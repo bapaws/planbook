@@ -1,0 +1,45 @@
+[
+  {
+    "id": "ae01c28a-6b4f-4718-9685-c4d3d0f81e51",
+    "user_id": null,
+    "name": "Work",
+    "color": "#2196F3",
+    "order": 0,
+    "parent_id": null,
+    "level": 0,
+    "dark_color_scheme": null,
+    "light_color_scheme": null,
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": null,
+    "deleted_at": null
+  },
+  {
+    "id": "b9a0b5e5-3818-4cfb-88ba-23a30a9cf942",
+    "user_id": null,
+    "name": "Study",
+    "color": "#4CAF50",
+    "order": 0,
+    "parent_id": null,
+    "level": 0,
+    "dark_color_scheme": null,
+    "light_color_scheme": null,
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": null,
+    "deleted_at": null
+  },
+  {
+    "id": "01617419-9780-4120-853f-9ebc237f608b",
+    "user_id": null,
+    "name": "Life",
+    "color": "#FF9800",
+    "order": 0,
+    "parent_id": null,
+    "level": 0,
+    "dark_color_scheme": null,
+    "light_color_scheme": null,
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "updated_at": null,
+    "deleted_at": null
+  }
+]
+

@@ -1,0 +1,1 @@
+enum DarkMode { dark, light }

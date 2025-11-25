@@ -1,0 +1,23 @@
+name: database_planbook_api
+description: A Very Good Project created by Very Good CLI.
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ^3.32.0
+
+dependencies:
+  drift: ^2.26.1
+  flutter:
+    sdk: flutter
+  jiffy: ^6.4.3
+  planbook_api:
+    path: ../planbook_api
+  rxdart: ^0.28.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^9.0.0
