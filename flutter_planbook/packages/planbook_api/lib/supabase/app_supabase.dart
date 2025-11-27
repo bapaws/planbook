@@ -21,6 +21,7 @@ class AppSupabase {
             'Fub24iLCJpYXQiOjE3NjI4NTI1MzEsImV4cCI'
             '6MjA3ODQyODUzMX0.'
             'siJey7U0kroIDp2rpuRfRP-Q2I4c44wWi0ThOW6rEsc',
+        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
       );
     } else {
       supabase = await Supabase.initialize(
@@ -31,6 +32,7 @@ class AppSupabase {
             'XNlIiwiaWF0IjoxNzYyNzA0MDAwLCJleHAiOj'
             'E5MjA0NzA0MDB9.'
             'TKP8eEkch5MSBWn4_Qzz_pYTZWnssVUU-YcTgn_riw8',
+        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
       );
     }
     _supabase = supabase;

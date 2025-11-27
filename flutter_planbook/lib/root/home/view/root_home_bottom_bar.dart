@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/app_router.dart';
@@ -12,6 +10,8 @@ const double kRootBottomBarItemWidth = kToolbarHeight + 16;
 class RootHomeBottomBar extends StatelessWidget {
   const RootHomeBottomBar({super.key});
 
+  static const Duration animationDuration = Durations.short4;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -19,21 +19,36 @@ class RootHomeBottomBar extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: kRootBottomBarItemWidth * 2,
+          width: kRootBottomBarItemWidth * 3,
           height: kRootBottomBarItemHeight,
           decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: theme.colorScheme.surfaceContainerHighest,
-              strokeAlign: BorderSide.strokeAlignOutside,
-            ),
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.surfaceContainerHighest,
+                blurRadius: 12,
+              ),
+            ],
           ),
           clipBehavior: Clip.hardEdge,
-
-          child: ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 64, sigmaY: 64),
-              child: Row(
+          child: Stack(
+            children: [
+              AnimatedPositioned(
+                duration: animationDuration,
+                top: 2,
+                left: 2 + tabsRouter.activeIndex * kRootBottomBarItemWidth,
+                bottom: 2,
+                child: Container(
+                  width: kRootBottomBarItemWidth - 4,
+                  height: kRootBottomBarItemHeight - 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                ),
+              ),
+              Row(
                 children: [
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
@@ -46,12 +61,16 @@ class RootHomeBottomBar extends StatelessWidget {
                     child: SizedBox(
                       height: kRootBottomBarItemHeight,
                       width: kRootBottomBarItemWidth,
-                      child: Icon(
-                        FontAwesomeIcons.listCheck,
-                        size: 24,
-                        color: tabsRouter.activeIndex == 0
-                            ? theme.colorScheme.onSurface
-                            : theme.colorScheme.outlineVariant,
+                      child: AnimatedSwitcher(
+                        duration: animationDuration,
+                        child: Icon(
+                          FontAwesomeIcons.solidCalendarCheck,
+                          key: ValueKey(tabsRouter.activeIndex),
+                          size: 24,
+                          color: tabsRouter.activeIndex == 0
+                              ? theme.colorScheme.onSurface
+                              : Colors.grey.shade400,
+                        ),
                       ),
                     ),
                   ),
@@ -66,18 +85,46 @@ class RootHomeBottomBar extends StatelessWidget {
                     child: SizedBox(
                       height: kRootBottomBarItemHeight,
                       width: kRootBottomBarItemWidth,
-                      child: Icon(
-                        FontAwesomeIcons.box,
-                        size: 24,
-                        color: tabsRouter.activeIndex == 1
-                            ? theme.colorScheme.onSurface
-                            : theme.colorScheme.outlineVariant,
+                      child: AnimatedSwitcher(
+                        duration: animationDuration,
+                        child: Icon(
+                          FontAwesomeIcons.book,
+                          key: ValueKey(tabsRouter.activeIndex),
+                          size: 24,
+                          color: tabsRouter.activeIndex == 1
+                              ? theme.colorScheme.onSurface
+                              : Colors.grey.shade400,
+                        ),
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onDoubleTap: () {
+                      _onTabDoubleTapped(context, 2);
+                    },
+                    onTap: () {
+                      _onTabTapped(context, 2);
+                    },
+                    child: SizedBox(
+                      height: kRootBottomBarItemHeight,
+                      width: kRootBottomBarItemWidth,
+                      child: AnimatedSwitcher(
+                        duration: animationDuration,
+                        child: Icon(
+                          FontAwesomeIcons.solidCompass,
+                          key: ValueKey(tabsRouter.activeIndex),
+                          size: 24,
+                          color: tabsRouter.activeIndex == 2
+                              ? theme.colorScheme.onSurface
+                              : Colors.grey.shade400,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
         ),
         const Spacer(),
@@ -97,26 +144,25 @@ class RootHomeBottomBar extends StatelessWidget {
             width: kRootBottomBarItemHeight,
             height: kRootBottomBarItemHeight,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(32),
-              border: Border.all(
-                color: theme.colorScheme.surfaceContainerHighest,
-                strokeAlign: BorderSide.strokeAlignOutside,
-              ),
+              color: theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(kRootBottomBarItemHeight),
+              boxShadow: [
+                BoxShadow(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  blurRadius: 12,
+                ),
+              ],
             ),
             clipBehavior: Clip.hardEdge,
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 64, sigmaY: 64),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 200),
-                  child: Icon(
-                    tabsRouter.activeIndex == 0
-                        ? FontAwesomeIcons.plus
-                        : FontAwesomeIcons.featherPointed,
-                    size: 18,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
+            child: AnimatedSwitcher(
+              duration: animationDuration,
+              child: Icon(
+                tabsRouter.activeIndex == 0
+                    ? FontAwesomeIcons.plus
+                    : FontAwesomeIcons.featherPointed,
+                key: ValueKey(tabsRouter.activeIndex),
+                size: 18,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),

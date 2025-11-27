@@ -40,8 +40,8 @@ class RootTaskDrawer extends StatelessWidget {
                 ),
                 for (final mode in [
                   TaskListMode.inbox,
-                  TaskListMode.today,
                   TaskListMode.overdue,
+                  TaskListMode.today,
                 ])
                   BlocSelector<RootTaskBloc, RootTaskState, int>(
                     selector: (state) => state.taskCounts[mode] ?? 0,

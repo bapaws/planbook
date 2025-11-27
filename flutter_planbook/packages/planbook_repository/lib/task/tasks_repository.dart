@@ -34,8 +34,8 @@ class TasksRepository {
     await _dbTaskApi.update(task: task, tags: tags);
   }
 
-  Future<Task?> getTaskById(String taskId) async {
-    return _dbTaskApi.getTaskById(taskId);
+  Future<TaskEntity?> getTaskEntityById(String taskId) async {
+    return _dbTaskApi.getTaskEntityById(taskId);
   }
 
   Stream<int> getTaskCount({required TaskListMode mode, Jiffy? date}) {
@@ -80,13 +80,33 @@ class TasksRepository {
   }
 
   /// 获取所有今天需要执行的任务，包括今天未完成和已完成任务
-  Stream<List<TaskEntity>> getAllTodayTaskEntities() {
-    return _dbTaskTodayApi.getAllTodayTaskEntities();
-  }
-
-  /// 获取所有 inbox 中，今天的任务，包括今天未完成和已完成任务
-  Stream<List<TaskEntity>> getAllInboxTodayTaskEntities() {
-    return _dbTaskTodayApi.getAllInboxTodayTaskEntities();
+  Stream<List<TaskEntity>> getAllTodayTaskEntities({
+    TaskListMode mode = TaskListMode.today,
+    Jiffy? day,
+    String? tagId,
+    TaskPriority? priority,
+    bool? isCompleted,
+  }) {
+    return switch (mode) {
+      TaskListMode.today => _dbTaskTodayApi.getAllTodayTaskEntities(
+        day: day,
+        tagId: tagId,
+        priority: priority,
+        isCompleted: isCompleted,
+      ),
+      TaskListMode.inbox => _dbTaskTodayApi.getAllInboxTodayTaskEntities(
+        tagId: tagId,
+        priority: priority,
+        isCompleted: isCompleted,
+      ),
+      TaskListMode.overdue => _dbTaskTodayApi.getAllTodayOverdueTaskEntities(
+        day: day,
+        tagId: tagId,
+        priority: priority,
+        isCompleted: isCompleted,
+      ),
+      TaskListMode.tag => throw UnimplementedError(),
+    };
   }
 
   /// 切换任务完成状态

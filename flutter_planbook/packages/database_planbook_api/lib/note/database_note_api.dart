@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
@@ -12,16 +14,18 @@ class DatabaseNoteApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
-  Future<void> create({
+  Future<String> create({
     required String title,
     String? content,
     List<String>? images,
     List<Tag>? tags,
+    String? taskId,
   }) async {
     final noteCompanion = NotesCompanion.insert(
       title: title,
       content: Value(content),
       images: Value(images ?? []),
+      taskId: Value(taskId),
     );
     final note = await db.into(db.notes).insertReturning(noteCompanion);
 
@@ -37,13 +41,16 @@ class DatabaseNoteApi {
             );
       }
     }
+    return note.id;
   }
 
   Future<void> update({
     required Note note,
     List<Tag>? tags,
   }) async {
-    await db.update(db.notes).write(note.toCompanion(false));
+    await (db.update(
+      db.notes,
+    )..where((n) => n.id.equals(note.id))).write(note.toCompanion(false));
     if (tags != null) {
       // 获取当前 note 的所有 tags（排除已删除的）
       final currentNoteTags =
@@ -91,42 +98,53 @@ class DatabaseNoteApi {
     }
   }
 
-  Future<Note?> getNoteById(String noteId) async {
-    return (db.select(db.notes)
-          ..where((n) => n.id.equals(noteId) & n.deletedAt.isNull()))
-        .getSingleOrNull();
+  Future<NoteEntity?> getNoteEntityById(String noteId) async {
+    final rows =
+        await (db.select(db.notes).join([
+              leftOuterJoin(
+                db.tasks,
+                db.tasks.id.equalsExp(db.notes.taskId) &
+                    db.tasks.deletedAt.isNull(),
+              ),
+              leftOuterJoin(
+                db.noteTags,
+                db.noteTags.noteId.equalsExp(db.notes.id) &
+                    db.noteTags.deletedAt.isNull(),
+              ),
+            ])..where(
+              db.notes.id.equals(noteId) & db.notes.deletedAt.isNull(),
+            ))
+            .get();
+    final entities = await buildNoteEntities(rows);
+    return entities.firstOrNull;
   }
 
-  Stream<List<Note>> getNotesByTaskId(String taskId) {
+  Stream<List<NoteEntity>> getNoteEntitiesByTaskId(String taskId) {
     return (db.select(db.notes).join([
-          innerJoin(
-            db.taskActivities,
-            db.taskActivities.noteId.equalsExp(db.notes.id),
+          leftOuterJoin(
+            db.tasks,
+            db.tasks.id.equalsExp(db.notes.taskId) &
+                db.tasks.deletedAt.isNull(),
+          ),
+          leftOuterJoin(
+            db.noteTags,
+            db.noteTags.noteId.equalsExp(db.notes.id) &
+                db.noteTags.deletedAt.isNull(),
           ),
         ])..where(
-          db.taskActivities.taskId.equals(taskId) &
-              db.taskActivities.deletedAt.isNull(),
+          db.notes.taskId.equals(taskId) & db.notes.deletedAt.isNull(),
         ))
         .watch()
-        .asyncMap((rows) async {
-          return rows.map((row) => row.readTable(db.notes)).toList();
-        });
+        .asyncMap(buildNoteEntities);
   }
 
   Future<List<NoteEntity>> buildNoteEntities(List<TypedResult> rows) async {
     final notesMap = <String, Note>{};
     final tagsByNoteId = <String, List<TagEntity>>{};
-    final activitiesByNoteId = <String, TaskActivity>{};
-
+    final taskMap = <String, Task>{};
     for (final row in rows) {
       final note = row.readTable(db.notes);
       notesMap[note.id] = note;
-
-      // 获取 TaskActivity
-      final activity = row.readTableOrNull(db.taskActivities);
-      if (activity != null) {
-        activitiesByNoteId[note.id] = activity;
-      }
 
       // 获取 Tag
       final noteTag = row.readTableOrNull(db.noteTags);
@@ -136,13 +154,18 @@ class DatabaseNoteApi {
           tagsByNoteId.putIfAbsent(note.id, () => []).add(tag);
         }
       }
+
+      final task = row.readTableOrNull(db.tasks);
+      if (task != null) {
+        taskMap[note.id] = task;
+      }
     }
     return notesMap.values
         .map(
           (note) => NoteEntity(
             note: note,
             tags: tagsByNoteId[note.id] ?? [],
-            activity: activitiesByNoteId[note.id],
+            task: taskMap[note.id],
           ),
         )
         .toList();
@@ -172,9 +195,9 @@ class DatabaseNoteApi {
     return (db.select(db.notes).join(
             [
               leftOuterJoin(
-                db.taskActivities,
-                db.taskActivities.noteId.equalsExp(db.notes.id) &
-                    db.taskActivities.deletedAt.isNull(),
+                db.tasks,
+                db.tasks.id.equalsExp(db.notes.taskId) &
+                    db.tasks.deletedAt.isNull(),
               ),
               leftOuterJoin(
                 db.noteTags,

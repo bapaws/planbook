@@ -23,6 +23,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TaskListBloc(
             tasksRepository: context.read(),
+            notesRepository: context.read(),
             tag: tag,
             mode: TaskListMode.today,
           )..add(TaskListRequested(date: Jiffy.now(), tagId: tag.id)),
@@ -41,6 +42,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TaskListBloc(
             tasksRepository: context.read(),
+            notesRepository: context.read(),
           )..add(TaskListRequested(tagId: tag.id)),
           child: BlocBuilder<TaskListBloc, TaskListState>(
             builder: (context, state) {
@@ -59,6 +61,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) => TaskListBloc(
             tasksRepository: context.read(),
+            notesRepository: context.read(),
             tag: tag,
             mode: TaskListMode.overdue,
           )..add(TaskListRequested(date: Jiffy.now(), tagId: tag.id)),

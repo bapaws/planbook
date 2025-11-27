@@ -12,7 +12,7 @@ import 'package:flutter_planbook/note/new/cubit/note_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:planbook_core/data/page_status.dart';
-import 'package:planbook_repository/planbook_repository.dart' hide Column;
+import 'package:planbook_repository/planbook_repository.dart';
 
 class NoteNewView extends StatefulWidget {
   const NoteNewView({super.key});
@@ -73,6 +73,7 @@ class _NoteNewViewState extends State<NoteNewView> {
                 horizontal: 16,
               ),
             ),
+            textInputAction: TextInputAction.next,
             onChanged: context.read<NoteNewCubit>().onTitleChanged,
           ),
         ),
@@ -99,6 +100,7 @@ class _NoteNewViewState extends State<NoteNewView> {
             onChanged: context.read<NoteNewCubit>().onContentChanged,
           ),
         ),
+        const SizedBox(height: 6),
         BlocSelector<NoteNewCubit, NoteNewState, List<String>>(
           selector: (state) => state.images,
           builder: (context, images) {

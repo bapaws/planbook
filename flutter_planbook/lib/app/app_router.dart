@@ -25,9 +25,9 @@ class AppRouter extends RootStackRouter {
           children: [
             AutoRoute(page: TaskInboxRoute.page),
             AutoRoute(page: TaskTodayRoute.page),
-            AutoRoute(page: TaskListRoute.page),
           ],
         ),
+        AutoRoute(page: RootJournalRoute.page),
         AutoRoute(
           page: RootNoteRoute.page,
           children: [
@@ -39,62 +39,18 @@ class AppRouter extends RootStackRouter {
     ),
 
     // AutoRoute(page: TaskNewRoute.page),
-    CustomRoute<void>(
-      page: TaskNewRoute.page,
-      customRouteBuilder: <T>(context, child, page) {
-        return ModalBottomSheetRoute<T>(
-          settings: page,
-          builder: (context) => child,
-          isScrollControlled: true,
-          clipBehavior: Clip.hardEdge,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(),
-        );
-      },
-    ),
-    CustomRoute<void>(
-      page: TaskPickerRoute.page,
-      customRouteBuilder: <T>(context, child, page) {
-        return ModalBottomSheetRoute<T>(
-          settings: page,
-          builder: (context) => child,
-          isScrollControlled: true,
-          clipBehavior: Clip.hardEdge,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(),
-        );
-      },
-    ),
+    _buildModalBottomSheetRoute(TaskNewRoute.page),
+    _buildModalBottomSheetRoute(TaskPickerRoute.page),
+    _buildModalBottomSheetRoute(TaskPriorityPickerRoute.page),
+    _buildModalBottomSheetRoute(TaskDatePickerRoute.page),
+    AutoRoute(page: TaskDetailRoute.page),
 
     AutoRoute(page: NoteNewFullscreenRoute.page),
-    CustomRoute<void>(
-      page: NoteNewRoute.page,
-      customRouteBuilder: <T>(context, child, page) {
-        return ModalBottomSheetRoute<T>(
-          settings: page,
-          builder: (context) => child,
-          isScrollControlled: true,
-          clipBehavior: Clip.hardEdge,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(),
-        );
-      },
-    ),
+    _buildModalBottomSheetRoute(NoteNewRoute.page),
 
     AutoRoute(page: TagListRoute.page),
-    CustomRoute<void>(
-      page: TagPickerRoute.page,
-      customRouteBuilder: <T>(context, child, page) {
-        return ModalBottomSheetRoute<T>(
-          settings: page,
-          builder: (context) => child,
-          isScrollControlled: true,
-          clipBehavior: Clip.hardEdge,
-          backgroundColor: Colors.transparent,
-          shape: const RoundedRectangleBorder(),
-        );
-      },
-    ),
+    _buildModalBottomSheetRoute(TagPickerRoute.page),
+    _buildModalBottomSheetRoute(TagNewRoute.page),
 
     AutoRoute(page: SettingsHomeRoute.page),
     AutoRoute(page: FeedbackRoute.page),
@@ -102,8 +58,13 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SettingsDarkModeRoute.page),
     AutoRoute(page: SettingsSeedColorRoute.page),
     AutoRoute(page: SettingsIconRoute.page),
-    CustomRoute<void>(
-      page: TagNewRoute.page,
+  ];
+
+  AutoRoute _buildModalBottomSheetRoute(
+    PageInfo page,
+  ) {
+    return CustomRoute<void>(
+      page: page,
       customRouteBuilder: <T>(context, child, page) {
         return ModalBottomSheetRoute<T>(
           settings: page,
@@ -114,6 +75,6 @@ class AppRouter extends RootStackRouter {
           shape: const RoundedRectangleBorder(),
         );
       },
-    ),
-  ];
+    );
+  }
 }

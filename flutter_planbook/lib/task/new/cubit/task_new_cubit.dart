@@ -85,6 +85,8 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         isAllDay: false,
         alarms: [],
         createdAt: Jiffy.now(),
+        layer: 0,
+        childCount: 0,
       );
       await _tasksRepository.create(
         task: task,
@@ -108,6 +110,8 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         recurrenceRule: initialTask.recurrenceRule,
         createdAt: initialTask.createdAt,
         updatedAt: Jiffy.now(),
+        layer: 0,
+        childCount: 0,
       );
       await _tasksRepository.update(
         task: task,

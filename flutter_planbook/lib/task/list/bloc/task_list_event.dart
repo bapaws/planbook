@@ -8,23 +8,29 @@ sealed class TaskListEvent extends Equatable {
 }
 
 final class TaskListRequested extends TaskListEvent {
-  const TaskListRequested({this.date, this.tagId, this.priority});
+  const TaskListRequested({
+    this.date,
+    this.tagId,
+    this.priority,
+    this.showCompleted = true,
+  });
 
   final Jiffy? date;
   final String? tagId;
   final TaskPriority? priority;
+  final bool showCompleted;
 
   @override
-  List<Object?> get props => [date, tagId, priority];
+  List<Object?> get props => [date, tagId, priority, showCompleted];
 }
 
 final class TaskListCompleted extends TaskListEvent {
-  const TaskListCompleted({required this.taskId});
+  const TaskListCompleted({required this.task});
 
-  final String taskId;
+  final TaskEntity task;
 
   @override
-  List<Object?> get props => [taskId];
+  List<Object?> get props => [task];
 }
 
 final class TaskListDeleted extends TaskListEvent {
@@ -34,4 +40,13 @@ final class TaskListDeleted extends TaskListEvent {
 
   @override
   List<Object?> get props => [taskId];
+}
+
+final class TaskListNoteCreated extends TaskListEvent {
+  const TaskListNoteCreated({required this.task});
+
+  final TaskEntity task;
+
+  @override
+  List<Object?> get props => [task];
 }

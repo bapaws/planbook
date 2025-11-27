@@ -75,8 +75,8 @@ class _TaskListTileState extends State<TaskListTile> {
                 },
                 child: Icon(
                   _isCompleted
-                      ? FontAwesomeIcons.solidCircleCheck
-                      : FontAwesomeIcons.circle,
+                      ? FontAwesomeIcons.solidSquareCheck
+                      : FontAwesomeIcons.square,
                   size: 18,
                   color: theme.colorScheme.onSurface,
                 ),

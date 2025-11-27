@@ -10,33 +10,43 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
   NoteNewCubit({
     required NotesRepository notesRepository,
     NoteEntity? initialNote,
+    TaskEntity? initialTask,
   }) : _notesRepository = notesRepository,
-       super(NoteNewState.fromData(note: initialNote));
+       _initialTask = initialTask,
+       _initialNote = initialNote,
+       super(NoteNewState.fromData(note: initialNote, task: initialTask));
 
   final NotesRepository _notesRepository;
+  final TaskEntity? _initialTask;
+  final NoteEntity? _initialNote;
+
+  @override
+  String get id => _initialTask?.id ?? _initialNote?.id ?? '';
 
   @override
   NoteNewState? fromJson(Map<String, dynamic> json) {
+    if (_initialTask != null) return null;
+    if (_initialNote != null) return null;
     return NoteNewState.fromJson(json);
   }
 
   @override
   Map<String, dynamic>? toJson(NoteNewState state) {
+    if (_initialTask != null) return null;
+    if (_initialNote != null) return null;
     return state.toJson();
   }
 
   void onTitleChanged(String title) {
-    emit(state.copyWith(title: title));
+    emit(state.copyWith(title: title.trim()));
   }
 
   void onContentChanged(String content) {
-    emit(state.copyWith(content: content));
+    emit(state.copyWith(content: content.trim()));
   }
 
   void addImages(List<String> imagePaths) {
-    final currentImages = List<String>.from(state.images);
-    currentImages.addAll(imagePaths);
-    emit(state.copyWith(images: currentImages));
+    emit(state.copyWith(images: [...state.images, ...imagePaths]));
   }
 
   void removeImage(int index) {
@@ -84,6 +94,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         title: state.title,
         content: state.content.isEmpty ? null : state.content,
         images: state.images,
+        taskId: state.task?.id,
         createdAt: state.initialNote!.createdAt,
         updatedAt: Jiffy.now(),
         deletedAt: state.initialNote!.deletedAt,
@@ -99,6 +110,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         content: state.content.isEmpty ? null : state.content,
         images: state.images.isEmpty ? null : state.images,
         tags: tags.isEmpty ? null : tags,
+        taskId: state.task?.id,
       );
       await clear();
     }

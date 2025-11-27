@@ -112,6 +112,11 @@ class AppCalendarView extends StatelessWidget {
           firstDay: firstDay,
           lastDay: lastDay,
           focusedDay: date.dateTime,
+          startingDayOfWeek: switch (date.startOfWeek) {
+            StartOfWeek.monday => StartingDayOfWeek.monday,
+            StartOfWeek.saturday => StartingDayOfWeek.saturday,
+            StartOfWeek.sunday => StartingDayOfWeek.sunday,
+          },
           headerVisible: false,
           headerStyle: const HeaderStyle(
             leftChevronVisible: false,

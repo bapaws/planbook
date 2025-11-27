@@ -5,8 +5,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
-class TaskListTile extends StatefulWidget {
-  const TaskListTile({
+class TaskPriorityListTile extends StatefulWidget {
+  const TaskPriorityListTile({
     required this.task,
     required this.onPressed,
     required this.onCompleted,
@@ -22,10 +22,10 @@ class TaskListTile extends StatefulWidget {
   final VoidCallback onEdited;
 
   @override
-  State<TaskListTile> createState() => _TaskListTileState();
+  State<TaskPriorityListTile> createState() => _TaskPriorityListTileState();
 }
 
-class _TaskListTileState extends State<TaskListTile> {
+class _TaskPriorityListTileState extends State<TaskPriorityListTile> {
   late TaskEntity _task;
 
   bool _isCompleted = false;
@@ -65,11 +65,8 @@ class _TaskListTileState extends State<TaskListTile> {
           children: [
             IntrinsicHeight(
               child: CupertinoButton(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 16,
-                  horizontal: 12,
-                ),
-                minimumSize: const Size(24, kMinInteractiveDimensionCupertino),
+                padding: const EdgeInsets.all(8),
+                minimumSize: const Size.square(36),
                 onPressed: () {
                   setState(() {
                     _isCompleted = !_isCompleted;
@@ -78,9 +75,9 @@ class _TaskListTileState extends State<TaskListTile> {
                 },
                 child: Icon(
                   _isCompleted
-                      ? FontAwesomeIcons.solidCircleCheck
-                      : FontAwesomeIcons.circle,
-                  size: 18,
+                      ? FontAwesomeIcons.solidSquareCheck
+                      : FontAwesomeIcons.square,
+                  size: 16,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -88,7 +85,7 @@ class _TaskListTileState extends State<TaskListTile> {
             Expanded(
               child: AnimatedDefaultTextStyle(
                 duration: Durations.short2,
-                style: theme.textTheme.titleMedium!.copyWith(
+                style: theme.textTheme.bodyMedium!.copyWith(
                   color: _isCompleted
                       ? Colors.grey
                       : theme.colorScheme.onSurface,
@@ -96,10 +93,10 @@ class _TaskListTileState extends State<TaskListTile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                     Text(
                       _task.title,
-                      maxLines: 5,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     // if (_task.tags.isNotEmpty) ...[
@@ -112,7 +109,7 @@ class _TaskListTileState extends State<TaskListTile> {
                     //         .toList(),
                     //   ),
                     // ],
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 2),
                   ],
                 ),
               ),

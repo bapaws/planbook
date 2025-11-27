@@ -23,7 +23,7 @@ class TaskPickerBloc extends Bloc<TaskPickerEvent, TaskPickerState> {
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
     await emit.forEach(
-      _tasksRepository.getAllInboxTodayTaskEntities(),
+      _tasksRepository.getAllTodayTaskEntities(mode: TaskListMode.inbox),
       onData: (tasks) => state.copyWith(
         status: PageStatus.success,
         inboxTasks: tasks,

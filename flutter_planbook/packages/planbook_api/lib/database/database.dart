@@ -10,10 +10,10 @@ import 'package:path_provider_foundation/path_provider_foundation.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/database/detached_reason.dart';
 import 'package:planbook_api/database/event_alarm.dart';
-import 'package:planbook_api/database/event_priority.dart';
 import 'package:planbook_api/database/jiffy_converter.dart';
 import 'package:planbook_api/database/list_converter.dart';
 import 'package:planbook_api/database/recurrence_rule.dart';
+import 'package:planbook_api/database/task_priority.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
@@ -37,6 +37,9 @@ class Tasks extends Table {
     #id,
     onDelete: KeyAction.cascade,
   )();
+
+  IntColumn get layer => integer().withDefault(const Constant(0))();
+  IntColumn get childCount => integer().withDefault(const Constant(0))();
   // 排序字段（用于子任务列表排序）
   IntColumn get order => integer().withDefault(const Constant(0))();
 
@@ -107,6 +110,12 @@ class Notes extends Table {
   TextColumn get content => text().nullable()();
   TextColumn get images =>
       text().map(const ListConverter<String>()).nullable()();
+
+  TextColumn get taskId => text().nullable().references(
+    Tasks,
+    #id,
+    onDelete: KeyAction.setNull,
+  )();
 
   DateTimeColumn get createdAt =>
       dateTime().map(const JiffyConverter()).withDefault(currentDateAndTime)();
@@ -212,13 +221,6 @@ class TaskActivities extends Table {
   // 关联的任务
   TextColumn get taskId => text().nullable().references(
     Tasks,
-    #id,
-    onDelete: KeyAction.setNull,
-  )();
-
-  // 关联的日记（可选，完成时可以创建日记）
-  TextColumn get noteId => text().nullable().references(
-    Notes,
     #id,
     onDelete: KeyAction.setNull,
   )();

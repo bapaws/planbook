@@ -4,13 +4,14 @@ final class TagPickerState extends Equatable {
   const TagPickerState({
     this.status = PageStatus.initial,
     this.tags = const [],
-    this.selectedTagIds = const {},
+    this.selectedTagIds = const [],
   });
 
   final List<TagEntity> tags;
   final PageStatus status;
 
-  final Set<String> selectedTagIds;
+  /// 选中的标签ID列表，保持顺序
+  final List<String> selectedTagIds;
 
   bool get isAllSelected => selectedTagIds.length == tags.length;
 
@@ -20,7 +21,7 @@ final class TagPickerState extends Equatable {
   TagPickerState copyWith({
     PageStatus? status,
     List<TagEntity>? tags,
-    Set<String>? selectedTagIds,
+    List<String>? selectedTagIds,
   }) {
     return TagPickerState(
       status: status ?? this.status,

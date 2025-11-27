@@ -11,12 +11,13 @@ final class NoteNewState extends Equatable {
     this.task,
   });
 
-  factory NoteNewState.fromData({NoteEntity? note}) {
+  factory NoteNewState.fromData({NoteEntity? note, TaskEntity? task}) {
     return NoteNewState(
       initialNote: note,
-      title: note?.title ?? '',
+      title: note?.title ?? task?.title ?? '',
       content: note?.content ?? '',
-      task: note?.task,
+      task: note?.task ?? task?.task,
+      tags: note?.tags ?? task?.tags ?? const [],
     );
   }
 

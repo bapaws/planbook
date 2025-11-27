@@ -30,7 +30,6 @@ class RootTaskPage extends StatelessWidget {
               RootTaskBloc(
                   tasksRepository: context.read(),
                 )
-                ..add(const RootTaskRequested())
                 ..add(
                   const RootTaskTaskCountRequested(mode: TaskListMode.inbox),
                 )
@@ -77,9 +76,6 @@ class _RootTaskPage extends StatelessWidget {
             duration: Durations.medium1,
             child: switch (state.tab) {
               TaskListMode.today => BlocBuilder<TaskTodayCubit, TaskTodayState>(
-                buildWhen: (previous, current) =>
-                    previous.date != current.date ||
-                    previous.calendarFormat != current.calendarFormat,
                 builder: (context, state) {
                   return AppCalendarDateView(
                     date: state.date,
@@ -140,9 +136,7 @@ class _RootTaskPage extends StatelessWidget {
                       ? context.l10n.hideCompleted
                       : context.l10n.showCompleted,
                   onTap: () => context.read<RootTaskBloc>().add(
-                    const RootTaskViewTypeChanged(
-                      viewType: RootTaskViewType.priority,
-                    ),
+                    const RootTaskShowCompletedChanged(),
                   ),
                 ),
               ];

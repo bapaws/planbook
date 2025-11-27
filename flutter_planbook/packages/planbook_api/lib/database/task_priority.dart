@@ -6,16 +6,16 @@ import 'package:flutter/material.dart';
 /// 同时支持四象限时间管理法的映射
 enum TaskPriority {
   /// 无优先级（默认）
-  none(0),
+  none(4),
 
   /// 低优先级
-  low(2),
+  low(3),
 
   /// 中等优先级
-  medium(3),
+  medium(2),
 
   /// 高优先级
-  high(4);
+  high(1);
 
   const TaskPriority(this.value);
 
@@ -75,6 +75,11 @@ enum TaskPriority {
     TaskPriority.low => Colors.amber,
     TaskPriority.none => Colors.green,
   };
+
+  ColorScheme getColorScheme(BuildContext context) => ColorScheme.fromSeed(
+    seedColor: color,
+    brightness: Theme.of(context).brightness,
+  );
 }
 
 /// 四象限分类（基于 Eisenhower Matrix）

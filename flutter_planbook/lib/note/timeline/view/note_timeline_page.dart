@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/note/list/bloc/note_list_bloc.dart';
 import 'package:flutter_planbook/note/list/view/note_list_view.dart';
 import 'package:flutter_planbook/note/timeline/bloc/note_timeline_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
@@ -50,6 +51,23 @@ class _NoteTimelinePage extends StatelessWidget {
           child: BlocSelector<NoteListBloc, NoteListState, List<NoteEntity>>(
             selector: (state) => state.notes,
             builder: (context, notes) {
+              if (notes.isEmpty) {
+                return Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      bottom:
+                          24 +
+                          kBottomNavigationBarHeight +
+                          MediaQuery.of(context).padding.bottom,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/Summer-Collection.svg',
+                      width: 280,
+                      height: 280,
+                    ),
+                  ),
+                );
+              }
               return AnimatedSwitcher(
                 duration: Durations.medium1,
                 child: NoteListView(

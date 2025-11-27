@@ -9,11 +9,13 @@ class TaskEntity extends Equatable {
     required this.task,
     this.tags = const [],
     this.activity,
+    this.children = const [],
   });
 
   final Task task;
   final List<TagEntity> tags;
   final TaskActivity? activity;
+  final List<TaskEntity> children;
 
   String get id => task.id;
   String get title => task.title;
@@ -31,17 +33,19 @@ class TaskEntity extends Equatable {
   bool get isCompleted => activity?.completedAt != null;
 
   @override
-  List<Object?> get props => [task, tags, activity];
+  List<Object?> get props => [task, tags, activity, children];
 
   TaskEntity copyWith({
     Task? task,
     List<TagEntity>? tags,
     TaskActivity? activity,
+    List<TaskEntity>? children,
   }) {
     return TaskEntity(
       task: task ?? this.task,
       tags: tags ?? this.tags,
       activity: activity ?? this.activity,
+      children: children ?? this.children,
     );
   }
 }

@@ -39,26 +39,41 @@ class _RootHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AutoTabsRouter(
       routes: const [
+        RootJournalRoute(),
         RootTaskRoute(),
         RootNoteRoute(),
       ],
-      transitionBuilder: (context, child, animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              child,
-              const Positioned(
-                left: 24,
-                right: 24,
-                bottom: 22,
-                child: RootHomeBottomBar(),
-              ),
-            ],
-          ),
+      builder: (context, child) {
+        return Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            child,
+            const Positioned(
+              left: 24,
+              right: 24,
+              bottom: 22,
+              child: RootHomeBottomBar(),
+            ),
+          ],
         );
       },
+      // transitionBuilder: (context, child, animation) {
+      //   return FadeTransition(
+      //     opacity: animation,
+      //     child: Stack(
+      //       alignment: Alignment.bottomCenter,
+      //       children: [
+      //         child,
+      //         const Positioned(
+      //           left: 24,
+      //           right: 24,
+      //           bottom: 22,
+      //           child: RootHomeBottomBar(),
+      //         ),
+      //       ],
+      //     ),
+      //   );
+      // },
     );
   }
 }

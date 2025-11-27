@@ -27,54 +27,65 @@ class TaskListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiSliver(
-      pushPinnedChildren: true,
-      children: [
-        if (header != null && tasks.isNotEmpty)
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            sliver: SliverToBoxAdapter(child: header),
+    return BlocListener<TaskListBloc, TaskListState>(
+      listenWhen: (previous, current) =>
+          previous.currentTaskNote != current.currentTaskNote &&
+          current.currentTaskNote != null,
+      listener: (context, state) {
+        context.router.push(
+          NoteNewRoute(
+            initialNote: state.currentTaskNote,
           ),
-        SliverList.builder(
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            final task = tasks[index];
-            return TaskListTile(
-              key: ValueKey(task.id),
-              task: task,
-              onPressed: () {
-                if (onTaskPressed != null) {
-                  onTaskPressed!(task);
-                } else {
-                  // context.router.push(TaskRoute(taskId: task.id));
-                  print('onTaskPressed: ${task.id}');
-                }
-              },
-              onCompleted: () {
-                if (onTaskCompleted != null) {
-                  onTaskCompleted!(task);
-                } else {
-                  context.read<TaskListBloc>().add(
-                    TaskListCompleted(taskId: task.id),
-                  );
-                }
-              },
-              onDeleted: () {
-                if (onTaskDeleted != null) {
-                  onTaskDeleted!(task);
-                } else {
-                  context.read<TaskListBloc>().add(
-                    TaskListDeleted(taskId: task.id),
-                  );
-                }
-              },
-              onEdited: () {
-                context.router.push(TaskNewRoute(initialTask: task));
-              },
-            );
-          },
-        ),
-      ],
+        );
+      },
+      child: MultiSliver(
+        pushPinnedChildren: true,
+        children: [
+          if (header != null && tasks.isNotEmpty)
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              sliver: SliverToBoxAdapter(child: header),
+            ),
+          SliverList.builder(
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              return TaskListTile(
+                key: ValueKey(task.id),
+                task: task,
+                onPressed: () {
+                  if (onTaskPressed != null) {
+                    onTaskPressed!(task);
+                  } else {
+                    context.router.push(TaskDetailRoute(taskId: task.id));
+                  }
+                },
+                onCompleted: () {
+                  if (onTaskCompleted != null) {
+                    onTaskCompleted!(task);
+                  } else {
+                    context.read<TaskListBloc>().add(
+                      TaskListCompleted(task: task),
+                    );
+                  }
+                },
+                onDeleted: () {
+                  if (onTaskDeleted != null) {
+                    onTaskDeleted!(task);
+                  } else {
+                    context.read<TaskListBloc>().add(
+                      TaskListDeleted(taskId: task.id),
+                    );
+                  }
+                },
+                onEdited: () {
+                  context.router.push(TaskNewRoute(initialTask: task));
+                },
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

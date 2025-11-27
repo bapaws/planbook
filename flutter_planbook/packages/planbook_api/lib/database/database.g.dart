@@ -50,6 +50,28 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       'REFERENCES tasks (id) ON DELETE CASCADE',
     ),
   );
+  static const VerificationMeta _layerMeta = const VerificationMeta('layer');
+  @override
+  late final GeneratedColumn<int> layer = GeneratedColumn<int>(
+    'layer',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _childCountMeta = const VerificationMeta(
+    'childCount',
+  );
+  @override
+  late final GeneratedColumn<int> childCount = GeneratedColumn<int>(
+    'child_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _orderMeta = const VerificationMeta('order');
   @override
   late final GeneratedColumn<int> order = GeneratedColumn<int>(
@@ -226,6 +248,8 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     userId,
     title,
     parentId,
+    layer,
+    childCount,
     order,
     startAt,
     endAt,
@@ -277,6 +301,18 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       context.handle(
         _parentIdMeta,
         parentId.isAcceptableOrUnknown(data['parent_id']!, _parentIdMeta),
+      );
+    }
+    if (data.containsKey('layer')) {
+      context.handle(
+        _layerMeta,
+        layer.isAcceptableOrUnknown(data['layer']!, _layerMeta),
+      );
+    }
+    if (data.containsKey('child_count')) {
+      context.handle(
+        _childCountMeta,
+        childCount.isAcceptableOrUnknown(data['child_count']!, _childCountMeta),
       );
     }
     if (data.containsKey('order')) {
@@ -343,6 +379,14 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         DriftSqlType.string,
         data['${effectivePrefix}parent_id'],
       ),
+      layer: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}layer'],
+      )!,
+      childCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}child_count'],
+      )!,
       order: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}order'],
@@ -492,6 +536,8 @@ class Task extends DataClass implements Insertable<Task> {
   final String? userId;
   final String title;
   final String? parentId;
+  final int layer;
+  final int childCount;
   final int order;
   final Jiffy? startAt;
   final Jiffy? endAt;
@@ -514,6 +560,8 @@ class Task extends DataClass implements Insertable<Task> {
     this.userId,
     required this.title,
     this.parentId,
+    required this.layer,
+    required this.childCount,
     required this.order,
     this.startAt,
     this.endAt,
@@ -543,6 +591,8 @@ class Task extends DataClass implements Insertable<Task> {
     if (!nullToAbsent || parentId != null) {
       map['parent_id'] = Variable<String>(parentId);
     }
+    map['layer'] = Variable<int>(layer);
+    map['child_count'] = Variable<int>(childCount);
     map['order'] = Variable<int>(order);
     if (!nullToAbsent || startAt != null) {
       map['start_at'] = Variable<DateTime>(
@@ -625,6 +675,8 @@ class Task extends DataClass implements Insertable<Task> {
       parentId: parentId == null && nullToAbsent
           ? const Value.absent()
           : Value(parentId),
+      layer: Value(layer),
+      childCount: Value(childCount),
       order: Value(order),
       startAt: startAt == null && nullToAbsent
           ? const Value.absent()
@@ -681,6 +733,8 @@ class Task extends DataClass implements Insertable<Task> {
       userId: serializer.fromJson<String?>(json['user_id']),
       title: serializer.fromJson<String>(json['title']),
       parentId: serializer.fromJson<String?>(json['parent_id']),
+      layer: serializer.fromJson<int>(json['layer']),
+      childCount: serializer.fromJson<int>(json['child_count']),
       order: serializer.fromJson<int>(json['order']),
       startAt: $TasksTable.$converterstartAtn.fromJson(
         serializer.fromJson<DateTime?>(json['start_at']),
@@ -733,6 +787,8 @@ class Task extends DataClass implements Insertable<Task> {
       'user_id': serializer.toJson<String?>(userId),
       'title': serializer.toJson<String>(title),
       'parent_id': serializer.toJson<String?>(parentId),
+      'layer': serializer.toJson<int>(layer),
+      'child_count': serializer.toJson<int>(childCount),
       'order': serializer.toJson<int>(order),
       'start_at': serializer.toJson<DateTime?>(
         $TasksTable.$converterstartAtn.toJson(startAt),
@@ -782,6 +838,8 @@ class Task extends DataClass implements Insertable<Task> {
     Value<String?> userId = const Value.absent(),
     String? title,
     Value<String?> parentId = const Value.absent(),
+    int? layer,
+    int? childCount,
     int? order,
     Value<Jiffy?> startAt = const Value.absent(),
     Value<Jiffy?> endAt = const Value.absent(),
@@ -804,6 +862,8 @@ class Task extends DataClass implements Insertable<Task> {
     userId: userId.present ? userId.value : this.userId,
     title: title ?? this.title,
     parentId: parentId.present ? parentId.value : this.parentId,
+    layer: layer ?? this.layer,
+    childCount: childCount ?? this.childCount,
     order: order ?? this.order,
     startAt: startAt.present ? startAt.value : this.startAt,
     endAt: endAt.present ? endAt.value : this.endAt,
@@ -836,6 +896,10 @@ class Task extends DataClass implements Insertable<Task> {
       userId: data.userId.present ? data.userId.value : this.userId,
       title: data.title.present ? data.title.value : this.title,
       parentId: data.parentId.present ? data.parentId.value : this.parentId,
+      layer: data.layer.present ? data.layer.value : this.layer,
+      childCount: data.childCount.present
+          ? data.childCount.value
+          : this.childCount,
       order: data.order.present ? data.order.value : this.order,
       startAt: data.startAt.present ? data.startAt.value : this.startAt,
       endAt: data.endAt.present ? data.endAt.value : this.endAt,
@@ -871,6 +935,8 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('parentId: $parentId, ')
+          ..write('layer: $layer, ')
+          ..write('childCount: $childCount, ')
           ..write('order: $order, ')
           ..write('startAt: $startAt, ')
           ..write('endAt: $endAt, ')
@@ -898,6 +964,8 @@ class Task extends DataClass implements Insertable<Task> {
     userId,
     title,
     parentId,
+    layer,
+    childCount,
     order,
     startAt,
     endAt,
@@ -924,6 +992,8 @@ class Task extends DataClass implements Insertable<Task> {
           other.userId == this.userId &&
           other.title == this.title &&
           other.parentId == this.parentId &&
+          other.layer == this.layer &&
+          other.childCount == this.childCount &&
           other.order == this.order &&
           other.startAt == this.startAt &&
           other.endAt == this.endAt &&
@@ -948,6 +1018,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String?> userId;
   final Value<String> title;
   final Value<String?> parentId;
+  final Value<int> layer;
+  final Value<int> childCount;
   final Value<int> order;
   final Value<Jiffy?> startAt;
   final Value<Jiffy?> endAt;
@@ -971,6 +1043,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.userId = const Value.absent(),
     this.title = const Value.absent(),
     this.parentId = const Value.absent(),
+    this.layer = const Value.absent(),
+    this.childCount = const Value.absent(),
     this.order = const Value.absent(),
     this.startAt = const Value.absent(),
     this.endAt = const Value.absent(),
@@ -995,6 +1069,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.userId = const Value.absent(),
     required String title,
     this.parentId = const Value.absent(),
+    this.layer = const Value.absent(),
+    this.childCount = const Value.absent(),
     this.order = const Value.absent(),
     this.startAt = const Value.absent(),
     this.endAt = const Value.absent(),
@@ -1019,6 +1095,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Expression<String>? userId,
     Expression<String>? title,
     Expression<String>? parentId,
+    Expression<int>? layer,
+    Expression<int>? childCount,
     Expression<int>? order,
     Expression<DateTime>? startAt,
     Expression<DateTime>? endAt,
@@ -1043,6 +1121,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (userId != null) 'user_id': userId,
       if (title != null) 'title': title,
       if (parentId != null) 'parent_id': parentId,
+      if (layer != null) 'layer': layer,
+      if (childCount != null) 'child_count': childCount,
       if (order != null) 'order': order,
       if (startAt != null) 'start_at': startAt,
       if (endAt != null) 'end_at': endAt,
@@ -1071,6 +1151,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String?>? userId,
     Value<String>? title,
     Value<String?>? parentId,
+    Value<int>? layer,
+    Value<int>? childCount,
     Value<int>? order,
     Value<Jiffy?>? startAt,
     Value<Jiffy?>? endAt,
@@ -1095,6 +1177,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
       userId: userId ?? this.userId,
       title: title ?? this.title,
       parentId: parentId ?? this.parentId,
+      layer: layer ?? this.layer,
+      childCount: childCount ?? this.childCount,
       order: order ?? this.order,
       startAt: startAt ?? this.startAt,
       endAt: endAt ?? this.endAt,
@@ -1130,6 +1214,12 @@ class TasksCompanion extends UpdateCompanion<Task> {
     }
     if (parentId.present) {
       map['parent_id'] = Variable<String>(parentId.value);
+    }
+    if (layer.present) {
+      map['layer'] = Variable<int>(layer.value);
+    }
+    if (childCount.present) {
+      map['child_count'] = Variable<int>(childCount.value);
     }
     if (order.present) {
       map['order'] = Variable<int>(order.value);
@@ -1219,6 +1309,8 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('userId: $userId, ')
           ..write('title: $title, ')
           ..write('parentId: $parentId, ')
+          ..write('layer: $layer, ')
+          ..write('childCount: $childCount, ')
           ..write('order: $order, ')
           ..write('startAt: $startAt, ')
           ..write('endAt: $endAt, ')
@@ -1295,6 +1387,18 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       ).withConverter<List<String>>($NotesTable.$converterimages);
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<String> taskId = GeneratedColumn<String>(
+    'task_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES tasks (id) ON DELETE SET NULL',
+    ),
+  );
   @override
   late final GeneratedColumnWithTypeConverter<Jiffy, DateTime> createdAt =
       GeneratedColumn<DateTime>(
@@ -1330,6 +1434,7 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
     title,
     content,
     images,
+    taskId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -1369,6 +1474,12 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
         content.isAcceptableOrUnknown(data['content']!, _contentMeta),
       );
     }
+    if (data.containsKey('task_id')) {
+      context.handle(
+        _taskIdMeta,
+        taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
+      );
+    }
     return context;
   }
 
@@ -1399,6 +1510,10 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
           DriftSqlType.string,
           data['${effectivePrefix}images'],
         ),
+      ),
+      taskId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}task_id'],
       ),
       createdAt: $NotesTable.$convertercreatedAt.fromSql(
         attachedDatabase.typeMapping.read(
@@ -1446,6 +1561,7 @@ class Note extends DataClass implements Insertable<Note> {
   final String title;
   final String? content;
   final List<String> images;
+  final String? taskId;
   final Jiffy createdAt;
   final Jiffy? updatedAt;
   final Jiffy? deletedAt;
@@ -1455,6 +1571,7 @@ class Note extends DataClass implements Insertable<Note> {
     required this.title,
     this.content,
     required this.images,
+    this.taskId,
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -1474,6 +1591,9 @@ class Note extends DataClass implements Insertable<Note> {
       map['images'] = Variable<String>(
         $NotesTable.$converterimages.toSql(images),
       );
+    }
+    if (!nullToAbsent || taskId != null) {
+      map['task_id'] = Variable<String>(taskId);
     }
     {
       map['created_at'] = Variable<DateTime>(
@@ -1504,6 +1624,9 @@ class Note extends DataClass implements Insertable<Note> {
           ? const Value.absent()
           : Value(content),
       images: Value(images),
+      taskId: taskId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taskId),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1527,6 +1650,7 @@ class Note extends DataClass implements Insertable<Note> {
       images: $NotesTable.$converterimages.fromJson(
         serializer.fromJson<List<dynamic>?>(json['images']),
       ),
+      taskId: serializer.fromJson<String?>(json['task_id']),
       createdAt: $NotesTable.$convertercreatedAt.fromJson(
         serializer.fromJson<DateTime>(json['created_at']),
       ),
@@ -1549,6 +1673,7 @@ class Note extends DataClass implements Insertable<Note> {
       'images': serializer.toJson<List<dynamic>?>(
         $NotesTable.$converterimages.toJson(images),
       ),
+      'task_id': serializer.toJson<String?>(taskId),
       'created_at': serializer.toJson<DateTime>(
         $NotesTable.$convertercreatedAt.toJson(createdAt),
       ),
@@ -1567,6 +1692,7 @@ class Note extends DataClass implements Insertable<Note> {
     String? title,
     Value<String?> content = const Value.absent(),
     List<String>? images,
+    Value<String?> taskId = const Value.absent(),
     Jiffy? createdAt,
     Value<Jiffy?> updatedAt = const Value.absent(),
     Value<Jiffy?> deletedAt = const Value.absent(),
@@ -1576,6 +1702,7 @@ class Note extends DataClass implements Insertable<Note> {
     title: title ?? this.title,
     content: content.present ? content.value : this.content,
     images: images ?? this.images,
+    taskId: taskId.present ? taskId.value : this.taskId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -1587,6 +1714,7 @@ class Note extends DataClass implements Insertable<Note> {
       title: data.title.present ? data.title.value : this.title,
       content: data.content.present ? data.content.value : this.content,
       images: data.images.present ? data.images.value : this.images,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -1601,6 +1729,7 @@ class Note extends DataClass implements Insertable<Note> {
           ..write('title: $title, ')
           ..write('content: $content, ')
           ..write('images: $images, ')
+          ..write('taskId: $taskId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -1615,6 +1744,7 @@ class Note extends DataClass implements Insertable<Note> {
     title,
     content,
     images,
+    taskId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -1628,6 +1758,7 @@ class Note extends DataClass implements Insertable<Note> {
           other.title == this.title &&
           other.content == this.content &&
           other.images == this.images &&
+          other.taskId == this.taskId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -1639,6 +1770,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
   final Value<String> title;
   final Value<String?> content;
   final Value<List<String>> images;
+  final Value<String?> taskId;
   final Value<Jiffy> createdAt;
   final Value<Jiffy?> updatedAt;
   final Value<Jiffy?> deletedAt;
@@ -1649,6 +1781,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.title = const Value.absent(),
     this.content = const Value.absent(),
     this.images = const Value.absent(),
+    this.taskId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1660,6 +1793,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     required String title,
     this.content = const Value.absent(),
     this.images = const Value.absent(),
+    this.taskId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1671,6 +1805,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Expression<String>? title,
     Expression<String>? content,
     Expression<String>? images,
+    Expression<String>? taskId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -1682,6 +1817,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       if (title != null) 'title': title,
       if (content != null) 'content': content,
       if (images != null) 'images': images,
+      if (taskId != null) 'task_id': taskId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -1695,6 +1831,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Value<String>? title,
     Value<String?>? content,
     Value<List<String>>? images,
+    Value<String?>? taskId,
     Value<Jiffy>? createdAt,
     Value<Jiffy?>? updatedAt,
     Value<Jiffy?>? deletedAt,
@@ -1706,6 +1843,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
       title: title ?? this.title,
       content: content ?? this.content,
       images: images ?? this.images,
+      taskId: taskId ?? this.taskId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -1732,6 +1870,9 @@ class NotesCompanion extends UpdateCompanion<Note> {
       map['images'] = Variable<String>(
         $NotesTable.$converterimages.toSql(images.value),
       );
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<String>(taskId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(
@@ -1762,6 +1903,7 @@ class NotesCompanion extends UpdateCompanion<Note> {
           ..write('title: $title, ')
           ..write('content: $content, ')
           ..write('images: $images, ')
+          ..write('taskId: $taskId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -3490,18 +3632,6 @@ class $TaskActivitiesTable extends TaskActivities
       'REFERENCES tasks (id) ON DELETE SET NULL',
     ),
   );
-  static const VerificationMeta _noteIdMeta = const VerificationMeta('noteId');
-  @override
-  late final GeneratedColumn<String> noteId = GeneratedColumn<String>(
-    'note_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES notes (id) ON DELETE SET NULL',
-    ),
-  );
   @override
   late final GeneratedColumnWithTypeConverter<Jiffy?, DateTime> completedAt =
       GeneratedColumn<DateTime>(
@@ -3594,7 +3724,6 @@ class $TaskActivitiesTable extends TaskActivities
     id,
     userId,
     taskId,
-    noteId,
     completedAt,
     activityType,
     occurrenceAt,
@@ -3632,12 +3761,6 @@ class $TaskActivitiesTable extends TaskActivities
         taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta),
       );
     }
-    if (data.containsKey('note_id')) {
-      context.handle(
-        _noteIdMeta,
-        noteId.isAcceptableOrUnknown(data['note_id']!, _noteIdMeta),
-      );
-    }
     if (data.containsKey('activity_type')) {
       context.handle(
         _activityTypeMeta,
@@ -3673,10 +3796,6 @@ class $TaskActivitiesTable extends TaskActivities
       taskId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}task_id'],
-      ),
-      noteId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}note_id'],
       ),
       completedAt: $TaskActivitiesTable.$convertercompletedAtn.fromSql(
         attachedDatabase.typeMapping.read(
@@ -3770,7 +3889,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
   final String id;
   final String? userId;
   final String? taskId;
-  final String? noteId;
   final Jiffy? completedAt;
   final String? activityType;
   final Jiffy? occurrenceAt;
@@ -3784,7 +3902,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
     required this.id,
     this.userId,
     this.taskId,
-    this.noteId,
     this.completedAt,
     this.activityType,
     this.occurrenceAt,
@@ -3804,9 +3921,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
     }
     if (!nullToAbsent || taskId != null) {
       map['task_id'] = Variable<String>(taskId);
-    }
-    if (!nullToAbsent || noteId != null) {
-      map['note_id'] = Variable<String>(noteId);
     }
     if (!nullToAbsent || completedAt != null) {
       map['completed_at'] = Variable<DateTime>(
@@ -3861,9 +3975,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       taskId: taskId == null && nullToAbsent
           ? const Value.absent()
           : Value(taskId),
-      noteId: noteId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(noteId),
       completedAt: completedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(completedAt),
@@ -3901,7 +4012,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       id: serializer.fromJson<String>(json['id']),
       userId: serializer.fromJson<String?>(json['user_id']),
       taskId: serializer.fromJson<String?>(json['task_id']),
-      noteId: serializer.fromJson<String?>(json['note_id']),
       completedAt: $TaskActivitiesTable.$convertercompletedAtn.fromJson(
         serializer.fromJson<DateTime?>(json['completed_at']),
       ),
@@ -3934,7 +4044,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       'id': serializer.toJson<String>(id),
       'user_id': serializer.toJson<String?>(userId),
       'task_id': serializer.toJson<String?>(taskId),
-      'note_id': serializer.toJson<String?>(noteId),
       'completed_at': serializer.toJson<DateTime?>(
         $TaskActivitiesTable.$convertercompletedAtn.toJson(completedAt),
       ),
@@ -3965,7 +4074,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
     String? id,
     Value<String?> userId = const Value.absent(),
     Value<String?> taskId = const Value.absent(),
-    Value<String?> noteId = const Value.absent(),
     Value<Jiffy?> completedAt = const Value.absent(),
     Value<String?> activityType = const Value.absent(),
     Value<Jiffy?> occurrenceAt = const Value.absent(),
@@ -3979,7 +4087,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
     id: id ?? this.id,
     userId: userId.present ? userId.value : this.userId,
     taskId: taskId.present ? taskId.value : this.taskId,
-    noteId: noteId.present ? noteId.value : this.noteId,
     completedAt: completedAt.present ? completedAt.value : this.completedAt,
     activityType: activityType.present ? activityType.value : this.activityType,
     occurrenceAt: occurrenceAt.present ? occurrenceAt.value : this.occurrenceAt,
@@ -3995,7 +4102,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       id: data.id.present ? data.id.value : this.id,
       userId: data.userId.present ? data.userId.value : this.userId,
       taskId: data.taskId.present ? data.taskId.value : this.taskId,
-      noteId: data.noteId.present ? data.noteId.value : this.noteId,
       completedAt: data.completedAt.present
           ? data.completedAt.value
           : this.completedAt,
@@ -4020,7 +4126,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('taskId: $taskId, ')
-          ..write('noteId: $noteId, ')
           ..write('completedAt: $completedAt, ')
           ..write('activityType: $activityType, ')
           ..write('occurrenceAt: $occurrenceAt, ')
@@ -4039,7 +4144,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
     id,
     userId,
     taskId,
-    noteId,
     completedAt,
     activityType,
     occurrenceAt,
@@ -4057,7 +4161,6 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
           other.id == this.id &&
           other.userId == this.userId &&
           other.taskId == this.taskId &&
-          other.noteId == this.noteId &&
           other.completedAt == this.completedAt &&
           other.activityType == this.activityType &&
           other.occurrenceAt == this.occurrenceAt &&
@@ -4073,7 +4176,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
   final Value<String> id;
   final Value<String?> userId;
   final Value<String?> taskId;
-  final Value<String?> noteId;
   final Value<Jiffy?> completedAt;
   final Value<String?> activityType;
   final Value<Jiffy?> occurrenceAt;
@@ -4088,7 +4190,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.taskId = const Value.absent(),
-    this.noteId = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.activityType = const Value.absent(),
     this.occurrenceAt = const Value.absent(),
@@ -4104,7 +4205,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
     this.id = const Value.absent(),
     this.userId = const Value.absent(),
     this.taskId = const Value.absent(),
-    this.noteId = const Value.absent(),
     this.completedAt = const Value.absent(),
     this.activityType = const Value.absent(),
     this.occurrenceAt = const Value.absent(),
@@ -4120,7 +4220,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
     Expression<String>? id,
     Expression<String>? userId,
     Expression<String>? taskId,
-    Expression<String>? noteId,
     Expression<DateTime>? completedAt,
     Expression<String>? activityType,
     Expression<DateTime>? occurrenceAt,
@@ -4136,7 +4235,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
       if (id != null) 'id': id,
       if (userId != null) 'user_id': userId,
       if (taskId != null) 'task_id': taskId,
-      if (noteId != null) 'note_id': noteId,
       if (completedAt != null) 'completed_at': completedAt,
       if (activityType != null) 'activity_type': activityType,
       if (occurrenceAt != null) 'occurrence_at': occurrenceAt,
@@ -4154,7 +4252,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
     Value<String>? id,
     Value<String?>? userId,
     Value<String?>? taskId,
-    Value<String?>? noteId,
     Value<Jiffy?>? completedAt,
     Value<String?>? activityType,
     Value<Jiffy?>? occurrenceAt,
@@ -4170,7 +4267,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
       id: id ?? this.id,
       userId: userId ?? this.userId,
       taskId: taskId ?? this.taskId,
-      noteId: noteId ?? this.noteId,
       completedAt: completedAt ?? this.completedAt,
       activityType: activityType ?? this.activityType,
       occurrenceAt: occurrenceAt ?? this.occurrenceAt,
@@ -4195,9 +4291,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
     }
     if (taskId.present) {
       map['task_id'] = Variable<String>(taskId.value);
-    }
-    if (noteId.present) {
-      map['note_id'] = Variable<String>(noteId.value);
     }
     if (completedAt.present) {
       map['completed_at'] = Variable<DateTime>(
@@ -4252,7 +4345,6 @@ class TaskActivitiesCompanion extends UpdateCompanion<TaskActivity> {
           ..write('id: $id, ')
           ..write('userId: $userId, ')
           ..write('taskId: $taskId, ')
-          ..write('noteId: $noteId, ')
           ..write('completedAt: $completedAt, ')
           ..write('activityType: $activityType, ')
           ..write('occurrenceAt: $occurrenceAt, ')
@@ -4921,6 +5013,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
+        'tasks',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('notes', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
         'tags',
         limitUpdateKind: UpdateKind.delete,
       ),
@@ -4963,13 +5062,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName(
-        'notes',
-        limitUpdateKind: UpdateKind.delete,
-      ),
-      result: [TableUpdate('task_activities', kind: UpdateKind.update)],
-    ),
-    WritePropagation(
-      on: TableUpdateQuery.onTableName(
         'tasks',
         limitUpdateKind: UpdateKind.delete,
       ),
@@ -4987,6 +5079,8 @@ typedef $$TasksTableCreateCompanionBuilder =
       Value<String?> userId,
       required String title,
       Value<String?> parentId,
+      Value<int> layer,
+      Value<int> childCount,
       Value<int> order,
       Value<Jiffy?> startAt,
       Value<Jiffy?> endAt,
@@ -5012,6 +5106,8 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<String?> userId,
       Value<String> title,
       Value<String?> parentId,
+      Value<int> layer,
+      Value<int> childCount,
       Value<int> order,
       Value<Jiffy?> startAt,
       Value<Jiffy?> endAt,
@@ -5070,6 +5166,25 @@ final class $$TasksTableReferences
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$NotesTable, List<Note>> _notesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.notes,
+    aliasName: $_aliasNameGenerator(db.tasks.id, db.notes.taskId),
+  );
+
+  $$NotesTableProcessedTableManager get notesRefs {
+    final manager = $$NotesTableTableManager(
+      $_db,
+      $_db.notes,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_notesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
@@ -5151,6 +5266,16 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
 
   ColumnFilters<String> get title => $composableBuilder(
     column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get layer => $composableBuilder(
+    column: $table.layer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get childCount => $composableBuilder(
+    column: $table.childCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5291,6 +5416,31 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
     return composer;
   }
 
+  Expression<bool> notesRefs(
+    Expression<bool> Function($$NotesTableFilterComposer f) f,
+  ) {
+    final $$NotesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.notes,
+      getReferencedColumn: (t) => t.taskId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$NotesTableFilterComposer(
+            $db: $db,
+            $table: $db.notes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> taskTagsRefs(
     Expression<bool> Function($$TaskTagsTableFilterComposer f) f,
   ) {
@@ -5388,6 +5538,16 @@ class $$TasksTableOrderingComposer
 
   ColumnOrderings<String> get title => $composableBuilder(
     column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get layer => $composableBuilder(
+    column: $table.layer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get childCount => $composableBuilder(
+    column: $table.childCount,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -5536,6 +5696,14 @@ class $$TasksTableAnnotationComposer
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
+  GeneratedColumn<int> get layer =>
+      $composableBuilder(column: $table.layer, builder: (column) => column);
+
+  GeneratedColumn<int> get childCount => $composableBuilder(
+    column: $table.childCount,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get order =>
       $composableBuilder(column: $table.order, builder: (column) => column);
 
@@ -5639,6 +5807,31 @@ class $$TasksTableAnnotationComposer
     return composer;
   }
 
+  Expression<T> notesRefs<T extends Object>(
+    Expression<T> Function($$NotesTableAnnotationComposer a) f,
+  ) {
+    final $$NotesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.notes,
+      getReferencedColumn: (t) => t.taskId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$NotesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.notes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> taskTagsRefs<T extends Object>(
     Expression<T> Function($$TaskTagsTableAnnotationComposer a) f,
   ) {
@@ -5731,6 +5924,7 @@ class $$TasksTableTableManager
           PrefetchHooks Function({
             bool parentId,
             bool detachedFromTaskId,
+            bool notesRefs,
             bool taskTagsRefs,
             bool taskActivitiesRefs,
             bool taskOccurrencesRefs,
@@ -5753,6 +5947,8 @@ class $$TasksTableTableManager
                 Value<String?> userId = const Value.absent(),
                 Value<String> title = const Value.absent(),
                 Value<String?> parentId = const Value.absent(),
+                Value<int> layer = const Value.absent(),
+                Value<int> childCount = const Value.absent(),
                 Value<int> order = const Value.absent(),
                 Value<Jiffy?> startAt = const Value.absent(),
                 Value<Jiffy?> endAt = const Value.absent(),
@@ -5776,6 +5972,8 @@ class $$TasksTableTableManager
                 userId: userId,
                 title: title,
                 parentId: parentId,
+                layer: layer,
+                childCount: childCount,
                 order: order,
                 startAt: startAt,
                 endAt: endAt,
@@ -5801,6 +5999,8 @@ class $$TasksTableTableManager
                 Value<String?> userId = const Value.absent(),
                 required String title,
                 Value<String?> parentId = const Value.absent(),
+                Value<int> layer = const Value.absent(),
+                Value<int> childCount = const Value.absent(),
                 Value<int> order = const Value.absent(),
                 Value<Jiffy?> startAt = const Value.absent(),
                 Value<Jiffy?> endAt = const Value.absent(),
@@ -5824,6 +6024,8 @@ class $$TasksTableTableManager
                 userId: userId,
                 title: title,
                 parentId: parentId,
+                layer: layer,
+                childCount: childCount,
                 order: order,
                 startAt: startAt,
                 endAt: endAt,
@@ -5853,6 +6055,7 @@ class $$TasksTableTableManager
               ({
                 parentId = false,
                 detachedFromTaskId = false,
+                notesRefs = false,
                 taskTagsRefs = false,
                 taskActivitiesRefs = false,
                 taskOccurrencesRefs = false,
@@ -5860,6 +6063,7 @@ class $$TasksTableTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (notesRefs) db.notes,
                     if (taskTagsRefs) db.taskTags,
                     if (taskActivitiesRefs) db.taskActivities,
                     if (taskOccurrencesRefs) db.taskOccurrences,
@@ -5911,6 +6115,19 @@ class $$TasksTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (notesRefs)
+                        await $_getPrefetchedData<Task, $TasksTable, Note>(
+                          currentTable: table,
+                          referencedTable: $$TasksTableReferences
+                              ._notesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TasksTableReferences(db, table, p0).notesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.taskId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (taskTagsRefs)
                         await $_getPrefetchedData<Task, $TasksTable, TaskTag>(
                           currentTable: table,
@@ -5993,6 +6210,7 @@ typedef $$TasksTableProcessedTableManager =
       PrefetchHooks Function({
         bool parentId,
         bool detachedFromTaskId,
+        bool notesRefs,
         bool taskTagsRefs,
         bool taskActivitiesRefs,
         bool taskOccurrencesRefs,
@@ -6005,6 +6223,7 @@ typedef $$NotesTableCreateCompanionBuilder =
       required String title,
       Value<String?> content,
       Value<List<String>> images,
+      Value<String?> taskId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -6017,6 +6236,7 @@ typedef $$NotesTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String?> content,
       Value<List<String>> images,
+      Value<String?> taskId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -6026,6 +6246,23 @@ typedef $$NotesTableUpdateCompanionBuilder =
 final class $$NotesTableReferences
     extends BaseReferences<_$AppDatabase, $NotesTable, Note> {
   $$NotesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TasksTable _taskIdTable(_$AppDatabase db) =>
+      db.tasks.createAlias($_aliasNameGenerator(db.notes.taskId, db.tasks.id));
+
+  $$TasksTableProcessedTableManager? get taskId {
+    final $_column = $_itemColumn<String>('task_id');
+    if ($_column == null) return null;
+    final manager = $$TasksTableTableManager(
+      $_db,
+      $_db.tasks,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
 
   static MultiTypedResultKey<$NoteTagsTable, List<NoteTag>> _noteTagsRefsTable(
     _$AppDatabase db,
@@ -6041,24 +6278,6 @@ final class $$NotesTableReferences
     ).filter((f) => f.noteId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_noteTagsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$TaskActivitiesTable, List<TaskActivity>>
-  _taskActivitiesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.taskActivities,
-    aliasName: $_aliasNameGenerator(db.notes.id, db.taskActivities.noteId),
-  );
-
-  $$TaskActivitiesTableProcessedTableManager get taskActivitiesRefs {
-    final manager = $$TaskActivitiesTableTableManager(
-      $_db,
-      $_db.taskActivities,
-    ).filter((f) => f.noteId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_taskActivitiesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -6117,6 +6336,29 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
 
+  $$TasksTableFilterComposer get taskId {
+    final $$TasksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TasksTableFilterComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<bool> noteTagsRefs(
     Expression<bool> Function($$NoteTagsTableFilterComposer f) f,
   ) {
@@ -6133,31 +6375,6 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
           }) => $$NoteTagsTableFilterComposer(
             $db: $db,
             $table: $db.noteTags,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> taskActivitiesRefs(
-    Expression<bool> Function($$TaskActivitiesTableFilterComposer f) f,
-  ) {
-    final $$TaskActivitiesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.taskActivities,
-      getReferencedColumn: (t) => t.noteId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TaskActivitiesTableFilterComposer(
-            $db: $db,
-            $table: $db.taskActivities,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6216,6 +6433,29 @@ class $$NotesTableOrderingComposer
     column: $table.deletedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  $$TasksTableOrderingComposer get taskId {
+    final $$TasksTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TasksTableOrderingComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$NotesTableAnnotationComposer
@@ -6251,6 +6491,29 @@ class $$NotesTableAnnotationComposer
   GeneratedColumnWithTypeConverter<Jiffy?, DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
 
+  $$TasksTableAnnotationComposer get taskId {
+    final $$TasksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TasksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> noteTagsRefs<T extends Object>(
     Expression<T> Function($$NoteTagsTableAnnotationComposer a) f,
   ) {
@@ -6275,31 +6538,6 @@ class $$NotesTableAnnotationComposer
     );
     return f(composer);
   }
-
-  Expression<T> taskActivitiesRefs<T extends Object>(
-    Expression<T> Function($$TaskActivitiesTableAnnotationComposer a) f,
-  ) {
-    final $$TaskActivitiesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.taskActivities,
-      getReferencedColumn: (t) => t.noteId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TaskActivitiesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.taskActivities,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $$NotesTableTableManager
@@ -6315,7 +6553,7 @@ class $$NotesTableTableManager
           $$NotesTableUpdateCompanionBuilder,
           (Note, $$NotesTableReferences),
           Note,
-          PrefetchHooks Function({bool noteTagsRefs, bool taskActivitiesRefs})
+          PrefetchHooks Function({bool taskId, bool noteTagsRefs})
         > {
   $$NotesTableTableManager(_$AppDatabase db, $NotesTable table)
     : super(
@@ -6335,6 +6573,7 @@ class $$NotesTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String?> content = const Value.absent(),
                 Value<List<String>> images = const Value.absent(),
+                Value<String?> taskId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
@@ -6345,6 +6584,7 @@ class $$NotesTableTableManager
                 title: title,
                 content: content,
                 images: images,
+                taskId: taskId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -6357,6 +6597,7 @@ class $$NotesTableTableManager
                 required String title,
                 Value<String?> content = const Value.absent(),
                 Value<List<String>> images = const Value.absent(),
+                Value<String?> taskId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
@@ -6367,6 +6608,7 @@ class $$NotesTableTableManager
                 title: title,
                 content: content,
                 images: images,
+                taskId: taskId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -6378,59 +6620,59 @@ class $$NotesTableTableManager
                     (e.readTable(table), $$NotesTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({noteTagsRefs = false, taskActivitiesRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (noteTagsRefs) db.noteTags,
-                    if (taskActivitiesRefs) db.taskActivities,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (noteTagsRefs)
-                        await $_getPrefetchedData<Note, $NotesTable, NoteTag>(
-                          currentTable: table,
-                          referencedTable: $$NotesTableReferences
-                              ._noteTagsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$NotesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).noteTagsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.noteId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (taskActivitiesRefs)
-                        await $_getPrefetchedData<
-                          Note,
-                          $NotesTable,
-                          TaskActivity
-                        >(
-                          currentTable: table,
-                          referencedTable: $$NotesTableReferences
-                              ._taskActivitiesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$NotesTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).taskActivitiesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.noteId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+          prefetchHooksCallback: ({taskId = false, noteTagsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (noteTagsRefs) db.noteTags],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable: $$NotesTableReferences
+                                    ._taskIdTable(db),
+                                referencedColumn: $$NotesTableReferences
+                                    ._taskIdTable(db)
+                                    .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
                   },
-                );
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (noteTagsRefs)
+                    await $_getPrefetchedData<Note, $NotesTable, NoteTag>(
+                      currentTable: table,
+                      referencedTable: $$NotesTableReferences
+                          ._noteTagsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$NotesTableReferences(db, table, p0).noteTagsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.noteId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
+            );
+          },
         ),
       );
 }
@@ -6447,7 +6689,7 @@ typedef $$NotesTableProcessedTableManager =
       $$NotesTableUpdateCompanionBuilder,
       (Note, $$NotesTableReferences),
       Note,
-      PrefetchHooks Function({bool noteTagsRefs, bool taskActivitiesRefs})
+      PrefetchHooks Function({bool taskId, bool noteTagsRefs})
     >;
 typedef $$TagsTableCreateCompanionBuilder =
     TagsCompanion Function({
@@ -7978,7 +8220,6 @@ typedef $$TaskActivitiesTableCreateCompanionBuilder =
       Value<String> id,
       Value<String?> userId,
       Value<String?> taskId,
-      Value<String?> noteId,
       Value<Jiffy?> completedAt,
       Value<String?> activityType,
       Value<Jiffy?> occurrenceAt,
@@ -7995,7 +8236,6 @@ typedef $$TaskActivitiesTableUpdateCompanionBuilder =
       Value<String> id,
       Value<String?> userId,
       Value<String?> taskId,
-      Value<String?> noteId,
       Value<Jiffy?> completedAt,
       Value<String?> activityType,
       Value<Jiffy?> occurrenceAt,
@@ -8028,24 +8268,6 @@ final class $$TaskActivitiesTableReferences
       $_db.tasks,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static $NotesTable _noteIdTable(_$AppDatabase db) => db.notes.createAlias(
-    $_aliasNameGenerator(db.taskActivities.noteId, db.notes.id),
-  );
-
-  $$NotesTableProcessedTableManager? get noteId {
-    final $_column = $_itemColumn<String>('note_id');
-    if ($_column == null) return null;
-    final manager = $$NotesTableTableManager(
-      $_db,
-      $_db.notes,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_noteIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -8146,29 +8368,6 @@ class $$TaskActivitiesTableFilterComposer
     );
     return composer;
   }
-
-  $$NotesTableFilterComposer get noteId {
-    final $$NotesTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.noteId,
-      referencedTable: $db.notes,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$NotesTableFilterComposer(
-            $db: $db,
-            $table: $db.notes,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TaskActivitiesTableOrderingComposer
@@ -8257,29 +8456,6 @@ class $$TaskActivitiesTableOrderingComposer
     );
     return composer;
   }
-
-  $$NotesTableOrderingComposer get noteId {
-    final $$NotesTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.noteId,
-      referencedTable: $db.notes,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$NotesTableOrderingComposer(
-            $db: $db,
-            $table: $db.notes,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TaskActivitiesTableAnnotationComposer
@@ -8354,29 +8530,6 @@ class $$TaskActivitiesTableAnnotationComposer
     );
     return composer;
   }
-
-  $$NotesTableAnnotationComposer get noteId {
-    final $$NotesTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.noteId,
-      referencedTable: $db.notes,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$NotesTableAnnotationComposer(
-            $db: $db,
-            $table: $db.notes,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
 }
 
 class $$TaskActivitiesTableTableManager
@@ -8392,7 +8545,7 @@ class $$TaskActivitiesTableTableManager
           $$TaskActivitiesTableUpdateCompanionBuilder,
           (TaskActivity, $$TaskActivitiesTableReferences),
           TaskActivity,
-          PrefetchHooks Function({bool taskId, bool noteId})
+          PrefetchHooks Function({bool taskId})
         > {
   $$TaskActivitiesTableTableManager(
     _$AppDatabase db,
@@ -8412,7 +8565,6 @@ class $$TaskActivitiesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> taskId = const Value.absent(),
-                Value<String?> noteId = const Value.absent(),
                 Value<Jiffy?> completedAt = const Value.absent(),
                 Value<String?> activityType = const Value.absent(),
                 Value<Jiffy?> occurrenceAt = const Value.absent(),
@@ -8427,7 +8579,6 @@ class $$TaskActivitiesTableTableManager
                 id: id,
                 userId: userId,
                 taskId: taskId,
-                noteId: noteId,
                 completedAt: completedAt,
                 activityType: activityType,
                 occurrenceAt: occurrenceAt,
@@ -8444,7 +8595,6 @@ class $$TaskActivitiesTableTableManager
                 Value<String> id = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> taskId = const Value.absent(),
-                Value<String?> noteId = const Value.absent(),
                 Value<Jiffy?> completedAt = const Value.absent(),
                 Value<String?> activityType = const Value.absent(),
                 Value<Jiffy?> occurrenceAt = const Value.absent(),
@@ -8459,7 +8609,6 @@ class $$TaskActivitiesTableTableManager
                 id: id,
                 userId: userId,
                 taskId: taskId,
-                noteId: noteId,
                 completedAt: completedAt,
                 activityType: activityType,
                 occurrenceAt: occurrenceAt,
@@ -8479,7 +8628,7 @@ class $$TaskActivitiesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({taskId = false, noteId = false}) {
+          prefetchHooksCallback: ({taskId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -8513,20 +8662,6 @@ class $$TaskActivitiesTableTableManager
                               )
                               as T;
                     }
-                    if (noteId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.noteId,
-                                referencedTable: $$TaskActivitiesTableReferences
-                                    ._noteIdTable(db),
-                                referencedColumn:
-                                    $$TaskActivitiesTableReferences
-                                        ._noteIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
 
                     return state;
                   },
@@ -8551,7 +8686,7 @@ typedef $$TaskActivitiesTableProcessedTableManager =
       $$TaskActivitiesTableUpdateCompanionBuilder,
       (TaskActivity, $$TaskActivitiesTableReferences),
       TaskActivity,
-      PrefetchHooks Function({bool taskId, bool noteId})
+      PrefetchHooks Function({bool taskId})
     >;
 typedef $$TaskOccurrencesTableCreateCompanionBuilder =
     TaskOccurrencesCompanion Function({

@@ -7,13 +7,11 @@ class NoteEntity extends Equatable {
   const NoteEntity({
     required this.note,
     this.tags = const [],
-    this.activity,
     this.task,
   });
 
   final Note note;
   final List<TagEntity> tags;
-  final TaskActivity? activity;
   final Task? task;
 
   String get id => note.id;
@@ -25,18 +23,16 @@ class NoteEntity extends Equatable {
   Jiffy? get deletedAt => note.deletedAt;
 
   @override
-  List<Object?> get props => [note, tags, activity, task];
+  List<Object?> get props => [note, tags, task];
 
   NoteEntity copyWith({
     Note? note,
     List<TagEntity>? tags,
-    TaskActivity? activity,
     Task? task,
   }) {
     return NoteEntity(
       note: note ?? this.note,
       tags: tags ?? this.tags,
-      activity: activity ?? this.activity,
       task: task ?? this.task,
     );
   }

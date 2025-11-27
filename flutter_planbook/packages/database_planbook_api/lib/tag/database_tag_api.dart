@@ -84,6 +84,27 @@ class DatabaseTagApi {
     return entity;
   }
 
+  Future<List<TagEntity>> getTagEntitiesByTaskId(String taskId) async {
+    final taskTags =
+        await (_db.select(_db.taskTags)
+              ..where(
+                (tt) =>
+                    tt.taskId.equals(taskId) &
+                    tt.deletedAt.isNull() &
+                    tt.isParent.equals(false),
+              )
+              ..orderBy([
+                (tt) => OrderingTerm.asc(tt.createdAt),
+              ]))
+            .get();
+
+    final tags = await Future.wait(
+      taskTags.map((t) => getTagEntityById(t.tagId)),
+    );
+
+    return tags.nonNulls.toList();
+  }
+
   Future<void> createTag({
     required String name,
     required ColorScheme lightColorScheme,

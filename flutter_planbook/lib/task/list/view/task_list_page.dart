@@ -13,6 +13,7 @@ class TaskListPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => TaskListBloc(
         tasksRepository: context.read(),
+        notesRepository: context.read(),
       ),
       child: const _TaskListPage(),
     );

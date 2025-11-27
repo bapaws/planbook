@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/app/app_router.dart'
+    show AutoRouterX, NoteNewRoute, TaskDetailRoute;
 import 'package:flutter_planbook/app/view/app_network_image.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -8,86 +10,95 @@ import 'package:planbook_api/planbook_api.dart';
 class NoteListTile extends StatelessWidget {
   const NoteListTile({
     required this.note,
+    this.showLinkButton = true,
     super.key,
   });
 
   final NoteEntity note;
+  final bool showLinkButton;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            children: [
-              const Icon(
-                FontAwesomeIcons.circle,
-                size: 16,
-              ),
-              const SizedBox(width: 16),
-              Text(
-                note.createdAt.toLocal().jm,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface,
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      onPressed: () {
+        context.router.push(NoteNewRoute(initialNote: note));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: [
+                const Icon(
+                  FontAwesomeIcons.circle,
+                  size: 16,
                 ),
-              ),
-              const Spacer(),
-              // if (note.activity != null)
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                minimumSize: Size.zero,
-                sizeStyle: CupertinoButtonSize.small,
-                onPressed: () {},
-                child: const Icon(FontAwesomeIcons.link, size: 14),
-              ),
-            ],
-          ),
-        ),
-        IntrinsicHeight(
-          child: Row(
-            children: [
-              VerticalDivider(
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  spacing: 12,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (note.title.isNotEmpty)
-                      Text(
-                        note.title,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                    if (note.content != null)
-                      Text(
-                        note.content ?? '',
-                        maxLines: 5,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    if (note.images.isNotEmpty)
-                      _buildImages(context, note.images),
-                    if (note.tags.isNotEmpty) _buildTags(context, note.tags),
-                  ],
+                const SizedBox(width: 16),
+                Text(
+                  note.createdAt.toLocal().jm,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
-              ),
-            ],
+                const Spacer(),
+                if (note.task != null && showLinkButton)
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    sizeStyle: CupertinoButtonSize.small,
+                    onPressed: () {
+                      context.router.push(
+                        TaskDetailRoute(taskId: note.task!.id),
+                      );
+                    },
+                    child: const Icon(FontAwesomeIcons.link, size: 14),
+                  ),
+              ],
+            ),
           ),
-        ),
-      ],
+          IntrinsicHeight(
+            child: Row(
+              children: [
+                VerticalDivider(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    spacing: 12,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (note.title.isNotEmpty)
+                        Text(
+                          note.title,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                      if (note.content != null)
+                        Text(
+                          note.content ?? '',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      if (note.images.isNotEmpty)
+                        _buildImages(context, note.images),
+                      if (note.tags.isNotEmpty) _buildTags(context, note.tags),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

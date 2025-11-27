@@ -44,7 +44,7 @@ class TagPickerBloc extends Bloc<TagPickerEvent, TagPickerState> {
     TagPickerSelected event,
     Emitter<TagPickerState> emit,
   ) async {
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     final tagIndex = state.tags.indexWhere((tag) => tag.id == event.tag.id);
     if (tagIndex == -1) return;
 
@@ -67,15 +67,15 @@ class TagPickerBloc extends Bloc<TagPickerEvent, TagPickerState> {
       selectedTagIds.add(event.tag.id);
 
       // 如果选中的是子标签，自动选中父标签
-      var parentId = event.tag.parentId;
-      for (var i = tagIndex - 1; i >= 0; i--) {
-        final tag = state.tags[i];
-        if (tag.id == parentId) {
-          selectedTagIds.add(tag.id);
-          parentId = tag.parentId;
-        }
-        if (parentId == null) break;
-      }
+      // var parentId = event.tag.parentId;
+      // for (var i = tagIndex - 1; i >= 0; i--) {
+      //   final tag = state.tags[i];
+      //   if (tag.id == parentId) {
+      //     selectedTagIds.add(tag.id);
+      //     parentId = tag.parentId;
+      //   }
+      //   if (parentId == null) break;
+      // }
     }
     emit(state.copyWith(selectedTagIds: selectedTagIds));
   }
@@ -88,7 +88,7 @@ class TagPickerBloc extends Bloc<TagPickerEvent, TagPickerState> {
       await stream.firstWhere((state) => state.status == PageStatus.success);
     }
 
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     for (final tag in event.tags) {
       final tagEntity = state.tags.firstWhereOrNull((t) => t.id == tag.id);
       if (tagEntity != null && !selectedTagIds.contains(tagEntity.id)) {
@@ -112,7 +112,7 @@ class TagPickerBloc extends Bloc<TagPickerEvent, TagPickerState> {
     TagPickerSelectedAll event,
     Emitter<TagPickerState> emit,
   ) async {
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     for (final tag in state.tags) {
       if (!selectedTagIds.contains(tag.id)) {
         selectedTagIds.add(tag.id);
@@ -125,7 +125,7 @@ class TagPickerBloc extends Bloc<TagPickerEvent, TagPickerState> {
     TagPickerUnselectedAll event,
     Emitter<TagPickerState> emit,
   ) async {
-    emit(state.copyWith(selectedTagIds: {}));
+    emit(state.copyWith(selectedTagIds: []));
   }
 
   Future<void> _onDeleted(

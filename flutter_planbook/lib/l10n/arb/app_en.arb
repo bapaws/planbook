@@ -74,6 +74,7 @@
     "timeline": "Timeline",
     "planbook": "Planbook",
     "note": "Note",
+    "notes": "Notes",
     "day": "Day",
     "week": "Week", 
     "month": "Month",
@@ -122,5 +123,8 @@
     "study": "Study",
     "life": "Life",
     "showCompleted": "Show Completed",
-    "hideCompleted": "Hide Completed"
+    "hideCompleted": "Hide Completed",
+    "priority": "Priority",
+    "date": "Date",
+    "selectDate": "Select Date"
   }

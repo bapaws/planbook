@@ -1,18 +1,17 @@
-import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 part 'root_task_event.dart';
 part 'root_task_state.dart';
 
-class RootTaskBloc extends Bloc<RootTaskEvent, RootTaskState> {
+class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   RootTaskBloc({
     required TasksRepository tasksRepository,
   }) : _tasksRepository = tasksRepository,
        super(const RootTaskState()) {
-    on<RootTaskRequested>(_onRequested);
     on<RootTaskTabSelected>(_onTabSelected);
     on<RootTaskTagSelected>(_onTagSelected);
     on<RootTaskTaskCountRequested>(
@@ -26,11 +25,24 @@ class RootTaskBloc extends Bloc<RootTaskEvent, RootTaskState> {
 
   final TasksRepository _tasksRepository;
 
-  Future<void> _onRequested(
-    RootTaskRequested event,
-    Emitter<RootTaskState> emit,
-  ) async {
-    emit(state.copyWith(status: PageStatus.loading));
+  @override
+  RootTaskState? fromJson(Map<String, dynamic> json) {
+    return RootTaskState(
+      status: PageStatus.values.byName(json['status'] as String),
+      tab: TaskListMode.values.byName(json['tab'] as String),
+      viewType: RootTaskViewType.values.byName(json['viewType'] as String),
+      showCompleted: json['showCompleted'] as bool,
+    );
+  }
+
+  @override
+  Map<String, dynamic>? toJson(RootTaskState state) {
+    return {
+      'status': state.status.name,
+      'tab': state.tab.name,
+      'viewType': state.viewType.name,
+      'showCompleted': state.showCompleted,
+    };
   }
 
   Future<void> _onTabSelected(

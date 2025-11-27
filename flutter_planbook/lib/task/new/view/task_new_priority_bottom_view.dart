@@ -17,8 +17,6 @@ class TaskNewPriorityBottomView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
     final l10n = context.l10n;
     final mediaQuery = MediaQuery.of(context);
 
@@ -26,12 +24,6 @@ class TaskNewPriorityBottomView extends StatelessWidget {
       selector: (state) => state.priority,
       builder: (context, selectedPriority) {
         return Container(
-          decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerLowest,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(16),
-            ),
-          ),
           padding: EdgeInsets.only(
             top: 16,
             left: 16,

@@ -10,17 +10,19 @@ class NotesRepository {
 
   final DatabaseNoteApi _dbNoteApi;
 
-  Future<void> create({
+  Future<String> create({
     required String title,
     String? content,
     List<String>? images,
     List<Tag>? tags,
+    String? taskId,
   }) async {
-    await _dbNoteApi.create(
+    return _dbNoteApi.create(
       title: title,
       content: content,
       images: images,
       tags: tags,
+      taskId: taskId,
     );
   }
 
@@ -31,12 +33,12 @@ class NotesRepository {
     await _dbNoteApi.update(note: note, tags: tags);
   }
 
-  Future<Note?> getNoteById(String noteId) async {
-    return _dbNoteApi.getNoteById(noteId);
+  Future<NoteEntity?> getNoteEntityById(String noteId) async {
+    return _dbNoteApi.getNoteEntityById(noteId);
   }
 
-  Stream<List<Note>> getNotesByTaskId(String taskId) {
-    return _dbNoteApi.getNotesByTaskId(taskId);
+  Stream<List<NoteEntity>> getNoteEntitiesByTaskId(String taskId) {
+    return _dbNoteApi.getNoteEntitiesByTaskId(taskId);
   }
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(

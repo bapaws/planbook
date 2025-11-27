@@ -288,8 +288,13 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
   }
 
   /// 获取所有今天需要执行的任务，包括今天未完成和已完成任务
-  Stream<List<TaskEntity>> getAllTodayTaskEntities() {
-    final date = Jiffy.now();
+  Stream<List<TaskEntity>> getAllTodayTaskEntities({
+    Jiffy? day,
+    String? tagId,
+    TaskPriority? priority,
+    bool? isCompleted,
+  }) {
+    final date = day ?? Jiffy.now();
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
     final startOfDayDateTime = startOfDay.toUtc().dateTime;
@@ -299,7 +304,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     preGenerateTaskOccurrences(fromDate: date).ignore();
 
     // 查询 1: 通过 TaskOccurrences 表查询重复任务实例
-    final recurringExp =
+    var recurringExp =
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
@@ -311,7 +316,17 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
           endOfDayDateTime,
         );
-
+    if (priority != null) {
+      recurringExp &= db.tasks.priority.equals(priority.name);
+    }
+    if (tagId != null) {
+      recurringExp &= db.taskTags.tagId.equals(tagId);
+    }
+    if (isCompleted != null) {
+      recurringExp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
     final recurringTasksQuery = db.select(db.tasks).join([
       innerJoin(
         db.taskOccurrences,
@@ -339,6 +354,12 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     // 构建基础条件
     var nonRecurringExp =
         db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+    if (priority != null) {
+      nonRecurringExp &= db.tasks.priority.equals(priority.name);
+    }
+    if (tagId != null) {
+      nonRecurringExp &= db.taskTags.tagId.equals(tagId);
+    }
 
     // 非重复任务：日期在指定日期范围内
     final nonRecurringTaskCondition =
@@ -372,6 +393,12 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     // 组合非重复任务和分离实例的条件
     nonRecurringExp &= nonRecurringTaskCondition | detachedInstanceCondition;
 
+    if (isCompleted != null) {
+      nonRecurringExp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
+
     final nonRecurringTasksQuery = db.select(db.tasks).join([
       // LEFT JOIN TaskActivities 来检查完成状态
       // 对于非重复任务，不需要匹配 occurrenceAt
@@ -400,13 +427,27 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
   }
 
   /// 获取所有 inbox 中，今天的任务，包括今天未完成和已完成任务
-  Stream<List<TaskEntity>> getAllInboxTodayTaskEntities() {
-    final exp =
+  Stream<List<TaskEntity>> getAllInboxTodayTaskEntities({
+    String? tagId,
+    TaskPriority? priority,
+    bool? isCompleted,
+  }) {
+    var exp =
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
         db.tasks.deletedAt.isNull();
-
+    if (priority != null) {
+      exp &= db.tasks.priority.equals(priority.name);
+    }
+    if (tagId != null) {
+      exp &= db.taskTags.tagId.equals(tagId);
+    }
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
     final query =
         db.select(db.tasks).join([
             leftOuterJoin(
@@ -429,6 +470,48 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
             OrderingTerm.asc(db.tasks.createdAt),
           ]);
 
+    return query.watch().asyncMap(buildTaskEntities);
+  }
+
+  Stream<List<TaskEntity>> getAllTodayOverdueTaskEntities({
+    bool? isCompleted,
+    TaskPriority? priority,
+    Jiffy? day,
+    String? tagId,
+  }) {
+    final date = day ?? Jiffy.now();
+    final startOfDay = date.startOf(Unit.day);
+    final startOfDayDateTime = startOfDay.toUtc().dateTime;
+    var exp =
+        (db.tasks.dueAt.isNotNull() &
+            db.tasks.dueAt.isSmallerThanValue(startOfDayDateTime)) |
+        (db.tasks.endAt.isNotNull() &
+            db.tasks.endAt.isSmallerThanValue(startOfDayDateTime));
+    if (priority != null) {
+      exp &= db.tasks.priority.equals(priority.name);
+    }
+    if (tagId != null) {
+      exp &= db.taskTags.tagId.equals(tagId);
+    }
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
+    final query = db.select(db.tasks).join([
+      leftOuterJoin(
+        db.taskActivities,
+        db.taskActivities.taskId.equalsExp(db.tasks.id) &
+            db.taskActivities.occurrenceAt.isNull() &
+            db.taskActivities.completedAt.isNotNull() &
+            db.taskActivities.deletedAt.isNull(),
+      ),
+      leftOuterJoin(
+        db.taskTags,
+        db.taskTags.taskId.equalsExp(db.tasks.id) &
+            db.taskTags.deletedAt.isNull(),
+      ),
+    ])..where(exp);
     return query.watch().asyncMap(buildTaskEntities);
   }
 }

@@ -52,7 +52,7 @@ class DatabaseTaskApi {
   }) async {
     await (db.update(
       db.tasks,
-    )..where((t) => t.id.equals(task.id))).write(task.toCompanion(true));
+    )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
     if (tags != null) {
       // 获取当前 task 的所有 tags（排除已删除的）
       final currentTaskTags =
@@ -104,6 +104,76 @@ class DatabaseTaskApi {
     return (db.select(db.tasks)
           ..where((t) => t.id.equals(taskId) & t.deletedAt.isNull()))
         .getSingleOrNull();
+  }
+
+  Future<TaskEntity?> getTaskEntityById(String taskId) async {
+    final query =
+        db.select(db.tasks).join([
+            // 获取所有活动（completedAt 不为 null 的）
+            leftOuterJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.deletedAt.isNull() &
+                  db.taskActivities.completedAt.isNotNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(
+            db.tasks.id.equals(taskId) & db.tasks.deletedAt.isNull(),
+          )
+          ..orderBy([
+            OrderingTerm.desc(db.taskActivities.completedAt),
+            OrderingTerm.desc(db.taskActivities.createdAt),
+          ]);
+
+    final rows = await query.get();
+
+    if (rows.isEmpty) return null;
+
+    // 取第一行（最新的活动）
+    final row = rows.first;
+    final task = row.readTable(db.tasks);
+    final activity = row.readTableOrNull(db.taskActivities);
+
+    // 查询标签（需要递归获取 parent，所以单独查询）
+    final tags = await tagApi.getTagEntitiesByTaskId(task.id);
+
+    // 查询子任务（需要递归，所以单独查询）
+    final children = await getChildTaskEntitiesById(task.id);
+
+    return TaskEntity(
+      task: task,
+      tags: tags,
+      activity: activity,
+      children: children,
+    );
+  }
+
+  Future<List<TaskEntity>> getChildTaskEntitiesById(String parentId) async {
+    final children =
+        await (db.select(db.tasks)
+              ..where(
+                (t) => t.parentId.equals(parentId) & t.deletedAt.isNull(),
+              )
+              ..orderBy([
+                (t) => OrderingTerm.asc(t.order),
+                (t) => OrderingTerm.asc(t.createdAt),
+              ]))
+            .get();
+
+    final childEntities = <TaskEntity>[];
+    for (final child in children) {
+      final childEntity = await getTaskEntityById(child.id);
+      if (childEntity != null) {
+        childEntities.add(childEntity);
+      }
+    }
+
+    return childEntities;
   }
 
   /// 预生成任务实例
@@ -224,26 +294,13 @@ class DatabaseTaskApi {
     for (final row in rows) {
       final task = row.readTable(db.tasks);
       if (!tasks.containsKey(task.id)) {
-        // 由于需要获取 tag 的 parent，所以无法使用 join
-        final taskTags =
-            await ((db.select(db.taskTags))..where(
-                  (t) =>
-                      t.taskId.equals(task.id) &
-                      t.isParent.equals(false) &
-                      t.deletedAt.isNull(),
-                ))
-                .get();
-        final tags = await Future.wait(
-          taskTags.map((t) => tagApi.getTagEntityById(t.tagId)),
-        );
         tasks[task.id] = TaskEntity(
           task: task,
           activity: row.readTableOrNull(db.taskActivities),
-          tags: tags.nonNulls.cast<TagEntity>().toList(),
+          tags: await tagApi.getTagEntitiesByTaskId(task.id),
         );
       }
     }
-
     return tasks.values.toList();
   }
 

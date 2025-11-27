@@ -136,8 +136,13 @@ class _TaskNewPageState extends State<_TaskNewPage> {
         ),
         decoration: BoxDecoration(
           color: colorScheme.surfaceContainerLowest,
+          image: const DecorationImage(
+            image: AssetImage('assets/images/bg_tile.png'),
+            repeat: ImageRepeat.repeat,
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
+        clipBehavior: Clip.hardEdge,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
