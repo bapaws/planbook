@@ -9,16 +9,19 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getOverdueTaskCount({required Jiffy date}) {
+  Stream<int> getOverdueTaskCount({required Jiffy date, bool? isCompleted}) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
-    final exp =
+    var exp =
         ((db.tasks.dueAt.isNotNull() &
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
             (db.tasks.endAt.isNotNull() &
                 db.tasks.endAt.isSmallerThanValue(startOfDay))) &
-        db.tasks.deletedAt.isNull() &
-        // 未完成任务：不存在对应的 taskActivity
-        db.taskActivities.id.isNull();
+        db.tasks.deletedAt.isNull();
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
 
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])

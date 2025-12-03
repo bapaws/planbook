@@ -10,7 +10,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getTodayTaskCount({required Jiffy date}) {
+  Stream<int> getTodayTaskCount({required Jiffy date, bool? isCompleted}) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
     final startOfDayDateTime = startOfDay.toUtc().dateTime;
@@ -20,7 +20,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     preGenerateTaskOccurrences(fromDate: date).ignore();
 
     // 查询 1: 通过 TaskOccurrences 表查询重复任务实例（未完成）
-    final recurringExp =
+    var recurringExp =
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
@@ -31,9 +31,13 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         ) &
         db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
           endOfDayDateTime,
-        ) &
-        // 未完成任务：不存在对应的 taskActivity
-        db.taskActivities.id.isNull();
+        );
+
+    if (isCompleted != null) {
+      recurringExp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
 
     final recurringTasksQuery = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -93,8 +97,11 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     // 组合非重复任务和分离实例的条件
     nonRecurringExp &= nonRecurringTaskCondition | detachedInstanceCondition;
 
-    // 未完成任务：不存在对应的 taskActivity
-    nonRecurringExp &= db.taskActivities.id.isNull();
+    if (isCompleted != null) {
+      nonRecurringExp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
 
     final nonRecurringTasksQuery = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -466,8 +473,8 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
           ..where(exp)
           ..orderBy([
             OrderingTerm.asc(db.tasks.order),
-            OrderingTerm.desc(db.taskActivities.completedAt),
-            OrderingTerm.asc(db.tasks.createdAt),
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
           ]);
 
     return query.watch().asyncMap(buildTaskEntities);

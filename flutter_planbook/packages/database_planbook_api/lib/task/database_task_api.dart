@@ -126,8 +126,8 @@ class DatabaseTaskApi {
             db.tasks.id.equals(taskId) & db.tasks.deletedAt.isNull(),
           )
           ..orderBy([
-            OrderingTerm.desc(db.taskActivities.completedAt),
-            OrderingTerm.desc(db.taskActivities.createdAt),
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.desc(db.taskActivities.createdAt.datetime),
           ]);
 
     final rows = await query.get();
@@ -161,7 +161,7 @@ class DatabaseTaskApi {
               )
               ..orderBy([
                 (t) => OrderingTerm.asc(t.order),
-                (t) => OrderingTerm.asc(t.createdAt),
+                (t) => OrderingTerm.asc(t.createdAt.datetime),
               ]))
             .get();
 
@@ -320,5 +320,16 @@ class DatabaseTaskApi {
             ),
           );
     }
+  }
+
+  Future<Jiffy?> getStartDate() async {
+    final row =
+        await (db.select(
+                db.tasks,
+              )
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt.datetime)])
+              ..limit(1))
+            .getSingleOrNull();
+    return row?.createdAt;
   }
 }

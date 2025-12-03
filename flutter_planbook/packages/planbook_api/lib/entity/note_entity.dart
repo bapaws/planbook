@@ -18,12 +18,13 @@ class NoteEntity extends Equatable {
   String get title => note.title;
   String? get content => note.content;
   List<String> get images => note.images;
+  String? get coverImage => note.coverImage;
   Jiffy get createdAt => note.createdAt;
   Jiffy? get updatedAt => note.updatedAt;
   Jiffy? get deletedAt => note.deletedAt;
 
   @override
-  List<Object?> get props => [note, tags, task];
+  List<Object?> get props => [note, tags, task, coverImage];
 
   NoteEntity copyWith({
     Note? note,

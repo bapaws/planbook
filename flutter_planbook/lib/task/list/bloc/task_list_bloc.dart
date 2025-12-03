@@ -38,7 +38,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       date: date,
       tagId: event.tagId,
       priority: event.priority,
-      isCompleted: event.showCompleted ? null : false,
+      isCompleted: event.isCompleted,
     );
     await emit.forEach(
       stream,

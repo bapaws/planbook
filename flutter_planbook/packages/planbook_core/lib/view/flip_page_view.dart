@@ -3,19 +3,163 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-enum FlipPageDirection { left, right }
+enum FlipPageDirection {
+  left(-1),
+  right(1);
+
+  const FlipPageDirection(this.value);
+
+  final int value;
+}
+
+/// Callback type for animating to a page.
+typedef _AnimateToPageCallback =
+    Future<void> Function(
+      int page, {
+      required Duration duration,
+      Curve curve,
+    });
+
+/// Callback type for jumping to a page.
+typedef _JumpToPageCallback = void Function(int page);
+
+/// Callback type for getting current page.
+typedef _GetCurrentPageCallback = int Function();
+
+/// Callback type for getting items count.
+typedef _GetItemsCountCallback = int Function();
+
+/// A controller for [FlipPageView] that allows programmatic control
+/// of the page being displayed.
+///
+/// Similar to [PageController], this controller provides methods to
+/// animate or jump to a specific page in the [FlipPageView].
+///
+/// The controller maintains its own state and directly controls the page view
+/// through callbacks, reducing coupling between the controller and the view.
+class FlipPageController extends ChangeNotifier {
+  /// Creates a controller for a [FlipPageView].
+  ///
+  /// The [initialPage] argument must not be null.
+  FlipPageController({this.initialPage = 0}) : assert(initialPage >= 0);
+
+  /// The page to show when first creating the [FlipPageView].
+  final int initialPage;
+
+  _AnimateToPageCallback? _animateToPageCallback;
+  _JumpToPageCallback? _jumpToPageCallback;
+  _GetCurrentPageCallback? _getCurrentPageCallback;
+  _GetItemsCountCallback? _getItemsCountCallback;
+
+  /// Whether this controller is attached to a [FlipPageView].
+  bool get hasClients =>
+      _animateToPageCallback != null && _jumpToPageCallback != null;
+
+  /// The currently selected page index.
+  ///
+  /// Returns null if the controller is not attached to a [FlipPageView].
+  int? get page => _getCurrentPageCallback?.call();
+
+  /// Animates the [FlipPageView] from the current page to the given page.
+  ///
+  /// The animation lasts for the given duration and follows the given curve.
+  /// The returned [Future] completes when the animation completes.
+  ///
+  /// The [page] argument must be a valid page index.
+  Future<void> animateToPage(
+    int page, {
+    Duration duration = const Duration(milliseconds: 250),
+    Curve curve = Curves.easeInOut,
+  }) {
+    if (_animateToPageCallback == null) {
+      return Future.value();
+    }
+    return _animateToPageCallback!(page, duration: duration, curve: curve);
+  }
+
+  /// Jumps the [FlipPageView] from the current page to the given page
+  /// without animation.
+  ///
+  /// The [page] argument must be a valid page index.
+  void jumpToPage(int page) {
+    _jumpToPageCallback?.call(page);
+  }
+
+  /// Animates the [FlipPageView] to the next page.
+  ///
+  /// The animation lasts for the given duration and follows the given curve.
+  /// The returned [Future] completes when the animation completes.
+  Future<void> nextPage({
+    Duration duration = const Duration(milliseconds: 250),
+    Curve curve = Curves.easeInOut,
+  }) {
+    if (!hasClients) return Future.value();
+    final currentPage = _getCurrentPageCallback?.call() ?? 0;
+    final itemsCount = _getItemsCountCallback?.call() ?? 1;
+    final nextPageIndex = (currentPage + 1) % itemsCount;
+    return animateToPage(nextPageIndex, duration: duration, curve: curve);
+  }
+
+  /// Animates the [FlipPageView] to the previous page.
+  ///
+  /// The animation lasts for the given duration and follows the given curve.
+  /// The returned [Future] completes when the animation completes.
+  Future<void> previousPage({
+    Duration duration = const Duration(milliseconds: 250),
+    Curve curve = Curves.easeInOut,
+  }) {
+    if (!hasClients) return Future.value();
+    final currentPage = _getCurrentPageCallback?.call() ?? 0;
+    final itemsCount = _getItemsCountCallback?.call() ?? 1;
+    final prevPageIndex = currentPage == 0 ? itemsCount - 1 : currentPage - 1;
+    return animateToPage(prevPageIndex, duration: duration, curve: curve);
+  }
+
+  void _attach({
+    required _AnimateToPageCallback animateToPage,
+    required _JumpToPageCallback jumpToPage,
+    required _GetCurrentPageCallback getCurrentPage,
+    required _GetItemsCountCallback getItemsCount,
+  }) {
+    _animateToPageCallback = animateToPage;
+    _jumpToPageCallback = jumpToPage;
+    _getCurrentPageCallback = getCurrentPage;
+    _getItemsCountCallback = getItemsCount;
+  }
+
+  void _detach() {
+    _animateToPageCallback = null;
+    _jumpToPageCallback = null;
+    _getCurrentPageCallback = null;
+    _getItemsCountCallback = null;
+  }
+
+  void _notifyPageChanged() {
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _detach();
+    super.dispose();
+  }
+}
 
 class FlipPageView extends StatefulWidget {
   const FlipPageView({
     required this.itemBuilder,
     required this.itemsCount,
     this.initialPage = 0,
+    this.controller,
+    this.spacing,
     super.key,
   });
 
   final int itemsCount;
   final IndexedWidgetBuilder? itemBuilder;
   final int initialPage;
+  final FlipPageController? controller;
+  final double? spacing;
 
   @override
   State<FlipPageView> createState() => _FlipPageViewState();
@@ -39,7 +183,8 @@ class _FlipPageViewState extends State<FlipPageView>
   static const double _defaultAngle = math.pi / 6;
   static const double _maxAngle = math.pi / 2;
 
-  void _onProgressUpdate(double progress) {
+  /// 更新角度（根据进度值）
+  void _updateAngles(double progress) {
     if (progress >= 0.5) {
       _leftAngle = -_defaultAngle;
       _rightAngle =
@@ -57,6 +202,10 @@ class _FlipPageViewState extends State<FlipPageView>
           -_maxAngle - (progress + 0.5) * 2 * (_maxAngle - _defaultAngle);
       _rightAngle = _defaultAngle;
     }
+  }
+
+  void _onProgressUpdate(double progress) {
+    _updateAngles(progress);
 
     if (progress > 0.5) {
       _currentIndex = _beforeDragIndex == 0
@@ -121,7 +270,7 @@ class _FlipPageViewState extends State<FlipPageView>
 
     final tween = Tween<double>(begin: 0, end: 1);
     final animation = tween.animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+      CurvedAnimation(parent: _controller, curve: Curves.linear),
     );
 
     void animationListener() {
@@ -145,24 +294,164 @@ class _FlipPageViewState extends State<FlipPageView>
     _dragStartX = null;
     _beforeDragIndex = null;
     _isAnimating = false;
+    widget.controller?._notifyPageChanged();
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.initialPage;
+    _currentIndex = widget.controller?.initialPage ?? widget.initialPage;
 
     _controller = AnimationController(
       duration: const Duration(milliseconds: 250),
       vsync: this,
     );
+
+    // Register callbacks with controller for direct control
+    widget.controller?._attach(
+      animateToPage: _animateToPage,
+      jumpToPage: _jumpToPage,
+      getCurrentPage: () => _currentIndex,
+      getItemsCount: () => widget.itemsCount,
+    );
   }
 
   @override
   void dispose() {
+    widget.controller?._detach();
     _controller.dispose();
     super.dispose();
+  }
+
+  /// 执行翻页动画到指定目标页面（支持跨多页）
+  Future<void> _animateToTargetPage(
+    int targetPage,
+    FlipPageDirection direction, {
+    required Duration duration,
+    Curve curve = Curves.easeInOut,
+  }) async {
+    final startPage = _currentIndex;
+    if (startPage == targetPage) return;
+
+    _beforeDragIndex = startPage;
+    _dragStartX = null;
+    _leftAngle = -_defaultAngle;
+    _rightAngle = _defaultAngle;
+
+    _controller.duration = duration;
+    _controller.reset();
+
+    // 动画范围从 0 到 pageCount
+    final tween = Tween<double>(begin: 0, end: 1);
+    final animation = tween.animate(
+      CurvedAnimation(parent: _controller, curve: curve),
+    );
+
+    void animationListener() {
+      final animationValue = animation.value;
+      final progress = direction == FlipPageDirection.left
+          ? animationValue
+          : -animationValue;
+      print('progress: $progress');
+      _updateAngles(progress);
+
+      if (progress > 0.5) {
+        _currentIndex = targetPage;
+      } else if (progress < -0.5) {
+        _currentIndex = targetPage;
+      }
+
+      _dragProgress = progress;
+      if (kDebugMode) {
+        print('dragProgress: $_dragProgress');
+      }
+
+      setState(() {});
+    }
+
+    animation.addListener(animationListener);
+    await _controller.forward();
+    animation.removeListener(animationListener);
+
+    // 确保最终状态正确
+    _currentIndex = targetPage;
+    _leftAngle = -_defaultAngle;
+    _rightAngle = _defaultAngle;
+    _dragProgress = 0;
+    _dragStartX = null;
+    _beforeDragIndex = null;
+  }
+
+  Future<void> _animateToPage(
+    int page, {
+    required Duration duration,
+    Curve curve = Curves.easeInOut,
+  }) async {
+    if (_isAnimating) return;
+    if (page < 0 || page >= widget.itemsCount) return;
+    if (page == _currentIndex) return;
+
+    _isAnimating = true;
+
+    final targetIndex = page;
+    final startIndex = _currentIndex;
+
+    // 计算需要翻多少页
+    final distance = (targetIndex - startIndex).abs() % widget.itemsCount;
+    final direction = targetIndex > startIndex
+        ? FlipPageDirection.right
+        : FlipPageDirection.left;
+
+    // 限制最多翻5页，超过则使用等步长翻页
+    const maxAnimatedPages = 5;
+    final animatedPageCount = math.min(distance, maxAnimatedPages);
+    final singlePageDuration = Duration(
+      milliseconds: duration.inMilliseconds ~/ animatedPageCount,
+    );
+    final stepSize = distance > maxAnimatedPages
+        ? distance / maxAnimatedPages
+        : 1;
+
+    final pages = List.generate(
+      animatedPageCount,
+      (index) =>
+          (startIndex + ((index + 1) * stepSize).round() * direction.value) %
+          widget.itemsCount,
+    );
+    for (final page in pages) {
+      await _animateToTargetPage(
+        page,
+        direction,
+        duration: singlePageDuration,
+        curve: curve,
+      );
+    }
+    _currentIndex = targetIndex;
+
+    // 清理状态
+    _leftAngle = -_defaultAngle;
+    _rightAngle = _defaultAngle;
+    _dragProgress = 0;
+    _dragStartX = null;
+    _beforeDragIndex = null;
+    _isAnimating = false;
+    widget.controller?._notifyPageChanged();
+    setState(() {});
+  }
+
+  void _jumpToPage(int page) {
+    if (page < 0 || page >= widget.itemsCount) return;
+    if (page == _currentIndex) return;
+
+    _currentIndex = page;
+    _leftAngle = -_defaultAngle;
+    _rightAngle = _defaultAngle;
+    _dragProgress = 0;
+    _dragStartX = null;
+    _beforeDragIndex = null;
+    widget.controller?._notifyPageChanged();
+    setState(() {});
   }
 
   @override
@@ -172,12 +461,19 @@ class _FlipPageViewState extends State<FlipPageView>
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Stack(
+            clipBehavior: Clip.none,
             children: [
               if ((_dragProgress > 0 && _dragProgress < 0.5) ||
                   (_dragProgress < -0.5))
                 Transform(
+                  key: ValueKey(
+                    _currentIndex <= 1
+                        ? widget.itemsCount - 2 + _currentIndex
+                        : _currentIndex - 2,
+                  ),
                   alignment: Alignment.centerRight,
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, _perspective)
@@ -196,6 +492,11 @@ class _FlipPageViewState extends State<FlipPageView>
                   ),
                 ),
               Transform(
+                key: ValueKey(
+                  _currentIndex == 0
+                      ? widget.itemsCount - 1
+                      : _currentIndex - 1,
+                ),
                 alignment: Alignment.centerRight,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, _perspective)
@@ -221,6 +522,7 @@ class _FlipPageViewState extends State<FlipPageView>
                 ),
               ),
               Transform(
+                key: ValueKey(_currentIndex),
                 alignment: Alignment.centerRight,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, _perspective)
@@ -238,12 +540,18 @@ class _FlipPageViewState extends State<FlipPageView>
               ),
             ],
           ),
-          const SizedBox(width: 2),
+          if (widget.spacing != null) SizedBox(width: widget.spacing),
           Stack(
+            clipBehavior: Clip.none,
             children: [
               if ((_dragProgress < 0 && _dragProgress > -0.5) ||
                   (_dragProgress > 0.5 && _dragProgress < 1))
                 Transform(
+                  key: ValueKey(
+                    _currentIndex >= widget.itemsCount - 2
+                        ? _currentIndex - widget.itemsCount + 2
+                        : _currentIndex + 2,
+                  ),
                   alignment: Alignment.centerLeft,
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, _perspective)
@@ -262,6 +570,11 @@ class _FlipPageViewState extends State<FlipPageView>
                   ),
                 ),
               Transform(
+                key: ValueKey(
+                  _currentIndex == widget.itemsCount - 1
+                      ? 0
+                      : _currentIndex + 1,
+                ),
                 alignment: Alignment.centerLeft,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, _perspective)
@@ -286,6 +599,7 @@ class _FlipPageViewState extends State<FlipPageView>
                 ),
               ),
               Transform(
+                key: ValueKey(_currentIndex),
                 alignment: Alignment.centerLeft,
                 transform: Matrix4.identity()
                   ..setEntry(3, 2, _perspective)

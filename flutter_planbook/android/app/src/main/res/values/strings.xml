@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Planbook</string>
+    <string name="camera_permission_description">[Planbook] needs to use your camera to record the task.</string>
+    <string name="microphone_permission_description">[Planbook] needs to use your microphone to record the task.</string>
+    <string name="photo_library_permission_description">[Planbook] needs to use your photo library to save images.</string>
+    <string name="photo_library_usage_description">[Planbook] needs to use your photos to record the task.</string>
+</resources>
+

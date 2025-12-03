@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class RootUserHeader extends StatelessWidget {
@@ -14,36 +17,76 @@ class RootUserHeader extends StatelessWidget {
     final usersRepository = context.read<UsersRepository>();
     final userProfile = usersRepository.userProfile;
     final user = usersRepository.user;
-    return ColoredBox(
-      color: theme.colorScheme.surface,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(kMinInteractiveDimension),
-                child: AppNetworkImage(
-                  url: userProfile?.avatar,
-                  bucket: ResBucket.userAvatars,
-                  width: kMinInteractiveDimension,
-                  height: kMinInteractiveDimension,
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        context.router.push(const SettingsHomeRoute());
+      },
+      child: ColoredBox(
+        color: theme.colorScheme.surface,
+        child: SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    // borderRadius: BorderRadius.circular(kMinInteractiveDimension),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: userProfile?.avatar == null
+                      ? SvgPicture.asset(
+                          'assets/images/logo.svg',
+                          width: kMinInteractiveDimension,
+                          height: kMinInteractiveDimension,
+                        )
+                      : AppNetworkImage(
+                          url: userProfile?.avatar,
+                          bucket: ResBucket.userAvatars,
+                          width: kMinInteractiveDimension,
+                          height: kMinInteractiveDimension,
+                        ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(userProfile?.username ?? context.l10n.notLoggedIn),
-                    if (user != null)
-                      Text(context.l10n.joinedDaysAgo(user.joinDays)),
-                  ],
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        userProfile?.username ?? context.l10n.notLoggedIn,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (user != null)
+                        Text(
+                          context.l10n.joinedDaysAgo(user.joinDays),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              const CupertinoListTileChevron(),
-            ],
+                CupertinoButton(
+                  sizeStyle: CupertinoButtonSize.small,
+                  child: const Icon(FontAwesomeIcons.gear),
+                  onPressed: () {
+                    context.router.push(const SettingsHomeRoute());
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

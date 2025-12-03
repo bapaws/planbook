@@ -29,6 +29,7 @@ class TaskEntity extends Equatable {
   TaskPriority get priority => task.priority ?? TaskPriority.none;
   List<EventAlarm>? get alarms => task.alarms;
   Jiffy get createdAt => task.createdAt;
+  Jiffy? get completedAt => activity?.completedAt;
 
   bool get isCompleted => activity?.completedAt != null;
 

@@ -57,23 +57,23 @@ class _RootHomePage extends StatelessWidget {
           ],
         );
       },
-      // transitionBuilder: (context, child, animation) {
-      //   return FadeTransition(
-      //     opacity: animation,
-      //     child: Stack(
-      //       alignment: Alignment.bottomCenter,
-      //       children: [
-      //         child,
-      //         const Positioned(
-      //           left: 24,
-      //           right: 24,
-      //           bottom: 22,
-      //           child: RootHomeBottomBar(),
-      //         ),
-      //       ],
-      //     ),
-      //   );
-      // },
+      transitionBuilder: (context, child, animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: Stack(
+            alignment: Alignment.bottomCenter,
+            children: [
+              child,
+              const Positioned(
+                left: 24,
+                right: 24,
+                bottom: 22,
+                child: RootHomeBottomBar(),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

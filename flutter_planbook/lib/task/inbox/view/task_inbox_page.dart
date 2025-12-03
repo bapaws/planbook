@@ -68,7 +68,7 @@ class _TaskInboxListPage extends StatelessWidget {
         tasksRepository: context.read(),
         notesRepository: context.read(),
         tag: tag,
-      )..add(TaskListRequested(tagId: tag?.id, showCompleted: showCompleted)),
+      )..add(TaskListRequested(tagId: tag?.id, isCompleted: showCompleted)),
       child: BlocListener<RootTaskBloc, RootTaskState>(
         listenWhen: (previous, current) =>
             previous.showCompleted != current.showCompleted,
@@ -76,7 +76,7 @@ class _TaskInboxListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               tagId: tag?.id,
-              showCompleted: state.showCompleted,
+              isCompleted: state.showCompleted ? null : false,
             ),
           );
         },
@@ -103,7 +103,7 @@ class _TaskInboxPriorityPage extends StatelessWidget {
           tasksRepository: context.read(),
           notesRepository: context.read(),
         );
-        _onRequested(bloc: bloc, showCompleted: showCompleted);
+        _onRequested(bloc: bloc, isCompleted: showCompleted ? null : false);
         return bloc;
       },
       child: BlocListener<RootTaskBloc, RootTaskState>(
@@ -111,7 +111,10 @@ class _TaskInboxPriorityPage extends StatelessWidget {
             previous.showCompleted != current.showCompleted,
         listener: (context, state) {
           final bloc = context.read<TaskPriorityBloc>();
-          _onRequested(bloc: bloc, showCompleted: state.showCompleted);
+          _onRequested(
+            bloc: bloc,
+            isCompleted: state.showCompleted ? null : false,
+          );
         },
         child: const TaskPriorityPage(
           mode: TaskListMode.today,
@@ -122,31 +125,32 @@ class _TaskInboxPriorityPage extends StatelessWidget {
 
   void _onRequested({
     required TaskPriorityBloc bloc,
-    bool showCompleted = true,
+    bool? isCompleted,
   }) {
-    bloc.add(
-      TaskPriorityRequested(
-        priority: TaskPriority.high,
-        showCompleted: showCompleted,
-      ),
-    );
-    bloc.add(
-      TaskPriorityRequested(
-        priority: TaskPriority.medium,
-        showCompleted: showCompleted,
-      ),
-    );
-    bloc.add(
-      TaskPriorityRequested(
-        priority: TaskPriority.low,
-        showCompleted: showCompleted,
-      ),
-    );
-    bloc.add(
-      TaskPriorityRequested(
-        priority: TaskPriority.none,
-        showCompleted: showCompleted,
-      ),
-    );
+    bloc
+      ..add(
+        TaskPriorityRequested(
+          priority: TaskPriority.high,
+          isCompleted: isCompleted,
+        ),
+      )
+      ..add(
+        TaskPriorityRequested(
+          priority: TaskPriority.medium,
+          isCompleted: isCompleted,
+        ),
+      )
+      ..add(
+        TaskPriorityRequested(
+          priority: TaskPriority.low,
+          isCompleted: isCompleted,
+        ),
+      )
+      ..add(
+        TaskPriorityRequested(
+          priority: TaskPriority.none,
+          isCompleted: isCompleted,
+        ),
+      );
   }
 }

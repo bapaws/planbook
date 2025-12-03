@@ -5,11 +5,11 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_page.dart';
+import 'package:flutter_planbook/note/tag/view/note_tag_page.dart';
 import 'package:flutter_planbook/note/timeline/bloc/note_timeline_bloc.dart';
 import 'package:flutter_planbook/note/timeline/view/note_timeline_page.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
 import 'package:flutter_planbook/root/note/view/root_note_drawer.dart';
-import 'package:flutter_planbook/root/tag/view/note_tag_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
 
@@ -40,7 +40,6 @@ class _RootNotePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootNoteDrawer(),

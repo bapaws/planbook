@@ -110,6 +110,7 @@ class Notes extends Table {
   TextColumn get content => text().nullable()();
   TextColumn get images =>
       text().map(const ListConverter<String>()).nullable()();
+  TextColumn get coverImage => text().nullable()();
 
   TextColumn get taskId => text().nullable().references(
     Tasks,

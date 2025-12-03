@@ -7,7 +7,7 @@ export 'data/app_store_results_entity.dart';
 export 'data/dark_mode.dart';
 export 'data/page_status.dart';
 export 'plus/datetime.dart';
-export 'plus/flip_page_view.dart';
 export 'plus/format.dart';
 export 'plus/hex_color.dart';
+export 'view/flip_page_view.dart';
 export 'view/navigation_bar_back_button.dart';

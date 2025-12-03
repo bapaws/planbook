@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
 
 class AnimatedLogo extends StatefulWidget {
   const AnimatedLogo({
@@ -75,7 +76,7 @@ class LogoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return AppPageScaffold(
       width: width,
       height: height,
       child: Hero(

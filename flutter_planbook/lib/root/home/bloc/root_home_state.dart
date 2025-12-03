@@ -7,6 +7,7 @@ final class RootHomeState extends Equatable {
     this.inboxTaskCount = 0,
     this.tags = const [],
     this.selectedTagIds = const {},
+    this.downloadJournalDayCount = 0,
   });
 
   final PageStatus status;
@@ -15,6 +16,8 @@ final class RootHomeState extends Equatable {
 
   final List<TagEntity> tags;
   final Set<String> selectedTagIds;
+
+  final int downloadJournalDayCount;
 
   bool get isAllSelected => selectedTagIds.length == tags.length;
 
@@ -28,6 +31,7 @@ final class RootHomeState extends Equatable {
     inboxTaskCount,
     tags,
     selectedTagIds,
+    downloadJournalDayCount,
   ];
 
   RootHomeState copyWith({
@@ -36,6 +40,7 @@ final class RootHomeState extends Equatable {
     int? inboxTaskCount,
     List<TagEntity>? tags,
     Set<String>? selectedTagIds,
+    int? downloadJournalDayCount,
   }) {
     return RootHomeState(
       status: status ?? this.status,
@@ -43,6 +48,8 @@ final class RootHomeState extends Equatable {
       inboxTaskCount: inboxTaskCount ?? this.inboxTaskCount,
       tags: tags ?? this.tags,
       selectedTagIds: selectedTagIds ?? this.selectedTagIds,
+      downloadJournalDayCount:
+          downloadJournalDayCount ?? this.downloadJournalDayCount,
     );
   }
 }

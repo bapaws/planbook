@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight + 8;
@@ -134,10 +137,21 @@ class RootHomeBottomBar extends StatelessWidget {
             _onTabDoubleTapped(context, 1);
           },
           onTap: () {
-            if (tabsRouter.activeIndex == 0) {
-              context.router.push(TaskNewRoute());
-            } else {
-              context.router.push(NoteNewRoute());
+            switch (tabsRouter.activeIndex) {
+              case 0:
+                if (kDebugMode) {
+                  context.read<RootHomeBloc>().add(
+                    const RootHomeDownloadJournalDayRequested(),
+                  );
+                  return;
+                }
+                context.router.push(NoteNewRoute());
+              case 1:
+                context.read<RootHomeBloc>().add(
+                  const RootHomeDownloadJournalDayRequested(),
+                );
+              case 2:
+                context.router.push(NoteNewRoute());
             }
           },
           child: Container(

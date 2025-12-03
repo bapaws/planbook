@@ -11,11 +11,13 @@ class NoteListTile extends StatelessWidget {
   const NoteListTile({
     required this.note,
     this.showLinkButton = true,
+    this.showDate = false,
     super.key,
   });
 
   final NoteEntity note;
   final bool showLinkButton;
+  final bool showDate;
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +41,11 @@ class NoteListTile extends StatelessWidget {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  note.createdAt.toLocal().jm,
+                  showDate
+                      ? note.createdAt.toLocal().yMMMdjm
+                      : note.createdAt.toLocal().jm,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface,
+                    color: theme.colorScheme.primary,
                   ),
                 ),
                 const Spacer(),

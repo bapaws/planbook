@@ -17,6 +17,7 @@ class RootHomeBloc extends Bloc<RootHomeEvent, RootHomeState> {
     on<RootHomeTagSelectedAll>(_onTagSelectedAll);
     on<RootHomeTagUnselectedAll>(_onTagUnselectedAll);
     on<RootHomeTagDeleted>(_onTagDeleted);
+    on<RootHomeDownloadJournalDayRequested>(_onDownloadJournalDayRequested);
   }
 
   final TagsRepository _tagsRepository;
@@ -87,5 +88,17 @@ class RootHomeBloc extends Bloc<RootHomeEvent, RootHomeState> {
     emit(state.copyWith(status: PageStatus.loading));
     await _tagsRepository.deleteTag(event.tagId);
     emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onDownloadJournalDayRequested(
+    RootHomeDownloadJournalDayRequested event,
+    Emitter<RootHomeState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        downloadJournalDayCount: state.downloadJournalDayCount + 1,
+      ),
+    );
   }
 }

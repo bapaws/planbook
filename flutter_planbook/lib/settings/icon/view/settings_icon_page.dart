@@ -6,6 +6,7 @@ import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/icon/cubit/settings_icon_cubit.dart';
 import 'package:flutter_planbook/settings/icon/model/app_icons.dart';
+import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
 @RoutePage()
 class SettingsIconPage extends StatelessWidget {
@@ -37,7 +38,7 @@ class _SettingsIconPage extends StatelessWidget {
             color: theme.colorScheme.onSurface,
           ),
         ),
-        leading: const CupertinoNavigationBarBackButton(),
+        leading: const NavigationBarBackButton(),
       ),
       body: BlocBuilder<SettingsIconCubit, SettingsIconState>(
         builder: (context, state) {

@@ -41,6 +41,10 @@ class NotesRepository {
     return _dbNoteApi.getNoteEntitiesByTaskId(taskId);
   }
 
+  Stream<List<NoteEntity>> getNoteEntitiesByTagId(String tagId) {
+    return _dbNoteApi.getNoteEntitiesByTagId(tagId);
+  }
+
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
     List<String>? tagIds,
@@ -48,10 +52,18 @@ class NotesRepository {
     return _dbNoteApi.getNoteEntitiesByDate(date, tagIds: tagIds);
   }
 
-  Stream<List<NoteImageEntity>> getNoteImageEntities({
-    int limit = 20,
-    int offset = 0,
+  Stream<List<NoteImageEntity>> getNoteImageEntities(int year) {
+    return _dbNoteApi.getNoteImageEntities(year);
+  }
+
+  Stream<List<NoteEntity>> getWrittenNoteEntities(
+    Jiffy date, {
+    List<String>? tagIds,
   }) {
-    return _dbNoteApi.getNoteImageEntities(limit: limit, offset: offset);
+    return _dbNoteApi.getWrittenNoteEntities(date, tagIds: tagIds);
+  }
+
+  Future<Jiffy?> getStartDate() async {
+    return _dbNoteApi.getStartDate();
   }
 }

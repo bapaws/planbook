@@ -60,3 +60,10 @@ final class RootHomeDayChanged extends RootHomeEvent {
   @override
   List<Object?> get props => [day];
 }
+
+final class RootHomeDownloadJournalDayRequested extends RootHomeEvent {
+  const RootHomeDownloadJournalDayRequested();
+
+  @override
+  List<Object?> get props => [];
+}

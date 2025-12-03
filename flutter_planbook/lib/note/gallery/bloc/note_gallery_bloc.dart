@@ -23,11 +23,9 @@ class NoteGalleryBloc extends Bloc<NoteGalleryEvent, NoteGalleryState> {
   ) async {
     emit(state.copyWith(status: PageStatus.loading, date: event.date));
     await emit.forEach(
-      _notesRepository.getNoteImageEntities(),
+      _notesRepository.getNoteImageEntities(event.date.year),
       onData: (noteImages) {
-        final noteImagesByDate = <Jiffy, List<NoteImageEntity>>{
-          ...state.noteImages,
-        };
+        final noteImagesByDate = <Jiffy, List<NoteImageEntity>>{};
         for (final noteImage in noteImages) {
           noteImagesByDate
               .putIfAbsent(noteImage.createdAt.startOf(Unit.day), () => [])

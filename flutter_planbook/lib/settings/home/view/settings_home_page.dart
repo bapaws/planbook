@@ -4,13 +4,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/bloc/settings_home_bloc.dart';
 import 'package:flutter_planbook/settings/home/view/settings_home_paywall.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:flutter_planbook/settings/home/view/settings_section_header.dart';
-import 'package:planbook_repository/planbook_repository.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:planbook_api/entity/user_entity.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
+import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -35,11 +39,11 @@ class _SettingsHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(context.l10n.settings),
-        leading: const CupertinoNavigationBarBackButton(),
+        leading: const NavigationBarBackButton(),
       ),
       body: BlocBuilder<SettingsHomeBloc, SettingsHomeState>(
         builder: (context, state) {
@@ -49,19 +53,20 @@ class _SettingsHomePage extends StatelessWidget {
                 selector: (state) => state.isLifetime,
                 builder: (context, state) {
                   return state
-                      ? Container()
-                      : const Padding(
-                          padding: EdgeInsets.only(
-                            top: 32,
-                            bottom: kMinInteractiveDimension,
-                          ),
-                          child: SettingsPaywall(),
-                        );
+                      ? const SizedBox.shrink()
+                      : const SettingsPaywall();
                 },
               ),
               CupertinoButton(
                 // padding: EdgeInsets.zero,
-                onPressed: () {},
+                onPressed: () {
+                  final user = context.read<AppBloc>().state.user;
+                  if (user == null) {
+                    // context.router.push(const LoginRoute());
+                  } else {
+                    // context.router.push(const UserProfileRoute());
+                  }
+                },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     vertical: 16,
@@ -72,21 +77,28 @@ class _SettingsHomePage extends StatelessWidget {
                     border: Border.all(
                       color: theme.colorScheme.surfaceContainerHighest,
                     ),
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: Row(
                     children: [
-                      const CircleAvatar(
-                        backgroundImage: AssetImage(
-                          'assets/logos/dark/Logo-Yellow.png',
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: SvgPicture.asset(
+                          'assets/images/logo.svg',
+                          width: 32,
+                          height: 32,
                         ),
-                        radius: 16,
                       ),
                       const SizedBox(width: 16),
-                      Text(
-                        '',
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface,
+                      BlocSelector<AppBloc, AppState, UserEntity?>(
+                        selector: (state) => state.user,
+                        builder: (context, user) => Text(
+                          user?.phone ??
+                              user?.email ??
+                              context.l10n.notLoggedIn,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -113,11 +125,6 @@ class _SettingsHomePage extends StatelessWidget {
                   context.router.push(const SettingsDarkModeRoute());
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
               SettingsRow(
                 leading: const Icon(
                   Icons.palette,
@@ -133,29 +140,19 @@ class _SettingsHomePage extends StatelessWidget {
                   context.router.push(const SettingsSeedColorRoute());
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
-              SettingsRow(
-                leading: const Icon(
-                  Icons.app_registration,
-                  color: Colors.pink,
-                ),
-                title: Text(
-                  l10n.appIcon,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                onPressed: () => context.router.push(const SettingsIconRoute()),
-              ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
+              // SettingsRow(
+              //   leading: const Icon(
+              //     Icons.app_registration,
+              //     color: Colors.pink,
+              //   ),
+              //   title: Text(
+              //     l10n.appIcon,
+              //     style: theme.textTheme.bodyLarge?.copyWith(
+              //       color: theme.colorScheme.onSurface,
+              //     ),
+              //   ),
+              //   onPressed: () => context.router.push(const SettingsIconRoute()),
+              // ),
               SettingsSectionHeader(
                 title: l10n.other,
               ),
@@ -177,11 +174,6 @@ class _SettingsHomePage extends StatelessWidget {
                     );
                   },
                 ),
-                Divider(
-                  indent: 56,
-                  height: 1,
-                  color: theme.colorScheme.surfaceContainerHighest,
-                ),
               ],
               SettingsRow(
                 leading: const Icon(
@@ -198,11 +190,6 @@ class _SettingsHomePage extends StatelessWidget {
                   context.router.push(const FeedbackRoute());
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
               SettingsRow(
                 leading: const Icon(
                   Icons.help,
@@ -218,11 +205,6 @@ class _SettingsHomePage extends StatelessWidget {
                   launchUrlString(context.l10n.helpUrl);
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
               SettingsRow(
                 leading: const Icon(
                   Icons.info,
@@ -237,11 +219,6 @@ class _SettingsHomePage extends StatelessWidget {
                 onPressed: () {
                   context.router.push(const AboutRoute());
                 },
-              ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
               ),
               const SizedBox(height: kToolbarHeight),
             ],

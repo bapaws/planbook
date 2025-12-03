@@ -2,27 +2,37 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class AppPageScaffold extends StatelessWidget {
-  const AppPageScaffold({required this.child, super.key});
+  const AppPageScaffold({
+    required this.child,
+    this.width,
+    this.height,
+    super.key,
+  });
 
   final Widget child;
+  final double? width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Stack(
-      children: [
-        ColoredBox(
-          color: theme.colorScheme.surfaceContainerLowest,
-          child: const SizedBox.expand(),
-        ),
-        Image.asset(
-          'assets/images/bg_tile.png',
+    final brightness = Theme.of(context).brightness;
+    // const brightness = Brightness.dark;
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: brightness == Brightness.dark
+            ? Colors.grey.shade900
+            : Colors.grey.shade50,
+        image: DecorationImage(
+          image: AssetImage(
+            'assets/images/bg_dot_tile_${brightness.name}.png',
+          ),
+          scale: 3,
           repeat: ImageRepeat.repeat,
-          width: double.infinity,
-          height: double.infinity,
         ),
-        child,
-      ],
+      ),
+      child: child,
     );
   }
 }
@@ -88,6 +98,7 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     return AppPageScaffold(
       child: Scaffold(
         key: scaffoldKey,

@@ -9,7 +9,10 @@ import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/launch/view/animated_logo.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/about/cubit/about_cubit.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
+import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -35,10 +38,10 @@ class _AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         title: Text(l10n.about),
-        leading: const CupertinoNavigationBarBackButton(),
+        leading: const NavigationBarBackButton(),
       ),
       body: SafeArea(
         child: BlocBuilder<AboutCubit, AboutState>(
@@ -48,13 +51,17 @@ class _AboutPage extends StatelessWidget {
                 if (kDebugMode)
                   Center(
                     child: SizedBox(
-                      width: 128,
-                      height: 128,
+                      width: 1024,
+                      height: 1024,
                       child: Screenshot(
                         controller: screenshotController,
                         child: ColoredBox(
                           color: theme.colorScheme.surfaceContainerLowest,
-                          child: const LogoView(width: 128, height: 128),
+                          child: LogoView(
+                            width: 1024,
+                            height: 1024,
+                            strokeColor: theme.colorScheme.primaryContainer,
+                          ),
                         ),
                       ),
                     ),
@@ -144,8 +151,10 @@ class _AboutPage extends StatelessWidget {
     final name =
         seedColor.name.substring(0, 1).toUpperCase() +
         seedColor.name.substring(1);
-    screenshotController.capture(pixelRatio: 4).then((image) async {
+    screenshotController.capture().then((image) async {
       if (image != null) {
+        await ImageGallerySaver.saveImage(image);
+
         final directory = await getApplicationDocumentsDirectory();
         final imagePath = await File(
           '${directory.path}/$folder/Logo-$name.png',

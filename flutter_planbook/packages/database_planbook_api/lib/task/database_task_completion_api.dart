@@ -1,7 +1,8 @@
 import 'package:database_planbook_api/task/database_task_api.dart';
 import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:planbook_api/database/database.dart';
+import 'package:planbook_api/planbook_api.dart';
+import 'package:rxdart/rxdart.dart';
 
 class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   DatabaseTaskCompletionApi({
@@ -268,6 +269,137 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     if (results.isEmpty) return false;
     return !results.any(
       (row) => row.readTableOrNull(db.taskActivities) == null,
+    );
+  }
+
+  Stream<List<TaskEntity>> getCompletedTaskEntities({
+    required Jiffy date,
+    TaskPriority? priority,
+    int limit = 10,
+  }) {
+    final startOfDay = date.startOf(Unit.day);
+    final endOfDay = date.endOf(Unit.day);
+    final startOfDayDateTime = startOfDay.toUtc().dateTime;
+    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+
+    // 查询 1: 通过 TaskOccurrences 表查询重复任务实例（在指定日期完成）
+    var recurringExp =
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        db.tasks.recurrenceRule.isNotNull() &
+        db.tasks.detachedFromTaskId.isNull() &
+        db.taskOccurrences.deletedAt.isNull();
+
+    if (priority != null) {
+      recurringExp &= db.tasks.priority.equals(priority.name);
+    }
+
+    final recurringTasksQuery =
+        db.select(db.tasks).join([
+            innerJoin(
+              db.taskOccurrences,
+              db.taskOccurrences.taskId.equalsExp(db.tasks.id),
+            ),
+            innerJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.equalsExp(
+                    db.taskOccurrences.occurrenceAt,
+                  ) &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.completedAt.isBiggerOrEqualValue(
+                    startOfDayDateTime,
+                  ) &
+                  db.taskActivities.completedAt.isSmallerOrEqualValue(
+                    endOfDayDateTime,
+                  ) &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(recurringExp)
+          ..orderBy([
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
+          ])
+          ..limit(limit);
+
+    // 查询 2: 非重复任务和分离实例（在指定日期完成）
+    var nonRecurringExp =
+        db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+
+    if (priority != null) {
+      nonRecurringExp &= db.tasks.priority.equals(priority.name);
+    }
+
+    final nonRecurringTasksQuery =
+        db.select(db.tasks).join([
+            innerJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.isNull() &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.completedAt.isBiggerOrEqualValue(
+                    startOfDayDateTime,
+                  ) &
+                  db.taskActivities.completedAt.isSmallerOrEqualValue(
+                    endOfDayDateTime,
+                  ) &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(nonRecurringExp)
+          ..orderBy([
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
+          ])
+          ..limit(limit);
+
+    // 合并两个查询的 Stream
+    return CombineLatestStream.list<List<TypedResult>>([
+      recurringTasksQuery.watch(),
+      nonRecurringTasksQuery.watch(),
+    ]).asyncMap((List<List<TypedResult>> results) async {
+      final rows = [...results[0], ...results[1]];
+      return buildTaskEntities(rows);
+    });
+  }
+
+  Stream<int> getCompletedTaskCount({
+    required Jiffy date,
+  }) {
+    final startOfDay = date.startOf(Unit.day);
+    final endOfDay = date.endOf(Unit.day);
+    final startOfDayDateTime = startOfDay.toUtc().dateTime;
+    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+
+    final query = db.selectOnly(db.taskActivities)
+      ..addColumns([db.taskActivities.taskId.count(distinct: true)])
+      ..where(
+        db.taskActivities.completedAt.isNotNull() &
+            db.taskActivities.completedAt.isBiggerOrEqualValue(
+              startOfDayDateTime,
+            ) &
+            db.taskActivities.completedAt.isSmallerOrEqualValue(
+              endOfDayDateTime,
+            ) &
+            db.taskActivities.deletedAt.isNull() &
+            db.taskActivities.taskId.isNotNull(),
+      );
+
+    return query.watch().map(
+      (rows) => rows.firstOrNull?.read(db.taskActivities.id.count()) ?? 0,
     );
   }
 }

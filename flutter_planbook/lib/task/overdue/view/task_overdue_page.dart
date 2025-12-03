@@ -69,7 +69,7 @@ class _TaskOverdueListPage extends StatelessWidget {
         notesRepository: context.read(),
         tag: tag,
         mode: TaskListMode.overdue,
-      )..add(TaskListRequested(tagId: tag?.id, showCompleted: showCompleted)),
+      )..add(TaskListRequested(tagId: tag?.id, isCompleted: showCompleted)),
       child: BlocListener<RootTaskBloc, RootTaskState>(
         listenWhen: (previous, current) =>
             previous.showCompleted != current.showCompleted,
@@ -77,7 +77,7 @@ class _TaskOverdueListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               tagId: tag?.id,
-              showCompleted: state.showCompleted,
+              isCompleted: state.showCompleted,
             ),
           );
         },
@@ -105,7 +105,7 @@ class _TaskOverduePriorityPage extends StatelessWidget {
           notesRepository: context.read(),
           mode: TaskListMode.overdue,
         );
-        _onRequested(bloc: bloc, showCompleted: showCompleted);
+        _onRequested(bloc: bloc, isCompleted: showCompleted);
         return bloc;
       },
       child: BlocListener<RootTaskBloc, RootTaskState>(
@@ -113,7 +113,10 @@ class _TaskOverduePriorityPage extends StatelessWidget {
             previous.showCompleted != current.showCompleted,
         listener: (context, state) {
           final bloc = context.read<TaskPriorityBloc>();
-          _onRequested(bloc: bloc, showCompleted: state.showCompleted);
+          _onRequested(
+            bloc: bloc,
+            isCompleted: state.showCompleted ? null : false,
+          );
         },
         child: const TaskPriorityPage(
           mode: TaskListMode.overdue,
@@ -124,31 +127,31 @@ class _TaskOverduePriorityPage extends StatelessWidget {
 
   void _onRequested({
     required TaskPriorityBloc bloc,
-    bool showCompleted = true,
+    bool? isCompleted,
   }) {
     bloc
       ..add(
         TaskPriorityRequested(
           priority: TaskPriority.high,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           priority: TaskPriority.medium,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           priority: TaskPriority.low,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           priority: TaskPriority.none,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       );
   }

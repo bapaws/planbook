@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">計劃本</string>
+    <string name="camera_permission_description">「計劃本」需要使用您的相機來記錄任務。</string>
+    <string name="microphone_permission_description">「計劃本」需要使用您的麥克風來記錄任務。</string>
+    <string name="photo_library_permission_description">「計劃本」需要使用您的照片來保存圖片。</string>
+    <string name="photo_library_usage_description">「計劃本」需要使用您的照片來記錄任務。</string>
+</resources>
+

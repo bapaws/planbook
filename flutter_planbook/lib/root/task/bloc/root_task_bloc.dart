@@ -64,7 +64,10 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     Emitter<RootTaskState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    final stream = _tasksRepository.getTaskCount(mode: event.mode);
+    final stream = _tasksRepository.getTaskCount(
+      mode: event.mode,
+      isCompleted: false,
+    );
     await emit.forEach(
       stream,
       onData: (count) => state.copyWith(

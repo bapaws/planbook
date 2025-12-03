@@ -94,7 +94,7 @@ class DatabaseTagApi {
                     tt.isParent.equals(false),
               )
               ..orderBy([
-                (tt) => OrderingTerm.asc(tt.createdAt),
+                (tt) => OrderingTerm.asc(tt.createdAt.datetime),
               ]))
             .get();
 

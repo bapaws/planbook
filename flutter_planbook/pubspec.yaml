@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 1.0.0+1
+version: 2.0.0+1
 publish_to: none
 
 environment:
@@ -40,6 +40,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.0
   hydrated_bloc: ^10.1.1
+  image_gallery_saver: ^2.0.3
   image_picker: ^1.1.2
   in_app_purchase: ^3.2.3
   in_app_review: ^2.0.10
@@ -92,3 +93,10 @@ flutter:
   assets:
     - assets/images/
     - assets/files/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/logos/logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21

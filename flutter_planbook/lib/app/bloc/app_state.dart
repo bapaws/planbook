@@ -5,12 +5,15 @@ final class AppState extends Equatable {
     required this.darkMode,
     required this.appIcons,
     required this.seedColor,
+    this.user,
   });
 
   final DarkMode? darkMode;
 
   final AppIcons appIcons;
   final AppSeedColors seedColor;
+
+  final UserEntity? user;
 
   material.ThemeData getTheme(material.Brightness brightness) =>
       switch (darkMode) {
@@ -29,9 +32,11 @@ final class AppState extends Equatable {
     ValueGetter<DarkMode?>? darkMode,
     AppIcons? appIcons,
     AppSeedColors? seedColor,
+    UserEntity? user,
   }) => AppState(
     darkMode: darkMode == null ? this.darkMode : darkMode(),
     appIcons: appIcons ?? this.appIcons,
     seedColor: seedColor ?? this.seedColor,
+    user: user ?? this.user,
   );
 }

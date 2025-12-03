@@ -38,14 +38,22 @@ class TasksRepository {
     return _dbTaskApi.getTaskEntityById(taskId);
   }
 
-  Stream<int> getTaskCount({required TaskListMode mode, Jiffy? date}) {
+  Stream<int> getTaskCount({
+    required TaskListMode mode,
+    Jiffy? date,
+    bool? isCompleted,
+  }) {
     return switch (mode) {
-      TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(),
+      TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
+        isCompleted: isCompleted,
+      ),
       TaskListMode.today => _dbTaskTodayApi.getTodayTaskCount(
         date: date ?? Jiffy.now(),
+        isCompleted: isCompleted,
       ),
       TaskListMode.overdue => _dbTaskOverdueApi.getOverdueTaskCount(
         date: date ?? Jiffy.now(),
+        isCompleted: isCompleted,
       ),
       TaskListMode.tag => throw UnimplementedError(),
     };
@@ -135,5 +143,27 @@ class TasksRepository {
 
   Future<void> deleteTaskById(String taskId) async {
     await _dbTaskApi.deleteTaskById(taskId);
+  }
+
+  Stream<List<TaskEntity>> getCompletedTaskEntities({
+    required Jiffy date,
+    TaskPriority? priority,
+    int limit = 10,
+  }) {
+    return _dbTaskCompletionApi.getCompletedTaskEntities(
+      date: date,
+      priority: priority,
+      limit: limit,
+    );
+  }
+
+  Stream<int> getCompletedTaskCount({
+    required Jiffy date,
+  }) {
+    return _dbTaskCompletionApi.getCompletedTaskCount(date: date);
+  }
+
+  Future<Jiffy?> getStartDate() async {
+    return _dbTaskApi.getStartDate();
   }
 }

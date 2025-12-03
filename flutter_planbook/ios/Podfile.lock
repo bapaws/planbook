@@ -15,6 +15,8 @@ PODS:
     - Flutter
   - home_widget (0.0.1):
     - Flutter
+  - image_gallery_saver (2.0.2):
+    - Flutter
   - image_picker_ios (0.0.1):
     - Flutter
   - in_app_purchase_storekit (0.0.1):
@@ -77,6 +79,7 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
   - home_widget (from `.symlinks/plugins/home_widget/ios`)
+  - image_gallery_saver (from `.symlinks/plugins/image_gallery_saver/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - in_app_purchase_storekit (from `.symlinks/plugins/in_app_purchase_storekit/darwin`)
   - in_app_review (from `.symlinks/plugins/in_app_review/ios`)
@@ -112,6 +115,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/fluttertoast/ios"
   home_widget:
     :path: ".symlinks/plugins/home_widget/ios"
+  image_gallery_saver:
+    :path: ".symlinks/plugins/image_gallery_saver/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   in_app_purchase_storekit:
@@ -142,6 +147,7 @@ SPEC CHECKSUMS:
   flutter_native_splash: c32d145d68aeda5502d5f543ee38c192065986cf
   fluttertoast: 2c67e14dce98bbdb200df9e1acf610d7a6264ea1
   home_widget: f169fc41fd807b4d46ab6615dc44d62adbf9f64f
+  image_gallery_saver: 14711d79da40581063e8842a11acf1969d781ed7
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   in_app_purchase_storekit: 22cca7d08eebca9babdf4d07d0baccb73325d3c8
   in_app_review: 7dd1ea365263f834b8464673f9df72c80c17c937

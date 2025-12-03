@@ -29,8 +29,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
        super(
          const AppState(
            darkMode: DarkMode.light,
-           appIcons: AppIcons.yellow,
-           seedColor: AppSeedColors.yellow,
+           appIcons: AppIcons.green,
+           seedColor: AppSeedColors.green,
          ),
        ) {
     on<AppInitialized>(_onInitialized);
@@ -50,7 +50,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     final darkMode = _settingsRepository.getDarkMode() ?? DarkMode.light;
     final seedColorHex = _settingsRepository.getSeedColorHex();
     final seedColor = seedColorHex == null
-        ? AppSeedColors.yellow
+        ? AppSeedColors.green
         : AppSeedColors.fromHex(seedColorHex);
 
     final lightColorScheme = await _settingsRepository.getLightColorScheme();
@@ -75,7 +75,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         darkMode: darkMode,
         seedColor: seedColor,
         appIcons: appIconName == null
-            ? AppIcons.yellow
+            ? AppIcons.green
             : AppIcons.fromName(appIconName),
       ),
     );

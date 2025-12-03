@@ -58,6 +58,8 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SettingsDarkModeRoute.page),
     AutoRoute(page: SettingsSeedColorRoute.page),
     AutoRoute(page: SettingsIconRoute.page),
+
+    AutoRoute(page: AppPurchasesRoute.page),
   ];
 
   AutoRoute _buildModalBottomSheetRoute(

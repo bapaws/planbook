@@ -35,7 +35,7 @@ class TaskPriorityFlagHeader extends StatelessWidget {
               TaskPriority.low => context.l10n.urgentUnimportant,
               TaskPriority.none => context.l10n.notUrgentUnimportant,
             },
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: theme.textTheme.labelMedium?.copyWith(
               color: colorScheme.primary,
             ),
           ),

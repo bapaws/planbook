@@ -24,7 +24,7 @@ class SettingsDarkModePage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(l10n.darkMode),
-        leading: const CupertinoNavigationBarBackButton(),
+        leading: const NavigationBarBackButton(),
       ),
       body: BlocSelector<AppBloc, AppState, DarkMode?>(
         selector: (state) => state.darkMode,

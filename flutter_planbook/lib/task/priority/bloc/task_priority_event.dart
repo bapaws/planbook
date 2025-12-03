@@ -12,16 +12,16 @@ final class TaskPriorityRequested extends TaskPriorityEvent {
     required this.priority,
     this.date,
     this.tagId,
-    this.showCompleted = true,
+    this.isCompleted,
   });
 
   final Jiffy? date;
   final String? tagId;
   final TaskPriority priority;
-  final bool showCompleted;
+  final bool? isCompleted;
 
   @override
-  List<Object?> get props => [date, tagId, priority, showCompleted];
+  List<Object?> get props => [date, tagId, priority, isCompleted];
 }
 
 final class TaskPriorityCompleted extends TaskPriorityEvent {

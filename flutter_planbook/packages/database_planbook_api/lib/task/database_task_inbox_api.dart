@@ -8,14 +8,17 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getInboxTaskCount() {
-    final exp =
+  Stream<int> getInboxTaskCount({bool? isCompleted}) {
+    var exp =
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
-        db.tasks.deletedAt.isNull() &
-        // 未完成任务：不存在对应的 taskActivity
-        db.taskActivities.id.isNull();
+        db.tasks.deletedAt.isNull();
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
 
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -87,8 +90,8 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
           ..where(exp)
           ..orderBy([
             OrderingTerm.asc(db.tasks.order),
-            OrderingTerm.asc(db.tasks.createdAt),
-            OrderingTerm.desc(db.taskActivities.completedAt),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
           ]);
 
     return query.watch().asyncMap(buildTaskEntities);

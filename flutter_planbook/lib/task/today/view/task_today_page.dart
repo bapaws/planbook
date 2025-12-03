@@ -92,7 +92,7 @@ class _TaskTodayListPage extends StatelessWidget {
             TaskListRequested(
               date: day,
               tagId: tag?.id,
-              showCompleted: showCompleted,
+              isCompleted: showCompleted,
             ),
           ),
       child: MultiBlocListener(
@@ -106,7 +106,7 @@ class _TaskTodayListPage extends StatelessWidget {
                 TaskListRequested(
                   date: date,
                   tagId: tag?.id,
-                  showCompleted: state.showCompleted,
+                  isCompleted: state.showCompleted,
                 ),
               );
             },
@@ -122,7 +122,7 @@ class _TaskTodayListPage extends StatelessWidget {
                 TaskListRequested(
                   date: state.date,
                   tagId: tag?.id,
-                  showCompleted: showCompleted,
+                  isCompleted: showCompleted,
                 ),
               );
             },
@@ -157,7 +157,7 @@ class _TaskTodayPriorityPage extends StatelessWidget {
         _onRequested(
           bloc: bloc,
           date: day,
-          showCompleted: showCompleted,
+          isCompleted: showCompleted ? null : false,
         );
         return bloc;
       },
@@ -170,7 +170,7 @@ class _TaskTodayPriorityPage extends StatelessWidget {
               _onRequested(
                 bloc: bloc,
                 date: state.date,
-                showCompleted: showCompleted,
+                isCompleted: showCompleted ? null : false,
               );
             },
           ),
@@ -181,7 +181,7 @@ class _TaskTodayPriorityPage extends StatelessWidget {
               final bloc = context.read<TaskPriorityBloc>();
               _onRequested(
                 bloc: bloc,
-                showCompleted: state.showCompleted,
+                isCompleted: state.showCompleted ? null : false,
               );
             },
           ),
@@ -196,35 +196,35 @@ class _TaskTodayPriorityPage extends StatelessWidget {
   void _onRequested({
     required TaskPriorityBloc bloc,
     Jiffy? date,
-    bool showCompleted = true,
+    bool? isCompleted,
   }) {
     bloc
       ..add(
         TaskPriorityRequested(
           date: date,
           priority: TaskPriority.high,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           date: date,
           priority: TaskPriority.medium,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           date: date,
           priority: TaskPriority.low,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       )
       ..add(
         TaskPriorityRequested(
           date: date,
           priority: TaskPriority.none,
-          showCompleted: showCompleted,
+          isCompleted: isCompleted,
         ),
       );
   }

@@ -6,17 +6,17 @@ import 'package:planbook_api/entity/note_entity.dart';
 class NoteListView extends StatelessWidget {
   const NoteListView({
     required this.notes,
+    this.showDate = false,
     super.key,
-    this.scrollController,
   });
 
-  final ScrollController? scrollController;
   final List<NoteEntity> notes;
+  final bool showDate;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      controller: scrollController,
+      controller: PrimaryScrollController.of(context),
       padding: EdgeInsets.fromLTRB(
         16,
         0,
@@ -26,7 +26,7 @@ class NoteListView extends StatelessWidget {
       itemCount: notes.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
-        return NoteListTile(note: notes[index]);
+        return NoteListTile(note: notes[index], showDate: showDate);
       },
     );
   }

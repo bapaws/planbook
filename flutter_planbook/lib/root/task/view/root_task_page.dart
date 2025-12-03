@@ -104,34 +104,52 @@ class _RootTaskPage extends StatelessWidget {
           ),
         ),
         actions: [
-          CupertinoButton(
-            onPressed: () => context.read<RootTaskBloc>().add(
-              const RootTaskViewTypeChanged(),
-            ),
-            child: BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
-              selector: (state) => state.viewType,
-              builder: (context, viewType) => Icon(
-                switch (viewType) {
-                  RootTaskViewType.list => FontAwesomeIcons.list,
-                  RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
-                },
-              ),
-            ),
-          ),
+          // CupertinoButton(
+          //   onPressed: () => context.read<RootTaskBloc>().add(
+          //     const RootTaskViewTypeChanged(),
+          //   ),
+          //   child: BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
+          //     selector: (state) => state.viewType,
+          //     builder: (context, viewType) => Icon(
+          //       switch (viewType) {
+          //         RootTaskViewType.list => FontAwesomeIcons.list,
+          //         RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
+          //       },
+          //     ),
+          //   ),
+          // ),
           PullDownButton(
             itemBuilder: (context) {
               final bloc = context.read<RootTaskBloc>();
+              final theme = Theme.of(context);
               return [
-                PullDownMenuItem(
+                PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
+                PullDownMenuItem.selectable(
+                  icon: FontAwesomeIcons.list,
+                  iconColor: theme.colorScheme.primary,
                   title: context.l10n.list,
+                  selected: bloc.state.viewType == RootTaskViewType.list,
                   onTap: () => context.read<RootTaskBloc>().add(
                     const RootTaskViewTypeChanged(
                       viewType: RootTaskViewType.list,
                     ),
                   ),
                 ),
+                PullDownMenuItem.selectable(
+                  icon: FontAwesomeIcons.solidFlag,
+                  iconColor: theme.colorScheme.primary,
+                  title: context.l10n.quadrant,
+                  selected: bloc.state.viewType == RootTaskViewType.priority,
+                  onTap: () => context.read<RootTaskBloc>().add(
+                    const RootTaskViewTypeChanged(
+                      viewType: RootTaskViewType.priority,
+                    ),
+                  ),
+                ),
+                const PullDownMenuDivider.large(),
                 PullDownMenuItem(
                   icon: FontAwesomeIcons.solidCircleCheck,
+                  iconColor: theme.colorScheme.primary,
                   title: bloc.state.showCompleted
                       ? context.l10n.hideCompleted
                       : context.l10n.showCompleted,

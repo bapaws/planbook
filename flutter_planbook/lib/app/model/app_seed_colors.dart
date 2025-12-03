@@ -91,7 +91,7 @@ enum AppSeedColors {
     const textTheme = TextTheme();
     return ThemeData(
       splashColor: Colors.transparent,
-      scaffoldBackgroundColor: colorScheme.surfaceContainerLowest,
+      scaffoldBackgroundColor: Colors.grey.shade100,
       splashFactory: NoSplash.splashFactory,
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(
@@ -123,16 +123,16 @@ enum AppSeedColors {
     const textTheme = TextTheme();
     return ThemeData(
       splashColor: Colors.transparent,
-      scaffoldBackgroundColor: colorScheme.surfaceContainerLowest,
+      scaffoldBackgroundColor: Colors.grey.shade900,
       splashFactory: NoSplash.splashFactory,
       textTheme: textTheme.copyWith(
         titleLarge: textTheme.titleLarge?.copyWith(
           fontSize: 20,
         ),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         centerTitle: true,
-        backgroundColor: colorScheme.surfaceContainerLowest,
+        backgroundColor: Colors.transparent,
       ),
       // bottomNavigationBarTheme: BottomNavigationBarThemeData
       dividerColor: colorScheme.surfaceContainerHighest,

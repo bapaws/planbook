@@ -121,19 +121,42 @@ class DatabaseNoteApi {
 
   Stream<List<NoteEntity>> getNoteEntitiesByTaskId(String taskId) {
     return (db.select(db.notes).join([
-          leftOuterJoin(
-            db.tasks,
-            db.tasks.id.equalsExp(db.notes.taskId) &
-                db.tasks.deletedAt.isNull(),
-          ),
-          leftOuterJoin(
-            db.noteTags,
-            db.noteTags.noteId.equalsExp(db.notes.id) &
-                db.noteTags.deletedAt.isNull(),
-          ),
-        ])..where(
-          db.notes.taskId.equals(taskId) & db.notes.deletedAt.isNull(),
-        ))
+            leftOuterJoin(
+              db.tasks,
+              db.tasks.id.equalsExp(db.notes.taskId) &
+                  db.tasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.noteTags,
+              db.noteTags.noteId.equalsExp(db.notes.id) &
+                  db.noteTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(
+            db.notes.taskId.equals(taskId) & db.notes.deletedAt.isNull(),
+          )
+          ..orderBy([OrderingTerm.desc(db.notes.createdAt.datetime)]))
+        .watch()
+        .asyncMap(buildNoteEntities);
+  }
+
+  Stream<List<NoteEntity>> getNoteEntitiesByTagId(String tagId) {
+    return (db.select(db.notes).join([
+            leftOuterJoin(
+              db.tasks,
+              db.tasks.id.equalsExp(db.notes.taskId) &
+                  db.tasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.noteTags,
+              db.noteTags.noteId.equalsExp(db.notes.id) &
+                  db.noteTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(
+            db.noteTags.tagId.equals(tagId) & db.notes.deletedAt.isNull(),
+          )
+          ..orderBy([OrderingTerm.desc(db.notes.createdAt.datetime)]))
         .watch()
         .asyncMap(buildNoteEntities);
   }
@@ -208,20 +231,15 @@ class DatabaseNoteApi {
             ],
           )
           ..where(exp)
-          ..orderBy([OrderingTerm.asc(db.notes.createdAt)]))
+          ..orderBy([OrderingTerm.desc(db.notes.createdAt.datetime)]))
         .watch()
         .asyncMap(buildNoteEntities);
   }
 
-  Stream<List<NoteImageEntity>> getNoteImageEntities({
-    int limit = 20,
-    int offset = 0,
-  }) {
+  Stream<List<NoteImageEntity>> getNoteImageEntities(int year) {
     return (db.select(
-            db.notes,
-          )
-          ..where((n) => n.deletedAt.isNull())
-          ..limit(limit, offset: offset))
+          db.notes,
+        )..where((n) => n.deletedAt.isNull() & n.createdAt.year.equals(year)))
         .watch()
         .asyncMap((notes) {
           final images = <NoteImageEntity>[];
@@ -238,5 +256,59 @@ class DatabaseNoteApi {
           }
           return images;
         });
+  }
+
+  Stream<List<NoteEntity>> getWrittenNoteEntities(
+    Jiffy date, {
+    List<String>? tagIds,
+  }) {
+    final startOfDay = date.startOf(Unit.day);
+    final endOfDay = date.endOf(Unit.day);
+    final startOfDayDateTime = startOfDay.toUtc().dateTime;
+    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+
+    var exp =
+        db.notes.deletedAt.isNull() &
+        db.notes.createdAt.isBiggerOrEqualValue(
+          startOfDayDateTime,
+        ) &
+        db.notes.createdAt.isSmallerOrEqualValue(
+          endOfDayDateTime,
+        ) &
+        (db.tasks.id.isNull() |
+            db.tasks.deletedAt.isNotNull() |
+            (db.notes.images.isNotNull() & db.notes.images.equals('[]').not()) |
+            (db.notes.content.isNotNull() & db.notes.content.equals('').not()));
+    if (tagIds != null && tagIds.isNotEmpty) {
+      exp &= db.noteTags.tagId.isIn(tagIds);
+    }
+    return (db.select(db.notes).join([
+            leftOuterJoin(
+              db.tasks,
+              db.tasks.id.equalsExp(db.notes.taskId) &
+                  db.tasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.noteTags,
+              db.noteTags.noteId.equalsExp(db.notes.id) &
+                  db.noteTags.isParent.equals(false) &
+                  db.noteTags.deletedAt.isNull(),
+            ),
+          ])
+          ..where(exp)
+          ..orderBy([OrderingTerm.asc(db.notes.createdAt.datetime)]))
+        .watch()
+        .asyncMap(buildNoteEntities);
+  }
+
+  Future<Jiffy?> getStartDate() async {
+    final row =
+        await (db.select(
+                db.notes,
+              )
+              ..orderBy([(t) => OrderingTerm.asc(t.createdAt.datetime)])
+              ..limit(1))
+            .getSingleOrNull();
+    return row?.createdAt;
   }
 }

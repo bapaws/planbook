@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -26,7 +27,7 @@ class FeedbackPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(l10n.feedback),
-        leading: const CupertinoNavigationBarBackButton(),
+        leading: const NavigationBarBackButton(),
       ),
       body: ListView(
         children: [

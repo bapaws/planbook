@@ -29,7 +29,7 @@ class SettingsRow extends StatelessWidget {
         vertical: 16,
         horizontal: 16,
       ),
-      backgroundColor: theme.colorScheme.surfaceContainerLowest,
+      backgroundColor: Colors.transparent,
       backgroundColorActivated: theme.colorScheme.surfaceContainerHighest,
       leading: leading,
       title: title,
