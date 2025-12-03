@@ -32,8 +32,14 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>[Planbook] needs to use your camera to record the task.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>[Planbook] needs to use your microphone to record the task.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>应用需要访问您的相册以保存图片。</string>
+	<string>[Planbook] needs to use your photo library to save images.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>[Planbook] needs to use your photos to record the task.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
