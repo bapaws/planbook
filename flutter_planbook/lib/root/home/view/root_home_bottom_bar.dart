@@ -109,7 +109,7 @@ class RootHomeBottomBar extends StatelessWidget {
             final activeTab = RootHomeTab.values[tabsRouter.activeIndex];
             switch (activeTab) {
               case RootHomeTab.task:
-                context.router.push(NoteNewRoute());
+                context.router.push(TaskNewRoute());
               case RootHomeTab.journal:
                 context.read<RootHomeBloc>().add(
                   const RootHomeDownloadJournalDayRequested(),
