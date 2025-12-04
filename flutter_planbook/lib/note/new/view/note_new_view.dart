@@ -9,9 +9,11 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/new/cubit/note_new_cubit.dart';
+import 'package:flutter_planbook/note/new/view/note_new_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:planbook_core/data/page_status.dart';
+import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class NoteNewView extends StatefulWidget {
@@ -46,7 +48,20 @@ class _NoteNewViewState extends State<NoteNewView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 12),
+        AppBar(
+          forceMaterialTransparency: true,
+          titleSpacing: 0,
+          title: const NoteNewTitleView(),
+          leading: const NavigationBarBackButton(),
+          actions: [
+            CupertinoButton(
+              onPressed: () {
+                context.read<NoteNewCubit>().onSave();
+              },
+              child: const Icon(FontAwesomeIcons.solidPaperPlane),
+            ),
+          ],
+        ),
         BlocListener<NoteNewCubit, NoteNewState>(
           listenWhen: (previous, current) =>
               previous.status != current.status &&

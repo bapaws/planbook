@@ -20,12 +20,14 @@ class DatabaseNoteApi {
     List<String>? images,
     List<Tag>? tags,
     String? taskId,
+    Jiffy? createdAt,
   }) async {
     final noteCompanion = NotesCompanion.insert(
       title: title,
       content: Value(content),
       images: Value(images ?? []),
       taskId: Value(taskId),
+      createdAt: Value(createdAt ?? Jiffy.now()),
     );
     final note = await db.into(db.notes).insertReturning(noteCompanion);
 

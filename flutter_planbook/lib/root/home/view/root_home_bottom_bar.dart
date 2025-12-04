@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,6 +9,24 @@ const double kRootBottomBarHeight = kToolbarHeight + 8;
 const double kRootBottomBarItemHeight = kToolbarHeight;
 const double kRootBottomBarItemWidth = kToolbarHeight + 16;
 
+enum RootHomeTab {
+  task,
+  journal,
+  note;
+
+  IconData get icon => switch (this) {
+    RootHomeTab.task => FontAwesomeIcons.solidCalendarCheck,
+    RootHomeTab.journal => FontAwesomeIcons.book,
+    RootHomeTab.note => FontAwesomeIcons.solidCompass,
+  };
+
+  IconData get actionIcon => switch (this) {
+    RootHomeTab.task => FontAwesomeIcons.plus,
+    RootHomeTab.journal => FontAwesomeIcons.shareNodes,
+    RootHomeTab.note => FontAwesomeIcons.featherPointed,
+  };
+}
+
 class RootHomeBottomBar extends StatelessWidget {
   const RootHomeBottomBar({super.key});
 
@@ -19,6 +36,7 @@ class RootHomeBottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tabsRouter = context.watchTabsRouter;
+    final activeTab = RootHomeTab.values[tabsRouter.activeIndex];
     return Row(
       children: [
         Container(
@@ -53,78 +71,31 @@ class RootHomeBottomBar extends StatelessWidget {
               ),
               Row(
                 children: [
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onDoubleTap: () {
-                      _onTabDoubleTapped(context, 0);
-                    },
-                    onTap: () {
-                      _onTabTapped(context, 0);
-                    },
-                    child: SizedBox(
-                      height: kRootBottomBarItemHeight,
-                      width: kRootBottomBarItemWidth,
-                      child: AnimatedSwitcher(
-                        duration: animationDuration,
-                        child: Icon(
-                          FontAwesomeIcons.solidCalendarCheck,
-                          key: ValueKey(tabsRouter.activeIndex),
-                          size: 24,
-                          color: tabsRouter.activeIndex == 0
-                              ? theme.colorScheme.onSurface
-                              : Colors.grey.shade400,
+                  for (final tab in RootHomeTab.values)
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onDoubleTap: () {
+                        _onTabDoubleTapped(context, tab);
+                      },
+                      onTap: () {
+                        _onTabTapped(context, tab);
+                      },
+                      child: SizedBox(
+                        height: kRootBottomBarItemHeight,
+                        width: kRootBottomBarItemWidth,
+                        child: AnimatedSwitcher(
+                          duration: animationDuration,
+                          child: Icon(
+                            tab.icon,
+                            key: ValueKey(tab),
+                            size: 24,
+                            color: activeTab == tab
+                                ? theme.colorScheme.onSurface
+                                : Colors.grey.shade400,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onDoubleTap: () {
-                      _onTabDoubleTapped(context, 1);
-                    },
-                    onTap: () {
-                      _onTabTapped(context, 1);
-                    },
-                    child: SizedBox(
-                      height: kRootBottomBarItemHeight,
-                      width: kRootBottomBarItemWidth,
-                      child: AnimatedSwitcher(
-                        duration: animationDuration,
-                        child: Icon(
-                          FontAwesomeIcons.book,
-                          key: ValueKey(tabsRouter.activeIndex),
-                          size: 24,
-                          color: tabsRouter.activeIndex == 1
-                              ? theme.colorScheme.onSurface
-                              : Colors.grey.shade400,
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onDoubleTap: () {
-                      _onTabDoubleTapped(context, 2);
-                    },
-                    onTap: () {
-                      _onTabTapped(context, 2);
-                    },
-                    child: SizedBox(
-                      height: kRootBottomBarItemHeight,
-                      width: kRootBottomBarItemWidth,
-                      child: AnimatedSwitcher(
-                        duration: animationDuration,
-                        child: Icon(
-                          FontAwesomeIcons.solidCompass,
-                          key: ValueKey(tabsRouter.activeIndex),
-                          size: 24,
-                          color: tabsRouter.activeIndex == 2
-                              ? theme.colorScheme.onSurface
-                              : Colors.grey.shade400,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],
@@ -133,24 +104,17 @@ class RootHomeBottomBar extends StatelessWidget {
         const Spacer(),
         GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onDoubleTap: () {
-            _onTabDoubleTapped(context, 1);
-          },
+          onDoubleTap: () {},
           onTap: () {
-            switch (tabsRouter.activeIndex) {
-              case 0:
-                if (kDebugMode) {
-                  context.read<RootHomeBloc>().add(
-                    const RootHomeDownloadJournalDayRequested(),
-                  );
-                  return;
-                }
+            final activeTab = RootHomeTab.values[tabsRouter.activeIndex];
+            switch (activeTab) {
+              case RootHomeTab.task:
                 context.router.push(NoteNewRoute());
-              case 1:
+              case RootHomeTab.journal:
                 context.read<RootHomeBloc>().add(
                   const RootHomeDownloadJournalDayRequested(),
                 );
-              case 2:
+              case RootHomeTab.note:
                 context.router.push(NoteNewRoute());
             }
           },
@@ -171,10 +135,8 @@ class RootHomeBottomBar extends StatelessWidget {
             child: AnimatedSwitcher(
               duration: animationDuration,
               child: Icon(
-                tabsRouter.activeIndex == 0
-                    ? FontAwesomeIcons.plus
-                    : FontAwesomeIcons.featherPointed,
-                key: ValueKey(tabsRouter.activeIndex),
+                activeTab.actionIcon,
+                key: ValueKey(activeTab),
                 size: 18,
                 color: theme.colorScheme.onSurface,
               ),
@@ -185,15 +147,15 @@ class RootHomeBottomBar extends StatelessWidget {
     );
   }
 
-  void _onTabTapped(BuildContext context, int index) {
+  void _onTabTapped(BuildContext context, RootHomeTab tab) {
     HapticFeedback.lightImpact();
-    context.tabsRouter.setActiveIndex(index);
+    context.tabsRouter.setActiveIndex(tab.index);
   }
 
-  void _onTabDoubleTapped(BuildContext context, int index) {
-    final activeIndex = context.tabsRouter.activeIndex;
-    if (activeIndex != index) {
-      return;
-    }
+  void _onTabDoubleTapped(BuildContext context, RootHomeTab tab) {
+    // final activeIndex = context.tabsRouter.activeIndex;
+    // if (activeIndex != index) {
+    //   return;
+    // }
   }
 }

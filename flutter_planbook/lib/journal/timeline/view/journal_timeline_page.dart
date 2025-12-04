@@ -12,7 +12,6 @@ class JournalTimelinePage extends StatelessWidget {
     final theme = Theme.of(context);
     return BlocBuilder<JournalTimelineBloc, JournalTimelineState>(
       builder: (context, state) {
-        final totalTasks = state.completedTaskCount;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

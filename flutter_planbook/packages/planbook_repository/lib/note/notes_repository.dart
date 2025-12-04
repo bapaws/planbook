@@ -16,6 +16,7 @@ class NotesRepository {
     List<String>? images,
     List<Tag>? tags,
     String? taskId,
+    Jiffy? createdAt,
   }) async {
     return _dbNoteApi.create(
       title: title,
@@ -23,6 +24,7 @@ class NotesRepository {
       images: images,
       tags: tags,
       taskId: taskId,
+      createdAt: createdAt,
     );
   }
 

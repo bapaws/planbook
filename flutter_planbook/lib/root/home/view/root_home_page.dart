@@ -39,8 +39,8 @@ class _RootHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AutoTabsRouter(
       routes: const [
-        RootJournalRoute(),
         RootTaskRoute(),
+        RootJournalRoute(),
         RootNoteRoute(),
       ],
       builder: (context, child) {

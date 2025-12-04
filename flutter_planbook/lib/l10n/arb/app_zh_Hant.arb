@@ -146,6 +146,7 @@
   "total": "總計",
   "completed": "已完成",
   "completionRate": "完成率",
-  "words": "字數"
+  "words": "字數",
+  "time": "時間"
 }
 

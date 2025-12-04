@@ -37,6 +37,10 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
     return state.toJson();
   }
 
+  void onCreatedAtChanged(Jiffy createdAt) {
+    emit(state.copyWith(createdAt: createdAt));
+  }
+
   void onTitleChanged(String title) {
     emit(state.copyWith(title: title.trim()));
   }
@@ -95,7 +99,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         content: state.content.isEmpty ? null : state.content,
         images: state.images,
         taskId: state.task?.id,
-        createdAt: state.initialNote!.createdAt,
+        createdAt: state.createdAt ?? state.initialNote!.createdAt,
         updatedAt: Jiffy.now(),
         deletedAt: state.initialNote!.deletedAt,
       );
@@ -111,6 +115,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         images: state.images.isEmpty ? null : state.images,
         tags: tags.isEmpty ? null : tags,
         taskId: state.task?.id,
+        createdAt: state.createdAt,
       );
       await clear();
     }

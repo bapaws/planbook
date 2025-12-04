@@ -15,6 +15,7 @@ dependencies:
   cached_network_image: ^3.4.1
   calendar_date_picker2: ^2.0.1
   collection: ^1.19.1
+  cupertino_calendar_picker: ^2.2.6
   cupertino_icons: ^1.0.6
   database_planbook_api:
     path: packages/database_planbook_api
