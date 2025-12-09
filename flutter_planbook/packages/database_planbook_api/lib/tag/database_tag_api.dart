@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 class DatabaseTagApi {

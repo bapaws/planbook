@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 class TaskNewBottomBar extends StatelessWidget {
   const TaskNewBottomBar({this.focusNode, super.key});
@@ -17,16 +17,24 @@ class TaskNewBottomBar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
+        const SizedBox(width: 6),
         BlocSelector<TaskNewCubit, TaskNewState, TaskPriority>(
           selector: (state) => state.priority,
           builder: (context, priority) {
+            final brightness = Theme.of(context).brightness;
+            final colorScheme = ColorScheme.fromSeed(
+              seedColor: priority.color,
+              brightness: brightness,
+            );
             return CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: () {
                 _onTagPressed(context, TaskNewFocus.priority);
               },
               child: Icon(
                 FontAwesomeIcons.solidFlag,
-                color: priority.color,
+                color: colorScheme.primary,
               ),
             );
           },
@@ -34,38 +42,84 @@ class TaskNewBottomBar extends StatelessWidget {
         BlocSelector<TaskNewCubit, TaskNewState, List<TagEntity>>(
           selector: (state) => state.tags,
           builder: (context, tags) {
+            final brightness = Theme.of(context).brightness;
+            final colorScheme = brightness == Brightness.dark
+                ? tags.firstOrNull?.dark
+                : tags.firstOrNull?.light;
             return CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: () {
                 _onTagPressed(context, TaskNewFocus.tags);
               },
               child: Icon(
                 FontAwesomeIcons.tags,
-                color: tags.firstOrNull?.color?.toColor ?? Colors.grey.shade400,
+                color: colorScheme?.primary ?? Colors.grey.shade400,
               ),
+            );
+          },
+        ),
+        BlocSelector<TaskNewCubit, TaskNewState, Jiffy?>(
+          selector: (state) => state.startAt,
+          builder: (context, startAt) {
+            return CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              minimumSize: const Size.square(kMinInteractiveDimension),
+              child: Icon(
+                FontAwesomeIcons.solidClock,
+                color: startAt != null
+                    ? colorScheme.tertiary
+                    : Colors.grey.shade400,
+              ),
+              onPressed: () {
+                _onTagPressed(context, TaskNewFocus.time);
+              },
+            );
+          },
+        ),
+        BlocSelector<TaskNewCubit, TaskNewState, RecurrenceRule?>(
+          selector: (state) => state.recurrenceRule,
+          builder: (context, recurrenceRule) {
+            return CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 6),
+              minimumSize: const Size.square(kMinInteractiveDimension),
+              child: Icon(
+                FontAwesomeIcons.arrowsRotate,
+                color: recurrenceRule != null
+                    ? colorScheme.tertiary
+                    : Colors.grey.shade400,
+              ),
+              onPressed: () {
+                _onTagPressed(context, TaskNewFocus.recurrence);
+              },
             );
           },
         ),
         const Spacer(),
         BlocBuilder<TaskNewCubit, TaskNewState>(
           builder: (context, state) {
-            return CupertinoButton(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              onPressed:
-                  state.title.trim().isEmpty ||
-                      state.status == PageStatus.loading
-                  ? null
-                  : context.read<TaskNewCubit>().onSave,
-              child: AnimatedSwitcher(
-                duration: Durations.extralong1,
-                child: state.status == PageStatus.loading
-                    ? CupertinoActivityIndicator(
-                        radius: 12,
-                        color: colorScheme.onSurface,
-                      )
-                    : const Icon(
+            return AnimatedSwitcher(
+              duration: Durations.extralong1,
+              child: state.status == PageStatus.loading
+                  ? CupertinoActivityIndicator(
+                      radius: 12,
+                      color: colorScheme.onSurface,
+                    )
+                  : CupertinoButton(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      minimumSize: const Size.square(kMinInteractiveDimension),
+                      onPressed:
+                          state.title.trim().isEmpty ||
+                              state.status == PageStatus.loading
+                          ? null
+                          : context.read<TaskNewCubit>().onSave,
+                      child: const Icon(
                         FontAwesomeIcons.solidPaperPlane,
                       ),
-              ),
+                    ),
             ).shakeX(animate: state.status == PageStatus.failure);
           },
         ),

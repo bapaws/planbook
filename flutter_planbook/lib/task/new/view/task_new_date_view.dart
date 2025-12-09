@@ -56,6 +56,27 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
   @override
   void initState() {
     super.initState();
+
+    _selectedDate = widget.date;
+    _onDateChanged(_selectedDate);
+  }
+
+  void _onDateChanged(Jiffy? date) {
+    final now = Jiffy.now();
+    if (date == null) {
+      _selectedDate = null;
+      index = 3;
+    } else if (date.isSame(now, unit: Unit.day)) {
+      _selectedDate = date;
+      index = 0;
+    } else if (date.isSame(now.add(days: 1), unit: Unit.day)) {
+      _selectedDate = date;
+      index = 1;
+    } else {
+      _selectedDate = date;
+      _index = 2;
+      setState(() {});
+    }
   }
 
   @override
@@ -65,22 +86,7 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
     return BlocListener<TaskNewCubit, TaskNewState>(
       listenWhen: (previous, current) => previous.dueAt != current.dueAt,
       listener: (context, state) {
-        final newDate = state.dueAt;
-        final now = Jiffy.now();
-        if (newDate == null) {
-          _selectedDate = null;
-          index = 3;
-        } else if (newDate.isSame(now, unit: Unit.day)) {
-          _selectedDate = newDate;
-          index = 0;
-        } else if (newDate.isSame(now.add(days: 1), unit: Unit.day)) {
-          _selectedDate = newDate;
-          index = 1;
-        } else {
-          _selectedDate = newDate;
-          _index = 2;
-          setState(() {});
-        }
+        _onDateChanged(state.dueAt);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {

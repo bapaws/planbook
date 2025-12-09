@@ -13,6 +13,7 @@ class NoteListBloc extends Bloc<NoteListEvent, NoteListState> {
   }) : _notesRepository = notesRepository,
        super(const NoteListState()) {
     on<NoteListRequested>(_onRequested, transformer: restartable());
+    on<NoteListDeleted>(_onDeleted);
   }
 
   final NotesRepository _notesRepository;
@@ -27,5 +28,14 @@ class NoteListBloc extends Bloc<NoteListEvent, NoteListState> {
       onData: (notes) =>
           state.copyWith(status: PageStatus.success, notes: notes),
     );
+  }
+
+  Future<void> _onDeleted(
+    NoteListDeleted event,
+    Emitter<NoteListState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _notesRepository.deleteNoteById(event.note.id);
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

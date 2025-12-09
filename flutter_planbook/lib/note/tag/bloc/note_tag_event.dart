@@ -15,3 +15,12 @@ final class NoteTagRequested extends NoteTagEvent {
   @override
   List<Object> get props => [tagId];
 }
+
+final class NoteTagDeleted extends NoteTagEvent {
+  const NoteTagDeleted({required this.note});
+
+  final NoteEntity note;
+
+  @override
+  List<Object> get props => [note];
+}

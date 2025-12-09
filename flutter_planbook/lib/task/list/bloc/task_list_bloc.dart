@@ -12,6 +12,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
     TaskListMode mode = TaskListMode.inbox,
+    this.priority,
     TagEntity? tag,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
@@ -26,6 +27,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
   final TaskListMode _mode;
+  final TaskPriority? priority;
 
   Future<void> _onRequested(
     TaskListRequested event,
@@ -33,13 +35,20 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
-    final stream = _tasksRepository.getTaskEntities(
-      mode: _mode,
-      date: date,
-      tagId: event.tagId,
-      priority: event.priority,
-      isCompleted: event.isCompleted,
-    );
+    final stream = priority == null
+        ? _tasksRepository.getTaskEntities(
+            mode: _mode,
+            date: date,
+            tagId: event.tagId,
+            isCompleted: event.isCompleted,
+          )
+        : _tasksRepository.getAllTodayTaskEntities(
+            mode: _mode,
+            day: date,
+            tagId: event.tagId,
+            priority: priority,
+            isCompleted: event.isCompleted,
+          );
     await emit.forEach(
       stream,
       onData: (tasks) => state.copyWith(
@@ -53,7 +62,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListCompleted event,
     Emitter<TaskListState> emit,
   ) async {
-    await _tasksRepository.completeTaskById(event.task.id);
+    await _tasksRepository.completeTask(event.task);
     emit(state.copyWith(status: PageStatus.success));
     add(TaskListNoteCreated(task: event.task));
   }

@@ -40,6 +40,8 @@ class AppRouter extends RootStackRouter {
 
     // AutoRoute(page: TaskNewRoute.page),
     _buildModalBottomSheetRoute(TaskNewRoute.page),
+    _buildModalBottomSheetRoute(TaskNewRecurrenceEndAtRoute.page),
+
     _buildModalBottomSheetRoute(TaskPickerRoute.page),
     _buildModalBottomSheetRoute(TaskPriorityPickerRoute.page),
     _buildModalBottomSheetRoute(TaskDatePickerRoute.page),

@@ -44,6 +44,7 @@ class AssetsRepository {
   final AppDatabase _db;
 
   static const _host = 'https://supa.res.bapaws.top';
+  static const _folder = 'planbook';
 
   String? get userId => _supabase?.auth.currentUser?.id;
 
@@ -83,39 +84,41 @@ class AssetsRepository {
         url.lastIndexOf(bucketName) + bucketName.length + 1,
       );
     }
-    return p.join(userId!, url);
+    return p.join(userId ?? _folder, url);
   }
 
-  Future<void> removeImages(List<String> fileNames, ResBucket bucket) async {
-    if (fileNames.isEmpty) return;
+  Future<void> removeImages(List<String> urls, ResBucket bucket) async {
+    if (urls.isEmpty) return;
 
     await Future.wait(
-      fileNames.map(
+      urls.map(
         _cacheManager.removeFile,
       ),
     );
     await _supabase?.storage
         .from(bucket.name)
-        .remove(fileNames.map((e) => getFileName(bucket, e)).toList());
+        .remove(urls.map((e) => getFileName(bucket, e)).toList());
   }
 
   Future<String> uploadImage(String path, ResBucket bucket) async {
     if (path.startsWith('http')) {
       return path;
     }
-    final fileName = '${const Uuid().v4()}.${path.split('.').last}';
+    final fileName = getFileName(
+      bucket,
+      '${const Uuid().v4()}.${path.split('.').last}',
+    );
+    final url = '$_host/${bucket.name}/$fileName';
 
     final file = File(path);
 
     unawaited(() async {
       final fileBytes = await file.readAsBytes();
-      await _cacheManager.putFile(fileName, fileBytes);
+      await _cacheManager.putFile(url, fileBytes);
     }());
 
-    await _supabase?.storage
-        .from(bucket.name)
-        .upload(getFileName(bucket, fileName), file);
+    await _supabase?.storage.from(bucket.name).upload(fileName, file);
 
-    return '$_host/${bucket.name}/${getFileName(bucket, fileName)}';
+    return url;
   }
 }

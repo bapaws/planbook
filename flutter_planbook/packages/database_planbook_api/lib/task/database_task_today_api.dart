@@ -146,14 +146,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
-        db.tasks.detachedFromTaskId.isNull() &
-        db.taskOccurrences.deletedAt.isNull() &
-        db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
-          startOfDayDateTime,
-        ) &
-        db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
-          endOfDayDateTime,
-        );
+        db.tasks.detachedFromTaskId.isNull();
     if (isCompleted != null) {
       recurringExp &= isCompleted
           ? db.taskActivities.id.isNotNull()
@@ -169,7 +162,14 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     final recurringTasksQuery = db.select(db.tasks).join([
       innerJoin(
         db.taskOccurrences,
-        db.taskOccurrences.taskId.equalsExp(db.tasks.id),
+        db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
+            db.taskOccurrences.deletedAt.isNull() &
+            db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
+              startOfDayDateTime,
+            ) &
+            db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
+              endOfDayDateTime,
+            ),
       ),
       // LEFT JOIN TaskActivities 来检查完成状态
       // 对于重复任务，需要匹配 occurrenceAt
@@ -481,7 +481,6 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
   }
 
   Stream<List<TaskEntity>> getAllTodayOverdueTaskEntities({
-    bool? isCompleted,
     TaskPriority? priority,
     Jiffy? day,
     String? tagId,
@@ -500,11 +499,8 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     if (tagId != null) {
       exp &= db.taskTags.tagId.equals(tagId);
     }
-    if (isCompleted != null) {
-      exp &= isCompleted
-          ? db.taskActivities.id.isNotNull()
-          : db.taskActivities.id.isNull();
-    }
+    exp &= db.taskActivities.id.isNull();
+
     final query = db.select(db.tasks).join([
       leftOuterJoin(
         db.taskActivities,

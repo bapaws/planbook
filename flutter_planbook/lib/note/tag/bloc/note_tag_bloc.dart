@@ -15,6 +15,7 @@ class NoteTagBloc extends Bloc<NoteTagEvent, NoteTagState> {
   }) : _notesRepository = notesRepository,
        super(NoteTagState(tag: tag)) {
     on<NoteTagRequested>(_onRequested);
+    on<NoteTagDeleted>(_onDeleted);
   }
 
   final NotesRepository _notesRepository;
@@ -29,5 +30,14 @@ class NoteTagBloc extends Bloc<NoteTagEvent, NoteTagState> {
       onData: (notes) =>
           state.copyWith(status: PageStatus.success, notes: notes),
     );
+  }
+
+  Future<void> _onDeleted(
+    NoteTagDeleted event,
+    Emitter<NoteTagState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _notesRepository.deleteNoteById(event.note.id);
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

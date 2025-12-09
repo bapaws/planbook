@@ -89,13 +89,14 @@ class AppCalendarDateView extends StatelessWidget {
   }
 }
 
-class AppCalendarView extends StatelessWidget {
+class AppCalendarView<T> extends StatelessWidget {
   AppCalendarView({
     required this.child,
     required this.onDateSelected,
     Jiffy? date,
     this.calendarFormat = CalendarFormat.week,
     super.key,
+    this.eventLoader,
   }) : date = date ?? Jiffy.now();
 
   final Widget child;
@@ -103,12 +104,13 @@ class AppCalendarView extends StatelessWidget {
   final CalendarFormat calendarFormat;
 
   final ValueChanged<Jiffy> onDateSelected;
+  final List<T> Function(DateTime day)? eventLoader;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TableCalendar<DateTime>(
+        TableCalendar<T>(
           firstDay: firstDay,
           lastDay: lastDay,
           focusedDay: date.dateTime,
@@ -156,6 +158,7 @@ class AppCalendarView extends StatelessWidget {
               shape: BoxShape.circle,
             ),
           ),
+          eventLoader: eventLoader,
           onDaySelected: (selectedDay, focusedDay) {
             onDateSelected(Jiffy.parseFromDateTime(selectedDay));
           },

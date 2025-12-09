@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_list_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -8,11 +10,13 @@ class TaskPriorityPage extends StatelessWidget {
     super.key,
     this.date,
     this.tag,
+    this.isCompleted,
   });
 
   final TaskListMode mode;
   final Jiffy? date;
   final TagEntity? tag;
+  final bool? isCompleted;
 
   static const spacing = 12.0;
 
@@ -57,9 +61,23 @@ class TaskPriorityPage extends StatelessWidget {
   }
 
   Widget _buildTaskPriorityPage(BuildContext context, TaskPriority priority) {
-    return Expanded(
-      child: TaskPriorityListView(
-        priority: priority,
+    return BlocProvider(
+      key: ValueKey(date.toString() + priority.name + isCompleted.toString()),
+      create: (context) =>
+          TaskListBloc(
+            tasksRepository: context.read(),
+            notesRepository: context.read(),
+            mode: mode,
+            priority: priority,
+          )..add(
+            TaskListRequested(
+              date: date,
+              tagId: tag?.id,
+              isCompleted: isCompleted,
+            ),
+          ),
+      child: const Expanded(
+        child: TaskPriorityListView(),
       ),
     );
   }

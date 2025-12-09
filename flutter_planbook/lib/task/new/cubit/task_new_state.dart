@@ -7,6 +7,7 @@ enum TaskNewFocus {
   date,
   time,
   tags,
+  recurrence,
 }
 
 final class TaskNewState extends Equatable {
@@ -60,11 +61,11 @@ final class TaskNewState extends Equatable {
     );
   }
 
-  factory TaskNewState.fromData({TaskEntity? task}) {
+  factory TaskNewState.fromData({TaskEntity? task, Jiffy? dueAt}) {
     return TaskNewState(
       initialTask: task,
       title: task?.title ?? '',
-      dueAt: task?.dueAt ?? Jiffy.now().startOf(Unit.day),
+      dueAt: task?.dueAt ?? dueAt,
       startAt: task?.startAt,
       endAt: task?.endAt,
       isAllDay: task?.isAllDay ?? false,
@@ -134,7 +135,7 @@ final class TaskNewState extends Equatable {
     ValueGetter<Jiffy?>? startAt,
     ValueGetter<Jiffy?>? endAt,
     bool? isAllDay,
-    RecurrenceRule? recurrenceRule,
+    ValueGetter<RecurrenceRule?>? recurrenceRule,
     TaskPriority? priority,
     List<EventAlarm>? alarms,
     List<TagEntity>? tags,
@@ -148,7 +149,9 @@ final class TaskNewState extends Equatable {
       startAt: startAt == null ? this.startAt : startAt(),
       endAt: endAt == null ? this.endAt : endAt(),
       isAllDay: isAllDay ?? this.isAllDay,
-      recurrenceRule: recurrenceRule ?? this.recurrenceRule,
+      recurrenceRule: recurrenceRule == null
+          ? this.recurrenceRule
+          : recurrenceRule(),
       priority: priority ?? this.priority,
       alarms: alarms ?? this.alarms,
       tags: tags ?? this.tags,

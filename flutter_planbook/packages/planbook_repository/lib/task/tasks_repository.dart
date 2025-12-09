@@ -51,10 +51,12 @@ class TasksRepository {
         date: date ?? Jiffy.now(),
         isCompleted: isCompleted,
       ),
-      TaskListMode.overdue => _dbTaskOverdueApi.getOverdueTaskCount(
-        date: date ?? Jiffy.now(),
-        isCompleted: isCompleted,
-      ),
+      TaskListMode.overdue =>
+        isCompleted ?? false
+            ? throw UnimplementedError()
+            : _dbTaskOverdueApi.getOverdueTaskCount(
+                date: date ?? Jiffy.now(),
+              ),
       TaskListMode.tag => throw UnimplementedError(),
     };
   }
@@ -111,7 +113,6 @@ class TasksRepository {
         day: day,
         tagId: tagId,
         priority: priority,
-        isCompleted: isCompleted,
       ),
       TaskListMode.tag => throw UnimplementedError(),
     };
@@ -127,8 +128,10 @@ class TasksRepository {
   /// 同时根据子任务状态递归更新上级任务。
   ///
   /// 返回所有创建或标记删除的 taskActivities 对象
-  Future<List<TaskActivity>> completeTaskById(String taskId) async {
-    return _dbTaskCompletionApi.completeTaskById(taskId);
+  Future<List<TaskActivity>> completeTask(
+    TaskEntity entity,
+  ) async {
+    return _dbTaskCompletionApi.completeTask(entity);
   }
 
   Future<TaskActivity?> getTaskActivityForTask(

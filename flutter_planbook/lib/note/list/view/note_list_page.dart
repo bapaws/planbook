@@ -18,7 +18,12 @@ class NoteListPage extends StatelessWidget {
       child: BlocSelector<NoteListBloc, NoteListState, List<NoteEntity>>(
         selector: (state) => state.notes,
         builder: (context, notes) {
-          return NoteListView(notes: notes);
+          return NoteListView(
+            notes: notes,
+            onDeleted: (note) {
+              context.read<NoteListBloc>().add(NoteListDeleted(note: note));
+            },
+          );
         },
       ),
     );

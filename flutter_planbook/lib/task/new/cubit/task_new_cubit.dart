@@ -11,16 +11,37 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
   TaskNewCubit({
     required TasksRepository tasksRepository,
     TaskEntity? initialTask,
+    Jiffy? dueAt,
   }) : _tasksRepository = tasksRepository,
        super(
-         TaskNewState.fromData(task: initialTask),
+         TaskNewState.fromData(task: initialTask, dueAt: dueAt),
        );
 
   final TasksRepository _tasksRepository;
 
   @override
   TaskNewState? fromJson(Map<String, dynamic> json) {
-    return TaskNewState.fromJson(json);
+    return state.copyWith(
+      title: json['title'] as String? ?? '',
+      priority:
+          TaskPriority.fromValue(json['priority'] as int?) ?? TaskPriority.none,
+      isAllDay: json['isAllDay'] as bool? ?? false,
+      recurrenceRule: json['recurrenceRule'] != null
+          ? () => RecurrenceRule.fromJson(
+              json['recurrenceRule'] as Map<String, dynamic>,
+            )
+          : null,
+      alarms: json['alarms'] != null
+          ? (json['alarms'] as List<dynamic>)
+                .map((e) => EventAlarm.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
+      tags: json['tags'] != null
+          ? (json['tags'] as List<dynamic>)
+                .map((e) => TagEntity.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
+    );
   }
 
   @override
@@ -30,18 +51,51 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       return null; // 不保存编辑模式的状态
     }
     // 只在有实际内容时保存
-    if (state.title.isEmpty &&
-        state.tags.isEmpty &&
-        state.dueAt == null &&
-        state.startAt == null &&
-        state.endAt == null &&
-        state.priority == TaskPriority.none) {
+    if (state.title.isEmpty && state.tags.isEmpty) {
       return null; // 空状态不保存
     }
-    return state.toJson();
+
+    return {
+      'title': state.title,
+      'priority': state.priority.value,
+      'isAllDay': state.isAllDay,
+      if (state.recurrenceRule != null)
+        'recurrenceRule': state.recurrenceRule!.toJson(),
+      if (state.alarms != null && state.alarms!.isNotEmpty)
+        'alarms': state.alarms!.map((e) => e.toJson()).toList(),
+      if (state.tags.isNotEmpty)
+        'tags': state.tags.map((e) => e.toJson()).toList(),
+    };
   }
 
   void onFocusChanged(TaskNewFocus focus) {
+    if (focus == TaskNewFocus.time) {
+      if (state.startAt == null || state.endAt == null) {
+        final now = Jiffy.now().startOf(Unit.minute);
+        emit(
+          state.copyWith(
+            focus: TaskNewFocus.time,
+            startAt: () => now,
+            endAt: () => now.add(hours: 1),
+          ),
+        );
+        return;
+      }
+    }
+    if (focus == TaskNewFocus.recurrence) {
+      if (state.recurrenceRule == null) {
+        const recurrenceRule = RecurrenceRule(
+          frequency: RecurrenceFrequency.daily,
+        );
+        emit(
+          state.copyWith(
+            focus: TaskNewFocus.recurrence,
+            recurrenceRule: () => recurrenceRule,
+          ),
+        );
+        return;
+      }
+    }
     emit(state.copyWith(focus: focus));
   }
 
@@ -53,20 +107,28 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
     emit(state.copyWith(priority: priority));
   }
 
+  void onTagsChanged(List<TagEntity> tags) {
+    emit(state.copyWith(tags: tags));
+  }
+
   void onDueAtChanged(Jiffy? dueAt) {
-    emit(state.copyWith(dueAt: () => dueAt?.startOf(Unit.day)));
+    emit(state.copyWith(dueAt: () => dueAt?.toUtc().startOf(Unit.day)));
   }
 
   void onStartAtChanged(Jiffy? startAt) {
-    emit(state.copyWith(startAt: () => startAt));
+    emit(state.copyWith(startAt: () => startAt?.toUtc()));
   }
 
   void onEndAtChanged(Jiffy? endAt) {
-    emit(state.copyWith(endAt: () => endAt));
+    emit(state.copyWith(endAt: () => endAt?.toUtc()));
   }
 
-  void onTagsChanged(List<TagEntity> tags) {
-    emit(state.copyWith(tags: tags));
+  void onIsAllDayChanged({required bool isAllDay}) {
+    emit(state.copyWith(isAllDay: isAllDay));
+  }
+
+  void onRecurrenceRuleChanged(RecurrenceRule? recurrenceRule) {
+    emit(state.copyWith(recurrenceRule: () => recurrenceRule));
   }
 
   Future<void> onSave() async {
@@ -78,13 +140,14 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         id: const Uuid().v4(),
         title: state.title,
         priority: state.priority,
-        dueAt: state.dueAt?.startOf(Unit.day),
-        startAt: state.startAt,
-        endAt: state.endAt,
+        dueAt: state.dueAt?.toUtc(),
+        startAt: state.startAt?.toUtc(),
+        endAt: state.endAt?.toUtc(),
+        recurrenceRule: state.recurrenceRule,
         order: 0,
         isAllDay: false,
         alarms: [],
-        createdAt: Jiffy.now(),
+        createdAt: Jiffy.now().toUtc(),
         layer: 0,
         childCount: 0,
       );
@@ -100,16 +163,16 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         id: initialTask.id,
         title: state.title,
         priority: state.priority,
-        dueAt: state.dueAt?.startOf(Unit.day),
-        startAt: state.startAt,
-        endAt: state.endAt,
+        dueAt: state.dueAt?.toUtc(),
+        startAt: state.startAt?.toUtc(),
+        endAt: state.endAt?.toUtc(),
         order: initialTask.order,
         isAllDay: initialTask.isAllDay,
-        alarms: initialTask.alarms ?? [],
+        alarms: state.alarms ?? [],
         parentId: initialTask.parentId,
-        recurrenceRule: initialTask.recurrenceRule,
-        createdAt: initialTask.createdAt,
-        updatedAt: Jiffy.now(),
+        recurrenceRule: state.recurrenceRule,
+        createdAt: initialTask.createdAt.toUtc(),
+        updatedAt: Jiffy.now().toUtc(),
         layer: 0,
         childCount: 0,
       );

@@ -4,6 +4,7 @@
   "slogen": "Plan, Task, Diary, All in One 👌",
   "list": "List",
   "save": "Save",
+  "confirm": "Confirm",
   "close": "Close",
   "share": "Share",
   "add": "Add",
@@ -91,6 +92,10 @@
   "yesterday": "Yesterday",
   "upgradePro": "Upgrade to Planbook Premium",
   "taskTitleHint": "What needs to be done?",
+  "startTime": "Start Time",
+  "endTime": "End Time",
+  "duration": "Duration",
+  "allDay": "All Day",
   "otherDate": "Other Date",
   "inbox": "Inbox",
   "overdue": "Overdue",
@@ -147,5 +152,67 @@
   "completed": "Completed",
   "completionRate": "Completion Rate",
   "words": "Words",
-  "time": "Time"
+  "time": "Time",
+  "deleteNote": "Delete Note",
+  "deleteNoteContent": "Are you sure you want to delete this note?",
+  "durationSeconds": "{count} {count, plural, =1 {second} other {seconds}}",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "durationMinutes": "{count} {count, plural, =1 {minute} other {minutes}}",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationHours": "{count} {count, plural, =1 {hour} other {hours}}",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "everyDay": "Day",
+  "everyWeek": "Week",
+  "everyMonth": "Month",
+  "everyYear": "Year",
+  "every": "Every",
+  "ends": "Ends",
+  "repeat": "Repeat",
+  "endlessly": "Endlessly",
+  "endByDate": "End By Date",
+  "endByCount": "End By Count",
+  "endsOn": "Ends On {date}",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "endsIn": "Ends In {count} Times",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  }
 }

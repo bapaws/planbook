@@ -3,7 +3,7 @@ library;
 
 // export 'package:drift/drift.dart';
 
-export 'database/color_scheme_converter.dart';
+// export 'database/color_scheme_converter.dart';
 export 'database/database.dart';
 export 'database/detached_reason.dart';
 export 'database/event_alarm.dart';

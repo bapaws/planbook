@@ -19,6 +19,7 @@ class NoteNewFullscreenPage extends StatelessWidget {
     return BlocProvider(
       create: (context) => NoteNewCubit(
         notesRepository: context.read(),
+        assetsRepository: context.read(),
         initialNote: initialNote,
       ),
       child: const _NoteNewFullscreenPage(),

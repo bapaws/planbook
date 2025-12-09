@@ -9,7 +9,6 @@ sealed class TaskPriorityEvent extends Equatable {
 
 final class TaskPriorityRequested extends TaskPriorityEvent {
   const TaskPriorityRequested({
-    required this.priority,
     this.date,
     this.tagId,
     this.isCompleted,
@@ -17,20 +16,21 @@ final class TaskPriorityRequested extends TaskPriorityEvent {
 
   final Jiffy? date;
   final String? tagId;
-  final TaskPriority priority;
+
   final bool? isCompleted;
 
   @override
-  List<Object?> get props => [date, tagId, priority, isCompleted];
+  List<Object?> get props => [date, tagId, isCompleted];
 }
 
 final class TaskPriorityCompleted extends TaskPriorityEvent {
-  const TaskPriorityCompleted({required this.task});
+  const TaskPriorityCompleted({required this.task, this.occurrenceAt});
 
   final TaskEntity task;
+  final Jiffy? occurrenceAt;
 
   @override
-  List<Object?> get props => [task];
+  List<Object?> get props => [task, occurrenceAt];
 }
 
 final class TaskPriorityDeleted extends TaskPriorityEvent {

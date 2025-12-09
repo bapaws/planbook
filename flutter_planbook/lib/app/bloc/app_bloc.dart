@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/icon/model/app_icons.dart';
+import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 

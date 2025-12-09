@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart' hide Column;
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -54,20 +55,25 @@ class _NoteNewViewState extends State<NoteNewView> {
           title: const NoteNewTitleView(),
           leading: const NavigationBarBackButton(),
           actions: [
-            CupertinoButton(
-              onPressed: () {
-                context.read<NoteNewCubit>().onSave();
-              },
-              child: const Icon(FontAwesomeIcons.solidPaperPlane),
-            ),
+            if (context.read<NoteNewCubit>().state.initialNote != null)
+              CupertinoButton(
+                foregroundColor: colorScheme.error,
+                onPressed: _showDeleteConfirmation,
+                child: const Icon(FontAwesomeIcons.trash),
+              ),
           ],
         ),
         BlocListener<NoteNewCubit, NoteNewState>(
-          listenWhen: (previous, current) =>
-              previous.status != current.status &&
-              current.status == PageStatus.failure,
+          listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             _titleFocusNode.requestFocus();
+            if (state.status == PageStatus.loading) {
+              EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+            } else if (state.status == PageStatus.dispose) {
+              context.router.maybePop();
+            } else if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
           },
           child: TextField(
             autofocus: true,
@@ -299,7 +305,7 @@ class _NoteNewViewState extends State<NoteNewView> {
                 if (!context.mounted) return;
 
                 final paths = files.map((file) => file.path).toList();
-                context.read<NoteNewCubit>().addImages(paths);
+                await context.read<NoteNewCubit>().addImages(paths);
               },
               child: Icon(
                 FontAwesomeIcons.solidImage,
@@ -316,7 +322,7 @@ class _NoteNewViewState extends State<NoteNewView> {
                 );
 
                 if (!context.mounted || file == null) return;
-                context.read<NoteNewCubit>().addImages([file.path]);
+                await context.read<NoteNewCubit>().addImages([file.path]);
               },
               child: Icon(
                 FontAwesomeIcons.solidCamera,
@@ -363,6 +369,7 @@ class _NoteNewViewState extends State<NoteNewView> {
             const Spacer(),
             CupertinoButton(
               padding: const EdgeInsets.all(16),
+              minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: () {
                 context.read<NoteNewCubit>().onSave();
               },
@@ -375,6 +382,31 @@ class _NoteNewViewState extends State<NoteNewView> {
         ),
         SizedBox(height: query.padding.bottom + query.viewInsets.bottom),
       ],
+    );
+  }
+
+  void _showDeleteConfirmation() {
+    final cubit = context.read<NoteNewCubit>();
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: Text(context.l10n.deleteNote),
+        content: Text(context.l10n.deleteNoteContent),
+        actions: [
+          CupertinoDialogAction(
+            child: Text(context.l10n.cancel),
+            onPressed: () => Navigator.pop(context),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            onPressed: () {
+              cubit.onDelete();
+              Navigator.pop(context);
+            },
+            child: Text(context.l10n.delete),
+          ),
+        ],
+      ),
     );
   }
 }

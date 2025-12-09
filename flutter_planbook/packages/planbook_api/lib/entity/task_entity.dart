@@ -8,12 +8,14 @@ class TaskEntity extends Equatable {
   const TaskEntity({
     required this.task,
     this.tags = const [],
+    this.occurrence,
     this.activity,
     this.children = const [],
   });
 
   final Task task;
   final List<TagEntity> tags;
+  final TaskOccurrence? occurrence;
   final TaskActivity? activity;
   final List<TaskEntity> children;
 

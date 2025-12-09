@@ -87,6 +87,6 @@ class AppNetworkImage extends StatelessWidget {
       );
     }
 
-    return image;
+    return Hero(tag: url!, child: image);
   }
 }

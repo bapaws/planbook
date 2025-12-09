@@ -11,26 +11,25 @@ final class TaskListRequested extends TaskListEvent {
   const TaskListRequested({
     this.date,
     this.tagId,
-    this.priority,
     this.isCompleted,
   });
 
   final Jiffy? date;
   final String? tagId;
-  final TaskPriority? priority;
   final bool? isCompleted;
 
   @override
-  List<Object?> get props => [date, tagId, priority, isCompleted];
+  List<Object?> get props => [date, tagId, isCompleted];
 }
 
 final class TaskListCompleted extends TaskListEvent {
-  const TaskListCompleted({required this.task});
+  const TaskListCompleted({required this.task, this.occurrenceAt});
 
   final TaskEntity task;
+  final Jiffy? occurrenceAt;
 
   @override
-  List<Object?> get props => [task];
+  List<Object?> get props => [task, occurrenceAt];
 }
 
 final class TaskListDeleted extends TaskListEvent {

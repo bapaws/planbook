@@ -34,8 +34,8 @@ class TaskPickerPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
         clipBehavior: Clip.hardEdge,
-        child: const AppPageScaffold(
-          child: _TaskPickerPage(),
+        child: AppPageScaffold(
+          child: const _TaskPickerPage(),
         ),
       ),
     );

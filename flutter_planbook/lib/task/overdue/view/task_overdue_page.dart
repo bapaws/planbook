@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
-import 'package:flutter_planbook/task/priority/bloc/task_priority_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -19,15 +19,17 @@ class TaskOverduePage extends StatelessWidget {
     return BlocBuilder<RootTaskBloc, RootTaskState>(
       buildWhen: (previous, current) =>
           previous.viewType != current.viewType ||
-          previous.showCompleted != current.showCompleted,
+          previous.taskCounts != current.taskCounts,
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
         child: switch (state.viewType) {
-          RootTaskViewType.list => _TaskOverdueListPage(
-            showCompleted: state.showCompleted,
-          ),
-          RootTaskViewType.priority => _TaskOverduePriorityPage(
-            showCompleted: state.showCompleted,
+          RootTaskViewType.list =>
+            state.taskCounts[TaskListMode.overdue] == 0
+                ? const AppEmptyTaskView()
+                : const _TaskOverdueListPage(),
+          RootTaskViewType.priority => TaskPriorityPage(
+            mode: TaskListMode.overdue,
+            isCompleted: state.showCompleted ? null : false,
           ),
         },
       ),
@@ -36,9 +38,7 @@ class TaskOverduePage extends StatelessWidget {
 }
 
 class _TaskOverdueListPage extends StatelessWidget {
-  const _TaskOverdueListPage({this.showCompleted = true});
-
-  final bool showCompleted;
+  const _TaskOverdueListPage();
 
   @override
   Widget build(BuildContext context) {
@@ -64,21 +64,21 @@ class _TaskOverdueListPage extends StatelessWidget {
   Widget _buildTaskList(BuildContext context, {TagEntity? tag}) {
     return BlocProvider(
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
-      create: (context) => TaskListBloc(
-        tasksRepository: context.read(),
-        notesRepository: context.read(),
-        tag: tag,
-        mode: TaskListMode.overdue,
-      )..add(TaskListRequested(tagId: tag?.id, isCompleted: showCompleted)),
+      create: (context) =>
+          TaskListBloc(
+            tasksRepository: context.read(),
+            notesRepository: context.read(),
+            tag: tag,
+            mode: TaskListMode.overdue,
+          )..add(
+            TaskListRequested(tagId: tag?.id),
+          ),
       child: BlocListener<RootTaskBloc, RootTaskState>(
         listenWhen: (previous, current) =>
             previous.showCompleted != current.showCompleted,
         listener: (context, state) {
           context.read<TaskListBloc>().add(
-            TaskListRequested(
-              tagId: tag?.id,
-              isCompleted: state.showCompleted,
-            ),
+            TaskListRequested(tagId: tag?.id),
           );
         },
         child: BlocBuilder<TaskListBloc, TaskListState>(
@@ -88,71 +88,5 @@ class _TaskOverdueListPage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _TaskOverduePriorityPage extends StatelessWidget {
-  const _TaskOverduePriorityPage({this.showCompleted = true});
-
-  final bool showCompleted;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final bloc = TaskPriorityBloc(
-          tasksRepository: context.read(),
-          notesRepository: context.read(),
-          mode: TaskListMode.overdue,
-        );
-        _onRequested(bloc: bloc, isCompleted: showCompleted);
-        return bloc;
-      },
-      child: BlocListener<RootTaskBloc, RootTaskState>(
-        listenWhen: (previous, current) =>
-            previous.showCompleted != current.showCompleted,
-        listener: (context, state) {
-          final bloc = context.read<TaskPriorityBloc>();
-          _onRequested(
-            bloc: bloc,
-            isCompleted: state.showCompleted ? null : false,
-          );
-        },
-        child: const TaskPriorityPage(
-          mode: TaskListMode.overdue,
-        ),
-      ),
-    );
-  }
-
-  void _onRequested({
-    required TaskPriorityBloc bloc,
-    bool? isCompleted,
-  }) {
-    bloc
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.high,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.medium,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.low,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.none,
-          isCompleted: isCompleted,
-        ),
-      );
   }
 }

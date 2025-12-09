@@ -313,4 +313,11 @@ class DatabaseNoteApi {
             .getSingleOrNull();
     return row?.createdAt;
   }
+
+  Future<void> deleteNoteById(String noteId) async {
+    await (db.update(db.notes)..where(
+          (n) => n.id.equals(noteId) & n.deletedAt.isNull(),
+        ))
+        .write(NotesCompanion(deletedAt: Value(Jiffy.now())));
+  }
 }

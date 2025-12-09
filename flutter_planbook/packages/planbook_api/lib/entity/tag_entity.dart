@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 const kTagSeparator = '/';

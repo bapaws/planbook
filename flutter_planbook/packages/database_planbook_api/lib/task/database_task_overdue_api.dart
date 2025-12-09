@@ -9,19 +9,16 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getOverdueTaskCount({required Jiffy date, bool? isCompleted}) {
+  /// 获取指定日期内的 overdue 任务数量
+  Stream<int> getOverdueTaskCount({required Jiffy date}) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
-    var exp =
+    final exp =
         ((db.tasks.dueAt.isNotNull() &
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
             (db.tasks.endAt.isNotNull() &
                 db.tasks.endAt.isSmallerThanValue(startOfDay))) &
-        db.tasks.deletedAt.isNull();
-    if (isCompleted != null) {
-      exp &= isCompleted
-          ? db.taskActivities.id.isNotNull()
-          : db.taskActivities.id.isNull();
-    }
+        db.tasks.deletedAt.isNull() &
+        db.taskActivities.id.isNull();
 
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -41,6 +38,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
     );
   }
 
+  /// 获取指定日期内的 overdue 任务（已完成任务不返回）
   Stream<List<TaskEntity>> getOverdueTaskEntities({
     required Jiffy date,
     TaskPriority? priority,

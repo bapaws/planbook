@@ -31,7 +31,13 @@ class _NoteTagPage extends StatelessWidget {
     return BlocSelector<NoteTagBloc, NoteTagState, List<NoteEntity>>(
       selector: (state) => state.notes,
       builder: (context, notes) {
-        return NoteListView(notes: notes, showDate: true);
+        return NoteListView(
+          notes: notes,
+          showDate: true,
+          onDeleted: (note) {
+            context.read<NoteTagBloc>().add(NoteTagDeleted(note: note));
+          },
+        );
       },
     );
   }

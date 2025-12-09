@@ -6,7 +6,6 @@ import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
-import 'package:flutter_planbook/task/priority/bloc/task_priority_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -26,8 +25,9 @@ class TaskInboxPage extends StatelessWidget {
           RootTaskViewType.list => _TaskInboxListPage(
             showCompleted: state.showCompleted,
           ),
-          RootTaskViewType.priority => _TaskInboxPriorityPage(
-            showCompleted: state.showCompleted,
+          RootTaskViewType.priority => TaskPriorityPage(
+            mode: TaskListMode.inbox,
+            isCompleted: state.showCompleted ? null : false,
           ),
         },
       ),
@@ -87,70 +87,5 @@ class _TaskInboxListPage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _TaskInboxPriorityPage extends StatelessWidget {
-  const _TaskInboxPriorityPage({this.showCompleted = true});
-
-  final bool showCompleted;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final bloc = TaskPriorityBloc(
-          tasksRepository: context.read(),
-          notesRepository: context.read(),
-        );
-        _onRequested(bloc: bloc, isCompleted: showCompleted ? null : false);
-        return bloc;
-      },
-      child: BlocListener<RootTaskBloc, RootTaskState>(
-        listenWhen: (previous, current) =>
-            previous.showCompleted != current.showCompleted,
-        listener: (context, state) {
-          final bloc = context.read<TaskPriorityBloc>();
-          _onRequested(
-            bloc: bloc,
-            isCompleted: state.showCompleted ? null : false,
-          );
-        },
-        child: const TaskPriorityPage(
-          mode: TaskListMode.today,
-        ),
-      ),
-    );
-  }
-
-  void _onRequested({
-    required TaskPriorityBloc bloc,
-    bool? isCompleted,
-  }) {
-    bloc
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.high,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.medium,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.low,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          priority: TaskPriority.none,
-          isCompleted: isCompleted,
-        ),
-      );
   }
 }

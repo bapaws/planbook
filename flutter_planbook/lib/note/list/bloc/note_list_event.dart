@@ -16,3 +16,12 @@ class NoteListRequested extends NoteListEvent {
   @override
   List<Object?> get props => [date, tagIds];
 }
+
+final class NoteListDeleted extends NoteListEvent {
+  const NoteListDeleted({required this.note});
+
+  final NoteEntity note;
+
+  @override
+  List<Object?> get props => [note];
+}

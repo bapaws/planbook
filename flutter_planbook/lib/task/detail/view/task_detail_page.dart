@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_planbook/note/list/view/note_list_tile.dart';
 import 'package:flutter_planbook/task/detail/bloc/task_detail_bloc.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_bottom_bar.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/data/page_status.dart';
@@ -240,17 +240,13 @@ class _TaskDetailPage extends StatelessWidget {
                             return SliverAnimatedSwitcher(
                               duration: Durations.medium1,
                               child: notes.isEmpty
-                                  ? SliverPadding(
-                                      padding: const EdgeInsets.symmetric(
+                                  ? const SliverPadding(
+                                      padding: EdgeInsets.symmetric(
                                         horizontal: 16,
                                         vertical: 32,
                                       ),
                                       sliver: SliverToBoxAdapter(
-                                        child: SvgPicture.asset(
-                                          'assets/images/Chill-Time.svg',
-                                          width: 280,
-                                          height: 280,
-                                        ),
+                                        child: AppEmptyTaskView(),
                                       ),
                                     )
                                   : SliverList.separated(

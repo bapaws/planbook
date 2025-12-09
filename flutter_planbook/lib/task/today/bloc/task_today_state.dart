@@ -1,4 +1,4 @@
-part of 'task_today_cubit.dart';
+part of 'task_today_bloc.dart';
 
 final class TaskTodayState extends Equatable {
   const TaskTodayState({

@@ -4,14 +4,18 @@ import 'package:flutter_planbook/app/app_router.dart'
     show AutoRouterX, NoteNewRoute, TaskDetailRoute;
 import 'package:flutter_planbook/app/view/app_network_image.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/app/view/gallery_photo_view_wrapper.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 class NoteListTile extends StatelessWidget {
   const NoteListTile({
     required this.note,
     this.showLinkButton = true,
     this.showDate = false,
+    this.onDeleted,
     super.key,
   });
 
@@ -19,89 +23,110 @@ class NoteListTile extends StatelessWidget {
   final bool showLinkButton;
   final bool showDate;
 
+  final VoidCallback? onDeleted;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
-      onPressed: () {
-        context.router.push(NoteNewRoute(initialNote: note));
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Row(
-              children: [
-                const Icon(
-                  FontAwesomeIcons.circle,
-                  size: 16,
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  showDate
-                      ? note.createdAt.toLocal().yMMMdjm
-                      : note.createdAt.toLocal().jm,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.primary,
+    return PullDownButton(
+      itemBuilder: (context) => [
+        PullDownMenuItem(
+          icon: FontAwesomeIcons.penToSquare,
+          title: context.l10n.edit,
+          onTap: () {
+            context.router.push(NoteNewRoute(initialNote: note));
+          },
+        ),
+        const PullDownMenuDivider.large(),
+        PullDownMenuItem(
+          icon: FontAwesomeIcons.trash,
+          title: context.l10n.delete,
+          isDestructive: true,
+          onTap: onDeleted,
+        ),
+      ],
+      buttonBuilder: (context, showMenu) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onLongPress: showMenu,
+        onTap: () {
+          context.router.push(NoteNewRoute(initialNote: note));
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  const Icon(
+                    FontAwesomeIcons.circle,
+                    size: 16,
                   ),
-                ),
-                const Spacer(),
-                if (note.task != null && showLinkButton)
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    sizeStyle: CupertinoButtonSize.small,
-                    onPressed: () {
-                      context.router.push(
-                        TaskDetailRoute(taskId: note.task!.id),
-                      );
-                    },
-                    child: const Icon(FontAwesomeIcons.link, size: 14),
+                  const SizedBox(width: 16),
+                  Text(
+                    showDate
+                        ? note.createdAt.toLocal().yMMMdjm
+                        : note.createdAt.toLocal().jm,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
-              ],
+                  const Spacer(),
+                  if (note.task != null && showLinkButton)
+                    CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      sizeStyle: CupertinoButtonSize.small,
+                      onPressed: () {
+                        context.router.push(
+                          TaskDetailRoute(taskId: note.task!.id),
+                        );
+                      },
+                      child: const Icon(FontAwesomeIcons.link, size: 14),
+                    ),
+                ],
+              ),
             ),
-          ),
-          IntrinsicHeight(
-            child: Row(
-              children: [
-                VerticalDivider(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    spacing: 12,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (note.title.isNotEmpty)
-                        Text(
-                          note.title,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                      if (note.content != null)
-                        Text(
-                          note.content ?? '',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      if (note.images.isNotEmpty)
-                        _buildImages(context, note.images),
-                      if (note.tags.isNotEmpty) _buildTags(context, note.tags),
-                    ],
+            IntrinsicHeight(
+              child: Row(
+                children: [
+                  VerticalDivider(
+                    color: theme.colorScheme.surfaceContainerHighest,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      spacing: 12,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (note.title.isNotEmpty)
+                          Text(
+                            note.title,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurface,
+                            ),
+                          ),
+                        if (note.content != null)
+                          Text(
+                            note.content ?? '',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        if (note.images.isNotEmpty)
+                          _buildImages(context, note.images),
+                        if (note.tags.isNotEmpty)
+                          _buildTags(context, note.tags),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -141,10 +166,19 @@ class NoteListTile extends StatelessWidget {
                           borderRadius: BorderRadius.circular(
                             8,
                           ),
-                          child: AppNetworkImage(
-                            url: images[row * crossAxisCount + col],
-                            width: imageSize,
-                            height: imageSize,
+                          child: GestureDetector(
+                            onTap: () {
+                              showGalleryPhotoView(
+                                context,
+                                images,
+                                initialIndex: row * crossAxisCount + col,
+                              );
+                            },
+                            child: AppNetworkImage(
+                              url: images[row * crossAxisCount + col],
+                              width: imageSize,
+                              height: imageSize,
+                            ),
                           ),
                         ),
                       ),

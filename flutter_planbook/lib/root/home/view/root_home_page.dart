@@ -6,6 +6,9 @@ import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
+import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
+import 'package:planbook_api/entity/task_entity.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight + 8;
 
@@ -15,11 +18,35 @@ class RootHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      lazy: false,
-      create: (context) => RootHomeBloc(
-        tagsRepository: context.read(),
-      )..add(const RootHomeRequested()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          lazy: false,
+          create: (context) => RootHomeBloc(
+            tagsRepository: context.read(),
+          )..add(const RootHomeRequested()),
+        ),
+        BlocProvider(
+          create: (context) =>
+              RootTaskBloc(
+                  tasksRepository: context.read(),
+                )
+                ..add(
+                  const RootTaskTaskCountRequested(mode: TaskListMode.inbox),
+                )
+                ..add(
+                  const RootTaskTaskCountRequested(mode: TaskListMode.today),
+                )
+                ..add(
+                  const RootTaskTaskCountRequested(mode: TaskListMode.overdue),
+                ),
+        ),
+        BlocProvider(
+          create: (context) => TaskTodayBloc(
+            tasksRepository: context.read(),
+          )..add(const TaskTodayRequested()),
+        ),
+      ],
       child: BlocListener<RootHomeBloc, RootHomeState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
@@ -38,10 +65,10 @@ class _RootHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoTabsRouter(
-      routes: const [
+      routes: [
         RootTaskRoute(),
-        RootJournalRoute(),
-        RootNoteRoute(),
+        const RootJournalRoute(),
+        const RootNoteRoute(),
       ],
       builder: (context, child) {
         return Stack(

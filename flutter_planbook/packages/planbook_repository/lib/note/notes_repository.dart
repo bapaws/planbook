@@ -68,4 +68,8 @@ class NotesRepository {
   Future<Jiffy?> getStartDate() async {
     return _dbNoteApi.getStartDate();
   }
+
+  Future<void> deleteNoteById(String noteId) async {
+    return _dbNoteApi.deleteNoteById(noteId);
+  }
 }

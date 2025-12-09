@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
+import 'package:flutter_planbook/app/view/gallery_photo_view_wrapper.dart';
 import 'package:flutter_planbook/note/gallery/bloc/note_gallery_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:jiffy/jiffy.dart';
@@ -57,10 +58,19 @@ class _NoteGalleryPage extends StatelessWidget {
                           crossAxisSpacing: 2,
                         ),
                     itemCount: state.noteImages[key]!.length,
-                    itemBuilder: (context, index) => AppNetworkImage(
-                      url: state.noteImages[key]![index].image,
-                      width: 120,
-                      height: 120,
+                    itemBuilder: (context, index) => GestureDetector(
+                      onTap: () {
+                        showGalleryPhotoView(
+                          context,
+                          state.noteImages[key]!.map((e) => e.image).toList(),
+                          initialIndex: index,
+                        );
+                      },
+                      child: AppNetworkImage(
+                        url: state.noteImages[key]![index].image,
+                        width: 120,
+                        height: 120,
+                      ),
                     ),
                   ),
                 ],

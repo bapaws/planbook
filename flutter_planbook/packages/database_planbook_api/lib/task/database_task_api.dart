@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
 import 'package:drift/drift.dart';
@@ -44,12 +46,22 @@ class DatabaseTaskApi {
         }
       }
     }
+
+    if (task.recurrenceRule != null) {
+      unawaited(
+        preGenerateTaskOccurrences(
+          fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
+        ),
+      );
+    }
   }
 
   Future<void> update({
     required Task task,
     List<TagEntity>? tags,
   }) async {
+    final existingTask = await getTaskById(task.id);
+
     await (db.update(
       db.tasks,
     )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
@@ -98,6 +110,24 @@ class DatabaseTaskApi {
             );
       }
     }
+
+    if (existingTask == null) return;
+    final recurrenceChanged =
+        existingTask.recurrenceRule != task.recurrenceRule ||
+        existingTask.startAt != task.startAt ||
+        existingTask.endAt != task.endAt ||
+        existingTask.dueAt != task.dueAt;
+
+    if (!recurrenceChanged) return;
+    await (db.delete(db.taskOccurrences)..where(
+          (to) => to.taskId.equals(task.id),
+        ))
+        .go();
+    unawaited(
+      preGenerateTaskOccurrences(
+        fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
+      ),
+    );
   }
 
   Future<Task?> getTaskById(String taskId) async {
@@ -296,6 +326,7 @@ class DatabaseTaskApi {
       if (!tasks.containsKey(task.id)) {
         tasks[task.id] = TaskEntity(
           task: task,
+          occurrence: row.readTableOrNull(db.taskOccurrences),
           activity: row.readTableOrNull(db.taskActivities),
           tags: await tagApi.getTagEntitiesByTaskId(task.id),
         );

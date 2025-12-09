@@ -10,7 +10,7 @@ import 'package:flutter_planbook/root/task/view/root_task_drawer.dart';
 import 'package:flutter_planbook/task/inbox/view/task_inbox_page.dart';
 import 'package:flutter_planbook/task/overdue/view/task_overdue_page.dart';
 import 'package:flutter_planbook/task/tag/view/task_tag_page.dart';
-import 'package:flutter_planbook/task/today/cubit/task_today_cubit.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/today/view/task_today_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/planbook_api.dart';
@@ -19,38 +19,7 @@ import 'package:pull_down_button/pull_down_button.dart';
 
 @RoutePage()
 class RootTaskPage extends StatelessWidget {
-  const RootTaskPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) =>
-              RootTaskBloc(
-                  tasksRepository: context.read(),
-                )
-                ..add(
-                  const RootTaskTaskCountRequested(mode: TaskListMode.inbox),
-                )
-                ..add(
-                  const RootTaskTaskCountRequested(mode: TaskListMode.today),
-                )
-                ..add(
-                  const RootTaskTaskCountRequested(mode: TaskListMode.overdue),
-                ),
-        ),
-        BlocProvider(
-          create: (context) => TaskTodayCubit(),
-        ),
-      ],
-      child: _RootTaskPage(),
-    );
-  }
-}
-
-class _RootTaskPage extends StatelessWidget {
-  _RootTaskPage();
+  RootTaskPage({super.key});
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -75,17 +44,19 @@ class _RootTaskPage extends StatelessWidget {
           builder: (context, state) => AnimatedSwitcher(
             duration: Durations.medium1,
             child: switch (state.tab) {
-              TaskListMode.today => BlocBuilder<TaskTodayCubit, TaskTodayState>(
+              TaskListMode.today => BlocBuilder<TaskTodayBloc, TaskTodayState>(
                 builder: (context, state) {
                   return AppCalendarDateView(
                     date: state.date,
                     calendarFormat: state.calendarFormat,
                     onDateSelected: (date) {
-                      context.read<TaskTodayCubit>().onDateSelected(date);
+                      context.read<TaskTodayBloc>().add(
+                        TaskTodayDateSelected(date),
+                      );
                     },
                     onCalendarFormatChanged: (calendarFormat) {
-                      context.read<TaskTodayCubit>().onCalendarFormatChanged(
-                        calendarFormat,
+                      context.read<TaskTodayBloc>().add(
+                        TaskTodayCalendarFormatChanged(calendarFormat),
                       );
                     },
                   );
@@ -146,17 +117,19 @@ class _RootTaskPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const PullDownMenuDivider.large(),
-                PullDownMenuItem(
-                  icon: FontAwesomeIcons.solidCircleCheck,
-                  iconColor: theme.colorScheme.primary,
-                  title: bloc.state.showCompleted
-                      ? context.l10n.hideCompleted
-                      : context.l10n.showCompleted,
-                  onTap: () => context.read<RootTaskBloc>().add(
-                    const RootTaskShowCompletedChanged(),
+                if (bloc.state.tab != TaskListMode.overdue) ...[
+                  const PullDownMenuDivider.large(),
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.solidCircleCheck,
+                    iconColor: theme.colorScheme.primary,
+                    title: bloc.state.showCompleted
+                        ? context.l10n.hideCompleted
+                        : context.l10n.showCompleted,
+                    onTap: () => context.read<RootTaskBloc>().add(
+                      const RootTaskShowCompletedChanged(),
+                    ),
                   ),
-                ),
+                ],
               ];
             },
             buttonBuilder: (context, showMenu) => CupertinoButton(

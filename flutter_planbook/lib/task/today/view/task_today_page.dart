@@ -8,9 +8,8 @@ import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
-import 'package:flutter_planbook/task/priority/bloc/task_priority_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
-import 'package:flutter_planbook/task/today/cubit/task_today_cubit.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -20,13 +19,26 @@ class TaskTodayPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TaskTodayCubit, TaskTodayState>(
+    return BlocBuilder<TaskTodayBloc, TaskTodayState>(
       builder: (context, todayState) {
-        return AppCalendarView(
+        return AppCalendarView<TaskEntity>(
           date: todayState.date,
           calendarFormat: todayState.calendarFormat,
+          // eventLoader: (day) {
+          //   final date = Jiffy.parseFromDateTime(day);
+          //   final count = todayState.taskCounts[date.dateKey];
+          //   if (count == null) {
+          //     context.read<TaskTodayBloc>().add(
+          //       TaskTodayTaskCountRequested(date),
+          //     );
+          //     return [];
+          //   }
+          //   return [];
+          // },
           onDateSelected: (date) {
-            context.read<TaskTodayCubit>().onDateSelected(date);
+            context.read<TaskTodayBloc>().add(
+              TaskTodayDateSelected(date: date),
+            );
           },
           child: BlocBuilder<RootTaskBloc, RootTaskState>(
             buildWhen: (previous, current) =>
@@ -39,9 +51,10 @@ class TaskTodayPage extends StatelessWidget {
                   day: todayState.date,
                   showCompleted: rootTaskState.showCompleted,
                 ),
-                RootTaskViewType.priority => _TaskTodayPriorityPage(
-                  day: todayState.date,
-                  showCompleted: rootTaskState.showCompleted,
+                RootTaskViewType.priority => TaskPriorityPage(
+                  mode: TaskListMode.today,
+                  date: todayState.date,
+                  isCompleted: rootTaskState.showCompleted ? null : false,
                 ),
               },
             ),
@@ -92,7 +105,7 @@ class _TaskTodayListPage extends StatelessWidget {
             TaskListRequested(
               date: day,
               tagId: tag?.id,
-              isCompleted: showCompleted,
+              isCompleted: showCompleted ? null : false,
             ),
           ),
       child: MultiBlocListener(
@@ -101,17 +114,17 @@ class _TaskTodayListPage extends StatelessWidget {
             listenWhen: (previous, current) =>
                 previous.showCompleted != current.showCompleted,
             listener: (context, state) {
-              final date = context.read<TaskTodayCubit>().state.date;
+              final date = context.read<TaskTodayBloc>().state.date;
               context.read<TaskListBloc>().add(
                 TaskListRequested(
                   date: date,
                   tagId: tag?.id,
-                  isCompleted: state.showCompleted,
+                  isCompleted: state.showCompleted ? null : false,
                 ),
               );
             },
           ),
-          BlocListener<TaskTodayCubit, TaskTodayState>(
+          BlocListener<TaskTodayBloc, TaskTodayState>(
             listenWhen: (previous, current) => previous.date != current.date,
             listener: (context, state) {
               final showCompleted = context
@@ -122,7 +135,7 @@ class _TaskTodayListPage extends StatelessWidget {
                 TaskListRequested(
                   date: state.date,
                   tagId: tag?.id,
-                  isCompleted: showCompleted,
+                  isCompleted: showCompleted ? null : false,
                 ),
               );
             },
@@ -136,96 +149,5 @@ class _TaskTodayListPage extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class _TaskTodayPriorityPage extends StatelessWidget {
-  const _TaskTodayPriorityPage({this.day, this.showCompleted = true});
-
-  final Jiffy? day;
-  final bool showCompleted;
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final bloc = TaskPriorityBloc(
-          tasksRepository: context.read(),
-          notesRepository: context.read(),
-          mode: TaskListMode.today,
-        );
-        _onRequested(
-          bloc: bloc,
-          date: day,
-          isCompleted: showCompleted ? null : false,
-        );
-        return bloc;
-      },
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<TaskTodayCubit, TaskTodayState>(
-            listenWhen: (previous, current) => previous.date != current.date,
-            listener: (context, state) {
-              final bloc = context.read<TaskPriorityBloc>();
-              _onRequested(
-                bloc: bloc,
-                date: state.date,
-                isCompleted: showCompleted ? null : false,
-              );
-            },
-          ),
-          BlocListener<RootTaskBloc, RootTaskState>(
-            listenWhen: (previous, current) =>
-                previous.showCompleted != current.showCompleted,
-            listener: (context, state) {
-              final bloc = context.read<TaskPriorityBloc>();
-              _onRequested(
-                bloc: bloc,
-                isCompleted: state.showCompleted ? null : false,
-              );
-            },
-          ),
-        ],
-        child: const TaskPriorityPage(
-          mode: TaskListMode.today,
-        ),
-      ),
-    );
-  }
-
-  void _onRequested({
-    required TaskPriorityBloc bloc,
-    Jiffy? date,
-    bool? isCompleted,
-  }) {
-    bloc
-      ..add(
-        TaskPriorityRequested(
-          date: date,
-          priority: TaskPriority.high,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          date: date,
-          priority: TaskPriority.medium,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          date: date,
-          priority: TaskPriority.low,
-          isCompleted: isCompleted,
-        ),
-      )
-      ..add(
-        TaskPriorityRequested(
-          date: date,
-          priority: TaskPriority.none,
-          isCompleted: isCompleted,
-        ),
-      );
   }
 }

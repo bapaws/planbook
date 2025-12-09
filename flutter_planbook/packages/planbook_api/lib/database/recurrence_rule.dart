@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
 
 /// 重复结束条件（参照 EventKit 的 EKRecurrenceEnd）
@@ -382,6 +383,28 @@ class RecurrenceRule extends Equatable {
     weeksOfMonth,
     monthsOfYear,
   ];
+
+  RecurrenceRule copyWith({
+    RecurrenceFrequency? frequency,
+    int? interval,
+    ValueGetter<RecurrenceEnd?>? recurrenceEnd,
+    List<RecurrenceDayOfWeek>? daysOfWeek,
+    List<int>? daysOfMonth,
+    List<int>? weeksOfMonth,
+    List<int>? monthsOfYear,
+  }) {
+    return RecurrenceRule(
+      frequency: frequency ?? this.frequency,
+      interval: interval ?? this.interval,
+      recurrenceEnd: recurrenceEnd != null
+          ? recurrenceEnd()
+          : this.recurrenceEnd,
+      daysOfWeek: daysOfWeek ?? this.daysOfWeek,
+      daysOfMonth: daysOfMonth ?? this.daysOfMonth,
+      weeksOfMonth: weeksOfMonth ?? this.weeksOfMonth,
+      monthsOfYear: monthsOfYear ?? this.monthsOfYear,
+    );
+  }
 }
 
 /// RecurrenceRule 的 Drift 类型转换器

@@ -3,7 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
+import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight + 8;
 const double kRootBottomBarItemHeight = kToolbarHeight;
@@ -74,9 +77,6 @@ class RootHomeBottomBar extends StatelessWidget {
                   for (final tab in RootHomeTab.values)
                     GestureDetector(
                       behavior: HitTestBehavior.opaque,
-                      onDoubleTap: () {
-                        _onTabDoubleTapped(context, tab);
-                      },
                       onTap: () {
                         _onTabTapped(context, tab);
                       },
@@ -107,16 +107,7 @@ class RootHomeBottomBar extends StatelessWidget {
           onDoubleTap: () {},
           onTap: () {
             final activeTab = RootHomeTab.values[tabsRouter.activeIndex];
-            switch (activeTab) {
-              case RootHomeTab.task:
-                context.router.push(TaskNewRoute());
-              case RootHomeTab.journal:
-                context.read<RootHomeBloc>().add(
-                  const RootHomeDownloadJournalDayRequested(),
-                );
-              case RootHomeTab.note:
-                context.router.push(NoteNewRoute());
-            }
+            _onActionTapped(context, activeTab);
           },
           child: Container(
             width: kRootBottomBarItemHeight,
@@ -157,5 +148,25 @@ class RootHomeBottomBar extends StatelessWidget {
     // if (activeIndex != index) {
     //   return;
     // }
+  }
+
+  void _onActionTapped(BuildContext context, RootHomeTab tab) {
+    HapticFeedback.lightImpact();
+    switch (tab) {
+      case RootHomeTab.task:
+        final mode = context.read<RootTaskBloc>().state.tab;
+        final dueAt = switch (mode) {
+          TaskListMode.inbox => null,
+          TaskListMode.today => context.read<TaskTodayBloc>().state.date,
+          _ => Jiffy.now().startOf(Unit.day),
+        };
+        context.router.push(TaskNewRoute(dueAt: dueAt));
+      case RootHomeTab.journal:
+        context.read<RootHomeBloc>().add(
+          const RootHomeDownloadJournalDayRequested(),
+        );
+      case RootHomeTab.note:
+        context.router.push(NoteNewRoute());
+    }
   }
 }

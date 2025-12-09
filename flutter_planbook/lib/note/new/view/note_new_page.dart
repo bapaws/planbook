@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/note/new/cubit/note_new_cubit.dart';
 import 'package:flutter_planbook/note/new/view/note_new_view.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -19,6 +20,7 @@ class NoteNewPage extends StatelessWidget {
       lazy: false,
       create: (context) => NoteNewCubit(
         notesRepository: context.read(),
+        assetsRepository: context.read(),
         initialNote: initialNote,
         initialTask: initialTask,
       ),
@@ -29,21 +31,14 @@ class NoteNewPage extends StatelessWidget {
         listener: (context, state) {
           context.router.maybePop();
         },
-        child: Container(
+        child: AppPageScaffold(
           constraints: BoxConstraints(
             maxHeight:
                 MediaQuery.of(context).size.height -
                 MediaQuery.of(context).padding.vertical -
                 64,
           ),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerLowest,
-            image: const DecorationImage(
-              image: AssetImage('assets/images/bg_tile.png'),
-              repeat: ImageRepeat.repeat,
-            ),
-            borderRadius: BorderRadius.circular(16),
-          ),
+          borderRadius: BorderRadius.circular(16),
           clipBehavior: Clip.hardEdge,
           child: const NoteNewView(),
         ),

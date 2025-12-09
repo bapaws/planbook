@@ -7,11 +7,14 @@ class NoteListView extends StatelessWidget {
   const NoteListView({
     required this.notes,
     this.showDate = false,
+    this.onDeleted,
     super.key,
   });
 
   final List<NoteEntity> notes;
   final bool showDate;
+
+  final ValueChanged<NoteEntity>? onDeleted;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,11 @@ class NoteListView extends StatelessWidget {
       itemCount: notes.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
-        return NoteListTile(note: notes[index], showDate: showDate);
+        return NoteListTile(
+          note: notes[index],
+          showDate: showDate,
+          onDeleted: () => onDeleted?.call(notes[index]),
+        );
       },
     );
   }

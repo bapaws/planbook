@@ -1,5 +1,4 @@
 import 'package:bloc/bloc.dart';
-import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -11,13 +10,15 @@ class TaskPriorityBloc extends Bloc<TaskPriorityEvent, TaskPriorityState> {
   TaskPriorityBloc({
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
+    required this.priority,
     TaskListMode mode = TaskListMode.inbox,
     TagEntity? tag,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _mode = mode,
+
        super(TaskPriorityState(tag: tag)) {
-    on<TaskPriorityRequested>(_onRequested, transformer: concurrent());
+    on<TaskPriorityRequested>(_onRequested);
     on<TaskPriorityCompleted>(_onCompleted);
     on<TaskPriorityDeleted>(_onDeleted);
     on<TaskPriorityNoteCreated>(_onNoteCreated);
@@ -26,6 +27,8 @@ class TaskPriorityBloc extends Bloc<TaskPriorityEvent, TaskPriorityState> {
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
   final TaskListMode _mode;
+
+  final TaskPriority priority;
 
   Future<void> _onRequested(
     TaskPriorityRequested event,
@@ -37,14 +40,14 @@ class TaskPriorityBloc extends Bloc<TaskPriorityEvent, TaskPriorityState> {
       mode: _mode,
       day: date,
       tagId: event.tagId,
-      priority: event.priority,
+      priority: priority,
       isCompleted: event.isCompleted,
     );
     await emit.forEach(
       stream,
       onData: (tasks) => state.copyWith(
         status: PageStatus.success,
-        tasks: {...state.tasks, event.priority: tasks},
+        tasks: tasks,
       ),
     );
   }
@@ -53,7 +56,7 @@ class TaskPriorityBloc extends Bloc<TaskPriorityEvent, TaskPriorityState> {
     TaskPriorityCompleted event,
     Emitter<TaskPriorityState> emit,
   ) async {
-    await _tasksRepository.completeTaskById(event.task.id);
+    await _tasksRepository.completeTask(event.task);
     emit(state.copyWith(status: PageStatus.success));
     add(TaskPriorityNoteCreated(task: event.task));
   }

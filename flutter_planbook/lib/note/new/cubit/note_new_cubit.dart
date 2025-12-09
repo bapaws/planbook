@@ -9,14 +9,17 @@ part 'note_new_state.dart';
 class NoteNewCubit extends HydratedCubit<NoteNewState> {
   NoteNewCubit({
     required NotesRepository notesRepository,
+    required AssetsRepository assetsRepository,
     NoteEntity? initialNote,
     TaskEntity? initialTask,
   }) : _notesRepository = notesRepository,
+       _assetsRepository = assetsRepository,
        _initialTask = initialTask,
        _initialNote = initialNote,
        super(NoteNewState.fromData(note: initialNote, task: initialTask));
 
   final NotesRepository _notesRepository;
+  final AssetsRepository _assetsRepository;
   final TaskEntity? _initialTask;
   final NoteEntity? _initialNote;
 
@@ -49,7 +52,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
     emit(state.copyWith(content: content.trim()));
   }
 
-  void addImages(List<String> imagePaths) {
+  Future<void> addImages(List<String> imagePaths) async {
     emit(state.copyWith(images: [...state.images, ...imagePaths]));
   }
 
@@ -92,12 +95,40 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
     final tags = state.tags.map((tagEntity) => tagEntity.tag).toList();
 
     if (state.initialNote != null) {
+      final images = <String>[];
+      if (state.images.isNotEmpty) {
+        // 上传新的图片
+        for (final image in state.images) {
+          if (state.initialNote!.images.contains(image)) {
+            images.add(image);
+            continue;
+          }
+          final url = await _assetsRepository.uploadImage(
+            image,
+            ResBucket.noteImages,
+          );
+          images.add(url);
+        }
+        // 删除不在新 images 中的图片
+        final removedImages = <String>[];
+        for (final image in state.initialNote!.images) {
+          if (!images.contains(image)) {
+            removedImages.add(image);
+          }
+        }
+        if (removedImages.isNotEmpty) {
+          await _assetsRepository.removeImages(
+            removedImages,
+            ResBucket.noteImages,
+          );
+        }
+      }
       // 编辑模式：更新现有的 note
       final updatedNote = Note(
         id: state.initialNote!.id,
         title: state.title,
         content: state.content.isEmpty ? null : state.content,
-        images: state.images,
+        images: images,
         taskId: state.task?.id,
         createdAt: state.createdAt ?? state.initialNote!.createdAt,
         updatedAt: Jiffy.now(),
@@ -108,11 +139,23 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         tags: tags.isEmpty ? null : tags,
       );
     } else {
+      // 上传新的图片
+      final images = <String>[];
+      if (state.images.isNotEmpty) {
+        for (final image in state.images) {
+          final url = await _assetsRepository.uploadImage(
+            image,
+            ResBucket.noteImages,
+          );
+          images.add(url);
+        }
+      }
+
       // 新建模式：创建新的 note
       await _notesRepository.create(
         title: state.title,
         content: state.content.isEmpty ? null : state.content,
-        images: state.images.isEmpty ? null : state.images,
+        images: images.isEmpty ? null : images,
         tags: tags.isEmpty ? null : tags,
         taskId: state.task?.id,
         createdAt: state.createdAt,
@@ -120,5 +163,11 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
       await clear();
     }
     emit(const NoteNewState(status: PageStatus.success));
+  }
+
+  Future<void> onDelete() async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _notesRepository.deleteNoteById(state.initialNote!.id);
+    emit(const NoteNewState(status: PageStatus.dispose));
   }
 }

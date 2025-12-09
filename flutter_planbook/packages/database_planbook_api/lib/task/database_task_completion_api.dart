@@ -10,66 +10,9 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  /// 切换任务完成状态
-  ///
-  /// 任务未完成时创建 TaskActivity，任务已完成时软删除对应记录。
-  /// 同时根据子任务状态递归更新上级任务。
-  /// 切换任务完成状态
-  ///
-  /// 通过查询数据库检查当前任务是否完成，如果已完成则取消完成，如果未完成则完成
-  /// 同时根据子任务状态递归更新上级任务。
-  ///
-  /// 返回所有创建或标记删除的 taskActivities 对象
-  Future<List<TaskActivity>> completeTaskById(String taskId) async {
-    final task = await getTaskById(taskId);
-    if (task == null) return [];
-
-    final isRecurring = _isRecurringTask(task);
-    Jiffy? occurrenceAt;
-
-    if (isRecurring) {
-      final today = Jiffy.now().startOf(Unit.day);
-      final todayDateTime = today.toUtc().dateTime;
-
-      var occurrence =
-          await (db.select(db.taskOccurrences)
-                ..where(
-                  (to) =>
-                      to.taskId.equals(taskId) &
-                      to.deletedAt.isNull() &
-                      to.occurrenceAt.isBiggerOrEqualValue(todayDateTime),
-                )
-                ..orderBy([
-                  (to) => OrderingTerm(expression: to.occurrenceAt),
-                ])
-                ..limit(1))
-              .getSingleOrNull();
-
-      occurrence ??=
-          await (db.select(db.taskOccurrences)
-                ..where(
-                  (to) =>
-                      to.taskId.equals(taskId) &
-                      to.deletedAt.isNull() &
-                      to.occurrenceAt.isSmallerOrEqualValue(todayDateTime),
-                )
-                ..orderBy([
-                  (to) => OrderingTerm(
-                    expression: to.occurrenceAt,
-                    mode: OrderingMode.desc,
-                  ),
-                ])
-                ..limit(1))
-              .getSingleOrNull();
-
-      if (occurrence == null) {
-        return [];
-      }
-
-      occurrenceAt = occurrence.occurrenceAt;
-    } else {
-      occurrenceAt = null;
-    }
+  Future<List<TaskActivity>> completeTask(TaskEntity entity) async {
+    final task = entity.task;
+    final occurrenceAt = entity.occurrence?.occurrenceAt;
 
     final existingActivity = await getTaskActivityForTask(
       task,

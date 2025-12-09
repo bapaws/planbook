@@ -8,16 +8,20 @@ import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:flutter_planbook/task/new/view/task_new_bottom_bar.dart';
 import 'package:flutter_planbook/task/new/view/task_new_date_picker.dart';
 import 'package:flutter_planbook/task/new/view/task_new_date_view.dart';
+import 'package:flutter_planbook/task/new/view/task_new_duration_bottom_view.dart';
 import 'package:flutter_planbook/task/new/view/task_new_priority_bottom_view.dart';
+import 'package:flutter_planbook/task/new/view/task_new_repeat_view.dart';
 import 'package:flutter_planbook/task/new/view/task_new_tag_bottom_view.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class TaskNewPage extends StatelessWidget {
-  const TaskNewPage({this.initialTask, super.key});
+  const TaskNewPage({this.initialTask, this.dueAt, super.key});
 
   final TaskEntity? initialTask;
+  final Jiffy? dueAt;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +31,7 @@ class TaskNewPage extends StatelessWidget {
           create: (context) => TaskNewCubit(
             tasksRepository: context.read(),
             initialTask: initialTask,
+            dueAt: dueAt,
           ),
         ),
         BlocProvider(
@@ -106,13 +111,11 @@ class _TaskNewPageState extends State<_TaskNewPage> {
       }
     });
 
-    // _titleFocusNode.addListener(() {
-    //   if (_titleFocusNode.hasFocus) {
-    //     context.read<TaskNewCubit>().onFocusChanged(TaskNewFocus.title);
-    //   } else {
-    //     context.read<TaskNewCubit>().onFocusChanged(TaskNewFocus.none);
-    //   }
-    // });
+    _titleFocusNode.addListener(() {
+      if (_titleFocusNode.hasFocus) {
+        context.read<TaskNewCubit>().onFocusChanged(TaskNewFocus.title);
+      }
+    });
   }
 
   @override
@@ -130,18 +133,11 @@ class _TaskNewPageState extends State<_TaskNewPage> {
           context.read<TaskNewCubit>().onTitleChanged(state.initialTask!.title);
         }
       },
-      child: Container(
+      child: AppPageScaffold(
         constraints: BoxConstraints(
           maxHeight: maxHeight,
         ),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerLowest,
-          image: const DecorationImage(
-            image: AssetImage('assets/images/bg_tile.png'),
-            repeat: ImageRepeat.repeat,
-          ),
-          borderRadius: BorderRadius.circular(16),
-        ),
+        borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.hardEdge,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -184,18 +180,23 @@ class _TaskNewPageState extends State<_TaskNewPage> {
             ),
             const SizedBox(height: 12),
             TaskNewBottomBar(focusNode: _titleFocusNode),
-            AnimatedSwitcher(
-              duration: Durations.medium1,
-              switchInCurve: Curves.easeInOut,
-              switchOutCurve: Curves.easeInOut,
-              transitionBuilder: (child, animation) => SizeTransition(
-                sizeFactor: animation,
-                child: FadeTransition(
-                  opacity: animation,
-                  child: child,
-                ),
-              ),
-              child: _buildBottomView(),
+            BlocSelector<TaskNewCubit, TaskNewState, TaskNewFocus>(
+              selector: (state) => state.focus,
+              builder: (context, focus) {
+                return AnimatedSwitcher(
+                  duration: Durations.medium1,
+                  switchInCurve: Curves.easeInOut,
+                  switchOutCurve: Curves.easeInOut,
+                  transitionBuilder: (child, animation) => SizeTransition(
+                    sizeFactor: animation,
+                    child: FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    ),
+                  ),
+                  child: _buildBottomView(focus),
+                );
+              },
             ),
           ],
         ),
@@ -203,43 +204,35 @@ class _TaskNewPageState extends State<_TaskNewPage> {
     );
   }
 
-  Widget _buildBottomView() {
-    // if (_titleFocusNode.hasFocus) {
-    //   return SizedBox(
-    //     height: MediaQuery.of(context).viewInsets.bottom,
-    //   );
-    // }
-    // return TaskNewPriorityBottomView(
-    //   selectedPriority: context.read<TaskNewCubit>().state.priority,
-    //   onPriorityChanged: (priority) {
-    //     context.read<TaskNewCubit>().onPriorityChanged(priority);
-    //   },
-    // );
-    return BlocSelector<TaskNewCubit, TaskNewState, TaskNewFocus>(
-      selector: (state) => state.focus,
-      builder: (context, focus) {
-        return switch (focus) {
-          TaskNewFocus.none => const SizedBox.shrink(),
-          TaskNewFocus.title => SizedBox(
-            height: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          TaskNewFocus.priority => TaskNewPriorityBottomView(
-            selectedPriority: context.read<TaskNewCubit>().state.priority,
-            onPriorityChanged: (priority) {
-              context.read<TaskNewCubit>().onPriorityChanged(priority);
-            },
-          ),
-          TaskNewFocus.date => TaskNewDatePicker(
-            date: context.read<TaskNewCubit>().state.date,
-            onDateChanged: (date) {
-              _onDateChanged(context, date);
-            },
-          ),
-          TaskNewFocus.time => const SizedBox.shrink(),
-          TaskNewFocus.tags => const TaskNewTagBottomView(),
-        };
-      },
-    );
+  Widget _buildBottomView(TaskNewFocus focus) {
+    return switch (focus) {
+      TaskNewFocus.none => SizedBox(
+        height: MediaQuery.of(context).padding.bottom,
+      ),
+      TaskNewFocus.title => SizedBox(
+        height: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      TaskNewFocus.priority => TaskNewPriorityBottomView(
+        selectedPriority: context.read<TaskNewCubit>().state.priority,
+        onPriorityChanged: (priority) {
+          context.read<TaskNewCubit>().onPriorityChanged(priority);
+        },
+      ),
+      TaskNewFocus.date => TaskNewDatePicker(
+        date: context.read<TaskNewCubit>().state.date,
+        onDateChanged: (date) {
+          _onDateChanged(context, date);
+        },
+      ),
+      TaskNewFocus.time => const TaskNewDurationBottomView(),
+      TaskNewFocus.tags => const TaskNewTagBottomView(),
+      TaskNewFocus.recurrence => TaskNewRecurrenceRuleView(
+        initialRecurrenceRule: context
+            .read<TaskNewCubit>()
+            .state
+            .recurrenceRule,
+      ),
+    };
   }
 
   void _onDateChanged(BuildContext context, Jiffy? date) {

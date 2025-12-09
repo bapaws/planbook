@@ -4,7 +4,7 @@ final class TaskPriorityState extends Equatable {
   const TaskPriorityState({
     this.date,
     this.status = PageStatus.initial,
-    this.tasks = const {},
+    this.tasks = const [],
     this.tag,
     this.currentTaskNote,
   });
@@ -13,7 +13,7 @@ final class TaskPriorityState extends Equatable {
 
   final Jiffy? date;
   final TagEntity? tag;
-  final Map<TaskPriority, List<TaskEntity>> tasks;
+  final List<TaskEntity> tasks;
 
   final NoteEntity? currentTaskNote;
 
@@ -24,7 +24,7 @@ final class TaskPriorityState extends Equatable {
     PageStatus? status,
     Jiffy? date,
     TagEntity? tag,
-    Map<TaskPriority, List<TaskEntity>>? tasks,
+    List<TaskEntity>? tasks,
     NoteEntity? currentTaskNote,
   }) {
     return TaskPriorityState(
