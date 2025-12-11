@@ -1,0 +1,26 @@
+name: supabase_planbook_api
+description: A Very Good Project created by Very Good CLI.
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: ^3.8.0
+  flutter: ^3.32.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  jiffy: ^6.3.1
+  planbook_api:
+    path: ../planbook_api
+  planbook_core:
+    path: ../planbook_core
+  shared_preferences: ^2.5.2
+  supabase_flutter: ^2.9.1
+  uuid: ^4.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  very_good_analysis: ^9.0.0

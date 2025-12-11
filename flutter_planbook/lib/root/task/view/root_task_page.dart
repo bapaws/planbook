@@ -51,12 +51,14 @@ class RootTaskPage extends StatelessWidget {
                     calendarFormat: state.calendarFormat,
                     onDateSelected: (date) {
                       context.read<TaskTodayBloc>().add(
-                        TaskTodayDateSelected(date),
+                        TaskTodayDateSelected(date: date),
                       );
                     },
                     onCalendarFormatChanged: (calendarFormat) {
                       context.read<TaskTodayBloc>().add(
-                        TaskTodayCalendarFormatChanged(calendarFormat),
+                        TaskTodayCalendarFormatChanged(
+                          calendarFormat: calendarFormat,
+                        ),
                       );
                     },
                   );

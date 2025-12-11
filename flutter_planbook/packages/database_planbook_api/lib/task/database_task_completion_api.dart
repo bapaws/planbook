@@ -96,21 +96,15 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     required Jiffy? occurrenceAt,
     bool cascade = true,
   }) async {
-    await (db.update(db.taskActivities)..where(
-          (ta) => ta.id.equals(activity.id),
-        ))
-        .write(
-          TaskActivitiesCompanion(
-            deletedAt: Value(Jiffy.now()),
-          ),
-        );
-
-    // 重新查询更新后的 activity（包含 deletedAt）
-    final updatedActivity = await (db.select(
-      db.taskActivities,
-    )..where((ta) => ta.id.equals(activity.id))).getSingle();
-
-    final activities = [updatedActivity];
+    final activities =
+        await (db.update(db.taskActivities)..where(
+              (ta) => ta.id.equals(activity.id),
+            ))
+            .writeReturning(
+              TaskActivitiesCompanion(
+                deletedAt: Value(Jiffy.now()),
+              ),
+            );
 
     if (cascade) {
       final parentActivities = await _maybeUncompleteParentTask(

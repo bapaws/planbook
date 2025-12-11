@@ -13,14 +13,12 @@ const kUserId = '__supabase_user_id__';
 class UsersRepository {
   /// {@macro planbook_repository}
   UsersRepository._({
-    required SupabaseClient? supabase,
     required api.AppDatabase db,
     required SharedPreferences sp,
-  }) : _supabase = supabase,
-       _db = db,
+  }) : _db = db,
        _sp = sp;
 
-  final SupabaseClient? _supabase;
+  SupabaseClient? get _supabase => AppSupabase.client;
   final api.AppDatabase _db;
   final SharedPreferences _sp;
 
@@ -41,8 +39,8 @@ class UsersRepository {
   }
 
   /// Receive a notification every time an auth event happens.
-  Stream<AuthState> get onAuthStateChange =>
-      _supabase?.auth.onAuthStateChange ?? const Stream.empty();
+  Stream<AuthState?> get onAuthStateChange =>
+      AppSupabase.instance.onAuthStateChange;
 
   late final _onUserProfileChangeController =
       BehaviorSubject<UserProfileEntity?>();
@@ -52,15 +50,24 @@ class UsersRepository {
       ? _onUserProfileChangeController.value
       : null;
 
+  Stream<UserEntity?> get onUserEntityChange {
+    return CombineLatestStream.combine2(
+      onAuthStateChange.map(
+        (authState) => authState?.session?.user,
+      ),
+      _onUserProfileChangeController.stream,
+      (User? user, UserProfileEntity? profile) =>
+          user == null ? null : UserEntity(user: user, profile: profile),
+    );
+  }
+
   static const kUserProfile = '__user_profile_cache__';
 
   static Future<void> initialize({
-    required SupabaseClient? supabase,
     required api.AppDatabase db,
     required SharedPreferences sp,
   }) async {
     _instance = UsersRepository._(
-      supabase: supabase,
       db: db,
       sp: sp,
     );
@@ -74,13 +81,13 @@ class UsersRepository {
   }) async {
     late final AuthResponse? response;
     if (EmailValidator.validate(name)) {
-      response = await _supabase?.auth.signUp(
+      response = await AppSupabase.instance.signUp(
         email: name,
         password: password,
         data: data,
       );
     } else {
-      response = await _supabase?.auth.signUp(
+      response = await AppSupabase.instance.signUp(
         phone: name,
         password: password,
         data: data,
@@ -101,7 +108,7 @@ class UsersRepository {
     String? phone,
     String? captchaToken,
   }) async {
-    final response = await _supabase?.auth.signInWithPassword(
+    final response = await AppSupabase.instance.signInWithPassword(
       email: email,
       phone: phone,
       password: password,
@@ -125,7 +132,7 @@ class UsersRepository {
     Map<String, dynamic>? data,
     String? captchaToken,
   }) async {
-    await _supabase?.auth.signInWithOtp(
+    await AppSupabase.instance.signInWithOtp(
       email: email,
       phone: phone,
       emailRedirectTo: emailRedirectTo,
@@ -154,7 +161,7 @@ class UsersRepository {
     String? captchaToken,
     String? tokenHash,
   }) async {
-    final response = await _supabase?.auth.verifyOTP(
+    final response = await AppSupabase.instance.verifyOTP(
       type: type,
       email: email,
       phone: phone,
@@ -272,17 +279,20 @@ class UsersRepository {
   }
 
   Future<UserProfileEntity?> _getUserProfileFromSupabase() async {
-    final response = await _supabase
+    var response = await _supabase
         ?.from('user_profiles')
         .select()
         .eq('id', user!.id)
         .maybeSingle();
     if (response == null) {
-      final entity = UserProfileEntity(
-        id: user!.id,
-      );
-      _onUserProfileChangeController.add(entity);
-      return entity;
+      response = await _supabase
+          ?.from('user_profiles')
+          .insert({
+            'id': user!.id,
+          })
+          .select()
+          .maybeSingle();
+      if (response == null) return null;
     }
     final entity = UserProfileEntity.fromMap(response);
     unawaited(_sp.setString(kUserProfile, entity.toJson()));
@@ -292,6 +302,7 @@ class UsersRepository {
 
   Future<void> updateUserProfile({
     DateTime? lastLaunchAppAt,
+    int? launchCount,
     String? username,
     String? avatar,
     UserGender? gender,
@@ -315,6 +326,7 @@ class UsersRepository {
         .update({
           if (lastLaunchAppAt != null)
             'last_launch_app_at': lastLaunchAppAt.toUtc().toIso8601String(),
+          if (launchCount != null) 'launch_count': launchCount,
           if (username != null) 'username': username,
           if (avatar != null) 'avatar': avatar,
           if (gender != null) 'gender': gender.name,

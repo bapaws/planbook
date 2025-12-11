@@ -20,6 +20,7 @@ dependencies:
   path_provider_foundation: ^2.4.1
   planbook_core:
     path: ../planbook_core
+  rxdart: ^0.28.0
   sqlite3: ^2.7.6
   sqlite3_flutter_libs: ^0.5.34
   supabase_flutter: ^2.9.1

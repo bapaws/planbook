@@ -24,9 +24,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     required SettingsRepository settingsRepository,
     required TagsRepository tagsRepository,
     required TasksRepository tasksRepository,
+    required UsersRepository usersRepository,
   }) : _settingsRepository = settingsRepository,
        _tagsRepository = tagsRepository,
        _tasksRepository = tasksRepository,
+       _usersRepository = usersRepository,
        super(
          const AppState(
            darkMode: DarkMode.light,
@@ -36,6 +38,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
        ) {
     on<AppInitialized>(_onInitialized);
     on<AppLaunched>(_onLaunched);
+    on<AppUserRequested>(_onUserProfileRequested);
     on<AppDarkModeChanged>(_onDarkModeChanged);
     on<AppSeedColorChanged>(_onSeedColorChanged);
   }
@@ -43,6 +46,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final SettingsRepository _settingsRepository;
   final TagsRepository _tagsRepository;
   final TasksRepository _tasksRepository;
+
+  final UsersRepository _usersRepository;
 
   Future<void> _onInitialized(
     AppInitialized event,
@@ -140,6 +145,22 @@ class AppBloc extends Bloc<AppEvent, AppState> {
         await _tasksRepository.create(task: task, tags: tags.nonNulls.toList());
       }
     }
+
+    final now = DateTime.now().toUtc();
+    await _usersRepository.updateUserProfile(
+      lastLaunchAppAt: now,
+      launchCount: launchCount,
+    );
+  }
+
+  Future<void> _onUserProfileRequested(
+    AppUserRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    await emit.forEach(
+      _usersRepository.onUserEntityChange,
+      onData: (user) => state.copyWith(user: user),
+    );
   }
 
   void _onDarkModeChanged(

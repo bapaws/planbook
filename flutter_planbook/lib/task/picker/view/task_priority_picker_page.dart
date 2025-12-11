@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/database/task_priority.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
 @RoutePage()
@@ -20,7 +21,8 @@ class TaskPriorityPickerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AppPageScaffold(
+      borderRadius: BorderRadius.circular(16),
       constraints: BoxConstraints(
         maxHeight:
             kToolbarHeight +
@@ -28,21 +30,12 @@ class TaskPriorityPickerPage extends StatelessWidget {
             MediaQuery.of(context).padding.bottom +
             24,
       ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        image: const DecorationImage(
-          image: AssetImage('assets/images/bg_tile.png'),
-          repeat: ImageRepeat.repeat,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
       clipBehavior: Clip.hardEdge,
       child: Column(
         children: [
           AppBar(
             forceMaterialTransparency: true,
-            title: Text(context.l10n.priority),
-            leading: const NavigationBarBackButton(),
+            leading: const NavigationBarCloseButton(),
           ),
           for (final priority in TaskPriority.values.reversed) ...[
             _buildPriorityItem(context, priority),

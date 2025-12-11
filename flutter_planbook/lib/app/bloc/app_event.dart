@@ -20,6 +20,10 @@ final class AppLaunched extends AppEvent {
   List<Object?> get props => [l10n];
 }
 
+final class AppUserRequested extends AppEvent {
+  const AppUserRequested();
+}
+
 final class AppDarkModeChanged extends AppEvent {
   const AppDarkModeChanged({
     this.darkMode,

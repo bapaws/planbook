@@ -185,7 +185,56 @@ class UserEntity extends Equatable {
   UserGender? get gender => profile?.gender;
 
   int get joinDays => DateTime.now().difference(createdAt).inDays;
-  String get nickname => name ?? 'me';
+
+  /// 脱敏手机号：显示前3位和后4位，中间用*代替
+  /// 例如：138****1234
+  String _maskPhone(String phone) {
+    if (phone.length <= 7) {
+      // 如果手机号长度不足，直接返回
+      return phone;
+    }
+    if (phone.length == 11) {
+      // 标准11位手机号：显示前3位和后4位
+      return '${phone.substring(0, 3)}****${phone.substring(7)}';
+    } else {
+      // 其他长度的手机号：显示前3位和后3位
+      final visibleEnd = phone.length > 6 ? 3 : phone.length - 3;
+      final maskLength = phone.length - 3 - visibleEnd;
+      return '${phone.substring(0, 3)}${'*' * maskLength}${phone.substring(phone.length - visibleEnd)}';
+    }
+  }
+
+  /// 脱敏邮箱：显示@前面的前2-3位和@后面的完整域名
+  /// 例如：ab***@example.com 或 abc***@example.com
+  String _maskEmail(String email) {
+    final atIndex = email.indexOf('@');
+    if (atIndex == -1) {
+      // 如果没有@符号，直接返回
+      return email;
+    }
+    final localPart = email.substring(0, atIndex);
+    final domain = email.substring(atIndex);
+
+    if (localPart.length <= 2) {
+      // 如果@前面只有1-2个字符，显示1个字符
+      return '${localPart[0]}***$domain';
+    } else if (localPart.length <= 4) {
+      // 如果@前面有3-4个字符，显示前2个字符
+      return '${localPart.substring(0, 2)}***$domain';
+    } else {
+      // 如果@前面有5个或更多字符，显示前3个字符
+      return '${localPart.substring(0, 3)}***$domain';
+    }
+  }
+
+  String? get displayName {
+    if (profile?.username != null && profile!.username!.isNotEmpty) {
+      return profile!.username!;
+    }
+    if (phone != null && phone!.isNotEmpty) return _maskPhone(phone!);
+    if (email != null && email!.isNotEmpty) return _maskEmail(email!);
+    return 'me';
+  }
 
   UserEntity copyWith({
     supabase.User? user,

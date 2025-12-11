@@ -54,3 +54,39 @@ final class TaskDetailTagsChanged extends TaskDetailEvent {
   @override
   List<Object?> get props => [tags];
 }
+
+final class TaskDetailRecurrenceRuleChanged extends TaskDetailEvent {
+  const TaskDetailRecurrenceRuleChanged({this.recurrenceRule});
+
+  final RecurrenceRule? recurrenceRule;
+
+  @override
+  List<Object?> get props => [recurrenceRule];
+}
+
+final class TaskDetailIsAllDayChanged extends TaskDetailEvent {
+  const TaskDetailIsAllDayChanged({required this.isAllDay});
+
+  final bool isAllDay;
+
+  @override
+  List<Object?> get props => [isAllDay];
+}
+
+final class TaskDetailStartAtChanged extends TaskDetailEvent {
+  const TaskDetailStartAtChanged({required this.startAt});
+
+  final Jiffy? startAt;
+
+  @override
+  List<Object?> get props => [startAt];
+}
+
+final class TaskDetailEndAtChanged extends TaskDetailEvent {
+  const TaskDetailEndAtChanged({required this.endAt});
+
+  final Jiffy? endAt;
+
+  @override
+  List<Object?> get props => [endAt];
+}

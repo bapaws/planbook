@@ -7,6 +7,7 @@ enum TaskListMode { today, inbox, overdue, tag }
 class TaskEntity extends Equatable {
   const TaskEntity({
     required this.task,
+    this.taskTags = const [],
     this.tags = const [],
     this.occurrence,
     this.activity,
@@ -14,6 +15,7 @@ class TaskEntity extends Equatable {
   });
 
   final Task task;
+  final List<TaskTag> taskTags;
   final List<TagEntity> tags;
   final TaskOccurrence? occurrence;
   final TaskActivity? activity;
@@ -36,16 +38,18 @@ class TaskEntity extends Equatable {
   bool get isCompleted => activity?.completedAt != null;
 
   @override
-  List<Object?> get props => [task, tags, activity, children];
+  List<Object?> get props => [task, taskTags, tags, activity, children];
 
   TaskEntity copyWith({
     Task? task,
+    List<TaskTag>? taskTags,
     List<TagEntity>? tags,
     TaskActivity? activity,
     List<TaskEntity>? children,
   }) {
     return TaskEntity(
       task: task ?? this.task,
+      taskTags: taskTags ?? this.taskTags,
       tags: tags ?? this.tags,
       activity: activity ?? this.activity,
       children: children ?? this.children,

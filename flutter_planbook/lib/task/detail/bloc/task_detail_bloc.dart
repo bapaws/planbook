@@ -23,6 +23,10 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailDueAtChanged>(_onDueAtChanged);
     on<TaskDetailPriorityChanged>(_onPriorityChanged);
     on<TaskDetailTagsChanged>(_onTagsChanged);
+    on<TaskDetailRecurrenceRuleChanged>(_onRecurrenceRuleChanged);
+    on<TaskDetailIsAllDayChanged>(_onIsAllDayChanged);
+    on<TaskDetailStartAtChanged>(_onStartAtChanged);
+    on<TaskDetailEndAtChanged>(_onEndAtChanged);
   }
 
   final String _taskId;
@@ -125,5 +129,53 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         task: state.task?.copyWith(tags: event.tags),
       ),
     );
+  }
+
+  Future<void> _onRecurrenceRuleChanged(
+    TaskDetailRecurrenceRuleChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final task = state.task?.task;
+    if (task == null) return;
+    final updatedTask = task.copyWith(
+      recurrenceRule: Value(event.recurrenceRule),
+    );
+    await _tasksRepository.update(task: updatedTask);
+    emit(
+      state.copyWith(
+        status: PageStatus.success,
+        task: state.task?.copyWith(task: updatedTask),
+      ),
+    );
+  }
+
+  Future<void> _onIsAllDayChanged(
+    TaskDetailIsAllDayChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final task = state.task?.task;
+    if (task == null) return;
+    final updatedTask = task.copyWith(isAllDay: event.isAllDay);
+    await _tasksRepository.update(task: updatedTask);
+  }
+
+  Future<void> _onStartAtChanged(
+    TaskDetailStartAtChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final task = state.task?.task;
+    if (task == null) return;
+    final updatedTask = task.copyWith(startAt: Value(event.startAt));
+    await _tasksRepository.update(task: updatedTask);
+  }
+
+  Future<void> _onEndAtChanged(
+    TaskDetailEndAtChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final task = state.task?.task;
+    if (task == null) return;
+    final updatedTask = task.copyWith(endAt: Value(event.endAt));
+    await _tasksRepository.update(task: updatedTask);
   }
 }

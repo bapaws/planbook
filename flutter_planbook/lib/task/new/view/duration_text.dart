@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 
+enum DurationTextMode {
+  short,
+  full,
+}
+
 class DurationText extends StatelessWidget {
-  const DurationText({required this.duration, this.style, super.key});
+  const DurationText({
+    required this.duration,
+    this.style,
+    this.mode = DurationTextMode.short,
+    this.separator = '',
+    super.key,
+  });
 
   final Duration duration;
   final TextStyle? style;
+  final DurationTextMode mode;
+  final String separator;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -34,16 +48,26 @@ class DurationText extends StatelessWidget {
     final parts = <String>[];
 
     if (hours > 0) {
-      parts.add(l10n.durationHours(hours));
+      parts.add(
+        mode == DurationTextMode.full ? l10n.durationHours(hours) : '${hours}h',
+      );
     }
     if (minutes > 0) {
-      parts.add(l10n.durationMinutes(minutes));
+      parts.add(
+        mode == DurationTextMode.full
+            ? l10n.durationMinutes(minutes)
+            : '${minutes}m',
+      );
     }
     // 只有在没有小时的情况下才显示秒
     if (seconds > 0 && hours == 0) {
-      parts.add(l10n.durationSeconds(seconds));
+      parts.add(
+        mode == DurationTextMode.full
+            ? l10n.durationSeconds(seconds)
+            : '${seconds}s',
+      );
     }
 
-    return parts.join(' ');
+    return parts.join(separator);
   }
 }

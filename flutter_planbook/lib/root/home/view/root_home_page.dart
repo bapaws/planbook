@@ -42,9 +42,7 @@ class RootHomePage extends StatelessWidget {
                 ),
         ),
         BlocProvider(
-          create: (context) => TaskTodayBloc(
-            tasksRepository: context.read(),
-          )..add(const TaskTodayRequested()),
+          create: (context) => TaskTodayBloc(),
         ),
       ],
       child: BlocListener<RootHomeBloc, RootHomeState>(

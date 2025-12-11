@@ -1,20 +1,41 @@
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/tag/supabase_tag_api.dart';
 
 class TagsRepository {
-  TagsRepository({required DatabaseTagApi tagApi}) : _tagApi = tagApi;
+  TagsRepository({
+    required SharedPreferences sp,
+    required DatabaseTagApi tagApi,
+  }) : _tagApi = tagApi,
+       _supabaseTagApi = SupabaseTagApi(sp: sp),
+       _db = tagApi.db;
 
   final DatabaseTagApi _tagApi;
+  final SupabaseTagApi _supabaseTagApi;
+  final AppDatabase _db;
 
-  Future<Stream<List<Tag>>> getTopLevelTags() async {
+  Stream<List<Tag>> getTopLevelTags() {
     return _tagApi.getTopLevelTags();
   }
 
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
   }) {
+    _syncTags();
     return _tagApi.getAllTags(notIncludeTagIds: notIncludeTagIds);
+  }
+
+  Future<void> _syncTags({
+    bool force = false,
+  }) async {
+    final tags = await _supabaseTagApi.getLatestTags(force: force);
+    await _db.transaction(() async {
+      for (final tag in tags) {
+        await _db.into(_db.tags).insertOnConflictUpdate(tag);
+      }
+    });
   }
 
   Future<TagEntity?> getTagEntityById(String id) async {

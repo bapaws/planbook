@@ -41,8 +41,7 @@ Future<void> bootstrap() async {
   Bloc.observer = const AppBlocObserver();
 
   await _initPurchases();
-
-  // await AppSupabase.initialize();
+  await AppSupabase.initialize();
 
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
@@ -64,12 +63,17 @@ Future<Widget> _initApp() async {
 
   final db = AppDatabase();
   final tagApi = DatabaseTagApi(db: db);
-  final tagsRepository = TagsRepository(tagApi: tagApi);
+  final tagsRepository = TagsRepository(
+    sp: sp,
+    tagApi: tagApi,
+  );
   final tasksRepository = TasksRepository(
+    sp: sp,
     tagApi: tagApi,
     db: db,
   );
   final notesRepository = NotesRepository(
+    sp: sp,
     db: db,
     tagApi: tagApi,
   );
@@ -79,7 +83,6 @@ Future<Widget> _initApp() async {
   );
 
   await UsersRepository.initialize(
-    supabase: AppSupabase.client,
     db: db,
     sp: sp,
   );
@@ -108,11 +111,15 @@ Future<Widget> _initApp() async {
                 ..add(const AppPurchasesPackageRequested()),
         ),
         BlocProvider(
-          create: (context) => AppBloc(
-            settingsRepository: context.read(),
-            tagsRepository: context.read(),
-            tasksRepository: context.read(),
-          )..add(const AppInitialized()),
+          create: (context) =>
+              AppBloc(
+                  settingsRepository: context.read(),
+                  tagsRepository: context.read(),
+                  tasksRepository: context.read(),
+                  usersRepository: context.read(),
+                )
+                ..add(const AppInitialized())
+                ..add(const AppUserRequested()),
         ),
       ],
       child: const App(),

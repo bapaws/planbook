@@ -3,16 +3,25 @@ import 'dart:async';
 import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/task/supabase_task_api.dart';
 
 class TasksRepository {
   TasksRepository({
     required DatabaseTagApi tagApi,
+    required SharedPreferences sp,
     required AppDatabase db,
-  }) : _dbTaskApi = DatabaseTaskApi(db: db, tagApi: tagApi),
+  }) : _db = db,
+       _tagApi = tagApi,
+       _supabaseTaskApi = SupabaseTaskApi(sp: sp),
+       _dbTaskApi = DatabaseTaskApi(db: db, tagApi: tagApi),
        _dbTaskInboxApi = DatabaseTaskInboxApi(db: db, tagApi: tagApi),
        _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi),
        _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi),
        _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi);
+
+  final AppDatabase _db;
+  final DatabaseTagApi _tagApi;
 
   final DatabaseTaskApi _dbTaskApi;
   final DatabaseTaskInboxApi _dbTaskInboxApi;
@@ -20,11 +29,20 @@ class TasksRepository {
   final DatabaseTaskTodayApi _dbTaskTodayApi;
   final DatabaseTaskCompletionApi _dbTaskCompletionApi;
 
+  final SupabaseTaskApi _supabaseTaskApi;
+
   Future<void> create({
     required Task task,
     List<TagEntity>? tags,
   }) async {
     await _dbTaskApi.create(task: task, tags: tags);
+
+    Future<void> createTask(Task task) async {
+      final taskTags = await _tagApi.getTaskTagsByTaskId(task.id);
+      await _supabaseTaskApi.create(task: task, taskTags: taskTags);
+    }
+
+    unawaited(createTask(task));
   }
 
   Future<void> update({
@@ -32,6 +50,38 @@ class TasksRepository {
     List<TagEntity>? tags,
   }) async {
     await _dbTaskApi.update(task: task, tags: tags);
+
+    Future<void> updateTask(Task task) async {
+      final taskTags = await _tagApi.getTaskTagsByTaskId(task.id);
+      await _supabaseTaskApi.update(task: task, taskTags: taskTags);
+    }
+
+    unawaited(updateTask(task));
+  }
+
+  Future<void> _syncTasks({
+    bool force = false,
+  }) async {
+    final list = await _supabaseTaskApi.getLatestTasks(force: force);
+    await _db.transaction(() async {
+      for (final item in list) {
+        final task = Task.fromJson(item);
+        await _db.into(_db.tasks).insertOnConflictUpdate(task);
+
+        if (item['task_tags'] is List<dynamic>) {
+          for (final taskTag in item['task_tags'] as List<dynamic>) {
+            final map = taskTag as Map<String, dynamic>;
+            final tag = Tag.fromJson(map['tags'] as Map<String, dynamic>);
+            await _db.into(_db.tags).insertOnConflictUpdate(tag);
+            await _db
+                .into(_db.taskTags)
+                .insertOnConflictUpdate(
+                  TaskTag.fromJson(map),
+                );
+          }
+        }
+      }
+    });
   }
 
   Future<TaskEntity?> getTaskEntityById(String taskId) async {
@@ -43,6 +93,8 @@ class TasksRepository {
     Jiffy? date,
     bool? isCompleted,
   }) {
+    _syncTasks();
+
     return switch (mode) {
       TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
         isCompleted: isCompleted,
@@ -131,7 +183,9 @@ class TasksRepository {
   Future<List<TaskActivity>> completeTask(
     TaskEntity entity,
   ) async {
-    return _dbTaskCompletionApi.completeTask(entity);
+    final activities = await _dbTaskCompletionApi.completeTask(entity);
+    unawaited(_supabaseTaskApi.complete(activities: activities));
+    return activities;
   }
 
   Future<TaskActivity?> getTaskActivityForTask(
@@ -145,7 +199,10 @@ class TasksRepository {
   }
 
   Future<void> deleteTaskById(String taskId) async {
-    await _dbTaskApi.deleteTaskById(taskId);
+    final task = await _dbTaskApi.deleteTaskById(taskId);
+    if (task != null) {
+      unawaited(_supabaseTaskApi.deleteByTaskId(taskId));
+    }
   }
 
   Stream<List<TaskEntity>> getCompletedTaskEntities({

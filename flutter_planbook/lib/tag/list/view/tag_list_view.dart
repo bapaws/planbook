@@ -8,10 +8,12 @@ import 'package:flutter_planbook/tag/new/view/tag_new_button.dart';
 class TagListView extends StatelessWidget {
   const TagListView({
     this.showAddButton = false,
+    this.scrollController,
     super.key,
   });
 
   final bool showAddButton;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +21,7 @@ class TagListView extends StatelessWidget {
     return BlocBuilder<TagListBloc, TagListState>(
       builder: (context, state) {
         return ListView.builder(
+          controller: scrollController,
           padding: EdgeInsets.only(
             top: 16,
             bottom: 16 + MediaQuery.of(context).padding.bottom,

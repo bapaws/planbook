@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppSupabase {
@@ -7,9 +10,17 @@ class AppSupabase {
   static final AppSupabase instance = AppSupabase._();
 
   static Supabase? _supabase;
-  static SupabaseClient? get client => _supabase?.client;
+  static SupabaseClient? get client =>
+      _supabase?.client.auth.currentUser == null ? null : _supabase?.client;
+
+  late StreamSubscription<AuthState>? _onAuthStateChangeSubscription;
+
+  late final _onAuthStateChangeController = BehaviorSubject<AuthState?>();
+  Stream<AuthState?> get onAuthStateChange =>
+      _onAuthStateChangeController.stream;
 
   static Future<void> initialize() async {
+    if (_supabase != null) return;
     Supabase supabase;
     if (kDebugMode) {
       supabase = await Supabase.initialize(
@@ -36,5 +47,99 @@ class AppSupabase {
       );
     }
     _supabase = supabase;
+
+    instance._onAuthStateChangeSubscription = _supabase
+        ?.client
+        .auth
+        .onAuthStateChange
+        .listen(
+          (authState) {
+            instance._onAuthStateChangeController.add(authState);
+          },
+          onError: (Object error) {
+            instance._onAuthStateChangeController.addError(error);
+          },
+        );
+  }
+
+  void dispose() {
+    _onAuthStateChangeSubscription?.cancel();
+  }
+
+  Future<AuthResponse?> signUp({
+    required String password,
+    String? email,
+    String? phone,
+    String? emailRedirectTo,
+    Map<String, dynamic>? data,
+    String? captchaToken,
+    OtpChannel channel = OtpChannel.sms,
+  }) async {
+    await initialize();
+    return await _supabase?.client.auth.signUp(
+      email: email,
+      phone: phone,
+      password: password,
+      data: data,
+      captchaToken: captchaToken,
+      channel: channel,
+    );
+  }
+
+  Future<AuthResponse?> signInWithPassword({
+    required String password,
+    String? email,
+    String? phone,
+    String? captchaToken,
+  }) async {
+    await initialize();
+    return await _supabase?.client.auth.signInWithPassword(
+      email: email,
+      phone: phone,
+      password: password,
+      captchaToken: captchaToken,
+    );
+  }
+
+  Future<void> signInWithOtp({
+    String? email,
+    String? phone,
+    String? emailRedirectTo,
+    bool? shouldCreateUser,
+    Map<String, dynamic>? data,
+    String? captchaToken,
+    OtpChannel channel = OtpChannel.sms,
+  }) async {
+    await initialize();
+    await _supabase?.client.auth.signInWithOtp(
+      email: email,
+      phone: phone,
+      emailRedirectTo: emailRedirectTo,
+      shouldCreateUser: shouldCreateUser,
+      data: {...?data, 'com.bapaws.planbook': true, 'planbook': true},
+      captchaToken: captchaToken,
+      channel: channel,
+    );
+  }
+
+  Future<AuthResponse?> verifyOTP({
+    required OtpType type,
+    String? email,
+    String? phone,
+    String? token,
+    String? redirectTo,
+    String? captchaToken,
+    String? tokenHash,
+  }) async {
+    await initialize();
+    return await _supabase?.client.auth.verifyOTP(
+      email: email,
+      phone: phone,
+      token: token,
+      type: type,
+      redirectTo: redirectTo,
+      captchaToken: captchaToken,
+      tokenHash: tokenHash,
+    );
   }
 }

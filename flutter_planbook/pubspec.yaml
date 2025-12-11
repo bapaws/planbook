@@ -14,6 +14,7 @@ dependencies:
   bloc_concurrency: ^0.3.0
   cached_network_image: ^3.4.1
   calendar_date_picker2: ^2.0.1
+  carousel_slider: ^5.1.1
   collection: ^1.19.1
   cupertino_calendar_picker: ^2.2.6
   cupertino_icons: ^1.0.6
@@ -22,6 +23,7 @@ dependencies:
   device_info_plus: ^12.2.0
   drift: ^2.26.1
   drift_flutter: ^0.2.4
+  email_validator: ^3.0.0
   equatable: ^2.0.7
   flex_color_picker: ^3.7.2
   flutter:
@@ -41,6 +43,7 @@ dependencies:
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.0
   hydrated_bloc: ^10.1.1
+  image_cropper: ^11.0.0
   image_gallery_saver: ^2.0.3
   image_picker: ^1.1.2
   in_app_purchase: ^3.2.3
@@ -70,6 +73,8 @@ dependencies:
   sqlite3: ^2.7.7
   sqlite3_flutter_libs: ^0.5.37
   supabase_flutter: ^2.9.1
+  supabase_planbook_api:
+    path: packages/supabase_planbook_api
   tab_indicator_styler: ^2.0.0
   table_calendar: ^3.2.0
   timezone: ^0.10.1

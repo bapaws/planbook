@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_list_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -76,8 +77,20 @@ class TaskPriorityPage extends StatelessWidget {
               isCompleted: isCompleted,
             ),
           ),
-      child: const Expanded(
-        child: TaskPriorityListView(),
+      child: BlocListener<TaskListBloc, TaskListState>(
+        listenWhen: (previous, current) =>
+            previous.currentTaskNote != current.currentTaskNote &&
+            current.currentTaskNote != null,
+        listener: (context, state) {
+          context.router.push(
+            NoteNewRoute(
+              initialNote: state.currentTaskNote,
+            ),
+          );
+        },
+        child: const Expanded(
+          child: TaskPriorityListView(),
+        ),
       ),
     );
   }

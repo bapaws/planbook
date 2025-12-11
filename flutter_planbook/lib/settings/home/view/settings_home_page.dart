@@ -62,9 +62,9 @@ class _SettingsHomePage extends StatelessWidget {
                 onPressed: () {
                   final user = context.read<AppBloc>().state.user;
                   if (user == null) {
-                    // context.router.push(const LoginRoute());
+                    context.router.push(const SignHomeRoute());
                   } else {
-                    // context.router.push(const UserProfileRoute());
+                    context.router.push(const MineProfileRoute());
                   }
                 },
                 child: Container(
@@ -93,9 +93,7 @@ class _SettingsHomePage extends StatelessWidget {
                       BlocSelector<AppBloc, AppState, UserEntity?>(
                         selector: (state) => state.user,
                         builder: (context, user) => Text(
-                          user?.phone ??
-                              user?.email ??
-                              context.l10n.notLoggedIn,
+                          user?.displayName ?? context.l10n.notLoggedIn,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             color: theme.colorScheme.primary,
                           ),

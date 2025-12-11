@@ -42,10 +42,10 @@ final class TaskListDeleted extends TaskListEvent {
 }
 
 final class TaskListNoteCreated extends TaskListEvent {
-  const TaskListNoteCreated({required this.task});
+  const TaskListNoteCreated({required this.taskId});
 
-  final TaskEntity task;
+  final String taskId;
 
   @override
-  List<Object?> get props => [task];
+  List<Object?> get props => [taskId];
 }

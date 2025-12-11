@@ -52,7 +52,7 @@ class _TaskPickerPage extends StatelessWidget {
       slivers: [
         const SliverAppBar(
           forceMaterialTransparency: true,
-          leading: NavigationBarBackButton(),
+          leading: NavigationBarCloseButton(),
         ),
         BlocSelector<TaskPickerBloc, TaskPickerState, List<TaskEntity>>(
           selector: (state) => state.inboxTasks,

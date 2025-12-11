@@ -19,7 +19,7 @@ class TaskDetailTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return CupertinoButton(
-      padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+      padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
       minimumSize: const Size.square(kMinInteractiveDimension),
       onPressed: onPressed,
       child: Row(

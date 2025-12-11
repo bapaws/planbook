@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -19,26 +20,17 @@ class TaskDatePickerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
+    return AppPageScaffold(
+      borderRadius: BorderRadius.circular(16),
       constraints: BoxConstraints(
         maxHeight: 480 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerLowest,
-        image: const DecorationImage(
-          image: AssetImage('assets/images/bg_tile.png'),
-          repeat: ImageRepeat.repeat,
-        ),
-        borderRadius: BorderRadius.circular(16),
       ),
       clipBehavior: Clip.hardEdge,
       child: Column(
         children: [
           AppBar(
             forceMaterialTransparency: true,
-            title: Text(context.l10n.selectDate),
-            leading: const NavigationBarBackButton(),
+            leading: const NavigationBarCloseButton(),
             actions: [
               CupertinoButton(
                 onPressed: () {

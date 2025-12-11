@@ -1,16 +1,27 @@
+import 'dart:async';
+
 import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/supabase_planbook_api.dart';
 
 class NotesRepository {
   NotesRepository({
+    required SharedPreferences sp,
     required AppDatabase db,
     required DatabaseTagApi tagApi,
-  }) : _dbNoteApi = DatabaseNoteApi(db: db, tagApi: tagApi);
+  }) : _dbNoteApi = DatabaseNoteApi(db: db, tagApi: tagApi),
+       _supabaseNoteApi = SupabaseNoteApi(sp: sp),
+       _db = db,
+       _tagApi = tagApi;
 
   final DatabaseNoteApi _dbNoteApi;
+  final SupabaseNoteApi _supabaseNoteApi;
+  final AppDatabase _db;
+  final DatabaseTagApi _tagApi;
 
-  Future<String> create({
+  Future<Note> create({
     required String title,
     String? content,
     List<String>? images,
@@ -18,7 +29,7 @@ class NotesRepository {
     String? taskId,
     Jiffy? createdAt,
   }) async {
-    return _dbNoteApi.create(
+    final note = await _dbNoteApi.create(
       title: title,
       content: content,
       images: images,
@@ -26,6 +37,14 @@ class NotesRepository {
       taskId: taskId,
       createdAt: createdAt,
     );
+
+    Future<void> createNote(Note note) async {
+      final noteTags = await _tagApi.getNoteTagsByNoteId(note.id);
+      await _supabaseNoteApi.create(note: note, noteTags: noteTags);
+    }
+
+    unawaited(createNote(note));
+    return note;
   }
 
   Future<void> update({
@@ -33,6 +52,36 @@ class NotesRepository {
     List<Tag>? tags,
   }) async {
     await _dbNoteApi.update(note: note, tags: tags);
+
+    Future<void> updateNote(Note note) async {
+      final noteTags = await _tagApi.getNoteTagsByNoteId(note.id);
+      await _supabaseNoteApi.update(note: note, noteTags: noteTags);
+    }
+
+    unawaited(updateNote(note));
+  }
+
+  Future<void> _syncNotes({
+    bool force = false,
+  }) async {
+    final list = await _supabaseNoteApi.getLatestNotes(force: force);
+    await _db.transaction(() async {
+      for (final item in list) {
+        final note = Note.fromJson(item);
+        await _db.into(_db.notes).insertOnConflictUpdate(note);
+
+        if (item['note_tags'] is List<dynamic>) {
+          for (final noteTag in item['note_tags'] as List<dynamic>) {
+            final map = noteTag as Map<String, dynamic>;
+            final tag = Tag.fromJson(map['tags'] as Map<String, dynamic>);
+            await _db.into(_db.tags).insertOnConflictUpdate(tag);
+            await _db
+                .into(_db.noteTags)
+                .insertOnConflictUpdate(NoteTag.fromJson(map));
+          }
+        }
+      }
+    });
   }
 
   Future<NoteEntity?> getNoteEntityById(String noteId) async {
@@ -51,6 +100,7 @@ class NotesRepository {
     Jiffy date, {
     List<String>? tagIds,
   }) {
+    _syncNotes();
     return _dbNoteApi.getNoteEntitiesByDate(date, tagIds: tagIds);
   }
 
@@ -70,6 +120,7 @@ class NotesRepository {
   }
 
   Future<void> deleteNoteById(String noteId) async {
+    unawaited(_supabaseNoteApi.deleteByNoteId(noteId: noteId));
     return _dbNoteApi.deleteNoteById(noteId);
   }
 }

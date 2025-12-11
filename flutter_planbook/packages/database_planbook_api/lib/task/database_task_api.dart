@@ -16,6 +16,12 @@ class DatabaseTaskApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
+  Future<void> insertOrUpdate({
+    required Task task,
+  }) async {
+    await db.into(db.tasks).insertOnConflictUpdate(task);
+  }
+
   Future<void> create({
     required Task task,
     List<TagEntity>? tags,
@@ -335,21 +341,23 @@ class DatabaseTaskApi {
     return tasks.values.toList();
   }
 
-  Future<void> deleteTaskById(String taskId) async {
+  Future<Task?> deleteTaskById(String taskId) async {
     if (kDebugMode) {
-      await (db.delete(db.tasks)..where(
+      return (db.delete(db.tasks)..where(
             (t) => t.id.equals(taskId),
           ))
-          .go();
+          .goAndReturn()
+          .then((value) => value.firstOrNull);
     } else {
-      await (db.update(db.tasks)..where(
+      return (db.update(db.tasks)..where(
             (t) => t.id.equals(taskId) & t.deletedAt.isNull(),
           ))
-          .write(
+          .writeReturning(
             TasksCompanion(
               deletedAt: Value(Jiffy.now()),
             ),
-          );
+          )
+          .then((value) => value.firstOrNull);
     }
   }
 

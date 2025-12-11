@@ -14,7 +14,7 @@ class DatabaseNoteApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
-  Future<String> create({
+  Future<Note> create({
     required String title,
     String? content,
     List<String>? images,
@@ -43,7 +43,7 @@ class DatabaseNoteApi {
             );
       }
     }
-    return note.id;
+    return note;
   }
 
   Future<void> update({

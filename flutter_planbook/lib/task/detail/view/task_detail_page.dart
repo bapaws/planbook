@@ -7,14 +7,17 @@ import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/list/view/note_list_tile.dart';
+import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/task/detail/bloc/task_detail_bloc.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_bottom_bar.dart';
+import 'package:flutter_planbook/task/detail/view/task_detail_duration_view.dart';
+import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
-import 'package:planbook_repository/planbook_repository.dart' hide ColorScheme;
+import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -197,7 +200,7 @@ class _TaskDetailPage extends StatelessWidget {
                       foregroundColor:
                           tagColorScheme?.primary ?? colorScheme.tertiary,
                     ),
-                    title: task.tags.firstOrNull?.name ?? '',
+                    title: context.l10n.tags,
                     trailing: Wrap(
                       spacing: 4,
                       runSpacing: 4,
@@ -208,6 +211,8 @@ class _TaskDetailPage extends StatelessWidget {
                       ],
                     ),
                   ),
+                  TaskDetailDurationView(task: task, colorScheme: colorScheme),
+                  TaskDetailRepeatView(recurrenceRule: task.recurrenceRule),
                   // SliverToBoxAdapter(
                   //   child: Divider(
                   //     indent: 16,
@@ -262,6 +267,14 @@ class _TaskDetailPage extends StatelessWidget {
                             );
                           },
                         ),
+                  ),
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height:
+                          16 +
+                          kRootBottomBarHeight +
+                          MediaQuery.of(context).padding.bottom,
+                    ),
                   ),
                 ],
               );

@@ -6,22 +6,32 @@ import 'package:planbook_api/planbook_api.dart';
 
 class DatabaseTagApi {
   DatabaseTagApi({
-    required AppDatabase db,
-  }) : _db = db;
+    required this.db,
+  });
 
-  final AppDatabase _db;
+  final AppDatabase db;
 
-  Future<Stream<List<Tag>>> getTopLevelTags() async {
-    return (_db.select(
-      _db.tags,
+  Future<void> insertOrUpdateTag(Tag tag) async {
+    await db.into(db.tags).insertOnConflictUpdate(tag.toCompanion(false));
+  }
+
+  Future<void> insertOrUpdateTaskTag(TaskTag taskTag) async {
+    await db
+        .into(db.taskTags)
+        .insertOnConflictUpdate(taskTag.toCompanion(false));
+  }
+
+  Stream<List<Tag>> getTopLevelTags() {
+    return (db.select(
+      db.tags,
     )..where((tag) => tag.parentId.isNull())).watch();
   }
 
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
   }) {
-    return (_db.select(
-            _db.tags,
+    return (db.select(
+            db.tags,
           )
           ..where(
             (tag) => tag.deletedAt.isNull() & tag.id.isNotIn(notIncludeTagIds),
@@ -54,8 +64,8 @@ class DatabaseTagApi {
 
   Future<TagEntity?> getTagEntityById(String id) async {
     final tag =
-        await (_db.select(
-              _db.tags,
+        await (db.select(
+              db.tags,
             )..where((tag) => tag.id.equals(id) & tag.deletedAt.isNull()))
             .getSingleOrNull();
     if (tag == null) return null;
@@ -70,8 +80,8 @@ class DatabaseTagApi {
   Future<TagEntity?> getTagEntityByName(String name) async {
     final trimmedName = name.trim();
     final tag =
-        await (_db.select(
-              _db.tags,
+        await (db.select(
+              db.tags,
             )..where(
               (tag) => tag.name.equals(trimmedName) & tag.deletedAt.isNull(),
             ))
@@ -87,7 +97,7 @@ class DatabaseTagApi {
 
   Future<List<TagEntity>> getTagEntitiesByTaskId(String taskId) async {
     final taskTags =
-        await (_db.select(_db.taskTags)
+        await (db.select(db.taskTags)
               ..where(
                 (tt) =>
                     tt.taskId.equals(taskId) &
@@ -117,8 +127,8 @@ class DatabaseTagApi {
     final existingEntity = await getTagEntityByName(trimmedName);
     if (existingEntity != null) return;
 
-    await _db
-        .into(_db.tags)
+    await db
+        .into(db.tags)
         .insert(
           TagsCompanion.insert(
             id: id != null ? Value(id) : const Value.absent(),
@@ -142,8 +152,8 @@ class DatabaseTagApi {
     if (tag == null) return;
 
     final trimmedName = name?.trim() ?? tag.name.trim();
-    await (_db.update(
-      _db.tags,
+    await (db.update(
+      db.tags,
     )..where((tag) => tag.id.equals(id) & tag.deletedAt.isNull())).write(
       TagsCompanion(
         name: Value(trimmedName),
@@ -168,8 +178,8 @@ class DatabaseTagApi {
     final now = Jiffy.now();
 
     // 标记当前 tag 为删除
-    await (_db.update(
-      _db.tags,
+    await (db.update(
+      db.tags,
     )..where((tag) => tag.id.equals(id) & tag.deletedAt.isNull())).write(
       TagsCompanion(
         deletedAt: Value(now),
@@ -177,7 +187,7 @@ class DatabaseTagApi {
     );
 
     // 删除相关的 TaskTag 记录（软删除）
-    await (_db.update(_db.taskTags)..where(
+    await (db.update(db.taskTags)..where(
           (tt) => tt.tagId.equals(id) & tt.deletedAt.isNull(),
         ))
         .write(
@@ -187,7 +197,7 @@ class DatabaseTagApi {
         );
 
     // 删除相关的 NoteTag 记录（软删除）
-    await (_db.update(_db.noteTags)..where(
+    await (db.update(db.noteTags)..where(
           (nt) => nt.tagId.equals(id) & nt.deletedAt.isNull(),
         ))
         .write(
@@ -198,8 +208,8 @@ class DatabaseTagApi {
 
     // 查找所有直接子 tag，递归删除
     final directChildren =
-        await (_db.select(
-              _db.tags,
+        await (db.select(
+              db.tags,
             )..where(
               (tag) => tag.parentId.equals(id) & tag.deletedAt.isNull(),
             ))
@@ -212,7 +222,7 @@ class DatabaseTagApi {
 
   Future<void> deleteTagById(String id) async {
     if (kDebugMode) {
-      await (_db.delete(_db.tags)..where(
+      await (db.delete(db.tags)..where(
             (t) => t.id.equals(id),
           ))
           .go();
@@ -223,7 +233,21 @@ class DatabaseTagApi {
 
   Future<void> deleteAllTags() async {
     if (kDebugMode) {
-      await _db.delete(_db.tags).go();
+      await db.delete(db.tags).go();
     }
+  }
+
+  Future<List<TaskTag>> getTaskTagsByTaskId(String taskId) async {
+    return (db.select(db.taskTags)..where(
+          (tt) => tt.taskId.equals(taskId) & tt.deletedAt.isNull(),
+        ))
+        .get();
+  }
+
+  Future<List<NoteTag>> getNoteTagsByNoteId(String noteId) async {
+    return (db.select(db.noteTags)..where(
+          (nt) => nt.noteId.equals(noteId) & nt.deletedAt.isNull(),
+        ))
+        .get();
   }
 }

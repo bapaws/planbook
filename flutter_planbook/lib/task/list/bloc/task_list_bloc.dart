@@ -62,9 +62,14 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListCompleted event,
     Emitter<TaskListState> emit,
   ) async {
-    await _tasksRepository.completeTask(event.task);
+    emit(state.copyWith(status: PageStatus.loading));
+    final activities = await _tasksRepository.completeTask(event.task);
+    for (final activity in activities) {
+      if (activity.deletedAt == null && activity.taskId != null) {
+        add(TaskListNoteCreated(taskId: activity.taskId!));
+      }
+    }
     emit(state.copyWith(status: PageStatus.success));
-    add(TaskListNoteCreated(task: event.task));
   }
 
   Future<void> _onDeleted(
@@ -79,12 +84,14 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListNoteCreated event,
     Emitter<TaskListState> emit,
   ) async {
-    final noteId = await _notesRepository.create(
-      title: '✅ ${event.task.title}',
-      tags: event.task.tags.map((tag) => tag.tag).toList(),
-      taskId: event.task.id,
+    final task = await _tasksRepository.getTaskEntityById(event.taskId);
+    if (task == null) return;
+    final note = await _notesRepository.create(
+      title: '✅ ${task.title}',
+      tags: task.tags.map((tag) => tag.tag).toList(),
+      taskId: task.id,
     );
-    final note = await _notesRepository.getNoteEntityById(noteId);
-    emit(state.copyWith(status: PageStatus.success, currentTaskNote: note));
+    final entity = await _notesRepository.getNoteEntityById(note.id);
+    emit(state.copyWith(status: PageStatus.success, currentTaskNote: entity));
   }
 }
