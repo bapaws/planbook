@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
 
 class JiffyConverter extends TypeConverter<Jiffy, DateTime>
-    with JsonTypeConverter2<Jiffy, DateTime, DateTime> {
+    with JsonTypeConverter2<Jiffy, DateTime, String> {
   const JiffyConverter();
 
   @override
@@ -12,8 +12,8 @@ class JiffyConverter extends TypeConverter<Jiffy, DateTime>
   DateTime toSql(Jiffy value) => value.toUtc().dateTime;
 
   @override
-  Jiffy fromJson(DateTime json) => Jiffy.parseFromDateTime(json);
+  Jiffy fromJson(String json) => Jiffy.parse(json, isUtc: true);
 
   @override
-  DateTime toJson(Jiffy value) => value.toUtc().dateTime;
+  String toJson(Jiffy value) => value.toUtc().format();
 }

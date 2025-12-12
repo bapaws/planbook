@@ -165,6 +165,7 @@ class Tags extends Table {
 
 class NoteTags extends Table {
   TextColumn get id => text().clientDefault(() => _uuid.v4())();
+  TextColumn get userId => text().nullable()();
   TextColumn get noteId => text().references(
     Notes,
     #id,
@@ -175,7 +176,7 @@ class NoteTags extends Table {
     #id,
     onDelete: KeyAction.cascade,
   )();
-  BoolColumn get isParent => boolean().withDefault(const Constant(false))();
+  TextColumn get linkedTagId => text().nullable()();
 
   DateTimeColumn get createdAt =>
       dateTime().map(const JiffyConverter()).withDefault(currentDateAndTime)();
@@ -190,6 +191,7 @@ class NoteTags extends Table {
 
 class TaskTags extends Table {
   TextColumn get id => text().clientDefault(() => _uuid.v4())();
+  TextColumn get userId => text().nullable()();
   TextColumn get taskId => text().references(
     Tasks,
     #id,
@@ -200,7 +202,7 @@ class TaskTags extends Table {
     #id,
     onDelete: KeyAction.cascade,
   )();
-  BoolColumn get isParent => boolean().withDefault(const Constant(false))();
+  TextColumn get linkedTagId => text().nullable()();
 
   DateTimeColumn get createdAt =>
       dateTime().map(const JiffyConverter()).withDefault(currentDateAndTime)();

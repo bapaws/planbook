@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:drift/drift.dart';
 
 class ListConverter<T> extends TypeConverter<List<T>, String?>
-    with JsonTypeConverter2<List<T>, String?, List<dynamic>?> {
+    with JsonTypeConverter2<List<T>, String?, String?> {
   const ListConverter();
 
   @override
@@ -19,12 +19,13 @@ class ListConverter<T> extends TypeConverter<List<T>, String?>
   }
 
   @override
-  List<T> fromJson(List<dynamic>? json) {
-    return json == null ? [] : List<T>.from(json);
+  List<T> fromJson(String? json) {
+    if (json == null) return [];
+    return List<T>.from(jsonDecode(json) as List);
   }
 
   @override
-  List<dynamic>? toJson(List<T>? value) {
-    return value ?? [];
+  String? toJson(List<T>? value) {
+    return value == null ? null : jsonEncode(value);
   }
 }

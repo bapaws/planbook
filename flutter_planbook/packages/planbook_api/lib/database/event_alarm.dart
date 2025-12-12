@@ -98,7 +98,7 @@ class EventAlarm extends Equatable {
 
 /// EventAlarm 列表的 Drift 类型转换器
 class EventAlarmListConverter extends TypeConverter<List<EventAlarm>, String?>
-    with JsonTypeConverter2<List<EventAlarm>, String?, List<dynamic>?> {
+    with JsonTypeConverter2<List<EventAlarm>, String?, String?> {
   const EventAlarmListConverter();
 
   @override
@@ -117,16 +117,17 @@ class EventAlarmListConverter extends TypeConverter<List<EventAlarm>, String?>
   }
 
   @override
-  List<EventAlarm> fromJson(List<dynamic>? json) {
+  List<EventAlarm> fromJson(String? json) {
     if (json == null) return [];
-    return json
+    final list = jsonDecode(json) as List<dynamic>;
+    return list
         .map((e) => EventAlarm.fromJson(e as Map<String, dynamic>))
         .toList();
   }
 
   @override
-  List<dynamic>? toJson(List<EventAlarm>? value) {
-    if (value == null || value.isEmpty) return [];
-    return value.map((e) => e.toJson()).toList();
+  String? toJson(List<EventAlarm>? value) {
+    if (value == null || value.isEmpty) return null;
+    return jsonEncode(value.map((e) => e.toJson()).toList());
   }
 }

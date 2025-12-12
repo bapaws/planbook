@@ -88,7 +88,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     if (task == null) return;
     final note = await _notesRepository.create(
       title: '✅ ${task.title}',
-      tags: task.tags.map((tag) => tag.tag).toList(),
+      tags: task.tags,
       taskId: task.id,
     );
     final entity = await _notesRepository.getNoteEntityById(note.id);

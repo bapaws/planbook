@@ -57,11 +57,13 @@ class SupabaseNoteApi {
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final lastTimestamp = _sp.getInt(kLastGetNotesTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 1000) {
+    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
       return [];
     }
 
-    var builder = supabase!.from('notes').select('*,note_tags(*,tags(*))');
+    var builder = supabase!
+        .from('notes')
+        .select('*,note_tags(*,tag:tags!note_tags_tag_id_fkey(*))');
     if (!force) {
       if (lastTimestamp != null) {
         final date = DateTime.fromMillisecondsSinceEpoch(

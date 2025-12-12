@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.gr.dart';
+import 'package:planbook_api/planbook_api.dart';
 
 export 'package:auto_route/auto_route.dart';
 
@@ -12,7 +13,42 @@ class AppRouter extends RootStackRouter {
   RouteType get defaultRouteType => const RouteType.cupertino();
 
   @override
-  List<AutoRouteGuard> get guards => [];
+  List<AutoRouteGuard> get guards => [
+    AutoRouteGuard.simple(
+      (resolver, router) async {
+        final user = AppSupabase.user;
+        final routeName = resolver.route.name;
+
+        // 如果用户未登录，重定向到登录页面
+        if (user == null && routeName != 'SignHomeRoute') {
+          await resolver.redirectUntil(const SignHomeRoute(), replace: true);
+        } else {
+          resolver.next();
+        }
+
+        // 如果用户已登录且在登录页面，重定向到主页
+        // if (routeName == 'SignHomeRoute') {
+        //   await resolver.redirectUntil(const RootRoute(), replace: true);
+        //   return;
+        // }
+
+        // // 如果用户已登录且在引导页面，检查是否需要重定向
+        // if (routeName == 'OnboardingRoute') {
+        //   final settingsRepository = resolver.context
+        //       .read<SettingsRepository>();
+        //   final onboardingCompleted = await settingsRepository
+        //       .getOnboardingCompleted();
+        //   if (onboardingCompleted) {
+        //     await resolver.redirectUntil(const RootRoute(), replace: true);
+        //     return;
+        //   }
+        // }
+
+        // // 其他情况继续导航
+        // resolver.next();
+      },
+    ),
+  ];
 
   AutoRoute _buildModalBottomSheetRoute(
     PageInfo page,

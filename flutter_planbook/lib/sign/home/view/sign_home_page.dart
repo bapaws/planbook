@@ -13,7 +13,6 @@ import 'package:flutter_planbook/sign/welcome/view/sign_welcome_page.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
-import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
 @RoutePage()
 class SignHomePage extends StatelessWidget {
@@ -24,10 +23,12 @@ class SignHomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SignHomeCubit(),
+          create: (context) => SignHomeCubit()..onInitialized(),
         ),
         BlocProvider(
-          create: (context) => SignInCubit(usersRepository: context.read()),
+          create: (context) => SignInCubit(
+            usersRepository: context.read(),
+          ),
         ),
       ],
       child: const _SignHomePage(),
@@ -45,13 +46,17 @@ class _SignHomePage extends StatelessWidget {
     return BlocBuilder<SignHomeCubit, SignHomeState>(
       builder: (context, state) {
         return AppScaffold(
-          appBar: AppBar(
-            leading: const NavigationBarCloseButton(),
-            title: Text(context.l10n.appName.toUpperCase()),
-            forceMaterialTransparency: true,
-          ),
+          // appBar: AppBar(
+          //   leading: const NavigationBarCloseButton(),
+          //   title: Text(context.l10n.appName.toUpperCase()),
+          //   forceMaterialTransparency: true,
+          // ),
           body: Column(
             children: [
+              const Spacer(),
+              SizedBox(
+                height: MediaQuery.of(context).padding.top,
+              ),
               // primary color:fill="#BCF0B4"
               SvgPicture.asset(
                 'assets/images/sign-in-bg.svg',

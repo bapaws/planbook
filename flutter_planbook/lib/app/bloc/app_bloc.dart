@@ -1,15 +1,12 @@
-import 'dart:convert';
+import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/icon/model/app_icons.dart';
-import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -91,65 +88,60 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     AppLaunched event,
     Emitter<AppState> emit,
   ) async {
-    // Increment launch count
-    final launchCount = await _settingsRepository.incrementLaunchCount();
-
     // Create default tags and sample tasks on first launch
-    if (launchCount == 1) {
-      final languageCode = event.l10n.localeName.split('_').first;
-      final tagJsonString = await rootBundle.loadString(
-        'assets/files/tags_$languageCode.json',
-      );
-      final tagJson = jsonDecode(tagJsonString) as List<dynamic>;
+    // if (_usersRepository.isFirstLaunch) {
+    //   final languageCode = event.l10n.localeName.split('_').first;
+    //   final tagJsonString = await rootBundle.loadString(
+    //     'assets/files/tags_$languageCode.json',
+    //   );
+    //   final tagJson = jsonDecode(tagJsonString) as List<dynamic>;
 
-      for (final json in tagJson) {
-        final tag = Tag.fromJson(json as Map<String, dynamic>);
-        final color = tag.color?.toColor ?? material.Colors.yellow;
+    //   const uuid = Uuid();
+    //   for (final json in tagJson) {
+    //     final tag = Tag.fromJson(json as Map<String, dynamic>);
+    //     final color = tag.color?.toColor ?? material.Colors.yellow;
 
-        await _tagsRepository.deleteTagById(tag.id);
-        await _tagsRepository.createTag(
-          id: tag.id,
-          name: tag.name,
-          lightColorScheme: ColorScheme.fromColorScheme(
-            material.ColorScheme.fromSeed(
-              seedColor: color,
-            ),
-          ),
-          darkColorScheme: ColorScheme.fromColorScheme(
-            material.ColorScheme.fromSeed(
-              seedColor: color,
-              brightness: material.Brightness.dark,
-            ),
-          ),
-        );
-      }
+    //     await _tagsRepository.createTag(
+    //       id: uuid.v4(),
+    //       name: tag.name,
+    //       lightColorScheme: ColorScheme.fromColorScheme(
+    //         material.ColorScheme.fromSeed(
+    //           seedColor: color,
+    //         ),
+    //       ),
+    //       darkColorScheme: ColorScheme.fromColorScheme(
+    //         material.ColorScheme.fromSeed(
+    //           seedColor: color,
+    //           brightness: material.Brightness.dark,
+    //         ),
+    //       ),
+    //     );
+    //   }
 
-      final taskJsonString = await rootBundle.loadString(
-        'assets/files/tasks_$languageCode.json',
-      );
-      final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
-      for (final json in taskJson) {
-        final map = json as Map<String, dynamic>;
-        final taskMap = map['task'] as Map<String, dynamic>;
-        var task = Task.fromJson(taskMap);
+    //   final taskJsonString = await rootBundle.loadString(
+    //     'assets/files/tasks_$languageCode.json',
+    //   );
+    //   final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
+    //   for (final json in taskJson) {
+    //     final map = json as Map<String, dynamic>;
+    //     final taskMap = map['task'] as Map<String, dynamic>;
+    //     var task = Task.fromJson(taskMap).copyWith(id: uuid.v4());
 
-        /// If dueAt is not null, set it to today
-        if (taskMap['dueAt'] != null) {
-          task = task.copyWith(dueAt: Value(Jiffy.now()));
-        }
-        final tagIds = List<String>.from(map['tags'] as List<dynamic>);
-        final tags = await Future.wait(
-          tagIds.map(_tagsRepository.getTagEntityById),
-        );
-        await _tasksRepository.deleteTaskById(task.id);
-        await _tasksRepository.create(task: task, tags: tags.nonNulls.toList());
-      }
-    }
+    //     /// If dueAt is not null, set it to today
+    //     if (taskMap['dueAt'] != null) {
+    //       task = task.copyWith(dueAt: Value(Jiffy.now()));
+    //     }
+    //     final tagNames = List<String>.from(map['tags'] as List<dynamic>);
+    //     final tags = await Future.wait(
+    //       tagNames.map(_tagsRepository.getTagEntityByName),
+    //     );
+    //     await _tasksRepository.create(task: task, tags: tags.nonNulls.toList());
+    //   }
+    // }
 
     final now = DateTime.now().toUtc();
     await _usersRepository.updateUserProfile(
       lastLaunchAppAt: now,
-      launchCount: launchCount,
     );
   }
 
@@ -159,7 +151,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   ) async {
     await emit.forEach(
       _usersRepository.onUserEntityChange,
-      onData: (user) => state.copyWith(user: user),
+      onData: (user) {
+        // if (user != null && user.id != state.user?.id) {
+        //   unawaited(_syncRepository.sync());
+        // }
+        return state.copyWith(user: user);
+      },
     );
   }
 

@@ -485,23 +485,23 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     return $TasksTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterstartAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterstartAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterstartAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterstartAtn =
       JsonTypeConverter2.asNullable($converterstartAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterendAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterendAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterendAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterendAtn =
       JsonTypeConverter2.asNullable($converterendAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdueAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdueAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdueAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdueAtn =
       JsonTypeConverter2.asNullable($converterdueAt);
   static JsonTypeConverter2<RecurrenceRule?, String?, Map<String, dynamic>?>
   $converterrecurrenceRule = const RecurrenceRuleConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime>
+  static JsonTypeConverter2<Jiffy, DateTime, String>
   $converterdetachedRecurrenceAt = const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?>
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?>
   $converterdetachedRecurrenceAtn = JsonTypeConverter2.asNullable(
     $converterdetachedRecurrenceAt,
   );
@@ -513,21 +513,21 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
   $converterdetachedReasonn = JsonTypeConverter2.asNullable(
     $converterdetachedReason,
   );
-  static JsonTypeConverter2<List<EventAlarm>, String?, List<dynamic>?>
+  static JsonTypeConverter2<List<EventAlarm>, String?, String?>
   $converteralarms = const EventAlarmListConverter();
   static JsonTypeConverter2<TaskPriority, String, String> $converterpriority =
       const EnumNameConverter<TaskPriority>(TaskPriority.values);
   static JsonTypeConverter2<TaskPriority?, String?, String?>
   $converterpriorityn = JsonTypeConverter2.asNullable($converterpriority);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
@@ -737,14 +737,14 @@ class Task extends DataClass implements Insertable<Task> {
       childCount: serializer.fromJson<int>(json['child_count']),
       order: serializer.fromJson<int>(json['order']),
       startAt: $TasksTable.$converterstartAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['start_at']),
+        serializer.fromJson<String?>(json['start_at']),
       ),
       endAt: $TasksTable.$converterendAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['end_at']),
+        serializer.fromJson<String?>(json['end_at']),
       ),
       isAllDay: serializer.fromJson<bool>(json['is_all_day']),
       dueAt: $TasksTable.$converterdueAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['due_at']),
+        serializer.fromJson<String?>(json['due_at']),
       ),
       recurrenceRule: $TasksTable.$converterrecurrenceRule.fromJson(
         serializer.fromJson<Map<String, dynamic>?>(json['recurrence_rule']),
@@ -754,13 +754,13 @@ class Task extends DataClass implements Insertable<Task> {
       ),
       detachedRecurrenceAt: $TasksTable.$converterdetachedRecurrenceAtn
           .fromJson(
-            serializer.fromJson<DateTime?>(json['detached_recurrence_at']),
+            serializer.fromJson<String?>(json['detached_recurrence_at']),
           ),
       detachedReason: $TasksTable.$converterdetachedReasonn.fromJson(
         serializer.fromJson<String?>(json['detached_reason']),
       ),
       alarms: $TasksTable.$converteralarms.fromJson(
-        serializer.fromJson<List<dynamic>?>(json['alarms']),
+        serializer.fromJson<String?>(json['alarms']),
       ),
       priority: $TasksTable.$converterpriorityn.fromJson(
         serializer.fromJson<String?>(json['priority']),
@@ -769,13 +769,13 @@ class Task extends DataClass implements Insertable<Task> {
       notes: serializer.fromJson<String?>(json['notes']),
       timeZone: serializer.fromJson<String?>(json['time_zone']),
       createdAt: $TasksTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $TasksTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $TasksTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -790,21 +790,21 @@ class Task extends DataClass implements Insertable<Task> {
       'layer': serializer.toJson<int>(layer),
       'child_count': serializer.toJson<int>(childCount),
       'order': serializer.toJson<int>(order),
-      'start_at': serializer.toJson<DateTime?>(
+      'start_at': serializer.toJson<String?>(
         $TasksTable.$converterstartAtn.toJson(startAt),
       ),
-      'end_at': serializer.toJson<DateTime?>(
+      'end_at': serializer.toJson<String?>(
         $TasksTable.$converterendAtn.toJson(endAt),
       ),
       'is_all_day': serializer.toJson<bool>(isAllDay),
-      'due_at': serializer.toJson<DateTime?>(
+      'due_at': serializer.toJson<String?>(
         $TasksTable.$converterdueAtn.toJson(dueAt),
       ),
       'recurrence_rule': serializer.toJson<Map<String, dynamic>?>(
         $TasksTable.$converterrecurrenceRule.toJson(recurrenceRule),
       ),
       'detached_from_task_id': serializer.toJson<String?>(detachedFromTaskId),
-      'detached_recurrence_at': serializer.toJson<DateTime?>(
+      'detached_recurrence_at': serializer.toJson<String?>(
         $TasksTable.$converterdetachedRecurrenceAtn.toJson(
           detachedRecurrenceAt,
         ),
@@ -812,7 +812,7 @@ class Task extends DataClass implements Insertable<Task> {
       'detached_reason': serializer.toJson<String?>(
         $TasksTable.$converterdetachedReasonn.toJson(detachedReason),
       ),
-      'alarms': serializer.toJson<List<dynamic>?>(
+      'alarms': serializer.toJson<String?>(
         $TasksTable.$converteralarms.toJson(alarms),
       ),
       'priority': serializer.toJson<String?>(
@@ -821,13 +821,13 @@ class Task extends DataClass implements Insertable<Task> {
       'location': serializer.toJson<String?>(location),
       'notes': serializer.toJson<String?>(notes),
       'time_zone': serializer.toJson<String?>(timeZone),
-      'created_at': serializer.toJson<DateTime>(
+      'created_at': serializer.toJson<String>(
         $TasksTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $TasksTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $TasksTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -1563,17 +1563,17 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
     return $NotesTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<List<String>, String?, List<dynamic>?>
-  $converterimages = const ListConverter<String>();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<List<String>, String?, String?> $converterimages =
+      const ListConverter<String>();
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
@@ -1678,18 +1678,18 @@ class Note extends DataClass implements Insertable<Note> {
       title: serializer.fromJson<String>(json['title']),
       content: serializer.fromJson<String?>(json['content']),
       images: $NotesTable.$converterimages.fromJson(
-        serializer.fromJson<List<dynamic>?>(json['images']),
+        serializer.fromJson<String?>(json['images']),
       ),
       coverImage: serializer.fromJson<String?>(json['cover_image']),
       taskId: serializer.fromJson<String?>(json['task_id']),
       createdAt: $NotesTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $NotesTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $NotesTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -1701,18 +1701,18 @@ class Note extends DataClass implements Insertable<Note> {
       'user_id': serializer.toJson<String?>(userId),
       'title': serializer.toJson<String>(title),
       'content': serializer.toJson<String?>(content),
-      'images': serializer.toJson<List<dynamic>?>(
+      'images': serializer.toJson<String?>(
         $NotesTable.$converterimages.toJson(images),
       ),
       'cover_image': serializer.toJson<String?>(coverImage),
       'task_id': serializer.toJson<String?>(taskId),
-      'created_at': serializer.toJson<DateTime>(
+      'created_at': serializer.toJson<String>(
         $NotesTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $NotesTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $NotesTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -2233,15 +2233,15 @@ class $TagsTable extends Tags with TableInfo<$TagsTable, Tag> {
   $converterdarkColorScheme = const ColorSchemeConverter();
   static JsonTypeConverter2<ColorScheme?, String?, String?>
   $converterlightColorScheme = const ColorSchemeConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
@@ -2367,13 +2367,13 @@ class Tag extends DataClass implements Insertable<Tag> {
         serializer.fromJson<String?>(json['light_color_scheme']),
       ),
       createdAt: $TagsTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $TagsTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $TagsTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -2394,13 +2394,13 @@ class Tag extends DataClass implements Insertable<Tag> {
       'light_color_scheme': serializer.toJson<String?>(
         $TagsTable.$converterlightColorScheme.toJson(lightColorScheme),
       ),
-      'created_at': serializer.toJson<DateTime>(
+      'created_at': serializer.toJson<String>(
         $TagsTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $TagsTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $TagsTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -2709,6 +2709,15 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
     requiredDuringInsert: false,
     clientDefault: () => _uuid.v4(),
   );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _noteIdMeta = const VerificationMeta('noteId');
   @override
   late final GeneratedColumn<String> noteId = GeneratedColumn<String>(
@@ -2733,20 +2742,16 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
       'REFERENCES tags (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _isParentMeta = const VerificationMeta(
-    'isParent',
+  static const VerificationMeta _linkedTagIdMeta = const VerificationMeta(
+    'linkedTagId',
   );
   @override
-  late final GeneratedColumn<bool> isParent = GeneratedColumn<bool>(
-    'is_parent',
+  late final GeneratedColumn<String> linkedTagId = GeneratedColumn<String>(
+    'linked_tag_id',
     aliasedName,
-    false,
-    type: DriftSqlType.bool,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_parent" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
   );
   @override
   late final GeneratedColumnWithTypeConverter<Jiffy, DateTime> createdAt =
@@ -2779,9 +2784,10 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    userId,
     noteId,
     tagId,
-    isParent,
+    linkedTagId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -2801,6 +2807,12 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
     if (data.containsKey('note_id')) {
       context.handle(
         _noteIdMeta,
@@ -2817,10 +2829,13 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
     } else if (isInserting) {
       context.missing(_tagIdMeta);
     }
-    if (data.containsKey('is_parent')) {
+    if (data.containsKey('linked_tag_id')) {
       context.handle(
-        _isParentMeta,
-        isParent.isAcceptableOrUnknown(data['is_parent']!, _isParentMeta),
+        _linkedTagIdMeta,
+        linkedTagId.isAcceptableOrUnknown(
+          data['linked_tag_id']!,
+          _linkedTagIdMeta,
+        ),
       );
     }
     return context;
@@ -2836,6 +2851,10 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       noteId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}note_id'],
@@ -2844,10 +2863,10 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
         DriftSqlType.string,
         data['${effectivePrefix}tag_id'],
       )!,
-      isParent: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_parent'],
-      )!,
+      linkedTagId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_tag_id'],
+      ),
       createdAt: $NoteTagsTable.$convertercreatedAt.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
@@ -2874,31 +2893,33 @@ class $NoteTagsTable extends NoteTags with TableInfo<$NoteTagsTable, NoteTag> {
     return $NoteTagsTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
 class NoteTag extends DataClass implements Insertable<NoteTag> {
   final String id;
+  final String? userId;
   final String noteId;
   final String tagId;
-  final bool isParent;
+  final String? linkedTagId;
   final Jiffy createdAt;
   final Jiffy? updatedAt;
   final Jiffy? deletedAt;
   const NoteTag({
     required this.id,
+    this.userId,
     required this.noteId,
     required this.tagId,
-    required this.isParent,
+    this.linkedTagId,
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -2907,9 +2928,14 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['note_id'] = Variable<String>(noteId);
     map['tag_id'] = Variable<String>(tagId);
-    map['is_parent'] = Variable<bool>(isParent);
+    if (!nullToAbsent || linkedTagId != null) {
+      map['linked_tag_id'] = Variable<String>(linkedTagId);
+    }
     {
       map['created_at'] = Variable<DateTime>(
         $NoteTagsTable.$convertercreatedAt.toSql(createdAt),
@@ -2931,9 +2957,14 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
   NoteTagsCompanion toCompanion(bool nullToAbsent) {
     return NoteTagsCompanion(
       id: Value(id),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       noteId: Value(noteId),
       tagId: Value(tagId),
-      isParent: Value(isParent),
+      linkedTagId: linkedTagId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedTagId),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -2951,17 +2982,18 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return NoteTag(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['user_id']),
       noteId: serializer.fromJson<String>(json['note_id']),
       tagId: serializer.fromJson<String>(json['tag_id']),
-      isParent: serializer.fromJson<bool>(json['is_parent']),
+      linkedTagId: serializer.fromJson<String?>(json['linked_tag_id']),
       createdAt: $NoteTagsTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $NoteTagsTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $NoteTagsTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -2970,16 +3002,17 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'user_id': serializer.toJson<String?>(userId),
       'note_id': serializer.toJson<String>(noteId),
       'tag_id': serializer.toJson<String>(tagId),
-      'is_parent': serializer.toJson<bool>(isParent),
-      'created_at': serializer.toJson<DateTime>(
+      'linked_tag_id': serializer.toJson<String?>(linkedTagId),
+      'created_at': serializer.toJson<String>(
         $NoteTagsTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $NoteTagsTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $NoteTagsTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -2987,17 +3020,19 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
 
   NoteTag copyWith({
     String? id,
+    Value<String?> userId = const Value.absent(),
     String? noteId,
     String? tagId,
-    bool? isParent,
+    Value<String?> linkedTagId = const Value.absent(),
     Jiffy? createdAt,
     Value<Jiffy?> updatedAt = const Value.absent(),
     Value<Jiffy?> deletedAt = const Value.absent(),
   }) => NoteTag(
     id: id ?? this.id,
+    userId: userId.present ? userId.value : this.userId,
     noteId: noteId ?? this.noteId,
     tagId: tagId ?? this.tagId,
-    isParent: isParent ?? this.isParent,
+    linkedTagId: linkedTagId.present ? linkedTagId.value : this.linkedTagId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -3005,9 +3040,12 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
   NoteTag copyWithCompanion(NoteTagsCompanion data) {
     return NoteTag(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       noteId: data.noteId.present ? data.noteId.value : this.noteId,
       tagId: data.tagId.present ? data.tagId.value : this.tagId,
-      isParent: data.isParent.present ? data.isParent.value : this.isParent,
+      linkedTagId: data.linkedTagId.present
+          ? data.linkedTagId.value
+          : this.linkedTagId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -3018,9 +3056,10 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
   String toString() {
     return (StringBuffer('NoteTag(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('noteId: $noteId, ')
           ..write('tagId: $tagId, ')
-          ..write('isParent: $isParent, ')
+          ..write('linkedTagId: $linkedTagId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -3029,16 +3068,25 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, noteId, tagId, isParent, createdAt, updatedAt, deletedAt);
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    noteId,
+    tagId,
+    linkedTagId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is NoteTag &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.noteId == this.noteId &&
           other.tagId == this.tagId &&
-          other.isParent == this.isParent &&
+          other.linkedTagId == this.linkedTagId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -3046,18 +3094,20 @@ class NoteTag extends DataClass implements Insertable<NoteTag> {
 
 class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
   final Value<String> id;
+  final Value<String?> userId;
   final Value<String> noteId;
   final Value<String> tagId;
-  final Value<bool> isParent;
+  final Value<String?> linkedTagId;
   final Value<Jiffy> createdAt;
   final Value<Jiffy?> updatedAt;
   final Value<Jiffy?> deletedAt;
   final Value<int> rowid;
   const NoteTagsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.noteId = const Value.absent(),
     this.tagId = const Value.absent(),
-    this.isParent = const Value.absent(),
+    this.linkedTagId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -3065,9 +3115,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
   });
   NoteTagsCompanion.insert({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     required String noteId,
     required String tagId,
-    this.isParent = const Value.absent(),
+    this.linkedTagId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -3076,9 +3127,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
        tagId = Value(tagId);
   static Insertable<NoteTag> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? noteId,
     Expression<String>? tagId,
-    Expression<bool>? isParent,
+    Expression<String>? linkedTagId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -3086,9 +3138,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (noteId != null) 'note_id': noteId,
       if (tagId != null) 'tag_id': tagId,
-      if (isParent != null) 'is_parent': isParent,
+      if (linkedTagId != null) 'linked_tag_id': linkedTagId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -3098,9 +3151,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
 
   NoteTagsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? userId,
     Value<String>? noteId,
     Value<String>? tagId,
-    Value<bool>? isParent,
+    Value<String?>? linkedTagId,
     Value<Jiffy>? createdAt,
     Value<Jiffy?>? updatedAt,
     Value<Jiffy?>? deletedAt,
@@ -3108,9 +3162,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
   }) {
     return NoteTagsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       noteId: noteId ?? this.noteId,
       tagId: tagId ?? this.tagId,
-      isParent: isParent ?? this.isParent,
+      linkedTagId: linkedTagId ?? this.linkedTagId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -3124,14 +3179,17 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     if (noteId.present) {
       map['note_id'] = Variable<String>(noteId.value);
     }
     if (tagId.present) {
       map['tag_id'] = Variable<String>(tagId.value);
     }
-    if (isParent.present) {
-      map['is_parent'] = Variable<bool>(isParent.value);
+    if (linkedTagId.present) {
+      map['linked_tag_id'] = Variable<String>(linkedTagId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(
@@ -3158,9 +3216,10 @@ class NoteTagsCompanion extends UpdateCompanion<NoteTag> {
   String toString() {
     return (StringBuffer('NoteTagsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('noteId: $noteId, ')
           ..write('tagId: $tagId, ')
-          ..write('isParent: $isParent, ')
+          ..write('linkedTagId: $linkedTagId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -3184,6 +3243,15 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     clientDefault: () => _uuid.v4(),
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'user_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
   @override
@@ -3209,20 +3277,16 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
       'REFERENCES tags (id) ON DELETE CASCADE',
     ),
   );
-  static const VerificationMeta _isParentMeta = const VerificationMeta(
-    'isParent',
+  static const VerificationMeta _linkedTagIdMeta = const VerificationMeta(
+    'linkedTagId',
   );
   @override
-  late final GeneratedColumn<bool> isParent = GeneratedColumn<bool>(
-    'is_parent',
+  late final GeneratedColumn<String> linkedTagId = GeneratedColumn<String>(
+    'linked_tag_id',
     aliasedName,
-    false,
-    type: DriftSqlType.bool,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_parent" IN (0, 1))',
-    ),
-    defaultValue: const Constant(false),
   );
   @override
   late final GeneratedColumnWithTypeConverter<Jiffy, DateTime> createdAt =
@@ -3255,9 +3319,10 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    userId,
     taskId,
     tagId,
-    isParent,
+    linkedTagId,
     createdAt,
     updatedAt,
     deletedAt,
@@ -3277,6 +3342,12 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
+    if (data.containsKey('user_id')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['user_id']!, _userIdMeta),
+      );
+    }
     if (data.containsKey('task_id')) {
       context.handle(
         _taskIdMeta,
@@ -3293,10 +3364,13 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
     } else if (isInserting) {
       context.missing(_tagIdMeta);
     }
-    if (data.containsKey('is_parent')) {
+    if (data.containsKey('linked_tag_id')) {
       context.handle(
-        _isParentMeta,
-        isParent.isAcceptableOrUnknown(data['is_parent']!, _isParentMeta),
+        _linkedTagIdMeta,
+        linkedTagId.isAcceptableOrUnknown(
+          data['linked_tag_id']!,
+          _linkedTagIdMeta,
+        ),
       );
     }
     return context;
@@ -3312,6 +3386,10 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_id'],
+      ),
       taskId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}task_id'],
@@ -3320,10 +3398,10 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
         DriftSqlType.string,
         data['${effectivePrefix}tag_id'],
       )!,
-      isParent: attachedDatabase.typeMapping.read(
-        DriftSqlType.bool,
-        data['${effectivePrefix}is_parent'],
-      )!,
+      linkedTagId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}linked_tag_id'],
+      ),
       createdAt: $TaskTagsTable.$convertercreatedAt.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
@@ -3350,31 +3428,33 @@ class $TaskTagsTable extends TaskTags with TableInfo<$TaskTagsTable, TaskTag> {
     return $TaskTagsTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
 class TaskTag extends DataClass implements Insertable<TaskTag> {
   final String id;
+  final String? userId;
   final String taskId;
   final String tagId;
-  final bool isParent;
+  final String? linkedTagId;
   final Jiffy createdAt;
   final Jiffy? updatedAt;
   final Jiffy? deletedAt;
   const TaskTag({
     required this.id,
+    this.userId,
     required this.taskId,
     required this.tagId,
-    required this.isParent,
+    this.linkedTagId,
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -3383,9 +3463,14 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
+    if (!nullToAbsent || userId != null) {
+      map['user_id'] = Variable<String>(userId);
+    }
     map['task_id'] = Variable<String>(taskId);
     map['tag_id'] = Variable<String>(tagId);
-    map['is_parent'] = Variable<bool>(isParent);
+    if (!nullToAbsent || linkedTagId != null) {
+      map['linked_tag_id'] = Variable<String>(linkedTagId);
+    }
     {
       map['created_at'] = Variable<DateTime>(
         $TaskTagsTable.$convertercreatedAt.toSql(createdAt),
@@ -3407,9 +3492,14 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
   TaskTagsCompanion toCompanion(bool nullToAbsent) {
     return TaskTagsCompanion(
       id: Value(id),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
       taskId: Value(taskId),
       tagId: Value(tagId),
-      isParent: Value(isParent),
+      linkedTagId: linkedTagId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedTagId),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -3427,17 +3517,18 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return TaskTag(
       id: serializer.fromJson<String>(json['id']),
+      userId: serializer.fromJson<String?>(json['user_id']),
       taskId: serializer.fromJson<String>(json['task_id']),
       tagId: serializer.fromJson<String>(json['tag_id']),
-      isParent: serializer.fromJson<bool>(json['is_parent']),
+      linkedTagId: serializer.fromJson<String?>(json['linked_tag_id']),
       createdAt: $TaskTagsTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $TaskTagsTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $TaskTagsTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -3446,16 +3537,17 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
+      'user_id': serializer.toJson<String?>(userId),
       'task_id': serializer.toJson<String>(taskId),
       'tag_id': serializer.toJson<String>(tagId),
-      'is_parent': serializer.toJson<bool>(isParent),
-      'created_at': serializer.toJson<DateTime>(
+      'linked_tag_id': serializer.toJson<String?>(linkedTagId),
+      'created_at': serializer.toJson<String>(
         $TaskTagsTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $TaskTagsTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $TaskTagsTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -3463,17 +3555,19 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
 
   TaskTag copyWith({
     String? id,
+    Value<String?> userId = const Value.absent(),
     String? taskId,
     String? tagId,
-    bool? isParent,
+    Value<String?> linkedTagId = const Value.absent(),
     Jiffy? createdAt,
     Value<Jiffy?> updatedAt = const Value.absent(),
     Value<Jiffy?> deletedAt = const Value.absent(),
   }) => TaskTag(
     id: id ?? this.id,
+    userId: userId.present ? userId.value : this.userId,
     taskId: taskId ?? this.taskId,
     tagId: tagId ?? this.tagId,
-    isParent: isParent ?? this.isParent,
+    linkedTagId: linkedTagId.present ? linkedTagId.value : this.linkedTagId,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -3481,9 +3575,12 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
   TaskTag copyWithCompanion(TaskTagsCompanion data) {
     return TaskTag(
       id: data.id.present ? data.id.value : this.id,
+      userId: data.userId.present ? data.userId.value : this.userId,
       taskId: data.taskId.present ? data.taskId.value : this.taskId,
       tagId: data.tagId.present ? data.tagId.value : this.tagId,
-      isParent: data.isParent.present ? data.isParent.value : this.isParent,
+      linkedTagId: data.linkedTagId.present
+          ? data.linkedTagId.value
+          : this.linkedTagId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -3494,9 +3591,10 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
   String toString() {
     return (StringBuffer('TaskTag(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('taskId: $taskId, ')
           ..write('tagId: $tagId, ')
-          ..write('isParent: $isParent, ')
+          ..write('linkedTagId: $linkedTagId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -3505,16 +3603,25 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, taskId, tagId, isParent, createdAt, updatedAt, deletedAt);
+  int get hashCode => Object.hash(
+    id,
+    userId,
+    taskId,
+    tagId,
+    linkedTagId,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is TaskTag &&
           other.id == this.id &&
+          other.userId == this.userId &&
           other.taskId == this.taskId &&
           other.tagId == this.tagId &&
-          other.isParent == this.isParent &&
+          other.linkedTagId == this.linkedTagId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -3522,18 +3629,20 @@ class TaskTag extends DataClass implements Insertable<TaskTag> {
 
 class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
   final Value<String> id;
+  final Value<String?> userId;
   final Value<String> taskId;
   final Value<String> tagId;
-  final Value<bool> isParent;
+  final Value<String?> linkedTagId;
   final Value<Jiffy> createdAt;
   final Value<Jiffy?> updatedAt;
   final Value<Jiffy?> deletedAt;
   final Value<int> rowid;
   const TaskTagsCompanion({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     this.taskId = const Value.absent(),
     this.tagId = const Value.absent(),
-    this.isParent = const Value.absent(),
+    this.linkedTagId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -3541,9 +3650,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
   });
   TaskTagsCompanion.insert({
     this.id = const Value.absent(),
+    this.userId = const Value.absent(),
     required String taskId,
     required String tagId,
-    this.isParent = const Value.absent(),
+    this.linkedTagId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -3552,9 +3662,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
        tagId = Value(tagId);
   static Insertable<TaskTag> custom({
     Expression<String>? id,
+    Expression<String>? userId,
     Expression<String>? taskId,
     Expression<String>? tagId,
-    Expression<bool>? isParent,
+    Expression<String>? linkedTagId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -3562,9 +3673,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (userId != null) 'user_id': userId,
       if (taskId != null) 'task_id': taskId,
       if (tagId != null) 'tag_id': tagId,
-      if (isParent != null) 'is_parent': isParent,
+      if (linkedTagId != null) 'linked_tag_id': linkedTagId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -3574,9 +3686,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
 
   TaskTagsCompanion copyWith({
     Value<String>? id,
+    Value<String?>? userId,
     Value<String>? taskId,
     Value<String>? tagId,
-    Value<bool>? isParent,
+    Value<String?>? linkedTagId,
     Value<Jiffy>? createdAt,
     Value<Jiffy?>? updatedAt,
     Value<Jiffy?>? deletedAt,
@@ -3584,9 +3697,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
   }) {
     return TaskTagsCompanion(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       taskId: taskId ?? this.taskId,
       tagId: tagId ?? this.tagId,
-      isParent: isParent ?? this.isParent,
+      linkedTagId: linkedTagId ?? this.linkedTagId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -3600,14 +3714,17 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
+    if (userId.present) {
+      map['user_id'] = Variable<String>(userId.value);
+    }
     if (taskId.present) {
       map['task_id'] = Variable<String>(taskId.value);
     }
     if (tagId.present) {
       map['tag_id'] = Variable<String>(tagId.value);
     }
-    if (isParent.present) {
-      map['is_parent'] = Variable<bool>(isParent.value);
+    if (linkedTagId.present) {
+      map['linked_tag_id'] = Variable<String>(linkedTagId.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(
@@ -3634,9 +3751,10 @@ class TaskTagsCompanion extends UpdateCompanion<TaskTag> {
   String toString() {
     return (StringBuffer('TaskTagsCompanion(')
           ..write('id: $id, ')
+          ..write('userId: $userId, ')
           ..write('taskId: $taskId, ')
           ..write('tagId: $tagId, ')
-          ..write('isParent: $isParent, ')
+          ..write('linkedTagId: $linkedTagId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -3906,33 +4024,33 @@ class $TaskActivitiesTable extends TaskActivities
     return $TaskActivitiesTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercompletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercompletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?>
-  $convertercompletedAtn = JsonTypeConverter2.asNullable($convertercompletedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converteroccurrenceAt =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $convertercompletedAtn =
+      JsonTypeConverter2.asNullable($convertercompletedAt);
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converteroccurrenceAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?>
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?>
   $converteroccurrenceAtn = JsonTypeConverter2.asNullable(
     $converteroccurrenceAt,
   );
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterstartAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterstartAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterstartAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterstartAtn =
       JsonTypeConverter2.asNullable($converterstartAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterendAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterendAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterendAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterendAtn =
       JsonTypeConverter2.asNullable($converterendAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
@@ -4064,27 +4182,27 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       userId: serializer.fromJson<String?>(json['user_id']),
       taskId: serializer.fromJson<String?>(json['task_id']),
       completedAt: $TaskActivitiesTable.$convertercompletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['completed_at']),
+        serializer.fromJson<String?>(json['completed_at']),
       ),
       activityType: serializer.fromJson<String?>(json['activity_type']),
       occurrenceAt: $TaskActivitiesTable.$converteroccurrenceAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['occurrence_at']),
+        serializer.fromJson<String?>(json['occurrence_at']),
       ),
       startAt: $TaskActivitiesTable.$converterstartAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['start_at']),
+        serializer.fromJson<String?>(json['start_at']),
       ),
       endAt: $TaskActivitiesTable.$converterendAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['end_at']),
+        serializer.fromJson<String?>(json['end_at']),
       ),
       duration: serializer.fromJson<int?>(json['duration']),
       createdAt: $TaskActivitiesTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $TaskActivitiesTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $TaskActivitiesTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -4095,27 +4213,27 @@ class TaskActivity extends DataClass implements Insertable<TaskActivity> {
       'id': serializer.toJson<String>(id),
       'user_id': serializer.toJson<String?>(userId),
       'task_id': serializer.toJson<String?>(taskId),
-      'completed_at': serializer.toJson<DateTime?>(
+      'completed_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$convertercompletedAtn.toJson(completedAt),
       ),
       'activity_type': serializer.toJson<String?>(activityType),
-      'occurrence_at': serializer.toJson<DateTime?>(
+      'occurrence_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$converteroccurrenceAtn.toJson(occurrenceAt),
       ),
-      'start_at': serializer.toJson<DateTime?>(
+      'start_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$converterstartAtn.toJson(startAt),
       ),
-      'end_at': serializer.toJson<DateTime?>(
+      'end_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$converterendAtn.toJson(endAt),
       ),
       'duration': serializer.toJson<int?>(duration),
-      'created_at': serializer.toJson<DateTime>(
+      'created_at': serializer.toJson<String>(
         $TaskActivitiesTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $TaskActivitiesTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -4607,29 +4725,29 @@ class $TaskOccurrencesTable extends TaskOccurrences
     return $TaskOccurrencesTable(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converteroccurrenceAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converteroccurrenceAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterstartAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterstartAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterstartAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterstartAtn =
       JsonTypeConverter2.asNullable($converterstartAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterendAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterendAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterendAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterendAtn =
       JsonTypeConverter2.asNullable($converterendAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdueAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdueAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdueAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdueAtn =
       JsonTypeConverter2.asNullable($converterdueAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $convertercreatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterupdatedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterupdatedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterupdatedAtn =
       JsonTypeConverter2.asNullable($converterupdatedAt);
-  static JsonTypeConverter2<Jiffy, DateTime, DateTime> $converterdeletedAt =
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterdeletedAt =
       const JiffyConverter();
-  static JsonTypeConverter2<Jiffy?, DateTime?, DateTime?> $converterdeletedAtn =
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdeletedAtn =
       JsonTypeConverter2.asNullable($converterdeletedAt);
 }
 
@@ -4734,25 +4852,25 @@ class TaskOccurrence extends DataClass implements Insertable<TaskOccurrence> {
       id: serializer.fromJson<String>(json['id']),
       taskId: serializer.fromJson<String?>(json['task_id']),
       occurrenceAt: $TaskOccurrencesTable.$converteroccurrenceAt.fromJson(
-        serializer.fromJson<DateTime>(json['occurrence_at']),
+        serializer.fromJson<String>(json['occurrence_at']),
       ),
       startAt: $TaskOccurrencesTable.$converterstartAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['start_at']),
+        serializer.fromJson<String?>(json['start_at']),
       ),
       endAt: $TaskOccurrencesTable.$converterendAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['end_at']),
+        serializer.fromJson<String?>(json['end_at']),
       ),
       dueAt: $TaskOccurrencesTable.$converterdueAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['due_at']),
+        serializer.fromJson<String?>(json['due_at']),
       ),
       createdAt: $TaskOccurrencesTable.$convertercreatedAt.fromJson(
-        serializer.fromJson<DateTime>(json['created_at']),
+        serializer.fromJson<String>(json['created_at']),
       ),
       updatedAt: $TaskOccurrencesTable.$converterupdatedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['updated_at']),
+        serializer.fromJson<String?>(json['updated_at']),
       ),
       deletedAt: $TaskOccurrencesTable.$converterdeletedAtn.fromJson(
-        serializer.fromJson<DateTime?>(json['deleted_at']),
+        serializer.fromJson<String?>(json['deleted_at']),
       ),
     );
   }
@@ -4762,25 +4880,25 @@ class TaskOccurrence extends DataClass implements Insertable<TaskOccurrence> {
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
       'task_id': serializer.toJson<String?>(taskId),
-      'occurrence_at': serializer.toJson<DateTime>(
+      'occurrence_at': serializer.toJson<String>(
         $TaskOccurrencesTable.$converteroccurrenceAt.toJson(occurrenceAt),
       ),
-      'start_at': serializer.toJson<DateTime?>(
+      'start_at': serializer.toJson<String?>(
         $TaskOccurrencesTable.$converterstartAtn.toJson(startAt),
       ),
-      'end_at': serializer.toJson<DateTime?>(
+      'end_at': serializer.toJson<String?>(
         $TaskOccurrencesTable.$converterendAtn.toJson(endAt),
       ),
-      'due_at': serializer.toJson<DateTime?>(
+      'due_at': serializer.toJson<String?>(
         $TaskOccurrencesTable.$converterdueAtn.toJson(dueAt),
       ),
-      'created_at': serializer.toJson<DateTime>(
+      'created_at': serializer.toJson<String>(
         $TaskOccurrencesTable.$convertercreatedAt.toJson(createdAt),
       ),
-      'updated_at': serializer.toJson<DateTime?>(
+      'updated_at': serializer.toJson<String?>(
         $TaskOccurrencesTable.$converterupdatedAtn.toJson(updatedAt),
       ),
-      'deleted_at': serializer.toJson<DateTime?>(
+      'deleted_at': serializer.toJson<String?>(
         $TaskOccurrencesTable.$converterdeletedAtn.toJson(deletedAt),
       ),
     };
@@ -7400,9 +7518,10 @@ typedef $$TagsTableProcessedTableManager =
 typedef $$NoteTagsTableCreateCompanionBuilder =
     NoteTagsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       required String noteId,
       required String tagId,
-      Value<bool> isParent,
+      Value<String?> linkedTagId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -7411,9 +7530,10 @@ typedef $$NoteTagsTableCreateCompanionBuilder =
 typedef $$NoteTagsTableUpdateCompanionBuilder =
     NoteTagsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       Value<String> noteId,
       Value<String> tagId,
-      Value<bool> isParent,
+      Value<String?> linkedTagId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -7474,8 +7594,13 @@ class $$NoteTagsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get isParent => $composableBuilder(
-    column: $table.isParent,
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -7558,8 +7683,13 @@ class $$NoteTagsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get isParent => $composableBuilder(
-    column: $table.isParent,
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -7637,8 +7767,13 @@ class $$NoteTagsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<bool> get isParent =>
-      $composableBuilder(column: $table.isParent, builder: (column) => column);
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
+    builder: (column) => column,
+  );
 
   GeneratedColumnWithTypeConverter<Jiffy, DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -7725,18 +7860,20 @@ class $$NoteTagsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> noteId = const Value.absent(),
                 Value<String> tagId = const Value.absent(),
-                Value<bool> isParent = const Value.absent(),
+                Value<String?> linkedTagId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NoteTagsCompanion(
                 id: id,
+                userId: userId,
                 noteId: noteId,
                 tagId: tagId,
-                isParent: isParent,
+                linkedTagId: linkedTagId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -7745,18 +7882,20 @@ class $$NoteTagsTableTableManager
           createCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 required String noteId,
                 required String tagId,
-                Value<bool> isParent = const Value.absent(),
+                Value<String?> linkedTagId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => NoteTagsCompanion.insert(
                 id: id,
+                userId: userId,
                 noteId: noteId,
                 tagId: tagId,
-                isParent: isParent,
+                linkedTagId: linkedTagId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -7845,9 +7984,10 @@ typedef $$NoteTagsTableProcessedTableManager =
 typedef $$TaskTagsTableCreateCompanionBuilder =
     TaskTagsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       required String taskId,
       required String tagId,
-      Value<bool> isParent,
+      Value<String?> linkedTagId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -7856,9 +7996,10 @@ typedef $$TaskTagsTableCreateCompanionBuilder =
 typedef $$TaskTagsTableUpdateCompanionBuilder =
     TaskTagsCompanion Function({
       Value<String> id,
+      Value<String?> userId,
       Value<String> taskId,
       Value<String> tagId,
-      Value<bool> isParent,
+      Value<String?> linkedTagId,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -7919,8 +8060,13 @@ class $$TaskTagsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get isParent => $composableBuilder(
-    column: $table.isParent,
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8003,8 +8149,13 @@ class $$TaskTagsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get isParent => $composableBuilder(
-    column: $table.isParent,
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -8082,8 +8233,13 @@ class $$TaskTagsTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<bool> get isParent =>
-      $composableBuilder(column: $table.isParent, builder: (column) => column);
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get linkedTagId => $composableBuilder(
+    column: $table.linkedTagId,
+    builder: (column) => column,
+  );
 
   GeneratedColumnWithTypeConverter<Jiffy, DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -8170,18 +8326,20 @@ class $$TaskTagsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 Value<String> taskId = const Value.absent(),
                 Value<String> tagId = const Value.absent(),
-                Value<bool> isParent = const Value.absent(),
+                Value<String?> linkedTagId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TaskTagsCompanion(
                 id: id,
+                userId: userId,
                 taskId: taskId,
                 tagId: tagId,
-                isParent: isParent,
+                linkedTagId: linkedTagId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -8190,18 +8348,20 @@ class $$TaskTagsTableTableManager
           createCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
                 required String taskId,
                 required String tagId,
-                Value<bool> isParent = const Value.absent(),
+                Value<String?> linkedTagId = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => TaskTagsCompanion.insert(
                 id: id,
+                userId: userId,
                 taskId: taskId,
                 tagId: tagId,
-                isParent: isParent,
+                linkedTagId: linkedTagId,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,

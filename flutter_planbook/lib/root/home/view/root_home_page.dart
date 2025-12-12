@@ -18,13 +18,20 @@ class RootHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           lazy: false,
-          create: (context) => RootHomeBloc(
-            tagsRepository: context.read(),
-          )..add(const RootHomeRequested()),
+          create: (context) {
+            /// Trigger app launched to create default tags and sample tasks
+            context.read<AppBloc>().add(AppLaunched(l10n: l10n));
+            FlutterNativeSplash.remove();
+
+            return RootHomeBloc(
+              tagsRepository: context.read(),
+            )..add(const RootHomeRequested());
+          },
         ),
         BlocProvider(
           create: (context) =>
@@ -45,14 +52,7 @@ class RootHomePage extends StatelessWidget {
           create: (context) => TaskTodayBloc(),
         ),
       ],
-      child: BlocListener<RootHomeBloc, RootHomeState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: (context, state) {
-          context.read<AppBloc>().add(AppLaunched(l10n: context.l10n));
-          FlutterNativeSplash.remove();
-        },
-        child: const _RootHomePage(),
-      ),
+      child: const _RootHomePage(),
     );
   }
 }

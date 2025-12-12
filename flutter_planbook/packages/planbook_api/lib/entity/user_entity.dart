@@ -38,6 +38,7 @@ class UserProfileEntity extends Equatable {
     this.gender,
     this.birthday,
     this.lastLaunchAppAt,
+    this.launchCount = 0,
   });
 
   factory UserProfileEntity.fromMap(Map<String, dynamic> map) {
@@ -64,6 +65,10 @@ class UserProfileEntity extends Equatable {
       birthday: map['birthday'] != null
           ? DateTime.parse(map['birthday'] as String)
           : null,
+      lastLaunchAppAt: map['last_launch_app_at'] != null
+          ? DateTime.parse(map['last_launch_app_at'] as String)
+          : null,
+      launchCount: map['launch_count'] as int? ?? 0,
     );
   }
 
@@ -76,6 +81,7 @@ class UserProfileEntity extends Equatable {
   final UserGender? gender;
   final DateTime? birthday;
   final DateTime? lastLaunchAppAt;
+  final int launchCount;
 
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -91,6 +97,8 @@ class UserProfileEntity extends Equatable {
     avatar,
     gender,
     birthday,
+    lastLaunchAppAt,
+    launchCount,
   ];
 
   UserProfileEntity copyWith({
@@ -102,6 +110,8 @@ class UserProfileEntity extends Equatable {
     String? avatar,
     UserGender? gender,
     DateTime? birthday,
+    DateTime? lastLaunchAppAt,
+    int? launchCount,
   }) {
     return UserProfileEntity(
       id: id ?? this.id,
@@ -112,6 +122,8 @@ class UserProfileEntity extends Equatable {
       avatar: avatar ?? this.avatar,
       gender: gender ?? this.gender,
       birthday: birthday ?? this.birthday,
+      lastLaunchAppAt: lastLaunchAppAt ?? this.lastLaunchAppAt,
+      launchCount: launchCount ?? this.launchCount,
     );
   }
 
@@ -125,6 +137,9 @@ class UserProfileEntity extends Equatable {
       if (avatar != null) 'avatar': avatar,
       if (gender != null) 'gender': gender?.name,
       if (birthday != null) 'birthday': birthday?.toIso8601String(),
+      if (lastLaunchAppAt != null)
+        'last_launch_app_at': lastLaunchAppAt?.toIso8601String(),
+      'launch_count': launchCount,
     };
   }
 

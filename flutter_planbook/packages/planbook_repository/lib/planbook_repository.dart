@@ -10,4 +10,5 @@ export 'note/notes_repository.dart';
 export 'settings/settings_repository.dart';
 export 'task/tags_repository.dart';
 export 'task/tasks_repository.dart';
+// export 'users/sync_repository.dart';
 export 'users/users_repository.dart';

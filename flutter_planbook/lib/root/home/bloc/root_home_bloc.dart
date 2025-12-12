@@ -86,7 +86,7 @@ class RootHomeBloc extends Bloc<RootHomeEvent, RootHomeState> {
     Emitter<RootHomeState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    await _tagsRepository.deleteTag(event.tagId);
+    await _tagsRepository.deleteById(event.tagId);
     emit(state.copyWith(status: PageStatus.success));
   }
 

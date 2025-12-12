@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:planbook_api/planbook_api.dart' as api;
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -60,6 +61,8 @@ class UsersRepository {
           user == null ? null : UserEntity(user: user, profile: profile),
     );
   }
+
+  bool get isFirstLaunch => userProfile?.lastLaunchAppAt == null;
 
   static const kUserProfile = '__user_profile_cache__';
 
@@ -234,11 +237,16 @@ class UsersRepository {
       } else {
         throw Exception('Failed to delete user');
       }
-    } catch (e) {
-      print(e);
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
 
     await _db.transaction(() async {
+      await (_db.delete(
+        _db.tasks,
+      )..where((t) => t.userId.equals(user!.id))).go();
       await (_db.delete(
         _db.notes,
       )..where((t) => t.userId.equals(user!.id))).go();
@@ -247,9 +255,15 @@ class UsersRepository {
       )..where((t) => t.userId.equals(user!.id))).go();
       await (_db.delete(
         _db.noteTags,
-      )..where((t) => t.noteId.equals(user!.id))).go();
+      )..where((t) => t.userId.equals(user!.id))).go();
       await (_db.delete(
         _db.taskTags,
+      )..where((t) => t.userId.equals(user!.id))).go();
+      await (_db.delete(
+        _db.taskActivities,
+      )..where((t) => t.userId.equals(user!.id))).go();
+      await (_db.delete(
+        _db.taskOccurrences,
       )..where((t) => t.taskId.equals(user!.id))).go();
     });
   }

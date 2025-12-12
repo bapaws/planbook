@@ -10,7 +10,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
   });
 
   /// 获取指定日期内的 overdue 任务数量
-  Stream<int> getOverdueTaskCount({required Jiffy date}) {
+  Stream<int> getOverdueTaskCount({required Jiffy date, String? userId}) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
     final exp =
         ((db.tasks.dueAt.isNotNull() &
@@ -18,7 +18,10 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
             (db.tasks.endAt.isNotNull() &
                 db.tasks.endAt.isSmallerThanValue(startOfDay))) &
         db.tasks.deletedAt.isNull() &
-        db.taskActivities.id.isNull();
+        db.taskActivities.id.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -43,6 +46,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
     required Jiffy date,
     TaskPriority? priority,
     String? tagId,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
     var exp =
@@ -50,7 +54,10 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
             (db.tasks.endAt.isNotNull() &
                 db.tasks.endAt.isSmallerThanValue(startOfDay))) &
-        db.tasks.deletedAt.isNull();
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     // 只查询未完成的任务：taskActivities.id 为 null 表示未完成
     exp &= db.taskActivities.id.isNull();
     if (tagId != null) {

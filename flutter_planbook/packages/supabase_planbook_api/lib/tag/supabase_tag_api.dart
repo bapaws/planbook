@@ -28,11 +28,34 @@ class SupabaseTagApi {
     await supabase!.from('tags').update(tag.toJson()).eq('id', tag.id);
   }
 
-  Future<void> delete({
-    required Tag tag,
-  }) async {
+  Future<void> deleteById(String id) async {
     if (supabase == null) return;
-    await supabase!.from('tags').delete().eq('id', tag.id);
+    await supabase!
+        .from('tags')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', id);
+    await supabase!
+        .from('task_tags')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('tag_id', id);
+    await supabase!
+        .from('note_tags')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('tag_id', id);
+
+    final directChildren = await supabase!
+        .from('tags')
+        .select('id')
+        .eq('parent_id', id);
+    for (final child in directChildren) {
+      await deleteById(child['id'] as String);
+    }
   }
 
   Future<List<Tag>> getLatestTags({bool force = false}) async {
@@ -40,7 +63,7 @@ class SupabaseTagApi {
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final lastTimestamp = _sp.getInt(kLastGetTagsTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 1000) {
+    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
       return [];
     }
 

@@ -56,11 +56,13 @@ class SupabaseTaskApi {
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final lastTimestamp = _sp.getInt(kLastGetTasksTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 1000) {
+    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
       return [];
     }
 
-    var builder = supabase!.from('tasks').select('*,task_tags(*,tags(*))');
+    var builder = supabase!
+        .from('tasks')
+        .select('*,task_tags(*,tag:tags!task_tags_tag_id_fkey(*))');
     if (!force) {
       if (lastTimestamp != null) {
         final date = DateTime.fromMillisecondsSinceEpoch(

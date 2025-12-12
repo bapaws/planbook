@@ -10,7 +10,11 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getTodayTaskCount({required Jiffy date, bool? isCompleted}) {
+  Stream<int> getTodayTaskCount({
+    required Jiffy date,
+    bool? isCompleted,
+    String? userId,
+  }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
     final startOfDayDateTime = startOfDay.toUtc().dateTime;
@@ -31,7 +35,10 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         ) &
         db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
           endOfDayDateTime,
-        );
+        ) &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     if (isCompleted != null) {
       recurringExp &= isCompleted
@@ -60,7 +67,11 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
 
     // 查询 2: 非重复任务和分离实例（未完成）
     var nonRecurringExp =
-        db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     // 非重复任务：日期在指定日期范围内
     final nonRecurringTaskCondition =
@@ -132,6 +143,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     String? tagId,
     bool? isCompleted,
     TaskPriority? priority,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -146,7 +158,10 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
-        db.tasks.detachedFromTaskId.isNull();
+        db.tasks.detachedFromTaskId.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (isCompleted != null) {
       recurringExp &= isCompleted
           ? db.taskActivities.id.isNotNull()
@@ -201,7 +216,11 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     // 查询 2: 非重复任务和分离实例
     // 构建基础条件
     var nonRecurringExp =
-        db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     // 非重复任务：日期在指定日期范围内
     final nonRecurringTaskCondition =
@@ -300,6 +319,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     String? tagId,
     TaskPriority? priority,
     bool? isCompleted,
+    String? userId,
   }) {
     final date = day ?? Jiffy.now();
     final startOfDay = date.startOf(Unit.day);
@@ -322,7 +342,10 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         ) &
         db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
           endOfDayDateTime,
-        );
+        ) &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (priority != null) {
       recurringExp &= db.tasks.priority.equals(priority.name);
     }
@@ -360,7 +383,11 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     // 查询 2: 非重复任务和分离实例
     // 构建基础条件
     var nonRecurringExp =
-        db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (priority != null) {
       nonRecurringExp &= db.tasks.priority.equals(priority.name);
     }
@@ -438,12 +465,16 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     String? tagId,
     TaskPriority? priority,
     bool? isCompleted,
+    String? userId,
   }) {
     var exp =
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
-        db.tasks.deletedAt.isNull();
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (priority != null) {
       exp &= db.tasks.priority.equals(priority.name);
     }
@@ -484,6 +515,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     TaskPriority? priority,
     Jiffy? day,
     String? tagId,
+    String? userId,
   }) {
     final date = day ?? Jiffy.now();
     final startOfDay = date.startOf(Unit.day);
@@ -492,7 +524,10 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         (db.tasks.dueAt.isNotNull() &
             db.tasks.dueAt.isSmallerThanValue(startOfDayDateTime)) |
         (db.tasks.endAt.isNotNull() &
-            db.tasks.endAt.isSmallerThanValue(startOfDayDateTime));
+            db.tasks.endAt.isSmallerThanValue(startOfDayDateTime) &
+            (userId == null
+                ? db.tasks.userId.isNull()
+                : db.tasks.userId.equals(userId)));
     if (priority != null) {
       exp &= db.tasks.priority.equals(priority.name);
     }

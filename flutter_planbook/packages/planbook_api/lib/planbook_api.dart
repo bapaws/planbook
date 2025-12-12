@@ -16,4 +16,5 @@ export 'entity/note_image_entity.dart';
 export 'entity/tag_entity.dart';
 export 'entity/task_entity.dart';
 export 'entity/user_entity.dart';
+export 'supabase/app_purchases.dart';
 export 'supabase/app_supabase.dart';

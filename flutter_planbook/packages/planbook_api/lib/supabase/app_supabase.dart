@@ -10,8 +10,9 @@ class AppSupabase {
   static final AppSupabase instance = AppSupabase._();
 
   static Supabase? _supabase;
-  static SupabaseClient? get client =>
-      _supabase?.client.auth.currentUser == null ? null : _supabase?.client;
+  static SupabaseClient? get client => _supabase?.client;
+
+  static User? get user => _supabase?.client.auth.currentUser;
 
   late StreamSubscription<AuthState>? _onAuthStateChangeSubscription;
 
@@ -92,7 +93,6 @@ class AppSupabase {
     String? phone,
     String? captchaToken,
   }) async {
-    await initialize();
     return await _supabase?.client.auth.signInWithPassword(
       email: email,
       phone: phone,
@@ -110,7 +110,6 @@ class AppSupabase {
     String? captchaToken,
     OtpChannel channel = OtpChannel.sms,
   }) async {
-    await initialize();
     await _supabase?.client.auth.signInWithOtp(
       email: email,
       phone: phone,
@@ -131,7 +130,6 @@ class AppSupabase {
     String? captchaToken,
     String? tokenHash,
   }) async {
-    await initialize();
     return await _supabase?.client.auth.verifyOTP(
       email: email,
       phone: phone,

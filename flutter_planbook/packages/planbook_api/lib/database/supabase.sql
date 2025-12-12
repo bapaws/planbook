@@ -16,7 +16,7 @@ GRANT ALL ON SCHEMA planbook TO authenticated, service_role;
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.tasks (
     id TEXT PRIMARY KEY,
-    user_id TEXT,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     
     -- 层级关系
@@ -69,7 +69,7 @@ CREATE INDEX IF NOT EXISTS idx_tasks_deleted_at ON planbook.tasks(deleted_at) WH
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.notes (
     id TEXT PRIMARY KEY,
-    user_id TEXT,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     content TEXT,
     images TEXT,
@@ -90,7 +90,7 @@ CREATE INDEX IF NOT EXISTS idx_notes_deleted_at ON planbook.notes(deleted_at) WH
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.tags (
     id TEXT PRIMARY KEY,
-    user_id TEXT,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     color TEXT,
     "order" INTEGER NOT NULL DEFAULT 0,
@@ -113,15 +113,17 @@ CREATE INDEX IF NOT EXISTS idx_tags_deleted_at ON planbook.tags(deleted_at) WHER
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.note_tags (
     id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     note_id TEXT NOT NULL REFERENCES planbook.notes(id) ON DELETE CASCADE,
     tag_id TEXT NOT NULL REFERENCES planbook.tags(id) ON DELETE CASCADE,
-    is_parent BOOLEAN NOT NULL DEFAULT false,
+    linked_tag_id TEXT REFERENCES planbook.tags(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
 );
 
 -- NoteTags 表索引
+CREATE INDEX IF NOT EXISTS idx_note_tags_user_id ON planbook.note_tags(user_id);
 CREATE INDEX IF NOT EXISTS idx_note_tags_note_id ON planbook.note_tags(note_id);
 CREATE INDEX IF NOT EXISTS idx_note_tags_tag_id ON planbook.note_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_note_tags_deleted_at ON planbook.note_tags(deleted_at) WHERE deleted_at IS NULL;
@@ -131,15 +133,17 @@ CREATE INDEX IF NOT EXISTS idx_note_tags_deleted_at ON planbook.note_tags(delete
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.task_tags (
     id TEXT PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     task_id TEXT NOT NULL REFERENCES planbook.tasks(id) ON DELETE CASCADE,
     tag_id TEXT NOT NULL REFERENCES planbook.tags(id) ON DELETE CASCADE,
-    is_parent BOOLEAN NOT NULL DEFAULT false,
+    linked_tag_id TEXT REFERENCES planbook.tags(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
 );
 
 -- TaskTags 表索引
+CREATE INDEX IF NOT EXISTS idx_task_tags_user_id ON planbook.task_tags(user_id);
 CREATE INDEX IF NOT EXISTS idx_task_tags_task_id ON planbook.task_tags(task_id);
 CREATE INDEX IF NOT EXISTS idx_task_tags_tag_id ON planbook.task_tags(tag_id);
 CREATE INDEX IF NOT EXISTS idx_task_tags_deleted_at ON planbook.task_tags(deleted_at) WHERE deleted_at IS NULL;
@@ -149,8 +153,8 @@ CREATE INDEX IF NOT EXISTS idx_task_tags_deleted_at ON planbook.task_tags(delete
 -- ============================================
 CREATE TABLE IF NOT EXISTS planbook.task_activities (
     id TEXT PRIMARY KEY,
-    user_id TEXT,
-    task_id TEXT REFERENCES planbook.tasks(id) ON DELETE SET NULL,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    task_id TEXT REFERENCES planbook.tasks(id) ON DELETE CASCADE,
     completed_at TIMESTAMPTZ DEFAULT NOW(),
     activity_type TEXT,
     occurrence_at TIMESTAMPTZ,
@@ -216,60 +220,60 @@ ALTER TABLE planbook.user_profiles ENABLE ROW LEVEL SECURITY;
 -- ============================================
 CREATE POLICY "Users can select their own tasks"
   ON planbook.tasks FOR SELECT
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own tasks"
   ON planbook.tasks FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own tasks"
   ON planbook.tasks FOR UPDATE
-  USING (auth.uid()::text = user_id)
-  WITH CHECK (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own tasks"
   ON planbook.tasks FOR DELETE
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- Notes 表 RLS 策略
 -- ============================================
 CREATE POLICY "Users can select their own notes"
   ON planbook.notes FOR SELECT
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own notes"
   ON planbook.notes FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own notes"
   ON planbook.notes FOR UPDATE
-  USING (auth.uid()::text = user_id)
-  WITH CHECK (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own notes"
   ON planbook.notes FOR DELETE
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- Tags 表 RLS 策略
 -- ============================================
 CREATE POLICY "Users can select their own tags"
   ON planbook.tags FOR SELECT
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own tags"
   ON planbook.tags FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own tags"
   ON planbook.tags FOR UPDATE
-  USING (auth.uid()::text = user_id)
-  WITH CHECK (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own tags"
   ON planbook.tags FOR DELETE
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- NoteTags 表 RLS 策略
@@ -277,50 +281,20 @@ CREATE POLICY "Users can delete their own tags"
 -- NoteTags 表需要通过关联的 note 来检查权限
 CREATE POLICY "Users can select their own note_tags"
   ON planbook.note_tags FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.notes
-      WHERE notes.id = note_tags.note_id
-      AND notes.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own note_tags"
   ON planbook.note_tags FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM planbook.notes
-      WHERE notes.id = note_tags.note_id
-      AND notes.user_id = auth.uid()::text
-    )
-  );
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own note_tags"
   ON planbook.note_tags FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.notes
-      WHERE notes.id = note_tags.note_id
-      AND notes.user_id = auth.uid()::text
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM planbook.notes
-      WHERE notes.id = note_tags.note_id
-      AND notes.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own note_tags"
   ON planbook.note_tags FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.notes
-      WHERE notes.id = note_tags.note_id
-      AND notes.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- TaskTags 表 RLS 策略
@@ -328,70 +302,40 @@ CREATE POLICY "Users can delete their own note_tags"
 -- TaskTags 表需要通过关联的 task 来检查权限
 CREATE POLICY "Users can select their own task_tags"
   ON planbook.task_tags FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.tasks
-      WHERE tasks.id = task_tags.task_id
-      AND tasks.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own task_tags"
   ON planbook.task_tags FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM planbook.tasks
-      WHERE tasks.id = task_tags.task_id
-      AND tasks.user_id = auth.uid()::text
-    )
-  );
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own task_tags"
   ON planbook.task_tags FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.tasks
-      WHERE tasks.id = task_tags.task_id
-      AND tasks.user_id = auth.uid()::text
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM planbook.tasks
-      WHERE tasks.id = task_tags.task_id
-      AND tasks.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own task_tags"
   ON planbook.task_tags FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM planbook.tasks
-      WHERE tasks.id = task_tags.task_id
-      AND tasks.user_id = auth.uid()::text
-    )
-  );
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- TaskActivities 表 RLS 策略
 -- ============================================
 CREATE POLICY "Users can select their own task_activities"
   ON planbook.task_activities FOR SELECT
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own task_activities"
   ON planbook.task_activities FOR INSERT
-  WITH CHECK (auth.uid()::text = user_id);
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own task_activities"
   ON planbook.task_activities FOR UPDATE
-  USING (auth.uid()::text = user_id)
-  WITH CHECK (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete their own task_activities"
   ON planbook.task_activities FOR DELETE
-  USING (auth.uid()::text = user_id);
+  USING (auth.uid() = user_id);
 
 -- ============================================
 -- UserProfiles 表 RLS 策略

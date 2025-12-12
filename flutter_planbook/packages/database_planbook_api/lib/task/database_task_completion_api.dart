@@ -3,12 +3,22 @@ import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   DatabaseTaskCompletionApi({
     required super.db,
     required super.tagApi,
   });
+
+  Future<void> completeTaskByActivities(List<TaskActivity> activities) async {
+    if (activities.isEmpty) return;
+    await db.transaction(() async {
+      for (final activity in activities) {
+        await db.into(db.taskActivities).insertOnConflictUpdate(activity);
+      }
+    });
+  }
 
   Future<List<TaskActivity>> completeTask(TaskEntity entity) async {
     final task = entity.task;
@@ -66,16 +76,24 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   }) async {
     final activityOccurrence = _isRecurringTask(task) ? occurrenceAt : null;
 
-    final activity = await db
-        .into(db.taskActivities)
-        .insertReturning(
-          TaskActivitiesCompanion.insert(
-            taskId: Value(task.id),
-            occurrenceAt: Value(activityOccurrence),
-            completedAt: Value(Jiffy.now()),
-            activityType: const Value('completed'),
-          ),
-        );
+    // final activity = await db
+    //     .into(db.taskActivities)
+    //     .insertReturning(
+    //       TaskActivitiesCompanion.insert(
+    //         taskId: Value(task.id),
+    //         occurrenceAt: Value(activityOccurrence),
+    //         completedAt: Value(Jiffy.now()),
+    //         activityType: const Value('completed'),
+    //       ),
+    //     );
+    final activity = TaskActivity(
+      id: const Uuid().v4(),
+      createdAt: Jiffy.now(),
+      taskId: task.id,
+      occurrenceAt: activityOccurrence,
+      completedAt: Jiffy.now(),
+      activityType: 'completed',
+    );
 
     final activities = [activity];
 
@@ -96,15 +114,16 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     required Jiffy? occurrenceAt,
     bool cascade = true,
   }) async {
-    final activities =
-        await (db.update(db.taskActivities)..where(
-              (ta) => ta.id.equals(activity.id),
-            ))
-            .writeReturning(
-              TaskActivitiesCompanion(
-                deletedAt: Value(Jiffy.now()),
-              ),
-            );
+    // final activities =
+    //     await (db.update(db.taskActivities)..where(
+    //           (ta) => ta.id.equals(activity.id),
+    //         ))
+    //         .writeReturning(
+    //           TaskActivitiesCompanion(
+    //             deletedAt: Value(Jiffy.now()),
+    //           ),
+    //         );
+    final activities = [activity.copyWith(deletedAt: Value(Jiffy.now()))];
 
     if (cascade) {
       final parentActivities = await _maybeUncompleteParentTask(
@@ -213,6 +232,7 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     required Jiffy date,
     TaskPriority? priority,
     int limit = 10,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -225,7 +245,10 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
         db.tasks.detachedFromTaskId.isNull() &
-        db.taskOccurrences.deletedAt.isNull();
+        db.taskOccurrences.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     if (priority != null) {
       recurringExp &= db.tasks.priority.equals(priority.name);
@@ -268,7 +291,11 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
 
     // 查询 2: 非重复任务和分离实例（在指定日期完成）
     var nonRecurringExp =
-        db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
 
     if (priority != null) {
       nonRecurringExp &= db.tasks.priority.equals(priority.name);
@@ -315,6 +342,7 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
 
   Stream<int> getCompletedTaskCount({
     required Jiffy date,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -332,7 +360,10 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
               endOfDayDateTime,
             ) &
             db.taskActivities.deletedAt.isNull() &
-            db.taskActivities.taskId.isNotNull(),
+            db.taskActivities.taskId.isNotNull() &
+            (userId == null
+                ? db.taskActivities.userId.isNull()
+                : db.taskActivities.userId.equals(userId)),
       );
 
     return query.watch().map(

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:database_planbook_api/database_planbook_api.dart';
+import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,38 +32,42 @@ class TasksRepository {
 
   final SupabaseTaskApi _supabaseTaskApi;
 
+  String? get userId => AppSupabase.client?.auth.currentUser?.id;
+
   Future<void> create({
     required Task task,
     List<TagEntity>? tags,
   }) async {
-    await _dbTaskApi.create(task: task, tags: tags);
-
-    Future<void> createTask(Task task) async {
-      final taskTags = await _tagApi.getTaskTagsByTaskId(task.id);
-      await _supabaseTaskApi.create(task: task, taskTags: taskTags);
-    }
-
-    unawaited(createTask(task));
+    final newTask = task.copyWith(userId: Value(userId));
+    final taskTags = _dbTaskApi.generateTaskTags(
+      task: newTask,
+      tags: tags,
+      userId: userId,
+    );
+    await _supabaseTaskApi.create(task: newTask, taskTags: taskTags);
+    await _dbTaskApi.create(task: newTask, taskTags: taskTags);
   }
 
   Future<void> update({
     required Task task,
     List<TagEntity>? tags,
   }) async {
-    await _dbTaskApi.update(task: task, tags: tags);
-
-    Future<void> updateTask(Task task) async {
-      final taskTags = await _tagApi.getTaskTagsByTaskId(task.id);
-      await _supabaseTaskApi.update(task: task, taskTags: taskTags);
-    }
-
-    unawaited(updateTask(task));
+    final taskTags = _dbTaskApi.generateTaskTags(
+      task: task,
+      tags: tags,
+      userId: userId,
+    );
+    final newTask = task.copyWith(userId: Value(userId));
+    await _supabaseTaskApi.update(task: newTask, taskTags: taskTags);
+    await _dbTaskApi.update(task: newTask, taskTags: taskTags);
   }
 
   Future<void> _syncTasks({
     bool force = false,
   }) async {
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
+    if (list.isEmpty) return;
+
     await _db.transaction(() async {
       for (final item in list) {
         final task = Task.fromJson(item);
@@ -71,7 +76,9 @@ class TasksRepository {
         if (item['task_tags'] is List<dynamic>) {
           for (final taskTag in item['task_tags'] as List<dynamic>) {
             final map = taskTag as Map<String, dynamic>;
-            final tag = Tag.fromJson(map['tags'] as Map<String, dynamic>);
+            final tagMap = map['tag'] as Map<String, dynamic>?;
+            if (tagMap == null) continue;
+            final tag = Tag.fromJson(tagMap);
             await _db.into(_db.tags).insertOnConflictUpdate(tag);
             await _db
                 .into(_db.taskTags)
@@ -92,22 +99,25 @@ class TasksRepository {
     required TaskListMode mode,
     Jiffy? date,
     bool? isCompleted,
-  }) {
-    _syncTasks();
+  }) async* {
+    await _syncTasks();
 
-    return switch (mode) {
+    yield* switch (mode) {
       TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.today => _dbTaskTodayApi.getTodayTaskCount(
         date: date ?? Jiffy.now(),
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.overdue =>
         isCompleted ?? false
             ? throw UnimplementedError()
             : _dbTaskOverdueApi.getOverdueTaskCount(
                 date: date ?? Jiffy.now(),
+                userId: userId,
               ),
       TaskListMode.tag => throw UnimplementedError(),
     };
@@ -125,17 +135,20 @@ class TasksRepository {
         tagId: tagId,
         priority: priority,
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.today => _dbTaskTodayApi.getTaskEntities(
         date: date,
         tagId: tagId,
         priority: priority,
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.overdue => _dbTaskOverdueApi.getOverdueTaskEntities(
         date: date,
         tagId: tagId,
         priority: priority,
+        userId: userId,
       ),
       TaskListMode.tag => throw UnimplementedError(),
     };
@@ -155,16 +168,19 @@ class TasksRepository {
         tagId: tagId,
         priority: priority,
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.inbox => _dbTaskTodayApi.getAllInboxTodayTaskEntities(
         tagId: tagId,
         priority: priority,
         isCompleted: isCompleted,
+        userId: userId,
       ),
       TaskListMode.overdue => _dbTaskTodayApi.getAllTodayOverdueTaskEntities(
         day: day,
         tagId: tagId,
         priority: priority,
+        userId: userId,
       ),
       TaskListMode.tag => throw UnimplementedError(),
     };
@@ -184,7 +200,13 @@ class TasksRepository {
     TaskEntity entity,
   ) async {
     final activities = await _dbTaskCompletionApi.completeTask(entity);
-    unawaited(_supabaseTaskApi.complete(activities: activities));
+    if (userId != null) {
+      for (var i = 0; i < activities.length; i++) {
+        activities[i] = activities[i].copyWith(userId: Value(userId));
+      }
+    }
+    await _supabaseTaskApi.complete(activities: activities);
+    await _dbTaskCompletionApi.completeTaskByActivities(activities);
     return activities;
   }
 
@@ -200,9 +222,9 @@ class TasksRepository {
 
   Future<void> deleteTaskById(String taskId) async {
     final task = await _dbTaskApi.deleteTaskById(taskId);
-    if (task != null) {
-      unawaited(_supabaseTaskApi.deleteByTaskId(taskId));
-    }
+    if (task == null) return;
+    await _supabaseTaskApi.deleteByTaskId(taskId);
+    await _dbTaskApi.deleteTaskById(taskId);
   }
 
   Stream<List<TaskEntity>> getCompletedTaskEntities({
@@ -214,13 +236,17 @@ class TasksRepository {
       date: date,
       priority: priority,
       limit: limit,
+      userId: userId,
     );
   }
 
   Stream<int> getCompletedTaskCount({
     required Jiffy date,
   }) {
-    return _dbTaskCompletionApi.getCompletedTaskCount(date: date);
+    return _dbTaskCompletionApi.getCompletedTaskCount(
+      date: date,
+      userId: userId,
+    );
   }
 
   Future<Jiffy?> getStartDate() async {

@@ -148,7 +148,7 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
     Emitter<TagListState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    await _tagsRepository.deleteTag(event.tag.id);
+    await _tagsRepository.deleteById(event.tag.id);
     emit(state.copyWith(status: PageStatus.success));
   }
 }

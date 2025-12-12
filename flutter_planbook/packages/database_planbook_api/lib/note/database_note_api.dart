@@ -4,6 +4,7 @@ import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseNoteApi {
   DatabaseNoteApi({
@@ -14,90 +15,72 @@ class DatabaseNoteApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
-  Future<Note> create({
-    required String title,
-    String? content,
-    List<String>? images,
-    List<Tag>? tags,
-    String? taskId,
-    Jiffy? createdAt,
-  }) async {
-    final noteCompanion = NotesCompanion.insert(
-      title: title,
-      content: Value(content),
-      images: Value(images ?? []),
-      taskId: Value(taskId),
-      createdAt: Value(createdAt ?? Jiffy.now()),
-    );
-    final note = await db.into(db.notes).insertReturning(noteCompanion);
+  List<NoteTag> generateNoteTags({
+    required String noteId,
+    String? userId,
+    List<TagEntity>? tags,
+  }) {
+    if (tags == null || tags.isEmpty) return [];
 
-    if (tags != null && tags.isNotEmpty) {
-      for (final tag in tags) {
-        await db
-            .into(db.noteTags)
-            .insert(
-              NoteTagsCompanion.insert(
-                noteId: note.id,
-                tagId: tag.id,
-              ),
-            );
+    final noteTags = <NoteTag>[];
+    const uuid = Uuid();
+    final now = Jiffy.now();
+    for (final tag in tags) {
+      noteTags.add(
+        NoteTag(
+          id: uuid.v4(),
+          noteId: noteId,
+          tagId: tag.id,
+          userId: userId,
+          createdAt: now.toUtc(),
+        ),
+      );
+      var parent = tag.parent;
+      while (parent != null) {
+        noteTags.add(
+          NoteTag(
+            id: uuid.v4(),
+            linkedTagId: tag.id,
+            noteId: noteId,
+            tagId: parent.id,
+            userId: userId,
+            createdAt: now.toUtc(),
+          ),
+        );
+        parent = parent.parent;
       }
     }
-    return note;
+    return noteTags;
+  }
+
+  Future<void> create({
+    required Note note,
+    required List<NoteTag> noteTags,
+  }) async {
+    await db.transaction(() async {
+      await db.into(db.notes).insert(note);
+      for (final noteTag in noteTags) {
+        await db.into(db.noteTags).insert(noteTag);
+      }
+    });
   }
 
   Future<void> update({
     required Note note,
-    List<Tag>? tags,
+    required List<NoteTag> noteTags,
   }) async {
-    await (db.update(
-      db.notes,
-    )..where((n) => n.id.equals(note.id))).write(note.toCompanion(false));
-    if (tags != null) {
-      // 获取当前 note 的所有 tags（排除已删除的）
-      final currentNoteTags =
-          await (db.select(
-                db.noteTags,
-              )..where(
-                (nt) => nt.noteId.equals(note.id) & nt.deletedAt.isNull(),
-              ))
-              .get();
-      final currentTagIds = currentNoteTags
-          .map((nt) => nt.tagId)
-          .whereType<String>()
-          .toSet();
-      final newTagIds = tags.map((tag) => tag.id).toSet();
+    await db.transaction(() async {
+      await (db.update(
+        db.notes,
+      )..where((n) => n.id.equals(note.id))).write(note.toCompanion(false));
 
-      // 找出需要添加的 tags（新 tags 中有，旧 tags 中没有）
-      final tagsToAdd = newTagIds.difference(currentTagIds);
-      for (final tagId in tagsToAdd) {
-        await db
-            .into(db.noteTags)
-            .insert(
-              NoteTagsCompanion.insert(
-                noteId: note.id,
-                tagId: tagId,
-              ),
-            );
+      await (db.delete(
+        db.noteTags,
+      )..where((nt) => nt.noteId.equals(note.id))).go();
+      for (final noteTag in noteTags) {
+        await db.into(db.noteTags).insert(noteTag.toCompanion(false));
       }
-
-      // 找出需要删除的 tags（旧 tags 中有，新 tags 中没有）
-      // 使用软删除：设置 deletedAt 字段
-      final tagsToDelete = currentTagIds.difference(newTagIds);
-      if (tagsToDelete.isNotEmpty) {
-        await (db.update(db.noteTags)..where(
-              (nt) =>
-                  nt.noteId.equals(note.id) &
-                  nt.tagId.isIn(tagsToDelete) &
-                  nt.deletedAt.isNull(),
-            ))
-            .write(
-              NoteTagsCompanion(
-                deletedAt: Value(Jiffy.now()),
-              ),
-            );
-      }
-    }
+    });
   }
 
   Future<NoteEntity?> getNoteEntityById(String noteId) async {
@@ -199,6 +182,7 @@ class DatabaseNoteApi {
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
     List<String>? tagIds,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -212,7 +196,10 @@ class DatabaseNoteApi {
         ) &
         db.notes.createdAt.isSmallerOrEqualValue(
           endOfDayDateTime,
-        );
+        ) &
+        (userId == null
+            ? db.notes.userId.isNull()
+            : db.notes.userId.equals(userId));
     if (tagIds != null && tagIds.isNotEmpty) {
       exp &= db.noteTags.tagId.isIn(tagIds);
     }
@@ -227,7 +214,7 @@ class DatabaseNoteApi {
               leftOuterJoin(
                 db.noteTags,
                 db.noteTags.noteId.equalsExp(db.notes.id) &
-                    db.noteTags.isParent.equals(false) &
+                    db.noteTags.linkedTagId.isNull() &
                     db.noteTags.deletedAt.isNull(),
               ),
             ],
@@ -238,10 +225,15 @@ class DatabaseNoteApi {
         .asyncMap(buildNoteEntities);
   }
 
-  Stream<List<NoteImageEntity>> getNoteImageEntities(int year) {
+  Stream<List<NoteImageEntity>> getNoteImageEntities(int year, String? userId) {
     return (db.select(
           db.notes,
-        )..where((n) => n.deletedAt.isNull() & n.createdAt.year.equals(year)))
+        )..where(
+          (n) =>
+              n.deletedAt.isNull() &
+              n.createdAt.year.equals(year) &
+              (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
+        ))
         .watch()
         .asyncMap((notes) {
           final images = <NoteImageEntity>[];
@@ -263,6 +255,7 @@ class DatabaseNoteApi {
   Stream<List<NoteEntity>> getWrittenNoteEntities(
     Jiffy date, {
     List<String>? tagIds,
+    String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -280,7 +273,10 @@ class DatabaseNoteApi {
         (db.tasks.id.isNull() |
             db.tasks.deletedAt.isNotNull() |
             (db.notes.images.isNotNull() & db.notes.images.equals('[]').not()) |
-            (db.notes.content.isNotNull() & db.notes.content.equals('').not()));
+            (db.notes.content.isNotNull() & db.notes.content.equals('').not()) &
+                (userId == null
+                    ? db.notes.userId.isNull()
+                    : db.notes.userId.equals(userId)));
     if (tagIds != null && tagIds.isNotEmpty) {
       exp &= db.noteTags.tagId.isIn(tagIds);
     }
@@ -293,7 +289,7 @@ class DatabaseNoteApi {
             leftOuterJoin(
               db.noteTags,
               db.noteTags.noteId.equalsExp(db.notes.id) &
-                  db.noteTags.isParent.equals(false) &
+                  db.noteTags.linkedTagId.isNull() &
                   db.noteTags.deletedAt.isNull(),
             ),
           ])
@@ -303,12 +299,17 @@ class DatabaseNoteApi {
         .asyncMap(buildNoteEntities);
   }
 
-  Future<Jiffy?> getStartDate() async {
+  Future<Jiffy?> getStartDate({String? userId}) async {
     final row =
         await (db.select(
                 db.notes,
               )
               ..orderBy([(t) => OrderingTerm.asc(t.createdAt.datetime)])
+              ..where(
+                (t) => userId == null
+                    ? t.userId.isNull()
+                    : t.userId.equals(userId),
+              )
               ..limit(1))
             .getSingleOrNull();
     return row?.createdAt;

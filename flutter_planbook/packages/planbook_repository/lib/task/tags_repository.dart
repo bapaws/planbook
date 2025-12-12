@@ -1,8 +1,11 @@
 import 'package:database_planbook_api/tag/database_tag_api.dart';
+import 'package:drift/drift.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/tag/supabase_tag_api.dart';
+import 'package:uuid/uuid.dart';
 
 class TagsRepository {
   TagsRepository({
@@ -16,15 +19,20 @@ class TagsRepository {
   final SupabaseTagApi _supabaseTagApi;
   final AppDatabase _db;
 
+  String? get userId => AppSupabase.client?.auth.currentUser?.id;
+
   Stream<List<Tag>> getTopLevelTags() {
-    return _tagApi.getTopLevelTags();
+    return _tagApi.getTopLevelTags(userId: userId);
   }
 
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
-  }) {
-    _syncTags();
-    return _tagApi.getAllTags(notIncludeTagIds: notIncludeTagIds);
+  }) async* {
+    await _syncTags();
+    yield* _tagApi.getAllTags(
+      notIncludeTagIds: notIncludeTagIds,
+      userId: userId,
+    );
   }
 
   Future<void> _syncTags({
@@ -43,7 +51,7 @@ class TagsRepository {
   }
 
   Future<TagEntity?> getTagEntityByName(String name) async {
-    return _tagApi.getTagEntityByName(name);
+    return _tagApi.getTagEntityByName(name, userId);
   }
 
   Future<void> createTag({
@@ -53,13 +61,26 @@ class TagsRepository {
     String? id,
     TagEntity? parentTag,
   }) async {
-    await _tagApi.createTag(
-      name: name,
+    final trimmedName = name.trim();
+    final existingEntity = await _tagApi.getTagEntityByName(
+      trimmedName,
+      userId,
+    );
+    if (existingEntity != null) return;
+
+    final tag = Tag(
+      id: id ?? const Uuid().v4(),
+      name: trimmedName,
       lightColorScheme: lightColorScheme,
       darkColorScheme: darkColorScheme,
-      id: id,
-      parentTag: parentTag,
+      parentId: parentTag?.id,
+      userId: userId,
+      order: 0,
+      level: 0,
+      createdAt: Jiffy.now().toUtc(),
     );
+    await _supabaseTagApi.create(tag: tag);
+    await _tagApi.create(tag: tag);
   }
 
   Future<void> updateTag({
@@ -69,22 +90,23 @@ class TagsRepository {
     ColorScheme? darkColorScheme,
     TagEntity? parentTag,
   }) async {
-    await _tagApi.updateTag(
-      id: id,
-      name: name,
-      lightColorScheme: lightColorScheme,
-      darkColorScheme: darkColorScheme,
-      parentTag: parentTag,
+    final tag = await _tagApi.getTagById(id);
+    if (tag == null) return;
+
+    final newTag = tag.copyWith(
+      name: name?.trim(),
+      lightColorScheme: Value(lightColorScheme),
+      darkColorScheme: Value(darkColorScheme),
+      parentId: Value(parentTag?.id),
     );
+    await _supabaseTagApi.update(tag: newTag);
+    await _tagApi.update(tag: newTag);
   }
 
   /// 递归删除 tag 及其所有子 tag
-  Future<void> deleteTag(String id) async {
-    await _tagApi.deleteTag(id);
-  }
-
-  Future<void> deleteTagById(String id) async {
-    await _tagApi.deleteTagById(id);
+  Future<void> deleteById(String id) async {
+    await _supabaseTagApi.deleteById(id);
+    await _tagApi.deleteById(id);
   }
 
   Future<void> deleteAllTags() async {

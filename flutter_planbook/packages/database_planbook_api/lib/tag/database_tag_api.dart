@@ -21,20 +21,39 @@ class DatabaseTagApi {
         .insertOnConflictUpdate(taskTag.toCompanion(false));
   }
 
-  Stream<List<Tag>> getTopLevelTags() {
+  Future<Tag?> getTagById(String id) async {
     return (db.select(
       db.tags,
-    )..where((tag) => tag.parentId.isNull())).watch();
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
+  Stream<List<Tag>> getTopLevelTags({String? userId}) {
+    return (db.select(
+          db.tags,
+        )..where(
+          (tag) =>
+              tag.parentId.isNull() &
+              (userId == null
+                  ? tag.userId.isNull()
+                  : tag.userId.equals(userId)),
+        ))
+        .watch();
   }
 
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
+    String? userId,
   }) {
     return (db.select(
             db.tags,
           )
           ..where(
-            (tag) => tag.deletedAt.isNull() & tag.id.isNotIn(notIncludeTagIds),
+            (tag) =>
+                tag.deletedAt.isNull() &
+                tag.id.isNotIn(notIncludeTagIds) &
+                (userId == null
+                    ? tag.userId.isNull()
+                    : tag.userId.equals(userId)),
           )
           ..orderBy([
             (tag) => OrderingTerm.asc(tag.order),
@@ -77,32 +96,43 @@ class DatabaseTagApi {
     return entity;
   }
 
-  Future<TagEntity?> getTagEntityByName(String name) async {
+  Future<TagEntity?> getTagEntityByName(String name, String? userId) async {
     final trimmedName = name.trim();
-    final tag =
+    final tags =
         await (db.select(
               db.tags,
             )..where(
-              (tag) => tag.name.equals(trimmedName) & tag.deletedAt.isNull(),
+              (tag) =>
+                  tag.name.equals(trimmedName) &
+                  tag.deletedAt.isNull() &
+                  (userId == null
+                      ? tag.userId.isNull()
+                      : tag.userId.equals(userId)),
             ))
-            .getSingleOrNull();
-    if (tag == null) return null;
-    var entity = TagEntity(tag: tag);
-    if (tag.parentId != null) {
-      final parent = await getTagEntityById(tag.parentId!);
+            .get();
+    if (tags.isEmpty) return null;
+    var entity = TagEntity(tag: tags.first);
+    if (tags.first.parentId != null) {
+      final parent = await getTagEntityById(tags.first.parentId!);
       if (parent != null) entity = entity.copyWith(parent: parent);
     }
     return entity;
   }
 
-  Future<List<TagEntity>> getTagEntitiesByTaskId(String taskId) async {
+  Future<List<TagEntity>> getTagEntitiesByTaskId(
+    String taskId,
+    String? userId,
+  ) async {
     final taskTags =
         await (db.select(db.taskTags)
               ..where(
                 (tt) =>
                     tt.taskId.equals(taskId) &
                     tt.deletedAt.isNull() &
-                    tt.isParent.equals(false),
+                    tt.linkedTagId.isNull() &
+                    (userId == null
+                        ? tt.userId.isNull()
+                        : tt.userId.equals(userId)),
               )
               ..orderBy([
                 (tt) => OrderingTerm.asc(tt.createdAt.datetime),
@@ -116,15 +146,22 @@ class DatabaseTagApi {
     return tags.nonNulls.toList();
   }
 
+  Future<void> create({
+    required Tag tag,
+  }) async {
+    await db.into(db.tags).insert(tag.toCompanion(false));
+  }
+
   Future<void> createTag({
     required String name,
     required ColorScheme lightColorScheme,
     required ColorScheme darkColorScheme,
+    String? userId,
     String? id,
     TagEntity? parentTag,
   }) async {
     final trimmedName = name.trim();
-    final existingEntity = await getTagEntityByName(trimmedName);
+    final existingEntity = await getTagEntityByName(trimmedName, userId);
     if (existingEntity != null) return;
 
     await db
@@ -132,6 +169,7 @@ class DatabaseTagApi {
         .insert(
           TagsCompanion.insert(
             id: id != null ? Value(id) : const Value.absent(),
+            userId: Value(userId),
             name: name,
             level: Value((parentTag?.level ?? -1) + 1),
             parentId: Value(parentTag?.id),
@@ -139,6 +177,18 @@ class DatabaseTagApi {
             darkColorScheme: Value(darkColorScheme),
           ),
         );
+  }
+
+  Future<void> update({
+    required Tag tag,
+  }) async {
+    await (db.update(
+      db.tags,
+    )..where((t) => t.id.equals(tag.id))).write(
+      tag.toCompanion(false),
+    );
+
+    // TODO: update task tags and note tags
   }
 
   Future<void> updateTag({
@@ -174,7 +224,7 @@ class DatabaseTagApi {
   }
 
   /// 递归删除 tag 及其所有子 tag
-  Future<void> deleteTag(String id) async {
+  Future<void> deleteById(String id) async {
     final now = Jiffy.now();
 
     // 标记当前 tag 为删除
@@ -216,7 +266,7 @@ class DatabaseTagApi {
             .get();
 
     for (final child in directChildren) {
-      await deleteTag(child.id);
+      await deleteById(child.id);
     }
   }
 
@@ -227,7 +277,7 @@ class DatabaseTagApi {
           ))
           .go();
     } else {
-      await deleteTag(id);
+      await deleteById(id);
     }
   }
 
@@ -237,16 +287,28 @@ class DatabaseTagApi {
     }
   }
 
-  Future<List<TaskTag>> getTaskTagsByTaskId(String taskId) async {
+  Future<List<TaskTag>> getTaskTagsByTaskId(
+    String taskId,
+    String? userId,
+  ) async {
     return (db.select(db.taskTags)..where(
-          (tt) => tt.taskId.equals(taskId) & tt.deletedAt.isNull(),
+          (tt) =>
+              tt.taskId.equals(taskId) &
+              tt.deletedAt.isNull() &
+              (userId == null ? tt.userId.isNull() : tt.userId.equals(userId)),
         ))
         .get();
   }
 
-  Future<List<NoteTag>> getNoteTagsByNoteId(String noteId) async {
+  Future<List<NoteTag>> getNoteTagsByNoteId(
+    String noteId,
+    String? userId,
+  ) async {
     return (db.select(db.noteTags)..where(
-          (nt) => nt.noteId.equals(noteId) & nt.deletedAt.isNull(),
+          (nt) =>
+              nt.noteId.equals(noteId) &
+              nt.deletedAt.isNull() &
+              (userId == null ? nt.userId.isNull() : nt.userId.equals(userId)),
         ))
         .get();
   }

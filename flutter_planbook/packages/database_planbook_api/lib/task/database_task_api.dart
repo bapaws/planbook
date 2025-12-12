@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:uuid/uuid.dart';
 
 class DatabaseTaskApi {
   DatabaseTaskApi({
@@ -22,36 +23,54 @@ class DatabaseTaskApi {
     await db.into(db.tasks).insertOnConflictUpdate(task);
   }
 
-  Future<void> create({
+  List<TaskTag> generateTaskTags({
     required Task task,
-    List<TagEntity>? tags,
-  }) async {
-    await db.into(db.tasks).insert(task);
-    if (tags != null) {
-      for (final tag in tags) {
-        await db
-            .into(db.taskTags)
-            .insert(
-              TaskTagsCompanion.insert(
-                taskId: task.id,
-                tagId: tag.id,
-              ),
-            );
-        var parent = tag.parent;
-        while (parent != null) {
-          await db
-              .into(db.taskTags)
-              .insert(
-                TaskTagsCompanion.insert(
-                  taskId: task.id,
-                  tagId: parent.id,
-                  isParent: const Value(true),
-                ),
-              );
-          parent = parent.parent;
-        }
+    required List<TagEntity>? tags,
+    required String? userId,
+  }) {
+    if (tags == null || tags.isEmpty) return [];
+
+    final taskTags = <TaskTag>[];
+    const uuid = Uuid();
+    final now = Jiffy.now();
+    for (final tag in tags) {
+      taskTags.add(
+        TaskTag(
+          id: uuid.v4(),
+          taskId: task.id,
+          tagId: tag.id,
+          userId: userId,
+          createdAt: now.toUtc(),
+        ),
+      );
+      var parent = tag.parent;
+      while (parent != null) {
+        taskTags.add(
+          TaskTag(
+            id: uuid.v4(),
+            taskId: task.id,
+            tagId: parent.id,
+            linkedTagId: tag.id,
+            userId: userId,
+            createdAt: now.toUtc(),
+          ),
+        );
+        parent = parent.parent;
       }
     }
+    return taskTags;
+  }
+
+  Future<void> create({
+    required Task task,
+    required List<TaskTag> taskTags,
+  }) async {
+    await db.transaction(() async {
+      await db.into(db.tasks).insert(task);
+      for (final taskTag in taskTags) {
+        await db.into(db.taskTags).insert(taskTag);
+      }
+    });
 
     if (task.recurrenceRule != null) {
       unawaited(
@@ -64,58 +83,21 @@ class DatabaseTaskApi {
 
   Future<void> update({
     required Task task,
-    List<TagEntity>? tags,
+    required List<TaskTag> taskTags,
   }) async {
     final existingTask = await getTaskById(task.id);
 
-    await (db.update(
-      db.tasks,
-    )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
-    if (tags != null) {
-      // 获取当前 task 的所有 tags（排除已删除的）
-      final currentTaskTags =
-          await (db.select(
-                db.taskTags,
-              )..where(
-                (tt) => tt.taskId.equals(task.id) & tt.deletedAt.isNull(),
-              ))
-              .get();
-      final currentTagIds = currentTaskTags
-          .map((tt) => tt.tagId)
-          .whereType<String>()
-          .toSet();
-      final newTagIds = tags.map((tag) => tag.id).toSet();
-
-      // 找出需要添加的 tags（新 tags 中有，旧 tags 中没有）
-      final tagsToAdd = newTagIds.difference(currentTagIds);
-      for (final tagId in tagsToAdd) {
-        await db
-            .into(db.taskTags)
-            .insert(
-              TaskTagsCompanion.insert(
-                taskId: task.id,
-                tagId: tagId,
-              ),
-            );
+    await db.transaction(() async {
+      await (db.update(
+        db.tasks,
+      )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
+      await (db.delete(
+        db.taskTags,
+      )..where((tt) => tt.taskId.equals(task.id))).go();
+      for (final taskTag in taskTags) {
+        await db.into(db.taskTags).insert(taskTag);
       }
-
-      // 找出需要删除的 tags（旧 tags 中有，新 tags 中没有）
-      // 使用软删除：设置 deletedAt 字段
-      final tagsToDelete = currentTagIds.difference(newTagIds);
-      if (tagsToDelete.isNotEmpty) {
-        await (db.update(db.taskTags)..where(
-              (tt) =>
-                  tt.taskId.equals(task.id) &
-                  tt.tagId.isIn(tagsToDelete) &
-                  tt.deletedAt.isNull(),
-            ))
-            .write(
-              TaskTagsCompanion(
-                deletedAt: Value(Jiffy.now()),
-              ),
-            );
-      }
-    }
+    });
 
     if (existingTask == null) return;
     final recurrenceChanged =
@@ -176,7 +158,7 @@ class DatabaseTaskApi {
     final activity = row.readTableOrNull(db.taskActivities);
 
     // 查询标签（需要递归获取 parent，所以单独查询）
-    final tags = await tagApi.getTagEntitiesByTaskId(task.id);
+    final tags = await tagApi.getTagEntitiesByTaskId(task.id, task.userId);
 
     // 查询子任务（需要递归，所以单独查询）
     final children = await getChildTaskEntitiesById(task.id);
@@ -334,7 +316,7 @@ class DatabaseTaskApi {
           task: task,
           occurrence: row.readTableOrNull(db.taskOccurrences),
           activity: row.readTableOrNull(db.taskActivities),
-          tags: await tagApi.getTagEntitiesByTaskId(task.id),
+          tags: await tagApi.getTagEntitiesByTaskId(task.id, task.userId),
         );
       }
     }

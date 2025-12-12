@@ -26,7 +26,7 @@ final class AppState extends Equatable {
       };
 
   @override
-  List<Object?> get props => [darkMode, appIcons, seedColor];
+  List<Object?> get props => [darkMode, appIcons, seedColor, user];
 
   AppState copyWith({
     ValueGetter<DarkMode?>? darkMode,

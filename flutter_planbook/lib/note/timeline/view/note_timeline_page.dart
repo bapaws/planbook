@@ -40,7 +40,7 @@ class _NoteTimelinePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NoteTimelineBloc, NoteTimelineState>(
       builder: (context, state) {
-        return AppCalendarView(
+        return AppCalendarView<void>(
           date: state.date,
           calendarFormat: state.calendarFormat,
           onDateSelected: (date) {
@@ -64,6 +64,10 @@ class _NoteTimelinePage extends StatelessWidget {
                       'assets/images/Summer-Collection.svg',
                       width: 280,
                       height: 280,
+                      colorFilter: ColorFilter.mode(
+                        Theme.of(context).colorScheme.onSurface,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 );

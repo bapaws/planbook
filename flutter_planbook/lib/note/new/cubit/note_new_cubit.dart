@@ -91,8 +91,6 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
     }
 
     emit(state.copyWith(status: PageStatus.loading));
-    // 从 TagEntity 中提取 Tag 对象
-    final tags = state.tags.map((tagEntity) => tagEntity.tag).toList();
 
     if (state.initialNote != null) {
       final images = <String>[];
@@ -136,7 +134,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
       );
       await _notesRepository.update(
         note: updatedNote,
-        tags: tags.isEmpty ? null : tags,
+        tags: state.tags.isEmpty ? null : state.tags,
       );
     } else {
       // 上传新的图片
@@ -156,7 +154,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         title: state.title,
         content: state.content.isEmpty ? null : state.content,
         images: images.isEmpty ? null : images,
-        tags: tags.isEmpty ? null : tags,
+        tags: state.tags.isEmpty ? null : state.tags,
         taskId: state.task?.id,
         createdAt: state.createdAt,
       );

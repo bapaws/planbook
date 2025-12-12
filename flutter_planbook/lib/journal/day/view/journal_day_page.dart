@@ -100,7 +100,7 @@ class _JournalDayPageState extends State<_JournalDayPage> {
           height: kJournalPageHeight,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: theme.colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: theme.colorScheme.outlineVariant,

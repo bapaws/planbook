@@ -8,12 +8,15 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getInboxTaskCount({bool? isCompleted}) {
+  Stream<int> getInboxTaskCount({bool? isCompleted, String? userId}) {
     var exp =
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
-        db.tasks.deletedAt.isNull();
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (isCompleted != null) {
       exp &= isCompleted
           ? db.taskActivities.id.isNotNull()
@@ -42,12 +45,16 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
     String? tagId,
     TaskPriority? priority,
     bool? isCompleted,
+    String? userId,
   }) {
     var exp =
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
-        db.tasks.deletedAt.isNull();
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
     if (isCompleted != null) {
       exp &= isCompleted
           ? db.taskActivities.id.isNotNull()

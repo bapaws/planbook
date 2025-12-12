@@ -1,10 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 part 'sign_home_state.dart';
 
 class SignHomeCubit extends Cubit<SignHomeState> {
   SignHomeCubit() : super(const SignHomeState());
+
+  void onInitialized() {
+    FlutterNativeSplash.remove();
+  }
 
   void signInWithPhone() {
     // 默认使用验证码登录
