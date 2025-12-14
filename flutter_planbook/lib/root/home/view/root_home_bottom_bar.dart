@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
@@ -150,23 +153,34 @@ class RootHomeBottomBar extends StatelessWidget {
     // }
   }
 
-  void _onActionTapped(BuildContext context, RootHomeTab tab) {
-    HapticFeedback.lightImpact();
+  Future<void> _onActionTapped(BuildContext context, RootHomeTab tab) async {
+    unawaited(HapticFeedback.lightImpact());
+
     switch (tab) {
       case RootHomeTab.task:
+        if (await context.read<AppPurchasesBloc>().isTaskLimitReached() &&
+            context.mounted) {
+          await context.router.push(const AppPurchasesRoute());
+          return;
+        }
         final mode = context.read<RootTaskBloc>().state.tab;
         final dueAt = switch (mode) {
           TaskListMode.inbox => null,
           TaskListMode.today => context.read<TaskTodayBloc>().state.date,
           _ => Jiffy.now().startOf(Unit.day),
         };
-        context.router.push(TaskNewRoute(dueAt: dueAt));
+        await context.router.push(TaskNewRoute(dueAt: dueAt));
       case RootHomeTab.journal:
         context.read<RootHomeBloc>().add(
           const RootHomeDownloadJournalDayRequested(),
         );
       case RootHomeTab.note:
-        context.router.push(NoteNewRoute());
+        if (await context.read<AppPurchasesBloc>().isTaskLimitReached() &&
+            context.mounted) {
+          await context.router.push(const AppPurchasesRoute());
+          return;
+        }
+        await context.router.push(NoteNewRoute());
     }
   }
 }

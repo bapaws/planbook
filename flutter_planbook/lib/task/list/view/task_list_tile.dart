@@ -74,6 +74,9 @@ class _TaskListTileState extends State<TaskListTile> {
                   widget.onCompleted();
                 },
                 child: Icon(
+                  // _isCompleted
+                  //     ? FontAwesomeIcons.solidCircleCheck
+                  //     : FontAwesomeIcons.circle,
                   _isCompleted
                       ? FontAwesomeIcons.solidSquareCheck
                       : FontAwesomeIcons.square,

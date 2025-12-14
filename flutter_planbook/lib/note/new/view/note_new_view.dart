@@ -10,9 +10,9 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/new/cubit/note_new_cubit.dart';
+import 'package:flutter_planbook/note/new/view/note_new_bottom_bar.dart';
 import 'package:flutter_planbook/note/new/view/note_new_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -29,6 +29,7 @@ class _NoteNewViewState extends State<NoteNewView> {
   final _titleFocusNode = FocusNode();
 
   final _contentController = TextEditingController();
+  final _contentFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -38,6 +39,12 @@ class _NoteNewViewState extends State<NoteNewView> {
       final state = cubit.state;
       _titleController.text = state.title;
       _contentController.text = state.content;
+
+      if (state.title.isNotEmpty && state.content.isEmpty) {
+        _contentFocusNode.requestFocus();
+      } else {
+        _titleFocusNode.requestFocus();
+      }
     });
   }
 
@@ -76,7 +83,6 @@ class _NoteNewViewState extends State<NoteNewView> {
             }
           },
           child: TextField(
-            autofocus: true,
             controller: _titleController,
             focusNode: _titleFocusNode,
             minLines: 1,
@@ -101,6 +107,7 @@ class _NoteNewViewState extends State<NoteNewView> {
         const SizedBox(height: 12),
         Expanded(
           child: TextField(
+            focusNode: _contentFocusNode,
             controller: _contentController,
             style: textTheme.bodyLarge?.copyWith(
               color: colorScheme.onSurface,
@@ -295,91 +302,7 @@ class _NoteNewViewState extends State<NoteNewView> {
             );
           },
         ),
-        Row(
-          children: [
-            CupertinoButton(
-              padding: const EdgeInsets.all(16),
-              onPressed: () async {
-                final picker = ImagePicker();
-                final files = await picker.pickMultiImage(limit: 9);
-                if (!context.mounted) return;
-
-                final paths = files.map((file) => file.path).toList();
-                await context.read<NoteNewCubit>().addImages(paths);
-              },
-              child: Icon(
-                FontAwesomeIcons.solidImage,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            CupertinoButton(
-              padding: const EdgeInsets.all(16),
-              minimumSize: const Size.square(kMinInteractiveDimension),
-              onPressed: () async {
-                final picker = ImagePicker();
-                final file = await picker.pickImage(
-                  source: ImageSource.camera,
-                );
-
-                if (!context.mounted || file == null) return;
-                await context.read<NoteNewCubit>().addImages([file.path]);
-              },
-              child: Icon(
-                FontAwesomeIcons.solidCamera,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            CupertinoButton(
-              padding: const EdgeInsets.all(16),
-              minimumSize: const Size.square(kMinInteractiveDimension),
-              onPressed: () {
-                final tags = context.read<NoteNewCubit>().state.tags;
-                context.router.push(
-                  TagPickerRoute(
-                    selectedTags: tags,
-                    onSelected: (selectedTags) {
-                      context.read<NoteNewCubit>().onTagsChanged(selectedTags);
-                    },
-                  ),
-                );
-              },
-              child: Icon(
-                FontAwesomeIcons.tags,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            CupertinoButton(
-              padding: const EdgeInsets.all(16),
-              minimumSize: const Size.square(kMinInteractiveDimension),
-              onPressed: () async {
-                final result = await context.router.push<TaskEntity>(
-                  const TaskPickerRoute(),
-                );
-                if (result != null && context.mounted) {
-                  context.read<NoteNewCubit>().onTaskSelected(
-                    result,
-                  );
-                }
-              },
-              child: Icon(
-                FontAwesomeIcons.paperclip,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const Spacer(),
-            CupertinoButton(
-              padding: const EdgeInsets.all(16),
-              minimumSize: const Size.square(kMinInteractiveDimension),
-              onPressed: () {
-                context.read<NoteNewCubit>().onSave();
-              },
-              child: Icon(
-                FontAwesomeIcons.solidPaperPlane,
-                color: colorScheme.onSurface,
-              ),
-            ),
-          ],
-        ),
+        const NoteNewBottomBar(),
         SizedBox(height: query.padding.bottom + query.viewInsets.bottom),
       ],
     );

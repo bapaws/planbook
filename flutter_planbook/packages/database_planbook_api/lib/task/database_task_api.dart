@@ -17,6 +17,19 @@ class DatabaseTaskApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
+  Future<int> getTotalCount({required String? userId}) async {
+    final query = db.selectOnly(db.tasks, distinct: true)
+      ..addColumns([db.tasks.id.count()])
+      ..where(
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId)),
+      );
+    final result = await query.getSingleOrNull();
+    return result?.read(db.tasks.id.count()) ?? 0;
+  }
+
   Future<void> insertOrUpdate({
     required Task task,
   }) async {

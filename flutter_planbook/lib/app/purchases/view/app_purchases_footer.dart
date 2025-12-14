@@ -20,9 +20,9 @@ class AppPurchasesFooter extends StatelessWidget {
       builder: (context, state) {
         final availablePackages = state.availablePackages;
         if (availablePackages.isEmpty) {
-          context
-              .read<AppPurchasesBloc>()
-              .add(const AppPurchasesPackageRequested());
+          context.read<AppPurchasesBloc>().add(
+            const AppPurchasesPackageRequested(),
+          );
           return const SizedBox.shrink();
         }
 
@@ -37,7 +37,12 @@ class AppPurchasesFooter extends StatelessWidget {
             top: spacing,
             bottom: 8,
           ),
-          color: theme.colorScheme.surfaceContainer,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer,
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(24),
+            ),
+          ),
           child: SafeArea(
             top: false,
             child: Column(
@@ -64,9 +69,9 @@ class AppPurchasesFooter extends StatelessWidget {
                             itemWidth: productItemWidth,
                             isSelected: selectedPackage == package,
                             onPressed: () {
-                              context
-                                  .read<AppPurchasesBloc>()
-                                  .add(AppPurchasesPackageSelected(package));
+                              context.read<AppPurchasesBloc>().add(
+                                AppPurchasesPackageSelected(package),
+                              );
                             },
                           ),
                           const SizedBox(width: spacing),
@@ -78,7 +83,12 @@ class AppPurchasesFooter extends StatelessWidget {
                 const SizedBox(height: 16),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  minSize: 0,
+                  onPressed: () {
+                    context.read<AppPurchasesBloc>().add(
+                      const AppPurchasesPurchased(),
+                    );
+                  },
+                  minimumSize: Size.zero,
                   child: Container(
                     width: productItemWidth * 3 + spacing * 2,
                     padding: const EdgeInsets.symmetric(
@@ -103,18 +113,18 @@ class AppPurchasesFooter extends StatelessWidget {
                       ],
                     ),
                   ),
-                  onPressed: () {
-                    context.read<AppPurchasesBloc>().add(
-                          const AppPurchasesPurchased(),
-                        );
-                  },
                 ),
                 if (state.originalPackages.isNotEmpty)
                   CupertinoButton(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                     ),
-                    minSize: 0,
+                    onPressed: () {
+                      context.read<AppPurchasesBloc>().add(
+                        const AppPurchasesSupportUsFullPrice(),
+                      );
+                    },
+                    minimumSize: Size.zero,
                     child: SizedBox(
                       width: productItemWidth * 3 + spacing * 2,
                       child: Row(
@@ -130,11 +140,6 @@ class AppPurchasesFooter extends StatelessWidget {
                         ],
                       ),
                     ),
-                    onPressed: () {
-                      context.read<AppPurchasesBloc>().add(
-                            const AppPurchasesSupportUsFullPrice(),
-                          );
-                    },
                   ),
               ],
             ),

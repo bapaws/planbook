@@ -50,11 +50,7 @@ class SettingsDarkModePage extends StatelessWidget {
                   );
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
+
               SettingsRow(
                 leading: const Icon(
                   Icons.dark_mode,
@@ -77,11 +73,6 @@ class SettingsDarkModePage extends StatelessWidget {
                   );
                 },
               ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
               SettingsRow(
                 leading: const Icon(
                   Icons.light_mode,
@@ -103,11 +94,6 @@ class SettingsDarkModePage extends StatelessWidget {
                     ),
                   );
                 },
-              ),
-              Divider(
-                indent: 56,
-                height: 1,
-                color: theme.colorScheme.surfaceContainerHighest,
               ),
             ],
           );

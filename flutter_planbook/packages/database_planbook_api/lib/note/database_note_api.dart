@@ -15,6 +15,19 @@ class DatabaseNoteApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
+  Future<int> getTotalCount({required String? userId}) async {
+    final query = db.selectOnly(db.notes, distinct: true)
+      ..addColumns([db.notes.id.count()])
+      ..where(
+        db.notes.deletedAt.isNull() &
+        (userId == null
+            ? db.notes.userId.isNull()
+            : db.notes.userId.equals(userId)),
+      );
+    final result = await query.getSingleOrNull();
+    return result?.read(db.notes.id.count()) ?? 0;
+  }
+
   List<NoteTag> generateNoteTags({
     required String noteId,
     String? userId,

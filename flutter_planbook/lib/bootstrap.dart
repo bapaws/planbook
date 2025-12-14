@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
-import 'package:flutter_planbook/app/purchases/model/app_purchases_repository.dart';
 import 'package:flutter_planbook/app/view/app.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -59,8 +58,6 @@ Future<Widget> _initApp() async {
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 
-  final appPurchasesRepository = AppPurchasesRepository();
-
   final db = AppDatabase();
   final tagApi = DatabaseTagApi(db: db);
   final tagsRepository = TagsRepository(
@@ -92,7 +89,6 @@ Future<Widget> _initApp() async {
   return MultiRepositoryProvider(
     providers: [
       RepositoryProvider.value(value: sp),
-      RepositoryProvider.value(value: appPurchasesRepository),
       RepositoryProvider.value(value: settingsRepository),
       RepositoryProvider.value(value: tagsRepository),
       RepositoryProvider.value(value: tasksRepository),
@@ -105,7 +101,9 @@ Future<Widget> _initApp() async {
         BlocProvider(
           create: (context) =>
               AppPurchasesBloc(
-                  appPurchasesRepository: context.read(),
+                  tasksRepository: context.read(),
+                  notesRepository: context.read(),
+                  tagsRepository: context.read(),
                 )
                 ..add(const AppPurchasesSubscriptionRequested())
                 ..add(const AppPurchasesPackageRequested()),

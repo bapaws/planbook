@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:database_planbook_api/database_planbook_api.dart';
+import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,8 @@ class NotesRepository {
   final DatabaseTagApi _tagApi;
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
+
+  Future<int> getTotalCount() => _dbNoteApi.getTotalCount(userId: userId);
 
   Future<Note> create({
     required String title,
@@ -63,8 +66,9 @@ class NotesRepository {
       noteId: note.id,
       userId: userId,
     );
-    await _supabaseNoteApi.update(note: note, noteTags: noteTags);
-    await _dbNoteApi.update(note: note, noteTags: noteTags);
+    final newNote = note.copyWith(userId: Value(userId));
+    await _supabaseNoteApi.update(note: newNote, noteTags: noteTags);
+    await _dbNoteApi.update(note: newNote, noteTags: noteTags);
   }
 
   Future<void> _syncNotes({

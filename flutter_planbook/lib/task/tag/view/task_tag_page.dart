@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
+import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/tag/view/task_tag_header.dart';
@@ -21,12 +22,19 @@ class TaskTagPage extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         BlocProvider(
-          create: (context) => TaskListBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            tag: tag,
-            mode: TaskListMode.today,
-          )..add(TaskListRequested(date: Jiffy.now(), tagId: tag.id)),
+          create: (context) =>
+              TaskListBloc(
+                tasksRepository: context.read(),
+                notesRepository: context.read(),
+                tag: tag,
+                mode: TaskListMode.today,
+              )..add(
+                TaskListRequested(
+                  date: Jiffy.now(),
+                  tagId: tag.id,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
+                ),
+              ),
           child: BlocBuilder<TaskListBloc, TaskListState>(
             builder: (context, state) => TaskListView(
               tasks: state.tasks,
@@ -40,10 +48,16 @@ class TaskTagPage extends StatelessWidget {
         ),
 
         BlocProvider(
-          create: (context) => TaskListBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-          )..add(TaskListRequested(tagId: tag.id)),
+          create: (context) =>
+              TaskListBloc(
+                tasksRepository: context.read(),
+                notesRepository: context.read(),
+              )..add(
+                TaskListRequested(
+                  tagId: tag.id,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
+                ),
+              ),
           child: BlocBuilder<TaskListBloc, TaskListState>(
             builder: (context, state) {
               return TaskListView(
@@ -59,12 +73,19 @@ class TaskTagPage extends StatelessWidget {
         ),
 
         BlocProvider(
-          create: (context) => TaskListBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            tag: tag,
-            mode: TaskListMode.overdue,
-          )..add(TaskListRequested(date: Jiffy.now(), tagId: tag.id)),
+          create: (context) =>
+              TaskListBloc(
+                tasksRepository: context.read(),
+                notesRepository: context.read(),
+                tag: tag,
+                mode: TaskListMode.overdue,
+              )..add(
+                TaskListRequested(
+                  date: Jiffy.now(),
+                  tagId: tag.id,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
+                ),
+              ),
           child: BlocBuilder<TaskListBloc, TaskListState>(
             builder: (context, state) => TaskListView(
               tasks: state.tasks,

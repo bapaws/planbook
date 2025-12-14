@@ -21,7 +21,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListRequested>(_onRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
-    on<TaskListNoteCreated>(_onNoteCreated);
+    on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
   }
 
   final TasksRepository _tasksRepository;
@@ -65,9 +65,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     emit(state.copyWith(status: PageStatus.loading));
     final activities = await _tasksRepository.completeTask(event.task);
     for (final activity in activities) {
-      if (activity.deletedAt == null && activity.taskId != null) {
-        add(TaskListNoteCreated(taskId: activity.taskId!));
-      }
+      add(TaskListNoteCreated(activity: activity));
     }
     emit(state.copyWith(status: PageStatus.success));
   }
@@ -84,10 +82,13 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListNoteCreated event,
     Emitter<TaskListState> emit,
   ) async {
-    final task = await _tasksRepository.getTaskEntityById(event.taskId);
+    final taskId = event.activity.taskId;
+    if (taskId == null) return;
+    final task = await _tasksRepository.getTaskEntityById(taskId);
     if (task == null) return;
+
     final note = await _notesRepository.create(
-      title: '✅ ${task.title}',
+      title: '${event.activity.deletedAt == null ? '✅' : '❌'} ${task.title}',
       tags: task.tags,
       taskId: task.id,
     );

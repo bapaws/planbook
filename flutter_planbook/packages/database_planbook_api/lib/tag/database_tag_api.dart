@@ -11,6 +11,19 @@ class DatabaseTagApi {
 
   final AppDatabase db;
 
+  Future<int> getTotalCount({required String? userId}) async {
+    final query = db.selectOnly(db.tags, distinct: true)
+      ..addColumns([db.tags.id.count()])
+      ..where(
+        db.tags.deletedAt.isNull() &
+        (userId == null
+            ? db.tags.userId.isNull()
+            : db.tags.userId.equals(userId)),
+      );
+    final result = await query.getSingleOrNull();
+    return result?.read(db.tags.id.count()) ?? 0;
+  }
+
   Future<void> insertOrUpdateTag(Tag tag) async {
     await db.into(db.tags).insertOnConflictUpdate(tag.toCompanion(false));
   }
@@ -27,17 +40,46 @@ class DatabaseTagApi {
     )..where((t) => t.id.equals(id))).getSingleOrNull();
   }
 
-  Stream<List<Tag>> getTopLevelTags({String? userId}) {
+  Stream<List<TagEntity>> getTopLevelTags({String? userId}) {
     return (db.select(
-          db.tags,
-        )..where(
-          (tag) =>
-              tag.parentId.isNull() &
-              (userId == null
-                  ? tag.userId.isNull()
-                  : tag.userId.equals(userId)),
-        ))
-        .watch();
+            db.tags,
+          )
+          ..where(
+            (tag) =>
+                tag.parentId.isNull() &
+                (userId == null
+                    ? tag.userId.isNull()
+                    : tag.userId.equals(userId)),
+          )
+          ..orderBy([
+            (tag) => OrderingTerm.asc(tag.order),
+            (tag) => OrderingTerm.asc(tag.createdAt),
+            (tag) => OrderingTerm.asc(tag.level),
+          ]))
+        .watch()
+        .map(
+          (tags) {
+            final tagMap = Map<String, Tag>.fromEntries(
+              tags.map((tag) => MapEntry(tag.id, tag)),
+            );
+
+            final entities = <String, TagEntity>{};
+            for (final tag in tags) {
+              if (tag.parentId == null) {
+                entities[tag.id] = _buildTagEntity(tag, tagMap);
+              }
+            }
+            return entities.values.toList();
+          },
+        );
+  }
+
+  TagEntity _buildTagEntity(Tag tag, Map<String, Tag> allTags) {
+    final parent = allTags[tag.parentId];
+    return TagEntity(
+      tag: tag,
+      parent: parent != null ? _buildTagEntity(parent, allTags) : null,
+    );
   }
 
   Stream<List<TagEntity>> getAllTags({
@@ -56,27 +98,27 @@ class DatabaseTagApi {
                     : tag.userId.equals(userId)),
           )
           ..orderBy([
+            (tag) => OrderingTerm.asc(tag.level),
             (tag) => OrderingTerm.asc(tag.order),
             (tag) => OrderingTerm.asc(tag.createdAt),
-            (tag) => OrderingTerm.asc(tag.level),
           ]))
         .watch()
         .map(
           (tags) {
-            final tagMap = <String, Tag>{};
-            final entities = <String, TagEntity>{};
+            final tagMap = Map<String, Tag>.fromEntries(
+              tags.map((tag) => MapEntry(tag.id, tag)),
+            );
+            final entities = <TagEntity>[];
             for (final tag in tags) {
-              tagMap[tag.id] = tag;
-              if (tag.parentId != null) {
-                entities[tag.id] = TagEntity(
-                  tag: tag,
-                  parent: entities[tag.parentId],
-                );
+              final entity = _buildTagEntity(tag, tagMap);
+              final index = entities.indexWhere((e) => e.id == entity.parentId);
+              if (index != -1) {
+                entities.insert(index + 1, entity);
               } else {
-                entities[tag.id] = TagEntity(tag: tag);
+                entities.add(entity);
               }
             }
-            return entities.values.toList();
+            return entities;
           },
         );
   }
@@ -150,33 +192,6 @@ class DatabaseTagApi {
     required Tag tag,
   }) async {
     await db.into(db.tags).insert(tag.toCompanion(false));
-  }
-
-  Future<void> createTag({
-    required String name,
-    required ColorScheme lightColorScheme,
-    required ColorScheme darkColorScheme,
-    String? userId,
-    String? id,
-    TagEntity? parentTag,
-  }) async {
-    final trimmedName = name.trim();
-    final existingEntity = await getTagEntityByName(trimmedName, userId);
-    if (existingEntity != null) return;
-
-    await db
-        .into(db.tags)
-        .insert(
-          TagsCompanion.insert(
-            id: id != null ? Value(id) : const Value.absent(),
-            userId: Value(userId),
-            name: name,
-            level: Value((parentTag?.level ?? -1) + 1),
-            parentId: Value(parentTag?.id),
-            lightColorScheme: Value(lightColorScheme),
-            darkColorScheme: Value(darkColorScheme),
-          ),
-        );
   }
 
   Future<void> update({

@@ -25,6 +25,8 @@ final class RootTaskState extends Equatable {
 
   final Map<TaskListMode, int> taskCounts;
 
+  bool? get isCompleted => showCompleted ? null : false;
+
   @override
   List<Object?> get props => [
     status,

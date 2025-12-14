@@ -6,6 +6,7 @@ import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:planbook_api/planbook_api.dart';
@@ -84,6 +85,7 @@ class _TaskOverdueListPage extends StatelessWidget {
         child: BlocBuilder<TaskListBloc, TaskListState>(
           builder: (context, state) => TaskListView(
             tasks: state.tasks,
+            header: tag != null ? TaskListHeader(tag: tag) : null,
           ),
         ),
       ),

@@ -40,6 +40,7 @@ class RootDrawerListTile extends StatelessWidget {
                 count!.toString(),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             const CupertinoListTileChevron(),

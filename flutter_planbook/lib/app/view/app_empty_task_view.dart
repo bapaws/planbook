@@ -7,7 +7,13 @@ class AppEmptyTaskView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom:
+              24 +
+              kBottomNavigationBarHeight +
+              MediaQuery.of(context).padding.bottom,
+        ),
         child: SvgPicture.asset(
           'assets/images/Chill-Time.svg',
           width: 280,

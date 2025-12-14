@@ -92,6 +92,7 @@ final class TaskNewState extends Equatable {
   final List<TagEntity> tags;
 
   Jiffy? get date => dueAt ?? startAt ?? endAt;
+  bool get isInbox => dueAt == null && startAt == null && endAt == null;
 
   @override
   List<Object?> get props => [

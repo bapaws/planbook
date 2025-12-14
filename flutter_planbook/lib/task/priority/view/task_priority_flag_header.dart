@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/database/task_priority.dart';
 
 class TaskPriorityFlagHeader extends StatelessWidget {
@@ -20,13 +18,24 @@ class TaskPriorityFlagHeader extends StatelessWidget {
     return Row(
       children: [
         const SizedBox(width: 8),
-        AppIcon(
-          FontAwesomeIcons.solidFlag,
-          backgroundColor: colorScheme.primaryContainer,
-          foregroundColor: colorScheme.primary,
-          size: 18,
+        Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            '${priority.value}',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onPrimaryContainer,
+              fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             switch (priority) {

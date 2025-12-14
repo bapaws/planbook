@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
+import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_core/planbook_core.dart';
 
 @RoutePage()
 class TaskTodayPage extends StatelessWidget {
@@ -37,24 +39,25 @@ class TaskTodayPage extends StatelessWidget {
           // },
           onDateSelected: (date) {
             context.read<TaskTodayBloc>().add(
-              TaskTodayDateSelected(date: date),
+              TaskTodayDateSelected(
+                date: date,
+                isCompleted: context.read<RootTaskBloc>().isCompleted,
+              ),
             );
           },
           child: BlocBuilder<RootTaskBloc, RootTaskState>(
             buildWhen: (previous, current) =>
-                previous.viewType != current.viewType ||
-                previous.showCompleted != current.showCompleted,
+                previous.viewType != current.viewType,
             builder: (context, rootTaskState) => AnimatedSwitcher(
               duration: Durations.medium1,
               child: switch (rootTaskState.viewType) {
                 RootTaskViewType.list => _TaskTodayListPage(
                   day: todayState.date,
-                  showCompleted: rootTaskState.showCompleted,
                 ),
                 RootTaskViewType.priority => TaskPriorityPage(
                   mode: TaskListMode.today,
                   date: todayState.date,
-                  isCompleted: rootTaskState.showCompleted ? null : false,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
                 ),
               },
             ),
@@ -66,29 +69,38 @@ class TaskTodayPage extends StatelessWidget {
 }
 
 class _TaskTodayListPage extends StatelessWidget {
-  const _TaskTodayListPage({this.day, this.showCompleted = true});
+  const _TaskTodayListPage({required this.day});
 
-  final Jiffy? day;
-  final bool showCompleted;
+  final Jiffy day;
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
-      selector: (state) => state.topLevelTags,
-      builder: (context, tags) => CustomScrollView(
-        slivers: [
-          _buildTaskList(context),
-          for (final tag in tags) _buildTaskList(context, tag: tag),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height:
-                  16 +
-                  kRootBottomBarHeight +
-                  MediaQuery.of(context).padding.bottom,
-            ),
-          ),
-        ],
-      ),
+    return BlocSelector<TaskTodayBloc, TaskTodayState, bool>(
+      selector: (state) => (state.taskCounts[day.dateKey] ?? 0) == 0,
+      builder: (context, isEmpty) {
+        return AnimatedSwitcher(
+          duration: Durations.medium1,
+          child: isEmpty
+              ? const AppEmptyTaskView()
+              : BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
+                  selector: (state) => state.topLevelTags,
+                  builder: (context, tags) => CustomScrollView(
+                    slivers: [
+                      _buildTaskList(context),
+                      for (final tag in tags) _buildTaskList(context, tag: tag),
+                      SliverToBoxAdapter(
+                        child: SizedBox(
+                          height:
+                              16 +
+                              kRootBottomBarHeight +
+                              MediaQuery.of(context).padding.bottom,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+        );
+      },
     );
   }
 
@@ -105,7 +117,7 @@ class _TaskTodayListPage extends StatelessWidget {
             TaskListRequested(
               date: day,
               tagId: tag?.id,
-              isCompleted: showCompleted ? null : false,
+              isCompleted: context.read<RootTaskBloc>().isCompleted,
             ),
           ),
       child: MultiBlocListener(
@@ -119,7 +131,7 @@ class _TaskTodayListPage extends StatelessWidget {
                 TaskListRequested(
                   date: date,
                   tagId: tag?.id,
-                  isCompleted: state.showCompleted ? null : false,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
                 ),
               );
             },
@@ -127,15 +139,11 @@ class _TaskTodayListPage extends StatelessWidget {
           BlocListener<TaskTodayBloc, TaskTodayState>(
             listenWhen: (previous, current) => previous.date != current.date,
             listener: (context, state) {
-              final showCompleted = context
-                  .read<RootTaskBloc>()
-                  .state
-                  .showCompleted;
               context.read<TaskListBloc>().add(
                 TaskListRequested(
                   date: state.date,
                   tagId: tag?.id,
-                  isCompleted: showCompleted ? null : false,
+                  isCompleted: context.read<RootTaskBloc>().isCompleted,
                 ),
               );
             },

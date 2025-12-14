@@ -50,8 +50,15 @@ class RootTaskPage extends StatelessWidget {
                     date: state.date,
                     calendarFormat: state.calendarFormat,
                     onDateSelected: (date) {
+                      final isCompleted =
+                          context.read<RootTaskBloc>().state.showCompleted
+                          ? null
+                          : false;
                       context.read<TaskTodayBloc>().add(
-                        TaskTodayDateSelected(date: date),
+                        TaskTodayDateSelected(
+                          date: date,
+                          isCompleted: isCompleted,
+                        ),
                       );
                     },
                     onCalendarFormatChanged: (calendarFormat) {

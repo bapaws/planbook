@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_planbook/app/purchases/model/app_purchases_repository.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:planbook_api/planbook_api.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class AppPurchasesProductView extends StatelessWidget {
@@ -25,8 +25,8 @@ class AppPurchasesProductView extends StatelessWidget {
     final theme = Theme.of(context);
     return CupertinoButton(
       padding: EdgeInsets.zero,
-      minSize: itemWidth,
       onPressed: onPressed,
+      minimumSize: Size(itemWidth, itemWidth),
       child: Stack(
         alignment: AlignmentDirectional.bottomCenter,
         clipBehavior: Clip.none,

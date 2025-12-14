@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_planbook/app/purchases/model/app_purchases_repository.dart';
+import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 import 'package:purchases_flutter/models/package_wrapper.dart';
 
 part 'app_purchases_event.dart';
@@ -9,8 +10,12 @@ part 'app_purchases_state.dart';
 
 class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
   AppPurchasesBloc({
-    required AppPurchasesRepository appPurchasesRepository,
-  }) : _appPurchasesRepository = appPurchasesRepository,
+    required TasksRepository tasksRepository,
+    required NotesRepository notesRepository,
+    required TagsRepository tagsRepository,
+  }) : _tasksRepository = tasksRepository,
+       _notesRepository = notesRepository,
+       _tagsRepository = tagsRepository,
        super(const AppPurchasesState()) {
     on<AppPurchasesSubscriptionRequested>(_onSubscriptionRequested);
     on<AppPurchasesPackageRequested>(_onPackageRequested);
@@ -22,10 +27,30 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     on<AppPurchasesSupportUsFullPrice>(_onSupportUsFullPrice);
   }
 
-  final AppPurchasesRepository _appPurchasesRepository;
+  final TasksRepository _tasksRepository;
+  final NotesRepository _notesRepository;
+  final TagsRepository _tagsRepository;
 
   bool get isPremium => state.isPremium;
   bool get isLifetime => state.isLifetime;
+
+  Future<bool> isTaskLimitReached() async {
+    if (isPremium) return false;
+    final count = await _tasksRepository.getTotalCount();
+    return count >= AppProFeatures.task.basicTotal;
+  }
+
+  Future<bool> isTagLimitReached() async {
+    if (isPremium) return false;
+    final count = await _tagsRepository.getTotalCount();
+    return count >= AppProFeatures.tag.basicTotal;
+  }
+
+  Future<bool> isNoteLimitReached() async {
+    if (isPremium) return false;
+    final count = await _notesRepository.getTotalCount();
+    return count >= AppProFeatures.note.basicTotal;
+  }
 
   Future<void> _onSubscriptionRequested(
     AppPurchasesSubscriptionRequested event,
@@ -39,7 +64,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     //   );
     // }
     await emit.forEach(
-      _appPurchasesRepository.getCustomerInfo(),
+      AppPurchases.instance.getCustomerInfo(),
       onData: (info) {
         // if (kDebugMode) {
         //   return state.copyWith(
@@ -59,17 +84,16 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
   ) async {
     if (state.availablePackages.isNotEmpty) return;
 
-    final availablePackages = await _appPurchasesRepository
+    final availablePackages = await AppPurchases.instance
         .getAvailablePackages();
 
-    final activeProductIdentifier = await _appPurchasesRepository
+    final activeProductIdentifier = await AppPurchases.instance
         .getActiveProductIdentifier();
     final activePackage = availablePackages?.firstWhereOrNull(
       (e) => e.storeProduct.identifier == activeProductIdentifier,
     );
 
-    final originalPackages = await _appPurchasesRepository
-        .getOriginalPackages();
+    final originalPackages = await AppPurchases.instance.getOriginalPackages();
 
     emit(
       state.copyWith(
@@ -91,10 +115,10 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     // 登录和这里都需要获取，两种逻辑相互独立
     await _onLimitFeatureRequested(userId: id);
 
-    final appUserId = await _appPurchasesRepository.getAppUserID();
+    final appUserId = await AppPurchases.instance.getAppUserID();
     if (appUserId == id) return;
 
-    final info = await _appPurchasesRepository.logIn(id);
+    final info = await AppPurchases.instance.logIn(id);
     emit(
       state.copyWith(
         activeProductIdentifier: info.customerInfo.activeProductIdentifier,
@@ -106,7 +130,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesRestored event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    final info = await _appPurchasesRepository.restore();
+    final info = await AppPurchases.instance.restore();
     emit(
       state.copyWith(
         activeProductIdentifier: info.activeProductIdentifier,
@@ -140,7 +164,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         ) ??
         state.availablePackages.first;
 
-    final info = await _appPurchasesRepository.purchasePackage(
+    final info = await AppPurchases.instance.purchasePackage(
       package,
     );
     emit(
@@ -166,7 +190,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         ) ??
         selectedPackage;
 
-    final info = await _appPurchasesRepository.purchasePackage(
+    final info = await AppPurchases.instance.purchasePackage(
       package,
     );
     emit(

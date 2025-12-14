@@ -21,7 +21,9 @@ class TagsRepository {
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
 
-  Stream<List<Tag>> getTopLevelTags() {
+  Future<int> getTotalCount() => _tagApi.getTotalCount(userId: userId);
+
+  Stream<List<TagEntity>> getTopLevelTags() {
     return _tagApi.getTopLevelTags(userId: userId);
   }
 
@@ -76,7 +78,7 @@ class TagsRepository {
       parentId: parentTag?.id,
       userId: userId,
       order: 0,
-      level: 0,
+      level: (parentTag?.level ?? 0) + 1,
       createdAt: Jiffy.now().toUtc(),
     );
     await _supabaseTagApi.create(tag: tag);
@@ -98,6 +100,8 @@ class TagsRepository {
       lightColorScheme: Value(lightColorScheme),
       darkColorScheme: Value(darkColorScheme),
       parentId: Value(parentTag?.id),
+      level: (parentTag?.level ?? 0) + 1,
+      updatedAt: Value(Jiffy.now().toUtc()),
     );
     await _supabaseTagApi.update(tag: newTag);
     await _tagApi.update(tag: newTag);

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
@@ -77,7 +78,7 @@ class RootNoteDrawer extends StatelessWidget {
                               icon: FontAwesomeIcons.plus,
                               title: context.l10n.addTag,
                               onTap: () {
-                                context.router.push(TagNewRoute());
+                                _onAddTagTapped(context);
                               },
                             ),
                           ],
@@ -135,5 +136,14 @@ class RootNoteDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _onAddTagTapped(BuildContext context) async {
+    if (await context.read<AppPurchasesBloc>().isTagLimitReached() &&
+        context.mounted) {
+      await context.router.push(const AppPurchasesRoute());
+      return;
+    }
+    await context.router.push(TagNewRoute());
   }
 }

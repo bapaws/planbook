@@ -58,9 +58,10 @@ class NoteListTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  const Icon(
+                  Icon(
                     FontAwesomeIcons.circle,
-                    size: 16,
+                    size: 12,
+                    color: theme.colorScheme.tertiary,
                   ),
                   const SizedBox(width: 16),
                   Text(
@@ -68,7 +69,8 @@ class NoteListTile extends StatelessWidget {
                         ? note.createdAt.toLocal().yMMMdjm
                         : note.createdAt.toLocal().jm,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.primary,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const Spacer(),
@@ -91,6 +93,7 @@ class NoteListTile extends StatelessWidget {
               child: Row(
                 children: [
                   VerticalDivider(
+                    width: 12,
                     color: theme.colorScheme.surfaceContainerHighest,
                   ),
                   const SizedBox(width: 16),

@@ -34,6 +34,8 @@ class TasksRepository {
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
 
+  Future<int> getTotalCount() => _dbTaskApi.getTotalCount(userId: userId);
+
   Future<void> create({
     required Task task,
     List<TagEntity>? tags,

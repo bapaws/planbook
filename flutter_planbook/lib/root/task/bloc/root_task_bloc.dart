@@ -25,12 +25,17 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
   final TasksRepository _tasksRepository;
 
+  bool? get isCompleted => state.isCompleted;
+
   @override
   RootTaskState? fromJson(Map<String, dynamic> json) {
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
       tab: TaskListMode.values.byName(json['tab'] as String),
       viewType: RootTaskViewType.values.byName(json['viewType'] as String),
+      tag: json['tag'] != null
+          ? TagEntity.fromJson(json['tag'] as Map<String, dynamic>)
+          : null,
       showCompleted: json['showCompleted'] as bool,
     );
   }
@@ -42,6 +47,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       'tab': state.tab.name,
       'viewType': state.viewType.name,
       'showCompleted': state.showCompleted,
+      'tag': state.tag?.toJson(),
     };
   }
 

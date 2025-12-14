@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -21,7 +23,7 @@ class TagNewButton extends StatelessWidget {
           sizeStyle: CupertinoButtonSize.medium,
           borderRadius: BorderRadius.circular(100),
           onPressed: () {
-            context.router.push(TagNewRoute());
+            _onAddTagTapped(context);
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -43,5 +45,14 @@ class TagNewButton extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _onAddTagTapped(BuildContext context) async {
+    if (await context.read<AppPurchasesBloc>().isTagLimitReached() &&
+        context.mounted) {
+      await context.router.push(const AppPurchasesRoute());
+      return;
+    }
+    await context.router.push(TagNewRoute());
   }
 }
