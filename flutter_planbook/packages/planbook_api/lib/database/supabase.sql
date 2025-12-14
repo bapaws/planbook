@@ -1,3 +1,16 @@
+-- ============================================
+-- 配置 PostgREST 暴露 planbook schema
+-- ============================================
+-- 注意：pgrst.db_schemas 参数无法通过普通 SQL 命令设置（需要超级用户权限）
+-- 请通过 Supabase Dashboard 配置：
+-- 1. 进入 Supabase Dashboard
+-- 2. 选择项目 -> Settings -> API
+-- 3. 在 "Exposed schemas" 中添加 "planbook"
+-- 4. 确保保留默认的 public, storage, graphql_public
+--
+-- 或者，如果您有超级用户权限，可以在 SQL Editor 中执行：
+-- ALTER ROLE authenticator SET pgrst.db_schemas = 'public, storage, graphql_public, planbook'; 
+
 -- 创建 planbook schema
 CREATE SCHEMA IF NOT EXISTS planbook;
 
@@ -7,9 +20,9 @@ SET search_path TO planbook, public;
 -- ============================================
 -- Schema 权限设置
 -- ============================================
--- 授予 authenticated、service_role 使用 planbook schema 的权限
-GRANT USAGE ON SCHEMA planbook TO authenticated, service_role;
-GRANT ALL ON SCHEMA planbook TO authenticated, service_role;
+-- 授予 anon、authenticated、service_role 使用 planbook schema 的权限
+GRANT USAGE ON SCHEMA planbook TO anon, authenticated, service_role;
+GRANT ALL ON SCHEMA planbook TO anon, authenticated, service_role;
 
 -- ============================================
 -- Tasks 表（任务表）
@@ -356,3 +369,54 @@ CREATE POLICY "Users can update their own user_profiles"
 CREATE POLICY "Users can delete their own user_profiles"
   ON planbook.user_profiles FOR DELETE
   USING (auth.uid() = id);
+
+-- ============================================
+-- Storage Buckets（存储桶）
+-- ============================================
+-- 创建 planbook-note-images bucket（笔记图片存储桶）
+-- 注意：如果 bucket 已存在，此操作不会报错（ON CONFLICT DO NOTHING）
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+  'planbook-note-images'::text,
+  'planbook-note-images',
+  false, -- 私有 bucket
+  52428800, -- 50MB 文件大小限制
+  ARRAY['image/jpeg', 'image/png', 'image/gif', 'image/webp']::text[] -- 允许的 MIME 类型
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================
+-- Storage Objects RLS 策略（planbook-note-images）
+-- ============================================
+-- 允许认证用户上传文件到 planbook-note-images bucket
+-- 文件路径格式：{userId}/{filename} 或 planbook/{filename}
+CREATE POLICY "Allow authenticated users to upload note images"
+  ON storage.objects FOR INSERT
+  TO authenticated
+  WITH CHECK (
+    bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- 允许用户访问自己上传的笔记图片（通过文件夹路径检查）
+CREATE POLICY "Allow users to access their own note images"
+  ON storage.objects FOR SELECT
+  TO authenticated
+  USING (
+    bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- 允许用户更新自己上传的笔记图片
+CREATE POLICY "Allow users to update their own note images"
+  ON storage.objects FOR UPDATE
+  TO authenticated
+  USING (
+    bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+-- 允许用户删除自己上传的笔记图片
+CREATE POLICY "Allow users to delete their own note images"
+  ON storage.objects FOR DELETE
+  TO authenticated
+  USING (
+    bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
+  );

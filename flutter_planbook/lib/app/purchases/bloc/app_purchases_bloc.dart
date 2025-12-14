@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:purchases_flutter/models/package_wrapper.dart';
@@ -56,21 +57,21 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesSubscriptionRequested event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    // if (kDebugMode) {
-    //   emit(
-    //     state.copyWith(
-    //       activeProductIdentifier: 'lifetime',
-    //     ),
-    //   );
-    // }
+    if (kDebugMode) {
+      emit(
+        state.copyWith(
+          activeProductIdentifier: 'lifetime',
+        ),
+      );
+    }
     await emit.forEach(
       AppPurchases.instance.getCustomerInfo(),
       onData: (info) {
-        // if (kDebugMode) {
-        //   return state.copyWith(
-        //     activeProductIdentifier: 'lifetime',
-        //   );
-        // }
+        if (kDebugMode) {
+          return state.copyWith(
+            activeProductIdentifier: 'lifetime',
+          );
+        }
         return state.copyWith(
           activeProductIdentifier: info?.activeProductIdentifier,
         );

@@ -17,6 +17,7 @@ final class NoteNewState extends Equatable {
       initialNote: note,
       title: note?.title ?? task?.title ?? '',
       content: note?.content ?? '',
+      images: note?.images ?? const [],
       task: note?.task ?? task?.task,
       tags: note?.tags ?? task?.tags ?? const [],
       createdAt: note?.createdAt ?? Jiffy.now(),

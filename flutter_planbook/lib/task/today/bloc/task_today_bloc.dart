@@ -32,8 +32,6 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
         isCompleted: event.isCompleted,
       ),
       onData: (count) {
-        print(event.date.dateKey);
-        print(count);
         return state.copyWith(
           taskCounts: {...state.taskCounts, event.date.dateKey: count},
         );

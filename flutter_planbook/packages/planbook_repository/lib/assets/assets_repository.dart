@@ -15,7 +15,7 @@ enum ResBucket {
   userAvatars;
 
   String get name => switch (this) {
-    ResBucket.noteImages => 'note-images',
+    ResBucket.noteImages => 'planbook-note-images',
     ResBucket.userAvatars => 'user-avatars',
   };
 }
