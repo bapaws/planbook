@@ -38,54 +38,86 @@ class TaskListView extends StatelessWidget {
           ),
         );
       },
-      child: MultiSliver(
-        pushPinnedChildren: true,
-        children: [
-          if (header != null && tasks.isNotEmpty)
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              sliver: SliverToBoxAdapter(child: header),
-            ),
-          SliverList.builder(
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              return TaskListTile(
-                key: ValueKey(task.occurrence?.id ?? task.id),
-                task: task,
-                onPressed: () {
-                  if (onTaskPressed != null) {
-                    onTaskPressed!(task);
-                  } else {
-                    context.router.push(TaskDetailRoute(taskId: task.id));
-                  }
-                },
-                onCompleted: () {
-                  if (onTaskCompleted != null) {
-                    onTaskCompleted!(task);
-                  } else {
-                    context.read<TaskListBloc>().add(
-                      TaskListCompleted(task: task),
-                    );
-                  }
-                },
-                onDeleted: () {
-                  if (onTaskDeleted != null) {
-                    onTaskDeleted!(task);
-                  } else {
-                    context.read<TaskListBloc>().add(
-                      TaskListDeleted(taskId: task.id),
-                    );
-                  }
-                },
-                onEdited: () {
-                  context.router.push(TaskNewRoute(initialTask: task));
-                },
-              );
-            },
-          ),
-        ],
+      child: TaskSliverList(
+        tasks: tasks,
+        header: header,
+        onTaskPressed: onTaskPressed,
+        onTaskCompleted: onTaskCompleted,
+        onTaskDeleted: onTaskDeleted,
+        onTaskEdited: onTaskEdited,
       ),
+    );
+  }
+}
+
+class TaskSliverList extends StatelessWidget {
+  const TaskSliverList({
+    required this.tasks,
+    this.header,
+    this.onTaskPressed,
+    this.onTaskCompleted,
+    this.onTaskDeleted,
+    this.onTaskEdited,
+    super.key,
+  });
+
+  final Widget? header;
+  final List<TaskEntity> tasks;
+
+  final ValueChanged<TaskEntity>? onTaskPressed;
+  final ValueChanged<TaskEntity>? onTaskCompleted;
+  final ValueChanged<TaskEntity>? onTaskDeleted;
+  final ValueChanged<TaskEntity>? onTaskEdited;
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiSliver(
+      pushPinnedChildren: true,
+      children: [
+        if (header != null && tasks.isNotEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+            sliver: SliverToBoxAdapter(child: header),
+          ),
+        SliverList.builder(
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            return TaskListTile(
+              key: ValueKey(task.occurrence?.id ?? task.id),
+              task: task,
+              onPressed: () {
+                if (onTaskPressed != null) {
+                  onTaskPressed!(task);
+                } else {
+                  context.router.push(TaskDetailRoute(taskId: task.id));
+                }
+              },
+              onCompleted: () {
+                if (onTaskCompleted != null) {
+                  onTaskCompleted!(task);
+                } else {
+                  context.read<TaskListBloc>().add(
+                    TaskListCompleted(task: task),
+                  );
+                }
+              },
+              onDeleted: () {
+                if (onTaskDeleted != null) {
+                  onTaskDeleted!(task);
+                } else {
+                  context.read<TaskListBloc>().add(
+                    TaskListDeleted(taskId: task.id),
+                  );
+                }
+              },
+              onEdited: () {
+                context.router.push(TaskNewRoute(initialTask: task));
+              },
+            );
+          },
+        ),
+      ],
     );
   }
 }

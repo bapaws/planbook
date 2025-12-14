@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.dart'
@@ -136,11 +138,17 @@ class NoteListTile extends StatelessWidget {
 
   Widget _buildImages(BuildContext context, List<String> images) {
     final screenWidth = MediaQuery.of(context).size.width;
-    const crossAxisCount = 3;
+    var crossAxisCount = 3;
     const spacing = 4.0;
     final availableWidth =
         screenWidth - 16 * 2 - 16 - 16; // padding + divider + spacing
-    final imageSize =
+    var imageSize = math.min<double>(
+      150,
+      ((availableWidth - (crossAxisCount - 1) * spacing) / crossAxisCount)
+          .floorToDouble(),
+    );
+    crossAxisCount = (availableWidth / imageSize).floor();
+    imageSize =
         ((availableWidth - (crossAxisCount - 1) * spacing) / crossAxisCount)
             .floorToDouble();
     final imageCount = images.length > 9 ? 9 : images.length;

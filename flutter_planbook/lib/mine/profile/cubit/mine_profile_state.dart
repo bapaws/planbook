@@ -2,6 +2,7 @@ part of 'mine_profile_cubit.dart';
 
 final class MineProfileState extends Equatable {
   MineProfileState({
+    this.status = PageStatus.initial,
     this.user,
     this.isUpdatingAvatar = false,
     this.deleteAccountConfirmation,
@@ -10,6 +11,7 @@ final class MineProfileState extends Equatable {
   }) : birthday = birthday ?? user?.birthday ?? DateTime(2010),
        gender = gender ?? user?.gender ?? UserGender.unknown;
 
+  final PageStatus status;
   final UserEntity? user;
   final bool isUpdatingAvatar;
 
@@ -19,6 +21,7 @@ final class MineProfileState extends Equatable {
   final String? deleteAccountConfirmation;
 
   MineProfileState copyWith({
+    PageStatus? status,
     UserEntity? user,
     bool? isUpdatingAvatar,
     DateTime? birthday,
@@ -26,6 +29,7 @@ final class MineProfileState extends Equatable {
     String? deleteAccountConfirmation,
   }) {
     return MineProfileState(
+      status: status ?? this.status,
       user: user ?? this.user,
       isUpdatingAvatar: isUpdatingAvatar ?? this.isUpdatingAvatar,
       birthday: birthday ?? this.birthday,
@@ -37,6 +41,7 @@ final class MineProfileState extends Equatable {
 
   @override
   List<Object?> get props => [
+    status,
     user,
     isUpdatingAvatar,
     birthday,

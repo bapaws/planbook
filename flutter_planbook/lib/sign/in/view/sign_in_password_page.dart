@@ -41,6 +41,7 @@ class _SignInPasswordPageState extends State<SignInPasswordPage> {
 
   void _handleSignIn() {
     if (_formKey.currentState?.validate() ?? false) {
+      FocusScope.of(context).unfocus();
       context.read<SignInCubit>().signInWithPassword(
         phone: _phoneController.text.trim(),
         password: _passwordController.text,
@@ -113,16 +114,18 @@ class _SignInPasswordPageState extends State<SignInPasswordPage> {
 
             // 手机号输入框
             AppTextField(
+              autofocus: true,
               hintText: l10n.phoneNumberOrEmail,
               controller: _phoneController,
+              textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return '请输入手机号或邮箱';
+                  return l10n.phoneNumberMessage;
                 }
                 if (!RegExp(
                   r'^1[3-9]\d{9}$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                 ).hasMatch(value)) {
-                  return '请输入有效的手机号或邮箱';
+                  return l10n.phoneNumberMessageInvalid;
                 }
                 return null;
               },
@@ -135,12 +138,13 @@ class _SignInPasswordPageState extends State<SignInPasswordPage> {
               hintText: l10n.password,
               obscureText: _obscurePassword,
               controller: _passwordController,
+              textInputAction: TextInputAction.done,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return '请输入密码';
+                  return l10n.passwordMessage;
                 }
                 if (value.length < 6) {
-                  return '密码长度至少6位';
+                  return l10n.passwordMessage;
                 }
                 return null;
               },
@@ -155,6 +159,7 @@ class _SignInPasswordPageState extends State<SignInPasswordPage> {
                   });
                 },
               ),
+              onSubmitted: (value) => _handleSignIn(),
             ),
 
             const SizedBox(height: 24),

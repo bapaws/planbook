@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/core/model/user_gender.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_planbook/mine/profile/cubit/mine_profile_cubit.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
+import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -24,7 +26,17 @@ class MineProfilePage extends StatelessWidget {
         usersRepository: context.read(),
         assetsRepository: context.read(),
       ),
-      child: const _MineProfilePage(),
+      child: BlocListener<MineProfileCubit, MineProfileState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == PageStatus.loading) {
+            EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+          } else if (EasyLoading.isShow) {
+            EasyLoading.dismiss();
+          }
+        },
+        child: const _MineProfilePage(),
+      ),
     );
   }
 }
@@ -134,8 +146,13 @@ class _MineProfilePage extends StatelessWidget {
                       ),
                       color: theme.colorScheme.surfaceContainer,
                       child: Text(context.l10n.logout),
-                      onPressed: () {
-                        context.read<MineProfileCubit>().onLogout();
+                      onPressed: () async {
+                        await context.read<MineProfileCubit>().onLogout();
+                        if (context.mounted) {
+                          await context.router.replaceAll([
+                            const SignHomeRoute(),
+                          ]);
+                        }
                       },
                     ),
                   ),

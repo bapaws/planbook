@@ -66,6 +66,7 @@ class SettingsPaywall extends StatelessWidget {
                 if (context.read<AppPurchasesBloc>().state.isLifetime) {
                   return;
                 }
+                context.router.push(const AppPurchasesRoute());
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(

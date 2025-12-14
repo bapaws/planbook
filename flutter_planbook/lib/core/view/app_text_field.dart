@@ -16,6 +16,7 @@ class AppTextField extends StatelessWidget {
     this.maxLines,
     this.textInputAction,
     this.maxLength,
+    this.onSubmitted,
   });
 
   final String? hintText;
@@ -31,6 +32,7 @@ class AppTextField extends StatelessWidget {
   final int? maxLines;
   final int? maxLength;
   final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +49,7 @@ class AppTextField extends StatelessWidget {
       maxLines: obscureText ? 1 : maxLines,
       minLines: minLines,
       maxLength: maxLength,
+      onFieldSubmitted: onSubmitted,
       style: theme.textTheme.bodyLarge?.copyWith(
         color: theme.colorScheme.onSurface,
       ),

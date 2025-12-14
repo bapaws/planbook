@@ -102,6 +102,7 @@ class NoteNewBottomBar extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           minimumSize: const Size.square(kMinInteractiveDimension),
           onPressed: () {
+            FocusScope.of(context).unfocus();
             context.read<NoteNewCubit>().onSave();
           },
           child: Icon(

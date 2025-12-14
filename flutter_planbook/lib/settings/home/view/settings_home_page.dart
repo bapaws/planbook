@@ -108,6 +108,9 @@ class _SettingsHomePage extends StatelessWidget {
               SettingsSectionHeader(
                 title: l10n.general,
               ),
+              SettingsSectionHeader(
+                title: l10n.appearance,
+              ),
               SettingsRow(
                 leading: const Icon(
                   Icons.dark_mode,
@@ -188,21 +191,21 @@ class _SettingsHomePage extends StatelessWidget {
                   context.router.push(const FeedbackRoute());
                 },
               ),
-              SettingsRow(
-                leading: const Icon(
-                  Icons.help,
-                  color: Colors.blue,
-                ),
-                title: Text(
-                  l10n.help,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-                onPressed: () {
-                  launchUrlString(context.l10n.helpUrl);
-                },
-              ),
+              // SettingsRow(
+              //   leading: const Icon(
+              //     Icons.help,
+              //     color: Colors.blue,
+              //   ),
+              //   title: Text(
+              //     l10n.help,
+              //     style: theme.textTheme.bodyLarge?.copyWith(
+              //       color: theme.colorScheme.onSurface,
+              //     ),
+              //   ),
+              //   onPressed: () {
+              //     launchUrlString(context.l10n.helpUrl);
+              //   },
+              // ),
               SettingsRow(
                 leading: const Icon(
                   Icons.info,

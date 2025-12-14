@@ -63,6 +63,7 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
 
   void _handleSignIn() {
     if (_formKey.currentState?.validate() ?? false) {
+      FocusScope.of(context).unfocus();
       context.read<SignInCubit>().signInWithCode(
         phone: _phoneController.text.trim(),
         code: _codeController.text.trim(),
@@ -177,13 +178,15 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
             AppTextField(
               hintText: l10n.phoneNumber,
               controller: _phoneController,
+              textInputAction: TextInputAction.next,
+              autofocus: true,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return '请输入手机号';
+                  return l10n.phoneNumberMessage;
                 }
                 if (!RegExp(r'^1[3-9]\d{9}$').hasMatch(value) &&
                     !EmailValidator.validate(value)) {
-                  return '请输入有效的手机号';
+                  return l10n.phoneNumberMessageInvalid;
                 }
                 return null;
               },
@@ -200,15 +203,17 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
                     hintText: l10n.verificationCode,
                     keyboardType: TextInputType.number,
                     controller: _codeController,
+                    textInputAction: TextInputAction.done,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return '请输入验证码';
+                        return l10n.verificationCodeMessage;
                       }
                       if (value.length != 6 && value.length != 8) {
-                        return '验证码为6位数字';
+                        return l10n.verificationCodeMessageInvalid;
                       }
                       return null;
                     },
+                    onSubmitted: (value) => _handleSignIn(),
                   ),
                 ),
                 const SizedBox(width: 12),

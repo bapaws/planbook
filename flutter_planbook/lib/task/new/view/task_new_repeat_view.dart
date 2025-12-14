@@ -63,7 +63,7 @@ class _TaskNewRecurrenceRuleViewState extends State<TaskNewRecurrenceRuleView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final screenWidth = MediaQuery.of(context).size.width;
+
     return Column(
       children: [
         const SizedBox(height: 12),
@@ -120,76 +120,84 @@ class _TaskNewRecurrenceRuleViewState extends State<TaskNewRecurrenceRuleView> {
                           height: 24,
                           color: theme.colorScheme.surfaceContainerHighest,
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: (screenWidth * 0.2).floorToDouble(),
-                              child: Align(
-                                alignment: AlignmentDirectional.centerEnd,
-                                child: Text(
-                                  context.l10n.every,
-                                  style: theme.textTheme.titleLarge?.copyWith(
-                                    color: theme.colorScheme.onSurface,
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final screenWidth = constraints.maxWidth;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  width: (screenWidth * 0.2).floorToDouble(),
+                                  child: Align(
+                                    alignment: AlignmentDirectional.centerEnd,
+                                    child: Text(
+                                      context.l10n.every,
+                                      style: theme.textTheme.titleLarge
+                                          ?.copyWith(
+                                            color: theme.colorScheme.onSurface,
+                                          ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: (screenWidth * 0.05).floorToDouble(),
-                            ),
-                            SizedBox(
-                              width: (screenWidth * 0.45).roundToDouble(),
-                              height: 216,
-                              child: CupertinoPicker.builder(
-                                itemExtent: kMinInteractiveDimension,
-                                scrollController: _everyScrollController,
-                                onSelectedItemChanged: (index) {},
-                                itemBuilder: (context, index) {
-                                  if (index < 1) return null;
-                                  return Center(
-                                    child: Text((index).toString()),
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: (screenWidth * 0.05).floorToDouble(),
-                            ),
-                            SizedBox(
-                              width: (screenWidth * 0.25).floorToDouble(),
-                              height: 216,
-                              child: CupertinoPicker(
-                                itemExtent: kMinInteractiveDimension,
-                                scrollController: _frequencyScrollController,
-                                changeReportingBehavior:
-                                    ChangeReportingBehavior.onScrollEnd,
-                                onSelectedItemChanged: (index) {
-                                  selectedFrequency =
-                                      RecurrenceFrequency.values[index];
-                                },
-                                selectionOverlay: null,
-                                children: [
-                                  for (final frequency
-                                      in RecurrenceFrequency.values)
-                                    Align(
-                                      alignment:
-                                          AlignmentDirectional.centerStart,
-                                      child: Text(
-                                        frequency.getEveryUnitName(
-                                          context.l10n,
-                                        ),
-                                        style: theme.textTheme.titleLarge
-                                            ?.copyWith(
-                                              color:
-                                                  theme.colorScheme.onSurface,
+                                SizedBox(
+                                  width: (screenWidth * 0.05).floorToDouble(),
+                                ),
+                                SizedBox(
+                                  width: (screenWidth * 0.45).roundToDouble(),
+                                  height: 216,
+                                  child: CupertinoPicker.builder(
+                                    itemExtent: kMinInteractiveDimension,
+                                    scrollController: _everyScrollController,
+                                    onSelectedItemChanged: (index) {},
+                                    itemBuilder: (context, index) {
+                                      if (index < 1) return null;
+                                      return Center(
+                                        child: Text((index).toString()),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: (screenWidth * 0.05).floorToDouble(),
+                                ),
+                                SizedBox(
+                                  width: (screenWidth * 0.25).floorToDouble(),
+                                  height: 216,
+                                  child: CupertinoPicker(
+                                    itemExtent: kMinInteractiveDimension,
+                                    scrollController:
+                                        _frequencyScrollController,
+                                    changeReportingBehavior:
+                                        ChangeReportingBehavior.onScrollEnd,
+                                    onSelectedItemChanged: (index) {
+                                      selectedFrequency =
+                                          RecurrenceFrequency.values[index];
+                                    },
+                                    selectionOverlay: null,
+                                    children: [
+                                      for (final frequency
+                                          in RecurrenceFrequency.values)
+                                        Align(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          child: Text(
+                                            frequency.getEveryUnitName(
+                                              context.l10n,
                                             ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                            style: theme.textTheme.titleLarge
+                                                ?.copyWith(
+                                                  color: theme
+                                                      .colorScheme
+                                                      .onSurface,
+                                                ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                         AnimatedSwitcher(
                           duration: Durations.medium1,

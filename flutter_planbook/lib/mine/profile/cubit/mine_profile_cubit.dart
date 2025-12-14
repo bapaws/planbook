@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 part 'mine_profile_state.dart';
@@ -122,8 +123,10 @@ class MineProfileCubit extends Cubit<MineProfileState> {
     emit(state.copyWith(deleteAccountConfirmation: value));
   }
 
-  void onLogout() {
-    _usersRepository.logout();
+  Future<void> onLogout() async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _usersRepository.logout();
+    emit(state.copyWith(status: PageStatus.dispose));
   }
 
   void onDeleted() {

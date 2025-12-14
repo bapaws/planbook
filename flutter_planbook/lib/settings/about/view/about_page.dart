@@ -1,19 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/bloc/app_bloc.dart';
-import 'package:flutter_planbook/app/launch/view/animated_logo.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/about/cubit/about_cubit.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
-import 'package:screenshot/screenshot.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -24,15 +17,13 @@ class AboutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => AboutCubit()..onRequested(),
-      child: _AboutPage(),
+      child: const _AboutPage(),
     );
   }
 }
 
 class _AboutPage extends StatelessWidget {
-  _AboutPage();
-
-  final ScreenshotController screenshotController = ScreenshotController();
+  const _AboutPage();
 
   @override
   Widget build(BuildContext context) {
@@ -48,41 +39,25 @@ class _AboutPage extends StatelessWidget {
           builder: (context, state) {
             return Column(
               children: [
-                if (kDebugMode)
-                  Center(
-                    child: SizedBox(
-                      width: 1024,
-                      height: 1024,
-                      child: Screenshot(
-                        controller: screenshotController,
-                        child: ColoredBox(
-                          color: theme.colorScheme.surfaceContainerLowest,
-                          child: LogoView(
-                            width: 1024,
-                            height: 1024,
-                            strokeColor: theme.colorScheme.primaryContainer,
-                          ),
-                        ),
-                      ),
-                    ),
-                  )
-                else
-                  const AnimatedLogo(),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  clipBehavior: Clip.hardEdge,
+                  child: SvgPicture.asset(
+                    'assets/images/logo.svg',
+                    width: 120,
+                    height: 120,
+                  ),
+                ),
                 const SizedBox(
                   height: 8,
                 ),
-                CupertinoButton(
-                  onPressed: kDebugMode
-                      ? () {
-                          _capture(context);
-                        }
-                      : null,
-                  child: Text(
-                    l10n.appName,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Text(
+                  l10n.appName,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 Center(
@@ -141,26 +116,5 @@ class _AboutPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  void _capture(BuildContext context) {
-    final seedColor = context.read<AppBloc>().state.seedColor;
-    final folder = Theme.of(context).brightness == Brightness.light
-        ? 'light'
-        : 'dark';
-    final name =
-        seedColor.name.substring(0, 1).toUpperCase() +
-        seedColor.name.substring(1);
-    screenshotController.capture().then((image) async {
-      if (image != null) {
-        await ImageGallerySaver.saveImage(image);
-
-        final directory = await getApplicationDocumentsDirectory();
-        final imagePath = await File(
-          '${directory.path}/$folder/Logo-$name.png',
-        ).create();
-        await imagePath.writeAsBytes(image);
-      }
-    });
   }
 }

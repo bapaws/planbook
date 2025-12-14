@@ -23,20 +23,16 @@ class TaskPickerPage extends StatelessWidget {
             )
             ..add(const TaskPickerInboxRequested())
             ..add(const TaskPickerTodayRequested()),
-      child: Container(
+      child: AppPageScaffold(
         constraints: BoxConstraints(
           maxHeight:
               MediaQuery.of(context).size.height -
               MediaQuery.of(context).padding.vertical -
               64,
         ),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.hardEdge,
-        child: AppPageScaffold(
-          child: const _TaskPickerPage(),
-        ),
+        child: const _TaskPickerPage(),
       ),
     );
   }
@@ -48,7 +44,7 @@ class _TaskPickerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-      controller: PrimaryScrollController.of(context),
+      // controller: PrimaryScrollController.of(context),
       slivers: [
         const SliverAppBar(
           forceMaterialTransparency: true,
@@ -56,7 +52,7 @@ class _TaskPickerPage extends StatelessWidget {
         ),
         BlocSelector<TaskPickerBloc, TaskPickerState, List<TaskEntity>>(
           selector: (state) => state.inboxTasks,
-          builder: (context, inboxTasks) => TaskListView(
+          builder: (context, inboxTasks) => TaskSliverList(
             tasks: inboxTasks,
             header: TaskTagHeader(
               icon: FontAwesomeIcons.inbox,
@@ -66,11 +62,14 @@ class _TaskPickerPage extends StatelessWidget {
             onTaskCompleted: (task) {
               context.router.maybePop(task);
             },
+            onTaskPressed: (task) {
+              context.router.maybePop(task);
+            },
           ),
         ),
         BlocSelector<TaskPickerBloc, TaskPickerState, List<TaskEntity>>(
           selector: (state) => state.todayTasks,
-          builder: (context, todayTasks) => TaskListView(
+          builder: (context, todayTasks) => TaskSliverList(
             tasks: todayTasks,
             header: TaskTagHeader(
               icon: FontAwesomeIcons.calendar,
@@ -78,6 +77,9 @@ class _TaskPickerPage extends StatelessWidget {
               backgroundColor: Colors.red,
             ),
             onTaskCompleted: (task) {
+              context.router.maybePop(task);
+            },
+            onTaskPressed: (task) {
               context.router.maybePop(task);
             },
           ),

@@ -23,41 +23,77 @@ class TaskPriorityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Row(
-            children: [
-              _buildTaskPriorityPage(
-                context,
-                TaskPriority.high,
-              ),
-              _buildTaskPriorityPage(
-                context,
-                TaskPriority.medium,
-              ),
-            ],
+    return OrientationBuilder(
+      builder: (context, orientation) {
+        final isLandscape = orientation == Orientation.landscape;
+        return AnimatedSwitcher(
+          duration: Durations.medium1,
+          transitionBuilder: (child, animation) => SizeTransition(
+            sizeFactor: animation,
+            child: FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
           ),
-        ),
-        const SizedBox(height: spacing),
-        Expanded(
-          child: Row(
-            children: [
-              _buildTaskPriorityPage(
-                context,
-                TaskPriority.low,
-              ),
-              _buildTaskPriorityPage(
-                context,
-                TaskPriority.none,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: kToolbarHeight + 22 + 8,
-        ),
-      ],
+          child: isLandscape
+              ? Row(
+                  children: [
+                    _buildTaskPriorityPage(
+                      context,
+                      TaskPriority.high,
+                    ),
+                    _buildTaskPriorityPage(
+                      context,
+                      TaskPriority.medium,
+                    ),
+                    _buildTaskPriorityPage(
+                      context,
+                      TaskPriority.low,
+                    ),
+                    _buildTaskPriorityPage(
+                      context,
+                      TaskPriority.none,
+                    ),
+                  ],
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildTaskPriorityPage(
+                            context,
+                            TaskPriority.high,
+                          ),
+                          _buildTaskPriorityPage(
+                            context,
+                            TaskPriority.medium,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: spacing),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          _buildTaskPriorityPage(
+                            context,
+                            TaskPriority.low,
+                          ),
+                          _buildTaskPriorityPage(
+                            context,
+                            TaskPriority.none,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: kToolbarHeight + 22 + 8,
+                    ),
+                  ],
+                ),
+        );
+      },
     );
   }
 
