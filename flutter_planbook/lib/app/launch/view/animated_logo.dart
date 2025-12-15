@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 
 class AnimatedLogo extends StatefulWidget {
   const AnimatedLogo({

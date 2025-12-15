@@ -1,7 +1,7 @@
 import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:planbook_core/planbook_core.dart';
 
 Future<bool?> showColorPicker(

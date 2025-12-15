@@ -1,8 +1,11 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'task_detail_event.dart';
 part 'task_detail_state.dart';
@@ -12,9 +15,11 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
     required String taskId,
+    required SettingsRepository settingsRepository,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _taskId = taskId,
+       _settingsRepository = settingsRepository,
        super(const TaskDetailState()) {
     on<TaskDetailRequested>(_onRequested);
     on<TaskDetailNotesRequested>(_onNotesRequested);
@@ -27,12 +32,16 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailIsAllDayChanged>(_onIsAllDayChanged);
     on<TaskDetailStartAtChanged>(_onStartAtChanged);
     on<TaskDetailEndAtChanged>(_onEndAtChanged);
+
+    on<TaskDetailCompleted>(_onCompleted);
+    on<TaskDetailNoteCreated>(_onNoteCreated);
   }
 
   final String _taskId;
 
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
+  final SettingsRepository _settingsRepository;
 
   Future<void> _onRequested(
     TaskDetailRequested event,
@@ -177,5 +186,68 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     if (task == null) return;
     final updatedTask = task.copyWith(endAt: Value(event.endAt));
     await _tasksRepository.update(task: updatedTask);
+  }
+
+  Future<void> _onCompleted(
+    TaskDetailCompleted event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    if (state.task == null) return;
+    emit(state.copyWith(status: PageStatus.loading));
+    final activities = await _tasksRepository.completeTask(state.task!);
+    for (final activity in activities) {
+      add(TaskDetailNoteCreated(task: state.task!, activity: activity));
+    }
+    emit(
+      state.copyWith(
+        status: PageStatus.success,
+        task: state.task?.copyWith(activity: activities.firstOrNull),
+      ),
+    );
+
+    final sound = await _settingsRepository.getTaskCompletedSound();
+    if (sound != null && sound.isNotEmpty) {
+      final player = AudioPlayer();
+      await player.play(AssetSource(sound));
+    }
+  }
+
+  Future<void> _onNoteCreated(
+    TaskDetailNoteCreated event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final rules = await _settingsRepository.getTaskAutoNoteRules();
+    final rule = rules.firstWhereOrNull(
+      (rule) => rule.priority == event.task.priority,
+    );
+    if (rule == null || rule.type == TaskAutoNoteType.none) return;
+
+    NoteEntity? noteEntity;
+    if (rule.type.isCreate) {
+      final note = await _notesRepository.create(
+        title:
+            '${event.activity.deletedAt == null ? '✅' : '❌'} '
+            '${event.task.title}',
+        tags: event.task.tags,
+        taskId: event.task.id,
+      );
+      if (rule.type == TaskAutoNoteType.createAndEdit) {
+        noteEntity = await _notesRepository.getNoteEntityById(note.id);
+      }
+    } else if (rule.type == TaskAutoNoteType.edit) {
+      final note = Note(
+        id: const Uuid().v4(),
+        title:
+            '${event.activity.deletedAt == null ? '✅' : '❌'} '
+            '${event.task.title}',
+        taskId: event.task.id,
+        createdAt: Jiffy.now(),
+        images: [],
+      );
+      noteEntity = NoteEntity(note: note, tags: event.task.tags);
+    }
+    emit(
+      state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
+    );
   }
 }

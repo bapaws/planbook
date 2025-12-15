@@ -238,6 +238,22 @@
   "desktopWidget": "小组件",
   "theme": "主题",
   "more": "更多",
-  "futureFeatures": "未来功能"
+  "futureFeatures": "未来功能",
+  "noteRules": "笔记规则",
+  "noteRuleDescription": "任务完成时创建笔记的规则。",
+  "none": "无",
+  "noneDescription": "任务完成时无任何操作",
+  "create": "创建",
+  "createDescription": "创建笔记",
+  "editDescription": "弹出笔记编辑器",
+  "createAndEdit": "创建 & 编辑",
+  "createAndEditDescription": "创建笔记并弹出笔记编辑器",
+  "priorityHeaderStyle": "四象限样式",
+  "solidColorBackground": "纯色背景",
+  "numberIcon": "数字图标",
+  "completedSound": "完成音效",
+  "background": "背景",
+  "dot": "点",
+  "grid": "格子"
 }
 

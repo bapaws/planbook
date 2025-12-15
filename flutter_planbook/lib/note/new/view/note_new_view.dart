@@ -78,7 +78,8 @@ class _NoteNewViewState extends State<NoteNewView> {
               EasyLoading.show(maskType: EasyLoadingMaskType.clear);
             } else if (state.status == PageStatus.dispose) {
               context.router.maybePop();
-            } else if (EasyLoading.isShow) {
+            }
+            if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
           },

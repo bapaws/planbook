@@ -3,13 +3,33 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository {
   SettingsRepository({required SharedPreferences sp}) : _sp = sp;
 
   final SharedPreferences _sp;
+
+  List<TaskAutoNoteRule>? taskAutoNoteRules;
+
+  late final _taskPriorityStyleController =
+      BehaviorSubject<TaskPriorityStyle>.seeded(
+        TaskPriorityStyle.solidColorBackground,
+      );
+  Stream<TaskPriorityStyle> get onTaskPriorityStyleChange =>
+      _taskPriorityStyleController.stream;
+
+  late final _onBackgroundAssetChangeController =
+      BehaviorSubject<AppBackgroundEntity>.seeded(
+        AppBackgroundEntity.all.first,
+      );
+  Stream<AppBackgroundEntity> get onBackgroundAssetChange =>
+      _onBackgroundAssetChangeController.stream;
+  AppBackgroundEntity? get backgroundAsset =>
+      _onBackgroundAssetChangeController.value;
 
   @visibleForTesting
   static const kSettingsDarkModeKey = '__settings_dark_mode_key__';
@@ -21,14 +41,6 @@ class SettingsRepository {
   /// The key used for storing the settings seed color locally.
   @visibleForTesting
   static const kSettingsSeedColorKey = '__settings_seed_color_key__';
-
-  /// The key used for storing the settings cloud locally.
-  @visibleForTesting
-  static const kSettingsCloudSyncKey = '__settings_cloud_sync_key__';
-
-  @visibleForTesting
-  static const kSettingsAutoBackupCountKey =
-      '__settings_auto_backup_count_key__';
 
   /// The key used for storing the settings seed color locally.
   @visibleForTesting
@@ -49,14 +61,19 @@ class SettingsRepository {
   static const kSettingsOnboardingCompletedKey =
       '__settings_onboarding_completed_key__';
 
-  /// The key used for storing the app launch count locally.
+  /// The key used for storing the settings task auto note rules locally.
   @visibleForTesting
-  static const kSettingsLaunchCountKey = '__settings_launch_count_key__';
+  static const kSettingsTaskAutoNoteRulesKey =
+      '__settings_task_auto_note_rules_key__';
 
-  Future<bool> getCloudSynchronizable() async {
-    final synchronizable = _sp.getBool(kSettingsCloudSyncKey);
-    return synchronizable != null && synchronizable;
-  }
+  /// The key used for storing the settings task priority style locally.
+  @visibleForTesting
+  static const kSettingsTaskPriorityStyleKey =
+      '__settings_task_priority_style_key__';
+
+  static const kSettingsTaskCompletedSound =
+      '__settings_task_completed_sound_key__';
+  static const kSettingsBackgroundAsset = '__settings_background_asset_key__';
 
   DarkMode? getDarkMode() {
     final index = _sp.getInt(kSettingsDarkModeKey);
@@ -69,28 +86,6 @@ class SettingsRepository {
       await _sp.remove(kSettingsDarkModeKey);
     } else {
       await _sp.setInt(kSettingsDarkModeKey, mode.index);
-    }
-  }
-
-  Future<void> toggleCloudSync() async {
-    final synchronizable = await getCloudSynchronizable();
-    if (synchronizable) {
-      await _sp.remove(kSettingsCloudSyncKey);
-    } else {
-      await _sp.setBool(kSettingsCloudSyncKey, true);
-    }
-  }
-
-  Future<int> getAutoBackupCount() async {
-    final count = _sp.getInt(kSettingsAutoBackupCountKey);
-    return count ?? 1;
-  }
-
-  Future<void> saveAutoBackupCount({required int count}) async {
-    if (count <= 0) {
-      await _sp.remove(kSettingsAutoBackupCountKey);
-    } else {
-      await _sp.setInt(kSettingsAutoBackupCountKey, count);
     }
   }
 
@@ -167,14 +162,71 @@ class SettingsRepository {
     await _sp.setBool(kSettingsOnboardingCompletedKey, completed);
   }
 
-  Future<int> getLaunchCount() async {
-    return _sp.getInt(kSettingsLaunchCountKey) ?? 0;
+  Future<List<TaskAutoNoteRule>> getTaskAutoNoteRules() async {
+    final json = await AppHomeWidget.getWidgetData<String>(
+      kSettingsTaskAutoNoteRulesKey,
+    );
+    if (json == null) {
+      return taskAutoNoteRules ??
+          <TaskAutoNoteRule>[
+            for (final priority in TaskPriority.values)
+              TaskAutoNoteRule(
+                priority: priority,
+              ),
+          ];
+    }
+    final list = jsonDecode(json) as List;
+    return taskAutoNoteRules = list
+        .map((e) => TaskAutoNoteRule.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<int> incrementLaunchCount() async {
-    final currentCount = await getLaunchCount();
-    final newCount = currentCount + 1;
-    await _sp.setInt(kSettingsLaunchCountKey, newCount);
-    return newCount;
+  Future<void> saveTaskAutoNoteRules(List<TaskAutoNoteRule> rules) async {
+    await AppHomeWidget.saveWidgetData(
+      kSettingsTaskAutoNoteRulesKey,
+      jsonEncode(rules.map((e) => e.toJson()).toList()),
+    );
+    taskAutoNoteRules = rules;
+  }
+
+  Future<TaskPriorityStyle> getTaskPriorityStyle() async {
+    final json = await AppHomeWidget.getWidgetData<String>(
+      kSettingsTaskPriorityStyleKey,
+    );
+    final style = json == null
+        ? TaskPriorityStyle.solidColorBackground
+        : TaskPriorityStyle.values.byName(json);
+    _taskPriorityStyleController.add(style);
+    return style;
+  }
+
+  Future<void> saveTaskPriorityStyle(TaskPriorityStyle style) async {
+    await AppHomeWidget.saveWidgetData(
+      kSettingsTaskPriorityStyleKey,
+      style.name,
+    );
+    _taskPriorityStyleController.add(style);
+  }
+
+  Future<String?> getTaskCompletedSound() async {
+    final sound = await AppHomeWidget.getWidgetData<String>(
+      kSettingsTaskCompletedSound,
+    );
+    return sound ?? 'audios/click2.m4a';
+  }
+
+  Future<void> saveTaskCompletedSound(String? sound) async {
+    await AppHomeWidget.saveWidgetData(
+      kSettingsTaskCompletedSound,
+      sound,
+    );
+  }
+
+  Future<void> saveBackgroundAsset(AppBackgroundEntity asset) async {
+    await AppHomeWidget.saveWidgetData(
+      kSettingsBackgroundAsset,
+      jsonEncode(asset.toJson()),
+    );
+    _onBackgroundAssetChangeController.add(asset);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:flutter_planbook/sign/home/view/sign_home_slogan_view.dart';
@@ -10,7 +11,6 @@ import 'package:flutter_planbook/sign/in/view/sign_in_password_page.dart';
 import 'package:flutter_planbook/sign/password/view/sign_password_page.dart';
 import 'package:flutter_planbook/sign/up/view/sign_up_page.dart';
 import 'package:flutter_planbook/sign/welcome/view/sign_welcome_page.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
 
 @RoutePage()
 class SignHomePage extends StatelessWidget {
@@ -71,21 +71,21 @@ class _SignHomePage extends StatelessWidget {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerLowest,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(96),
+                  child: AnimatedSwitcher(
+                    duration: Durations.medium2,
+                    transitionBuilder: (child, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      child: FadeTransition(
+                        opacity: animation,
+                        child: child,
                       ),
                     ),
-                    child: AnimatedSwitcher(
-                      duration: Durations.medium2,
-                      transitionBuilder: (child, animation) => SizeTransition(
-                        sizeFactor: animation,
-                        child: FadeTransition(
-                          opacity: animation,
-                          child: child,
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerLowest,
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(96),
                         ),
                       ),
                       child: Padding(

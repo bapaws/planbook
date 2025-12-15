@@ -9,7 +9,6 @@ import 'package:flutter/material.dart' as material;
 import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:flutter_planbook/settings/icon/model/app_icons.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -34,7 +33,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
        super(
          const AppState(
            darkMode: DarkMode.light,
-           appIcons: AppIcons.green,
            seedColor: AppSeedColors.green,
          ),
        ) {
@@ -43,6 +41,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<AppUserRequested>(_onUserProfileRequested);
     on<AppDarkModeChanged>(_onDarkModeChanged);
     on<AppSeedColorChanged>(_onSeedColorChanged);
+    on<AppBackgroundRequested>(_onBackgroundRequested);
   }
 
   final SettingsRepository _settingsRepository;
@@ -77,14 +76,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       await _settingsRepository.saveDarkColorScheme(colorScheme.toJson());
     }
 
-    final appIconName = _settingsRepository.getAppIconName();
+    /// Request background asset
+    add(const AppBackgroundRequested());
+
     emit(
       AppState(
         darkMode: darkMode,
         seedColor: seedColor,
-        appIcons: appIconName == null
-            ? AppIcons.green
-            : AppIcons.fromName(appIconName),
       ),
     );
   }
@@ -198,5 +196,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       brightness: material.Brightness.dark,
     );
     await _settingsRepository.saveDarkColorScheme(darkColorScheme.toJson());
+  }
+
+  Future<void> _onBackgroundRequested(
+    AppBackgroundRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    await emit.forEach(
+      _settingsRepository.onBackgroundAssetChange,
+      onData: (background) => state.copyWith(background: background),
+    );
   }
 }

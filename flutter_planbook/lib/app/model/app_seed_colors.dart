@@ -130,9 +130,14 @@ enum AppSeedColors {
           fontSize: 20,
         ),
       ),
-      appBarTheme: const AppBarTheme(
-        centerTitle: true,
+      appBarTheme: AppBarTheme(
+        centerTitle: false,
         backgroundColor: Colors.transparent,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: colorScheme.onSurface,
+        ),
       ),
       // bottomNavigationBarTheme: BottomNavigationBarThemeData
       dividerColor: colorScheme.surfaceContainerHighest,

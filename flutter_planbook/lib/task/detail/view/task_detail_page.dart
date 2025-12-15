@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/list/view/note_list_tile.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
@@ -14,7 +16,6 @@ import 'package:flutter_planbook/task/detail/view/task_detail_duration_view.dart
 import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -32,18 +33,40 @@ class TaskDetailPage extends StatelessWidget {
       create: (context) =>
           TaskDetailBloc(
               tasksRepository: context.read(),
+              settingsRepository: context.read(),
               notesRepository: context.read(),
               taskId: taskId,
             )
             ..add(const TaskDetailRequested())
             ..add(const TaskDetailNotesRequested()),
-      child: BlocListener<TaskDetailBloc, TaskDetailState>(
-        listenWhen: (previous, current) =>
-            previous.status != current.status &&
-            current.status == PageStatus.dispose,
-        listener: (context, state) {
-          context.router.pop();
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<TaskDetailBloc, TaskDetailState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status,
+            listener: (context, state) {
+              if (state.status == PageStatus.loading) {
+                EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+              } else if (state.status == PageStatus.dispose) {
+                context.router.pop();
+              } else if (EasyLoading.isShow) {
+                EasyLoading.dismiss();
+              }
+            },
+          ),
+          BlocListener<TaskDetailBloc, TaskDetailState>(
+            listenWhen: (previous, current) =>
+                previous.currentTaskNote != current.currentTaskNote &&
+                current.currentTaskNote != null,
+            listener: (context, state) {
+              context.router.push(
+                NoteNewRoute(
+                  initialNote: state.currentTaskNote,
+                ),
+              );
+            },
+          ),
+        ],
         child: const _TaskDetailPage(),
       ),
     );

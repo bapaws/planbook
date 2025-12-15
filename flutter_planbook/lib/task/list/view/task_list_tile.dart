@@ -81,7 +81,9 @@ class _TaskListTileState extends State<TaskListTile> {
                       ? FontAwesomeIcons.solidSquareCheck
                       : FontAwesomeIcons.square,
                   size: 18,
-                  color: theme.colorScheme.onSurface,
+                  color: _isCompleted
+                      ? theme.colorScheme.outline
+                      : theme.colorScheme.onSurface,
                 ),
               ),
             ),
@@ -90,7 +92,7 @@ class _TaskListTileState extends State<TaskListTile> {
                 duration: Durations.short2,
                 style: theme.textTheme.titleMedium!.copyWith(
                   color: _isCompleted
-                      ? Colors.grey
+                      ? theme.colorScheme.outline
                       : theme.colorScheme.onSurface,
                 ),
                 child: Column(

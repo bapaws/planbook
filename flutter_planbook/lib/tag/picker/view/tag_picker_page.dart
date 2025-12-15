@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/tag/list/bloc/tag_list_bloc.dart';
 import 'package:flutter_planbook/tag/list/view/tag_list_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/entity/tag_entity.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
 @RoutePage()

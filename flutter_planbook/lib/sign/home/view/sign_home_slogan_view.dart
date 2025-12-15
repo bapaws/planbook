@@ -16,11 +16,11 @@ class SignHomeSloganView extends StatelessWidget {
       children: [
         // SizedBox(height: query.padding.top / 2),
         // primary color:fill="#BCF0B4"
-        Flexible(
-          child: SvgPicture.asset(
-            'assets/images/sign-in-bg.svg',
-            fit: BoxFit.fitHeight,
-          ),
+        SvgPicture.asset(
+          'assets/images/sign-in-bg.svg',
+          fit: BoxFit.fitHeight,
+          height: 300,
+          width: 300,
         ),
         DefaultTextStyle(
           textAlign: TextAlign.center,

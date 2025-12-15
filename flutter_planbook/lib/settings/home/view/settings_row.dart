@@ -32,7 +32,12 @@ class SettingsRow extends StatelessWidget {
       backgroundColor: Colors.transparent,
       backgroundColorActivated: theme.colorScheme.surfaceContainerHighest,
       leading: leading,
-      title: title,
+      title: DefaultTextStyle(
+        style: theme.textTheme.bodyLarge!.copyWith(
+          color: theme.colorScheme.onSurface,
+        ),
+        child: title,
+      ),
       subtitle: subtitle,
       additionalInfo: additionalInfo,
       trailing: trailing,

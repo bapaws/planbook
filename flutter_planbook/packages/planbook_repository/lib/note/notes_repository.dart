@@ -27,6 +27,17 @@ class NotesRepository {
 
   Future<int> getTotalCount() => _dbNoteApi.getTotalCount(userId: userId);
 
+  List<NoteTag> generateNoteTags({
+    required List<TagEntity>? tags,
+    required String noteId,
+  }) {
+    return _dbNoteApi.generateNoteTags(
+      tags: tags,
+      noteId: noteId,
+      userId: userId,
+    );
+  }
+
   Future<Note> create({
     required String title,
     String? content,

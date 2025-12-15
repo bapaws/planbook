@@ -11,6 +11,7 @@ class JournalDayInboxView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TaskListBloc(
+        settingsRepository: context.read(),
         tasksRepository: context.read(),
         notesRepository: context.read(),
       )..add(TaskListRequested(date: Jiffy.now(), isCompleted: true)),

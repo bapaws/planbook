@@ -9,6 +9,7 @@ environment:
 dependencies:
   animate_do: ^4.2.0
   animated_text_kit: ^4.3.0
+  audioplayers: ^6.5.1
   auto_route: ^10.1.0+1
   bloc: ^9.0.0
   bloc_concurrency: ^0.3.0
@@ -101,6 +102,7 @@ flutter:
     - assets/google_fonts/
     - assets/images/
     - assets/files/
+    - assets/audios/
 
 flutter_launcher_icons:
   android: "launcher_icon"

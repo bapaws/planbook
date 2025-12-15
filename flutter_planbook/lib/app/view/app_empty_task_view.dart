@@ -18,6 +18,10 @@ class AppEmptyTaskView extends StatelessWidget {
           'assets/images/Chill-Time.svg',
           width: 280,
           height: 280,
+          colorFilter: ColorFilter.mode(
+            Theme.of(context).colorScheme.onSurface,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );

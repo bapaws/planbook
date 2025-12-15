@@ -98,6 +98,7 @@ class _TaskInboxListPage extends StatelessWidget {
       create: (context) =>
           TaskListBloc(
             tasksRepository: context.read(),
+            settingsRepository: context.read(),
             notesRepository: context.read(),
             tag: tag,
           )..add(

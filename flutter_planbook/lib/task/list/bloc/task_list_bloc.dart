@@ -1,8 +1,11 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'task_list_event.dart';
 part 'task_list_state.dart';
@@ -11,21 +14,30 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   TaskListBloc({
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
+    required SettingsRepository settingsRepository,
     TaskListMode mode = TaskListMode.inbox,
     this.priority,
     TagEntity? tag,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _mode = mode,
+       _settingsRepository = settingsRepository,
        super(TaskListState(tag: tag)) {
     on<TaskListRequested>(_onRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
+
+    on<TaskListPriorityStyleRequested>(
+      _onPriorityStyleRequested,
+      transformer: restartable(),
+    );
   }
 
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
+  final SettingsRepository _settingsRepository;
+
   final TaskListMode _mode;
   final TaskPriority? priority;
 
@@ -33,6 +45,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListRequested event,
     Emitter<TaskListState> emit,
   ) async {
+    add(const TaskListPriorityStyleRequested());
+
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
     final stream = priority == null
@@ -65,9 +79,15 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     emit(state.copyWith(status: PageStatus.loading));
     final activities = await _tasksRepository.completeTask(event.task);
     for (final activity in activities) {
-      add(TaskListNoteCreated(activity: activity));
+      add(TaskListNoteCreated(task: event.task, activity: activity));
     }
     emit(state.copyWith(status: PageStatus.success));
+
+    final sound = await _settingsRepository.getTaskCompletedSound();
+    if (sound != null && sound.isNotEmpty) {
+      final player = AudioPlayer();
+      await player.play(AssetSource(sound));
+    }
   }
 
   Future<void> _onDeleted(
@@ -82,17 +102,48 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListNoteCreated event,
     Emitter<TaskListState> emit,
   ) async {
-    final taskId = event.activity.taskId;
-    if (taskId == null) return;
-    final task = await _tasksRepository.getTaskEntityById(taskId);
-    if (task == null) return;
-
-    final note = await _notesRepository.create(
-      title: '${event.activity.deletedAt == null ? '✅' : '❌'} ${task.title}',
-      tags: task.tags,
-      taskId: task.id,
+    final rules = await _settingsRepository.getTaskAutoNoteRules();
+    final rule = rules.firstWhereOrNull(
+      (rule) => rule.priority == event.task.priority,
     );
-    final entity = await _notesRepository.getNoteEntityById(note.id);
-    emit(state.copyWith(status: PageStatus.success, currentTaskNote: entity));
+    if (rule == null || rule.type == TaskAutoNoteType.none) return;
+
+    NoteEntity? noteEntity;
+    if (rule.type.isCreate) {
+      final note = await _notesRepository.create(
+        title:
+            '${event.activity.deletedAt == null ? '✅' : '❌'} '
+            '${event.task.title}',
+        tags: event.task.tags,
+        taskId: event.task.id,
+      );
+      if (rule.type == TaskAutoNoteType.createAndEdit) {
+        noteEntity = await _notesRepository.getNoteEntityById(note.id);
+      }
+    } else if (rule.type == TaskAutoNoteType.edit) {
+      final note = Note(
+        id: const Uuid().v4(),
+        title:
+            '${event.activity.deletedAt == null ? '✅' : '❌'} '
+            '${event.task.title}',
+        taskId: event.task.id,
+        createdAt: Jiffy.now(),
+        images: [],
+      );
+      noteEntity = NoteEntity(note: note, tags: event.task.tags);
+    }
+    emit(
+      state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
+    );
+  }
+
+  Future<void> _onPriorityStyleRequested(
+    TaskListPriorityStyleRequested event,
+    Emitter<TaskListState> emit,
+  ) async {
+    await emit.forEach(
+      _settingsRepository.onTaskPriorityStyleChange,
+      onData: (priorityStyle) => state.copyWith(priorityStyle: priorityStyle),
+    );
   }
 }

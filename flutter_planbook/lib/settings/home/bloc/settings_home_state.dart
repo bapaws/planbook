@@ -5,29 +5,29 @@ class SettingsHomeState extends Equatable {
     this.isPremium = false,
     this.status = PageStatus.initial,
     this.darkMode,
-    this.cloudSynchronizable = false,
+    this.taskAutoNoteRules = const [],
   });
   final PageStatus status;
 
   final bool isPremium;
 
   final DarkMode? darkMode;
-  final bool cloudSynchronizable;
+  final List<TaskAutoNoteRule> taskAutoNoteRules;
 
   @override
-  List<Object?> get props => [status, isPremium, darkMode, cloudSynchronizable];
+  List<Object?> get props => [status, isPremium, darkMode, taskAutoNoteRules];
 
   SettingsHomeState copyWith({
     PageStatus? status,
     bool? isPremium,
     DarkMode? darkMode,
-    bool? cloudSynchronizable,
+    List<TaskAutoNoteRule>? taskAutoNoteRules,
   }) {
     return SettingsHomeState(
       status: status ?? this.status,
       isPremium: isPremium ?? this.isPremium,
       darkMode: darkMode ?? this.darkMode,
-      cloudSynchronizable: cloudSynchronizable ?? this.cloudSynchronizable,
+      taskAutoNoteRules: taskAutoNoteRules ?? this.taskAutoNoteRules,
     );
   }
 }

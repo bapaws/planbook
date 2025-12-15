@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_color_header.dart';
+import 'package:flutter_planbook/task/priority/view/task_priority_flag_header.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_list_tile.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -31,8 +32,22 @@ class TaskPriorityListView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TaskPriorityColorHeader(priority: priority, colorScheme: colorScheme),
-        // TaskPriorityFlagHeader(priority: priority, colorScheme: colorScheme),
+        BlocSelector<TaskListBloc, TaskListState, TaskPriorityStyle>(
+          selector: (state) => state.priorityStyle,
+          builder: (context, priorityStyle) => AnimatedSwitcher(
+            duration: Durations.medium1,
+            child: switch (priorityStyle) {
+              TaskPriorityStyle.solidColorBackground => TaskPriorityColorHeader(
+                priority: priority,
+                colorScheme: colorScheme,
+              ),
+              TaskPriorityStyle.numberIcon => TaskPriorityFlagHeader(
+                priority: priority,
+                colorScheme: colorScheme,
+              ),
+            },
+          ),
+        ),
         Expanded(
           child: BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(
             selector: (state) => state.tasks,

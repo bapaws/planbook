@@ -117,6 +117,8 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: SettingsDarkModeRoute.page),
     AutoRoute(page: SettingsSeedColorRoute.page),
     AutoRoute(page: SettingsIconRoute.page),
+    AutoRoute(page: SettingsTaskRoute.page),
+    AutoRoute(page: SettingsBackgroundRoute.page),
 
     AutoRoute(page: AppPurchasesRoute.page),
 

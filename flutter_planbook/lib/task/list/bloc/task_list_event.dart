@@ -42,10 +42,15 @@ final class TaskListDeleted extends TaskListEvent {
 }
 
 final class TaskListNoteCreated extends TaskListEvent {
-  const TaskListNoteCreated({required this.activity});
+  const TaskListNoteCreated({required this.task, required this.activity});
 
+  final TaskEntity task;
   final TaskActivity activity;
 
   @override
-  List<Object?> get props => [activity];
+  List<Object?> get props => [task, activity];
+}
+
+final class TaskListPriorityStyleRequested extends TaskListEvent {
+  const TaskListPriorityStyleRequested();
 }

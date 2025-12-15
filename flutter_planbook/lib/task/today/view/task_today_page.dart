@@ -109,6 +109,7 @@ class _TaskTodayListPage extends StatelessWidget {
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
       create: (context) =>
           TaskListBloc(
+            settingsRepository: context.read(),
             tasksRepository: context.read(),
             notesRepository: context.read(),
             tag: tag,

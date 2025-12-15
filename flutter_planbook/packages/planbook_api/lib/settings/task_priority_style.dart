@@ -1,0 +1,4 @@
+enum TaskPriorityStyle {
+  solidColorBackground,
+  numberIcon,
+}

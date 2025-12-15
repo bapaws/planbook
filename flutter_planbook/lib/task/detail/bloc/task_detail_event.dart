@@ -90,3 +90,17 @@ final class TaskDetailEndAtChanged extends TaskDetailEvent {
   @override
   List<Object?> get props => [endAt];
 }
+
+final class TaskDetailCompleted extends TaskDetailEvent {
+  const TaskDetailCompleted();
+}
+
+final class TaskDetailNoteCreated extends TaskDetailEvent {
+  const TaskDetailNoteCreated({required this.task, required this.activity});
+
+  final TaskEntity task;
+  final TaskActivity activity;
+
+  @override
+  List<Object?> get props => [task, activity];
+}

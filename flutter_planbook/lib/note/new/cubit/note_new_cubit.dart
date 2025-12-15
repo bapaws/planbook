@@ -92,7 +92,12 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
 
     emit(state.copyWith(status: PageStatus.loading));
 
-    if (state.initialNote != null) {
+    final entity = state.initialNote != null
+        ? await _notesRepository.getNoteEntityById(
+            state.initialNote!.id,
+          )
+        : null;
+    if (entity != null) {
       final images = <String>[];
       if (state.images.isNotEmpty) {
         // 上传新的图片

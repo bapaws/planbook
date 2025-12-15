@@ -102,6 +102,7 @@ class TaskPriorityPage extends StatelessWidget {
       key: ValueKey(date.toString() + priority.name + isCompleted.toString()),
       create: (context) =>
           TaskListBloc(
+            settingsRepository: context.read(),
             tasksRepository: context.read(),
             notesRepository: context.read(),
             mode: mode,

@@ -31,7 +31,6 @@ class SettingsHomeBloc extends Bloc<SettingsHomeEvent, SettingsHomeState> {
       state.copyWith(
         status: PageStatus.loading,
         darkMode: _settingsRepository.getDarkMode(),
-        cloudSynchronizable: await _settingsRepository.getCloudSynchronizable(),
         isPremium: activeEntitlement != null,
       ),
     );

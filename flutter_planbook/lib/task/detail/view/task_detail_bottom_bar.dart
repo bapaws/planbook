@@ -19,7 +19,11 @@ class TaskDetailBottomBar extends StatelessWidget {
         CupertinoButton(
           padding: EdgeInsets.zero,
           minimumSize: Size.zero,
-          onPressed: () {},
+          onPressed: () {
+            final task = context.read<TaskDetailBloc>().state.task;
+            if (task == null) return;
+            context.read<TaskDetailBloc>().add(const TaskDetailCompleted());
+          },
           child: Container(
             width: kRootBottomBarItemHeight * 2,
             height: kRootBottomBarItemHeight,
@@ -34,12 +38,18 @@ class TaskDetailBottomBar extends StatelessWidget {
               ],
             ),
             clipBehavior: Clip.hardEdge,
-            child: AnimatedSwitcher(
-              duration: animationDuration,
-              child: Icon(
-                FontAwesomeIcons.square,
-                size: 18,
-                color: theme.colorScheme.onSurface,
+            child: BlocSelector<TaskDetailBloc, TaskDetailState, bool>(
+              selector: (state) => state.isCompleted,
+              builder: (context, isCompleted) => AnimatedSwitcher(
+                duration: animationDuration,
+                child: Icon(
+                  isCompleted
+                      ? FontAwesomeIcons.solidSquareCheck
+                      : FontAwesomeIcons.square,
+                  key: ValueKey(isCompleted),
+                  size: 18,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
           ),

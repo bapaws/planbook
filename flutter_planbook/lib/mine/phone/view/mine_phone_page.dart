@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/core/view/app_text_field.dart';
 import 'package:flutter_planbook/core/view/sign_button.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/mine/phone/cubit/mine_phone_cubit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 

@@ -238,5 +238,21 @@
   "theme": "主題",
   "desktopWidget": "桌面小工具",
   "more": "更多",
-  "futureFeatures": "未來功能"
+  "futureFeatures": "未來功能",
+  "noteRules": "筆記規則",
+  "noteRuleDescription": "任務完成時創建筆記的規則。",
+  "none": "無",
+  "noneDescription": "任務完成時無任何操作",
+  "create": "創建",
+  "createDescription": "創建筆記",
+  "editDescription": "彈出筆記編輯器",
+  "createAndEdit": "創建 & 編輯",
+  "createAndEditDescription": "創建筆記並彈出筆記編輯器",
+  "priorityHeaderStyle": "四象限樣式",
+  "solidColorBackground": "純色背景",
+  "numberIcon": "數字圖標",
+  "completedSound": "完成音效",
+  "background": "背景",
+  "dot": "點",
+  "grid": "格子"
 }

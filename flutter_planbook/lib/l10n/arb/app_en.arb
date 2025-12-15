@@ -283,5 +283,21 @@
   "desktopWidget": "Desktop Widget",
   "theme": "Theme",
   "more": "More",
-  "futureFeatures": "Future Features"
+  "futureFeatures": "Future Features",
+  "noteRules": "Note Rules",
+  "noteRuleDescription": "Note creation rules when the task is completed.",
+  "none": "None",
+  "noneDescription": "No action when the task is completed.",
+  "create": "Create",
+  "createDescription": "Create a note.",
+  "editDescription": "Pop up the note editor.",
+  "createAndEdit": "Create & Edit",
+  "createAndEditDescription": "Create a note and pop up the note editor.",
+  "priorityHeaderStyle": "Priority Header Style",
+  "solidColorBackground": "Solid Color Background",
+  "numberIcon": "Number Icon",
+  "completedSound": "Completed Sound",
+  "background": "Background",
+  "dot": "Dot",
+  "grid": "Grid"
 }

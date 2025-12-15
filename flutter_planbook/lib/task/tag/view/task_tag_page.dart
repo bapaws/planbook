@@ -24,6 +24,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               TaskListBloc(
+                settingsRepository: context.read(),
                 tasksRepository: context.read(),
                 notesRepository: context.read(),
                 tag: tag,
@@ -50,6 +51,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               TaskListBloc(
+                settingsRepository: context.read(),
                 tasksRepository: context.read(),
                 notesRepository: context.read(),
               )..add(
@@ -75,6 +77,7 @@ class TaskTagPage extends StatelessWidget {
         BlocProvider(
           create: (context) =>
               TaskListBloc(
+                settingsRepository: context.read(),
                 tasksRepository: context.read(),
                 notesRepository: context.read(),
                 tag: tag,

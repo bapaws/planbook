@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/tag/list/bloc/tag_list_bloc.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
@@ -12,7 +13,6 @@ import 'package:flutter_planbook/task/new/view/task_new_duration_bottom_view.dar
 import 'package:flutter_planbook/task/new/view/task_new_priority_bottom_view.dart';
 import 'package:flutter_planbook/task/new/view/task_new_repeat_view.dart';
 import 'package:flutter_planbook/task/new/view/task_new_tag_bottom_view.dart';
-import 'package:planbook_core/app/app_scaffold.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 

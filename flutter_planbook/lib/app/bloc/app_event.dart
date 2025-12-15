@@ -42,3 +42,7 @@ final class AppSeedColorChanged extends AppEvent {
 
   final AppSeedColors seedColor;
 }
+
+final class AppBackgroundRequested extends AppEvent {
+  const AppBackgroundRequested();
+}
