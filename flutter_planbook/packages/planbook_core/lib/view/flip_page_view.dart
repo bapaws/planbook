@@ -178,13 +178,13 @@ class _FlipPageViewState extends State<FlipPageView>
 
   double? _dragStartX;
   double _dragProgress = 0;
-  double _leftAngle = -math.pi / 6;
-  double _rightAngle = math.pi / 6;
+  double _leftAngle = -math.pi / 8;
+  double _rightAngle = math.pi / 8;
   bool _isAnimating = false;
 
-  static const _perspective = 0.001;
+  static const _perspective = 0.0005;
   static const _zeroAngle = 0.0001;
-  static const double _defaultAngle = math.pi / 6;
+  static const double _defaultAngle = math.pi / 8;
   static const double _maxAngle = math.pi / 2;
 
   /// 更新角度（根据进度值）
