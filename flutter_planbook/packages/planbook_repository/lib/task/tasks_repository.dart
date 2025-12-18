@@ -1,11 +1,15 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/task/supabase_task_api.dart';
+import 'package:uuid/uuid.dart';
 
 class TasksRepository {
   TasksRepository({
@@ -59,7 +63,10 @@ class TasksRepository {
       tags: tags,
       userId: userId,
     );
-    final newTask = task.copyWith(userId: Value(userId));
+    final newTask = task.copyWith(
+      userId: Value(userId),
+      updatedAt: Value(Jiffy.now()),
+    );
     await _supabaseTaskApi.update(task: newTask, taskTags: taskTags);
     await _dbTaskApi.update(task: newTask, taskTags: taskTags);
   }
@@ -102,7 +109,7 @@ class TasksRepository {
     Jiffy? date,
     bool? isCompleted,
   }) async* {
-    await _syncTasks();
+    unawaited(_syncTasks());
 
     yield* switch (mode) {
       TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
@@ -232,12 +239,10 @@ class TasksRepository {
   Stream<List<TaskEntity>> getCompletedTaskEntities({
     required Jiffy date,
     TaskPriority? priority,
-    int limit = 10,
   }) {
     return _dbTaskCompletionApi.getCompletedTaskEntities(
       date: date,
       priority: priority,
-      limit: limit,
       userId: userId,
     );
   }
@@ -253,5 +258,30 @@ class TasksRepository {
 
   Future<Jiffy?> getStartDate() async {
     return _dbTaskApi.getStartDate();
+  }
+
+  Future<void> createDefaultTasks({required String languageCode}) async {
+    const uuid = Uuid();
+    final taskJsonString = await rootBundle.loadString(
+      'assets/files/${kDebugMode ? 'demo_' : ''}tasks_$languageCode.json',
+    );
+    final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
+    for (final json in taskJson) {
+      final map = json as Map<String, dynamic>;
+      final taskMap = map['task'] as Map<String, dynamic>;
+      var task = Task.fromJson(taskMap).copyWith(
+        id: kDebugMode ? null : uuid.v4(),
+      );
+
+      /// If dueAt is not null, set it to today
+      if (taskMap['dueAt'] != null) {
+        task = task.copyWith(dueAt: Value(Jiffy.now()));
+      }
+      final tagNames = List<String>.from(map['tags'] as List<dynamic>);
+      final tags = await Future.wait(
+        tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),
+      );
+      await create(task: task, tags: tags.nonNulls.toList());
+    }
   }
 }

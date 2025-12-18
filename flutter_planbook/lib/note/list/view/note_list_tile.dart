@@ -138,10 +138,27 @@ class NoteListTile extends StatelessWidget {
 
   Widget _buildImages(BuildContext context, List<String> images) {
     final screenWidth = MediaQuery.of(context).size.width;
-    var crossAxisCount = 3;
     const spacing = 4.0;
     final availableWidth =
         screenWidth - 16 * 2 - 16 - 16; // padding + divider + spacing
+
+    // 单张图片时，使用最大宽高限制
+    if (images.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: GestureDetector(
+          onTap: () {
+            showGalleryPhotoView(context, images);
+          },
+          child: AppNetworkImage(
+            url: images[0],
+            height: 200,
+          ),
+        ),
+      );
+    }
+
+    var crossAxisCount = 3;
     var imageSize = math.min<double>(
       150,
       ((availableWidth - (crossAxisCount - 1) * spacing) / crossAxisCount)

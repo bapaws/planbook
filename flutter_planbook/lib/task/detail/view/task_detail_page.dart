@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/view/app_empty_note_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/list/view/note_list_tile.dart';
@@ -47,10 +47,11 @@ class TaskDetailPage extends StatelessWidget {
             listener: (context, state) {
               if (state.status == PageStatus.loading) {
                 EasyLoading.show(maskType: EasyLoadingMaskType.clear);
-              } else if (state.status == PageStatus.dispose) {
-                context.router.pop();
               } else if (EasyLoading.isShow) {
                 EasyLoading.dismiss();
+              }
+              if (state.status == PageStatus.dispose) {
+                context.router.pop();
               }
             },
           ),
@@ -274,7 +275,9 @@ class _TaskDetailPage extends StatelessWidget {
                                         vertical: 32,
                                       ),
                                       sliver: SliverToBoxAdapter(
-                                        child: AppEmptyTaskView(),
+                                        child: AppEmptyNoteView(
+                                          showSlogan: false,
+                                        ),
                                       ),
                                     )
                                   : SliverList.separated(
@@ -285,6 +288,16 @@ class _TaskDetailPage extends StatelessWidget {
                                           NoteListTile(
                                             note: notes[index],
                                             showLinkButton: false,
+                                            showDate: true,
+                                            onDeleted: () {
+                                              context
+                                                  .read<TaskDetailBloc>()
+                                                  .add(
+                                                    TaskDetailNoteDeleted(
+                                                      noteId: notes[index].id,
+                                                    ),
+                                                  );
+                                            },
                                           ),
                                     ),
                             );

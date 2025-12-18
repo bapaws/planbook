@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
+import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -20,7 +20,8 @@ class TaskOverduePage extends StatelessWidget {
     return BlocBuilder<RootTaskBloc, RootTaskState>(
       buildWhen: (previous, current) =>
           previous.viewType != current.viewType ||
-          previous.taskCounts != current.taskCounts,
+          previous.taskCounts != current.taskCounts ||
+          previous.priorityStyle != current.priorityStyle,
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
         child: switch (state.viewType) {
@@ -29,6 +30,7 @@ class TaskOverduePage extends StatelessWidget {
                 ? const AppEmptyTaskView()
                 : const _TaskOverdueListPage(),
           RootTaskViewType.priority => TaskPriorityPage(
+            style: state.priorityStyle,
             mode: TaskListMode.overdue,
             isCompleted: state.showCompleted ? null : false,
           ),

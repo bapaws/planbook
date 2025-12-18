@@ -9,12 +9,15 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 class TaskPriorityListView extends StatelessWidget {
   const TaskPriorityListView({
+    required this.style,
     super.key,
     this.onTaskPressed,
     this.onTaskCompleted,
     this.onTaskDeleted,
     this.onTaskEdited,
   });
+
+  final TaskPriorityStyle style;
 
   final ValueChanged<TaskEntity>? onTaskPressed;
   final ValueChanged<TaskEntity>? onTaskCompleted;
@@ -32,21 +35,18 @@ class TaskPriorityListView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        BlocSelector<TaskListBloc, TaskListState, TaskPriorityStyle>(
-          selector: (state) => state.priorityStyle,
-          builder: (context, priorityStyle) => AnimatedSwitcher(
-            duration: Durations.medium1,
-            child: switch (priorityStyle) {
-              TaskPriorityStyle.solidColorBackground => TaskPriorityColorHeader(
-                priority: priority,
-                colorScheme: colorScheme,
-              ),
-              TaskPriorityStyle.numberIcon => TaskPriorityFlagHeader(
-                priority: priority,
-                colorScheme: colorScheme,
-              ),
-            },
-          ),
+        AnimatedSwitcher(
+          duration: Durations.medium1,
+          child: switch (style) {
+            TaskPriorityStyle.solidColorBackground => TaskPriorityColorHeader(
+              priority: priority,
+              colorScheme: colorScheme,
+            ),
+            TaskPriorityStyle.numberIcon => TaskPriorityFlagHeader(
+              priority: priority,
+              colorScheme: colorScheme,
+            ),
+          },
         ),
         Expanded(
           child: BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(

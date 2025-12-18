@@ -49,6 +49,8 @@ class RootNoteBloc extends Bloc<RootNoteEvent, RootNoteState> {
     switch (event.tab) {
       case RootNoteTab.gallery:
         emit(state.copyWith(galleryDate: event.date));
+      case RootNoteTab.written:
+      case RootNoteTab.task:
       case RootNoteTab.timeline:
       case RootNoteTab.tag:
         emit(state.copyWith(tagDate: event.date));

@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -29,12 +30,11 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailPriorityChanged>(_onPriorityChanged);
     on<TaskDetailTagsChanged>(_onTagsChanged);
     on<TaskDetailRecurrenceRuleChanged>(_onRecurrenceRuleChanged);
-    on<TaskDetailIsAllDayChanged>(_onIsAllDayChanged);
-    on<TaskDetailStartAtChanged>(_onStartAtChanged);
-    on<TaskDetailEndAtChanged>(_onEndAtChanged);
+    on<TaskDetailDurationChanged>(_onDurationChanged);
 
     on<TaskDetailCompleted>(_onCompleted);
     on<TaskDetailNoteCreated>(_onNoteCreated);
+    on<TaskDetailNoteDeleted>(_onNoteDeleted);
   }
 
   final String _taskId;
@@ -158,34 +158,24 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     );
   }
 
-  Future<void> _onIsAllDayChanged(
-    TaskDetailIsAllDayChanged event,
+  Future<void> _onDurationChanged(
+    TaskDetailDurationChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
     final task = state.task?.task;
     if (task == null) return;
-    final updatedTask = task.copyWith(isAllDay: event.isAllDay);
+    final updatedTask = task.copyWith(
+      isAllDay: event.entity?.isAllDay ?? true,
+      startAt: Value(event.entity?.startAt),
+      endAt: Value(event.entity?.endAt),
+    );
     await _tasksRepository.update(task: updatedTask);
-  }
-
-  Future<void> _onStartAtChanged(
-    TaskDetailStartAtChanged event,
-    Emitter<TaskDetailState> emit,
-  ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    final updatedTask = task.copyWith(startAt: Value(event.startAt));
-    await _tasksRepository.update(task: updatedTask);
-  }
-
-  Future<void> _onEndAtChanged(
-    TaskDetailEndAtChanged event,
-    Emitter<TaskDetailState> emit,
-  ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    final updatedTask = task.copyWith(endAt: Value(event.endAt));
-    await _tasksRepository.update(task: updatedTask);
+    emit(
+      state.copyWith(
+        status: PageStatus.success,
+        task: state.task?.copyWith(task: updatedTask),
+      ),
+    );
   }
 
   Future<void> _onCompleted(
@@ -249,5 +239,14 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
     );
+  }
+
+  Future<void> _onNoteDeleted(
+    TaskDetailNoteDeleted event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _notesRepository.deleteNoteById(event.noteId);
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

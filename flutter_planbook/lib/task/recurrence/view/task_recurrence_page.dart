@@ -4,14 +4,13 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/recurrence/view/task_recurrence_view.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/recurrence_rule.dart';
-import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
 @RoutePage()
-class TaskRecurrencePage extends StatelessWidget {
+class TaskRecurrencePage extends StatefulWidget {
   const TaskRecurrencePage({
-    required this.onRecurrenceRuleChanged,
     this.taskDate,
     this.initialRecurrenceRule,
     super.key,
@@ -19,7 +18,15 @@ class TaskRecurrencePage extends StatelessWidget {
 
   final Jiffy? taskDate;
   final RecurrenceRule? initialRecurrenceRule;
-  final ValueChanged<RecurrenceRule?> onRecurrenceRuleChanged;
+
+  @override
+  State<TaskRecurrencePage> createState() => _TaskRecurrencePageState();
+}
+
+class _TaskRecurrencePageState extends State<TaskRecurrencePage> {
+  late RecurrenceRule? _recurrenceRule =
+      widget.initialRecurrenceRule ??
+      const RecurrenceRule(frequency: RecurrenceFrequency.daily);
 
   @override
   Widget build(BuildContext context) {
@@ -34,21 +41,29 @@ class TaskRecurrencePage extends StatelessWidget {
         child: Column(
           children: [
             AppBar(
-              leading: const NavigationBarBackButton(),
+              automaticallyImplyLeading: false,
+              titleSpacing: 0,
+              title: CupertinoButton(
+                onPressed: () {
+                  context.router.maybePop();
+                },
+                child: Text(context.l10n.noRepeat),
+              ),
               actions: [
                 CupertinoButton(
                   onPressed: () {
-                    onRecurrenceRuleChanged(null);
-                    context.pop();
+                    context.router.maybePop(_recurrenceRule);
                   },
-                  child: Text(context.l10n.noRepeat),
+                  child: const Icon(FontAwesomeIcons.check),
                 ),
               ],
             ),
             TaskRecurrenceView(
-              onRecurrenceRuleChanged: onRecurrenceRuleChanged,
-              taskDate: taskDate,
-              initialRecurrenceRule: initialRecurrenceRule,
+              onRecurrenceRuleChanged: (value) {
+                _recurrenceRule = value;
+              },
+              taskDate: widget.taskDate,
+              initialRecurrenceRule: _recurrenceRule,
             ),
             SizedBox(
               height: 16 + MediaQuery.of(context).padding.bottom,

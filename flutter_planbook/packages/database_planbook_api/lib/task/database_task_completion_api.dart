@@ -231,7 +231,6 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   Stream<List<TaskEntity>> getCompletedTaskEntities({
     required Jiffy date,
     TaskPriority? priority,
-    int limit = 10,
     String? userId,
   }) {
     final startOfDay = date.startOf(Unit.day);
@@ -283,11 +282,10 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
           ])
           ..where(recurringExp)
           ..orderBy([
-            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.taskActivities.completedAt.datetime),
             OrderingTerm.asc(db.tasks.order),
             OrderingTerm.asc(db.tasks.createdAt.datetime),
-          ])
-          ..limit(limit);
+          ]);
 
     // 查询 2: 非重复任务和分离实例（在指定日期完成）
     var nonRecurringExp =
@@ -324,11 +322,10 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
           ])
           ..where(nonRecurringExp)
           ..orderBy([
-            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.taskActivities.completedAt.datetime),
             OrderingTerm.asc(db.tasks.order),
             OrderingTerm.asc(db.tasks.createdAt.datetime),
-          ])
-          ..limit(limit);
+          ]);
 
     // 合并两个查询的 Stream
     return CombineLatestStream.list<List<TypedResult>>([

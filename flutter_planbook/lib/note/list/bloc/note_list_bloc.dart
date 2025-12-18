@@ -24,9 +24,15 @@ class NoteListBloc extends Bloc<NoteListEvent, NoteListState> {
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
     await emit.forEach(
-      _notesRepository.getNoteEntitiesByDate(event.date, tagIds: event.tagIds),
-      onData: (notes) =>
-          state.copyWith(status: PageStatus.success, notes: notes),
+      _notesRepository.getNoteEntitiesByDate(
+        event.date,
+        tagIds: event.tagIds,
+        mode: event.mode,
+      ),
+      onData: (notes) => state.copyWith(
+        status: PageStatus.success,
+        notes: notes,
+      ),
     );
   }
 

@@ -48,8 +48,8 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
           status: PageStatus.success,
           tags: tags,
           selectedTagIds: (event.selectAll ?? false)
-              ? tags.map((tag) => tag.id).toSet()
-              : {},
+              ? tags.map((tag) => tag.id).toList()
+              : [],
         );
       },
     );
@@ -59,7 +59,7 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
     TagListSelected event,
     Emitter<TagListState> emit,
   ) async {
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     final tagIndex = state.tags.indexWhere((tag) => tag.id == event.tag.id);
     if (tagIndex == -1) return;
 
@@ -103,21 +103,21 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
       await stream.firstWhere((state) => state.status == PageStatus.success);
     }
 
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     for (final tag in event.tags) {
       final tagEntity = state.tags.firstWhereOrNull((t) => t.id == tag.id);
       if (tagEntity != null && !selectedTagIds.contains(tagEntity.id)) {
         selectedTagIds.add(tagEntity.id);
 
         // 如果选中的是子标签，自动选中父标签
-        if (tagEntity.parentId != null) {
-          final parentTag = state.tags.firstWhereOrNull(
-            (t) => t.id == tagEntity.parentId,
-          );
-          if (parentTag != null && !selectedTagIds.contains(parentTag.id)) {
-            selectedTagIds.add(parentTag.id);
-          }
-        }
+        // if (tagEntity.parentId != null) {
+        //   final parentTag = state.tags.firstWhereOrNull(
+        //     (t) => t.id == tagEntity.parentId,
+        //   );
+        //   if (parentTag != null && !selectedTagIds.contains(parentTag.id)) {
+        //     selectedTagIds.add(parentTag.id);
+        //   }
+        // }
       }
     }
     emit(state.copyWith(selectedTagIds: selectedTagIds));
@@ -127,7 +127,7 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
     TagListSelectedAll event,
     Emitter<TagListState> emit,
   ) async {
-    final selectedTagIds = {...state.selectedTagIds};
+    final selectedTagIds = [...state.selectedTagIds];
     for (final tag in state.tags) {
       if (!selectedTagIds.contains(tag.id)) {
         selectedTagIds.add(tag.id);
@@ -140,7 +140,7 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
     TagListUnselectedAll event,
     Emitter<TagListState> emit,
   ) async {
-    emit(state.copyWith(selectedTagIds: {}));
+    emit(state.copyWith(selectedTagIds: []));
   }
 
   Future<void> _onDeleted(

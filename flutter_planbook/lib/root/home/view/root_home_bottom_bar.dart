@@ -175,7 +175,7 @@ class RootHomeBottomBar extends StatelessWidget {
           const RootHomeDownloadJournalDayRequested(),
         );
       case RootHomeTab.note:
-        if (await context.read<AppPurchasesBloc>().isTaskLimitReached() &&
+        if (await context.read<AppPurchasesBloc>().isNoteLimitReached() &&
             context.mounted) {
           await context.router.push(const AppPurchasesRoute());
           return;

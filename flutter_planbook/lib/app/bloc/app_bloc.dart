@@ -1,18 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
-import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:uuid/uuid.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -25,10 +20,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     required SettingsRepository settingsRepository,
     required TagsRepository tagsRepository,
     required TasksRepository tasksRepository,
+    required NotesRepository notesRepository,
     required UsersRepository usersRepository,
   }) : _settingsRepository = settingsRepository,
        _tagsRepository = tagsRepository,
        _tasksRepository = tasksRepository,
+       _notesRepository = notesRepository,
        _usersRepository = usersRepository,
        super(
          const AppState(
@@ -47,6 +44,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final SettingsRepository _settingsRepository;
   final TagsRepository _tagsRepository;
   final TasksRepository _tasksRepository;
+  final NotesRepository _notesRepository;
 
   final UsersRepository _usersRepository;
 
@@ -92,54 +90,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) async {
     // Create default tags and sample tasks on first launch
-    if (_usersRepository.isFirstLaunch) {
+    if (_usersRepository.isFirstLaunch || kDebugMode) {
       final languageCode = event.l10n.localeName.split('_').first;
-      final tagJsonString = await rootBundle.loadString(
-        'assets/files/tags_$languageCode.json',
-      );
-      final tagJson = jsonDecode(tagJsonString) as List<dynamic>;
-
-      const uuid = Uuid();
-      for (final json in tagJson) {
-        final tag = Tag.fromJson(json as Map<String, dynamic>);
-        final color = tag.color?.toColor ?? material.Colors.yellow;
-
-        await _tagsRepository.createTag(
-          id: uuid.v4(),
-          name: tag.name,
-          lightColorScheme: ColorScheme.fromColorScheme(
-            material.ColorScheme.fromSeed(
-              seedColor: color,
-            ),
-          ),
-          darkColorScheme: ColorScheme.fromColorScheme(
-            material.ColorScheme.fromSeed(
-              seedColor: color,
-              brightness: material.Brightness.dark,
-            ),
-          ),
-        );
-      }
-
-      final taskJsonString = await rootBundle.loadString(
-        'assets/files/tasks_$languageCode.json',
-      );
-      final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
-      for (final json in taskJson) {
-        final map = json as Map<String, dynamic>;
-        final taskMap = map['task'] as Map<String, dynamic>;
-        var task = Task.fromJson(taskMap).copyWith(id: uuid.v4());
-
-        /// If dueAt is not null, set it to today
-        if (taskMap['dueAt'] != null) {
-          task = task.copyWith(dueAt: Value(Jiffy.now()));
-        }
-        final tagNames = List<String>.from(map['tags'] as List<dynamic>);
-        final tags = await Future.wait(
-          tagNames.map(_tagsRepository.getTagEntityByName),
-        );
-        await _tasksRepository.create(task: task, tags: tags.nonNulls.toList());
-      }
+      await _tagsRepository.createDefaultTags(languageCode: languageCode);
+      await _tasksRepository.createDefaultTasks(languageCode: languageCode);
+      await _notesRepository.createDefaultNotes(languageCode: languageCode);
     }
 
     final now = DateTime.now().toUtc();

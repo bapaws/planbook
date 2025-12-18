@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -36,7 +37,13 @@ class TaskNewBottomBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   minimumSize: const Size.square(kMinInteractiveDimension),
                   onPressed: () {
-                    _onTagPressed(context, TaskNewFocus.priority);
+                    final cubit = context.read<TaskNewCubit>();
+                    context.router.push(
+                      TaskPriorityPickerRoute(
+                        selectedPriority: cubit.state.priority,
+                        onSelected: cubit.onPriorityChanged,
+                      ),
+                    );
                   },
                   child: Icon(
                     FontAwesomeIcons.solidFlag,
@@ -56,7 +63,13 @@ class TaskNewBottomBar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   minimumSize: const Size.square(kMinInteractiveDimension),
                   onPressed: () {
-                    _onTagPressed(context, TaskNewFocus.tags);
+                    final cubit = context.read<TaskNewCubit>();
+                    context.router.push(
+                      TagPickerRoute(
+                        selectedTags: cubit.state.tags,
+                        onSelected: cubit.onTagsChanged,
+                      ),
+                    );
                   },
                   child: Icon(
                     FontAwesomeIcons.tags,
@@ -78,12 +91,23 @@ class TaskNewBottomBar extends StatelessWidget {
                           ? colorScheme.tertiary
                           : Colors.grey.shade400,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (!context.read<AppPurchasesBloc>().isPremium) {
-                        context.router.push(const AppPurchasesRoute());
+                        await context.router.push(const AppPurchasesRoute());
                         return;
                       }
-                      _onTagPressed(context, TaskNewFocus.time);
+                      final cubit = context.read<TaskNewCubit>();
+                      final entity = await context.router.push(
+                        TaskDurationRoute(
+                          startAt: cubit.state.startAt,
+                          endAt: cubit.state.endAt,
+                          isAllDay: false,
+                        ),
+                      );
+                      if (entity is! TaskDurationEntity || !context.mounted) {
+                        return;
+                      }
+                      cubit.onDurationChanged(entity);
                     },
                   );
                 },
@@ -100,8 +124,18 @@ class TaskNewBottomBar extends StatelessWidget {
                           ? colorScheme.tertiary
                           : Colors.grey.shade400,
                     ),
-                    onPressed: () {
-                      _onTagPressed(context, TaskNewFocus.recurrence);
+                    onPressed: () async {
+                      final cubit = context.read<TaskNewCubit>();
+                      final recurrenceRule = await context.router.push(
+                        TaskRecurrenceRoute(
+                          initialRecurrenceRule: cubit.state.recurrenceRule,
+                        ),
+                      );
+                      if (recurrenceRule is! RecurrenceRule ||
+                          !context.mounted) {
+                        return;
+                      }
+                      cubit.onRecurrenceRuleChanged(recurrenceRule);
                     },
                   );
                 },
@@ -110,40 +144,22 @@ class TaskNewBottomBar extends StatelessWidget {
             const Spacer(),
             BlocBuilder<TaskNewCubit, TaskNewState>(
               builder: (context, state) {
-                return AnimatedSwitcher(
-                  duration: Durations.extralong1,
-                  child: state.status == PageStatus.loading
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                              color: colorScheme.primary,
-                              strokeWidth: 2,
-                            ),
-                          ),
-                        )
-                      : CupertinoButton(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 16,
-                          ),
-                          minimumSize: const Size.square(
-                            kMinInteractiveDimension,
-                          ),
-                          onPressed:
-                              state.title.trim().isEmpty ||
-                                  state.status == PageStatus.loading
-                              ? null
-                              : context.read<TaskNewCubit>().onSave,
-                          child: const Icon(
-                            FontAwesomeIcons.solidPaperPlane,
-                          ),
-                        ),
+                return CupertinoButton(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  minimumSize: const Size.square(
+                    kMinInteractiveDimension,
+                  ),
+                  onPressed:
+                      state.title.trim().isEmpty ||
+                          state.status == PageStatus.loading
+                      ? null
+                      : context.read<TaskNewCubit>().onSave,
+                  child: const Icon(
+                    FontAwesomeIcons.solidPaperPlane,
+                  ),
                 ).shakeX(animate: state.status == PageStatus.failure);
               },
             ),
@@ -151,24 +167,5 @@ class TaskNewBottomBar extends StatelessWidget {
         );
       },
     );
-  }
-
-  void _onTagPressed(BuildContext context, TaskNewFocus focus) {
-    final previousFocus = context.read<TaskNewCubit>().state.focus;
-    if (previousFocus == focus) {
-      FocusScope.of(context).requestFocus();
-      context.read<TaskNewCubit>().onFocusChanged(
-        TaskNewFocus.title,
-      );
-    } else {
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 150), () {
-        if (context.mounted) {
-          context.read<TaskNewCubit>().onFocusChanged(
-            focus,
-          );
-        }
-      });
-    }
   }
 }

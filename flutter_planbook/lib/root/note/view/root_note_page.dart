@@ -12,6 +12,7 @@ import 'package:flutter_planbook/note/timeline/view/note_timeline_page.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
 import 'package:flutter_planbook/root/note/view/root_note_drawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
 class RootNotePage extends StatelessWidget {
@@ -58,36 +59,35 @@ class _RootNotePage extends StatelessWidget {
             duration: Durations.medium1,
             child: switch (state.tab) {
               RootNoteTab.gallery => Text(state.galleryDate.year.toString()),
-              RootNoteTab.timeline =>
-                BlocBuilder<NoteTimelineBloc, NoteTimelineState>(
-                  buildWhen: (previous, current) =>
-                      previous.date != current.date ||
-                      previous.calendarFormat != current.calendarFormat,
-                  builder: (context, state) {
-                    return AppCalendarDateView(
-                      date: state.date,
-                      calendarFormat: state.calendarFormat,
-                      onDateSelected: (date) {
-                        context.read<NoteTimelineBloc>().add(
-                          NoteTimelineDateSelected(date: date),
-                        );
-                      },
-                      onCalendarFormatChanged: (calendarFormat) {
-                        context.read<NoteTimelineBloc>().add(
-                          NoteTimelineCalendarFormatChanged(
-                            calendarFormat: calendarFormat,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
               RootNoteTab.tag => Row(
                 children: [
                   AppTagIcon.fromTagEntity(state.tag!),
                   const SizedBox(width: 4),
                   Text(state.tag!.fullName),
                 ],
+              ),
+              _ => BlocBuilder<NoteTimelineBloc, NoteTimelineState>(
+                buildWhen: (previous, current) =>
+                    previous.date != current.date ||
+                    previous.calendarFormat != current.calendarFormat,
+                builder: (context, state) {
+                  return AppCalendarDateView(
+                    date: state.date,
+                    calendarFormat: state.calendarFormat,
+                    onDateSelected: (date) {
+                      context.read<NoteTimelineBloc>().add(
+                        NoteTimelineDateSelected(date: date),
+                      );
+                    },
+                    onCalendarFormatChanged: (calendarFormat) {
+                      context.read<NoteTimelineBloc>().add(
+                        NoteTimelineCalendarFormatChanged(
+                          calendarFormat: calendarFormat,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             },
           ),
@@ -105,7 +105,17 @@ class _RootNotePage extends StatelessWidget {
         duration: Durations.medium1,
         child: switch (state.tab) {
           RootNoteTab.gallery => const NoteGalleryPage(),
-          RootNoteTab.timeline => const NoteTimelinePage(),
+          RootNoteTab.timeline => const NoteTimelinePage(
+            key: ValueKey('timeline'),
+          ),
+          RootNoteTab.written => const NoteTimelinePage(
+            key: ValueKey('written'),
+            mode: NoteListMode.written,
+          ),
+          RootNoteTab.task => const NoteTimelinePage(
+            key: ValueKey('task'),
+            mode: NoteListMode.task,
+          ),
           RootNoteTab.tag => NoteTagPage(
             key: ValueKey(state.tag!.id),
             tag: state.tag!,

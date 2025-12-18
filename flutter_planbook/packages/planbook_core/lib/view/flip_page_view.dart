@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:screenshot/screenshot.dart';
 
 enum FlipPageDirection {
   left(-1),
@@ -152,6 +153,7 @@ class FlipPageView extends StatefulWidget {
     this.initialPage = 0,
     this.controller,
     this.spacing,
+    this.captureController,
     super.key,
   });
 
@@ -160,6 +162,8 @@ class FlipPageView extends StatefulWidget {
   final int initialPage;
   final FlipPageController? controller;
   final double? spacing;
+
+  final ScreenshotController? captureController;
 
   @override
   State<FlipPageView> createState() => _FlipPageViewState();
@@ -608,7 +612,12 @@ class _FlipPageViewState extends State<FlipPageView>
                   child: Align(
                     alignment: Alignment.centerRight,
                     widthFactor: 0.5,
-                    child: widget.itemBuilder!(context, _currentIndex),
+                    child: widget.captureController != null
+                        ? Screenshot(
+                            controller: widget.captureController!,
+                            child: widget.itemBuilder!(context, _currentIndex),
+                          )
+                        : widget.itemBuilder!(context, _currentIndex),
                   ),
                 ),
               ),

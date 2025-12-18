@@ -8,11 +8,14 @@ import 'package:planbook_repository/planbook_repository.dart';
 class TaskPriorityPage extends StatelessWidget {
   const TaskPriorityPage({
     required this.mode,
+    required this.style,
     super.key,
     this.date,
     this.tag,
     this.isCompleted,
   });
+
+  final TaskPriorityStyle style;
 
   final TaskListMode mode;
   final Jiffy? date;
@@ -125,8 +128,10 @@ class TaskPriorityPage extends StatelessWidget {
             ),
           );
         },
-        child: const Expanded(
-          child: TaskPriorityListView(),
+        child: Expanded(
+          child: TaskPriorityListView(
+            style: style,
+          ),
         ),
       ),
     );

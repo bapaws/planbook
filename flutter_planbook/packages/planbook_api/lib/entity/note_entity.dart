@@ -3,6 +3,8 @@ import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/entity/tag_entity.dart';
 
+enum NoteListMode { all, written, task }
+
 class NoteEntity extends Equatable {
   const NoteEntity({
     required this.note,

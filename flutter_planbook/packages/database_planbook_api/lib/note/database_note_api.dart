@@ -20,9 +20,9 @@ class DatabaseNoteApi {
       ..addColumns([db.notes.id.count()])
       ..where(
         db.notes.deletedAt.isNull() &
-        (userId == null
-            ? db.notes.userId.isNull()
-            : db.notes.userId.equals(userId)),
+            (userId == null
+                ? db.notes.userId.isNull()
+                : db.notes.userId.equals(userId)),
       );
     final result = await query.getSingleOrNull();
     return result?.read(db.notes.id.count()) ?? 0;
@@ -107,6 +107,7 @@ class DatabaseNoteApi {
               leftOuterJoin(
                 db.noteTags,
                 db.noteTags.noteId.equalsExp(db.notes.id) &
+                    db.noteTags.linkedTagId.isNull() &
                     db.noteTags.deletedAt.isNull(),
               ),
             ])..where(
@@ -127,6 +128,7 @@ class DatabaseNoteApi {
             leftOuterJoin(
               db.noteTags,
               db.noteTags.noteId.equalsExp(db.notes.id) &
+                  db.noteTags.linkedTagId.isNull() &
                   db.noteTags.deletedAt.isNull(),
             ),
           ])
@@ -139,6 +141,15 @@ class DatabaseNoteApi {
   }
 
   Stream<List<NoteEntity>> getNoteEntitiesByTagId(String tagId) {
+    // 子查询：找出所有与该 tagId 关联的 noteId（包括直接关联和通过父级关联的）
+    final noteIdsSubquery = db.selectOnly(db.noteTags)
+      ..addColumns([db.noteTags.noteId])
+      ..where(
+        (db.noteTags.tagId.equals(tagId) |
+                db.noteTags.linkedTagId.equals(tagId)) &
+            db.noteTags.deletedAt.isNull(),
+      );
+
     return (db.select(db.notes).join([
             leftOuterJoin(
               db.tasks,
@@ -147,12 +158,16 @@ class DatabaseNoteApi {
             ),
             leftOuterJoin(
               db.noteTags,
+              // 只获取直接关联的 tag（linkedTagId.isNull()），这样可以获取笔记的所有直接 tag
               db.noteTags.noteId.equalsExp(db.notes.id) &
+                  db.noteTags.linkedTagId.isNull() &
                   db.noteTags.deletedAt.isNull(),
             ),
           ])
+          // 使用子查询过滤符合条件的笔记
           ..where(
-            db.noteTags.tagId.equals(tagId) & db.notes.deletedAt.isNull(),
+            db.notes.id.isInQuery(noteIdsSubquery) &
+                db.notes.deletedAt.isNull(),
           )
           ..orderBy([OrderingTerm.desc(db.notes.createdAt.datetime)]))
         .watch()
@@ -194,6 +209,7 @@ class DatabaseNoteApi {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
+    NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
     String? userId,
   }) {
@@ -215,6 +231,12 @@ class DatabaseNoteApi {
             : db.notes.userId.equals(userId));
     if (tagIds != null && tagIds.isNotEmpty) {
       exp &= db.noteTags.tagId.isIn(tagIds);
+    }
+
+    if (mode == NoteListMode.written) {
+      exp &= db.tasks.id.isNull();
+    } else if (mode == NoteListMode.task) {
+      exp &= db.tasks.id.isNotNull();
     }
 
     return (db.select(db.notes).join(

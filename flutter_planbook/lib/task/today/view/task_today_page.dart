@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
-import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
+import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -47,7 +47,8 @@ class TaskTodayPage extends StatelessWidget {
           },
           child: BlocBuilder<RootTaskBloc, RootTaskState>(
             buildWhen: (previous, current) =>
-                previous.viewType != current.viewType,
+                previous.viewType != current.viewType ||
+                previous.priorityStyle != current.priorityStyle,
             builder: (context, rootTaskState) => AnimatedSwitcher(
               duration: Durations.medium1,
               child: switch (rootTaskState.viewType) {
@@ -55,6 +56,7 @@ class TaskTodayPage extends StatelessWidget {
                   day: todayState.date,
                 ),
                 RootTaskViewType.priority => TaskPriorityPage(
+                  style: rootTaskState.priorityStyle,
                   mode: TaskListMode.today,
                   date: todayState.date,
                   isCompleted: context.read<RootTaskBloc>().isCompleted,

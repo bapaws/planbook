@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
-import 'package:flutter_svg/svg.dart';
 
 @RoutePage()
 class TaskListPage extends StatelessWidget {
@@ -35,21 +35,7 @@ class _TaskListPage extends StatelessWidget {
           child: child,
         ),
         child: state.tasks.isEmpty
-            ? Center(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    bottom:
-                        24 +
-                        kBottomNavigationBarHeight +
-                        MediaQuery.of(context).padding.bottom,
-                  ),
-                  child: SvgPicture.asset(
-                    'assets/images/Summer-Collection.svg',
-                    width: 280,
-                    height: 280,
-                  ),
-                ),
-              )
+            ? const AppEmptyTaskView()
             : TaskListView(
                 tasks: state.tasks,
               ),

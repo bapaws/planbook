@@ -10,8 +10,8 @@ import 'package:planbook_repository/assets/assets_repository.dart';
 class AppNetworkImage extends StatelessWidget {
   const AppNetworkImage({
     this.url,
-    this.width = 22,
-    this.height = 22,
+    this.width,
+    this.height,
     this.bucket = ResBucket.noteImages,
     this.placeholderIcon,
     this.placeholderColor,
@@ -20,8 +20,8 @@ class AppNetworkImage extends StatelessWidget {
   });
 
   final String? url;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
   final ResBucket bucket;
   final BoxFit fit;
 
@@ -30,6 +30,7 @@ class AppNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = min(width ?? 22, height ?? 22) / 4;
     final errorWidget = ColoredBox(
       color: Colors.grey.shade100,
       child: SizedBox(
@@ -40,7 +41,7 @@ class AppNetworkImage extends StatelessWidget {
           color:
               placeholderColor ??
               Theme.of(context).colorScheme.onSurfaceVariant,
-          size: min(width, height) / 4,
+          size: iconSize,
         ),
       ),
     );

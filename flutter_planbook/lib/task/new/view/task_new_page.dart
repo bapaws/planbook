@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -75,7 +76,14 @@ class TaskNewPage extends StatelessWidget {
                 previous.status != current.status &&
                 current.status == PageStatus.success,
             listener: (context, state) {
-              context.pop();
+              if (state.status == PageStatus.loading) {
+                EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+              } else if (EasyLoading.isShow) {
+                EasyLoading.dismiss();
+              }
+              if (state.status == PageStatus.success) {
+                context.router.maybePop();
+              }
             },
           ),
         ],

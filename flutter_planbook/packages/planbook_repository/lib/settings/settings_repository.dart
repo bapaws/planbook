@@ -9,23 +9,21 @@ import 'package:rxdart/subjects.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository {
-  SettingsRepository({required SharedPreferences sp}) : _sp = sp;
+  SettingsRepository({required SharedPreferences sp}) : _sp = sp {
+    _init();
+  }
 
   final SharedPreferences _sp;
 
   List<TaskAutoNoteRule>? taskAutoNoteRules;
 
   late final _taskPriorityStyleController =
-      BehaviorSubject<TaskPriorityStyle>.seeded(
-        TaskPriorityStyle.solidColorBackground,
-      );
+      BehaviorSubject<TaskPriorityStyle>();
   Stream<TaskPriorityStyle> get onTaskPriorityStyleChange =>
       _taskPriorityStyleController.stream;
 
   late final _onBackgroundAssetChangeController =
-      BehaviorSubject<AppBackgroundEntity>.seeded(
-        AppBackgroundEntity.all.first,
-      );
+      BehaviorSubject<AppBackgroundEntity>();
   Stream<AppBackgroundEntity> get onBackgroundAssetChange =>
       _onBackgroundAssetChangeController.stream;
   AppBackgroundEntity? get backgroundAsset =>
@@ -74,6 +72,26 @@ class SettingsRepository {
   static const kSettingsTaskCompletedSound =
       '__settings_task_completed_sound_key__';
   static const kSettingsBackgroundAsset = '__settings_background_asset_key__';
+
+  Future<void> _init() async {
+    final styleData = await AppHomeWidget.getWidgetData<String?>(
+      kSettingsTaskPriorityStyleKey,
+    );
+    final style = styleData == null
+        ? TaskPriorityStyle.solidColorBackground
+        : TaskPriorityStyle.values.byName(styleData);
+    _taskPriorityStyleController.add(style);
+
+    final backgroundAssetData = await AppHomeWidget.getWidgetData<String?>(
+      kSettingsBackgroundAsset,
+    );
+    final backgroundAsset = backgroundAssetData == null
+        ? AppBackgroundEntity.all.first
+        : AppBackgroundEntity.fromJson(
+            jsonDecode(backgroundAssetData) as Map<String, dynamic>,
+          );
+    _onBackgroundAssetChangeController.add(backgroundAsset);
+  }
 
   DarkMode? getDarkMode() {
     final index = _sp.getInt(kSettingsDarkModeKey);

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -109,6 +110,16 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
 
   void onTagsChanged(List<TagEntity> tags) {
     emit(state.copyWith(tags: tags));
+  }
+
+  void onDurationChanged(TaskDurationEntity? entity) {
+    emit(
+      state.copyWith(
+        startAt: () => entity?.startAt?.toUtc(),
+        endAt: () => entity?.endAt?.toUtc(),
+        isAllDay: entity?.isAllDay ?? false,
+      ),
+    );
   }
 
   void onDueAtChanged(Jiffy? dueAt) {

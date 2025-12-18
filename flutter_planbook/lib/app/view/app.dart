@@ -53,10 +53,18 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         setState(() {
           _brightness = Brightness.light;
         });
+        // 延迟设置，确保 context 已更新
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _setupSystemNavigationBar();
+        });
       case Brightness.dark:
         AppStyles.onPlatformBrightnessChanged(Brightness.dark);
         setState(() {
           _brightness = Brightness.dark;
+        });
+        // 延迟设置，确保 context 已更新
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _setupSystemNavigationBar();
         });
     }
   }
@@ -66,34 +74,44 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {}
   }
 
-  /// 设置系统导航栏样式
-  void _setupSystemNavigationBar() {
-    if (!Platform.isAndroid) return;
+  /// 设置系统导航栏样式（保留用于平台亮度变化时的更新）
+  void _setupSystemNavigationBar({AppState? state}) {
     if (!mounted) return;
 
-    // 获取当前主题的背景颜色
-    final currentTheme = context.read<AppBloc>().state.getTheme(_brightness);
+    // 只在 Android 上设置 edgeToEdge 模式
+    if (Platform.isAndroid) {
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.edgeToEdge,
+        overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+      );
+    }
 
-    // 先设置系统UI模式，确保导航栏可见但不覆盖内容
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.edgeToEdge,
-      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-    );
-
+    // 设置系统UI样式
     SystemChrome.setSystemUIOverlayStyle(
-      SystemUiOverlayStyle(
-        // 设置系统导航栏背景颜色与页面背景一致
-        systemNavigationBarColor: currentTheme.colorScheme.surface,
-        // 根据当前主题设置导航栏图标颜色
-        systemNavigationBarIconBrightness: _brightness == Brightness.light
-            ? Brightness.dark
-            : Brightness.light,
-        // 设置状态栏样式
-        statusBarColor: Colors.transparent,
-        statusBarIconBrightness: _brightness == Brightness.light
-            ? Brightness.dark
-            : Brightness.light,
-      ),
+      _getSystemUiOverlayStyle(state ?? context.read<AppBloc>().state),
+    );
+  }
+
+  SystemUiOverlayStyle _getSystemUiOverlayStyle(AppState state) {
+    final currentTheme = state.getTheme(_brightness);
+    final colorScheme = currentTheme.colorScheme;
+    final themeBrightness = colorScheme.brightness;
+
+    // 根据实际主题设置状态栏和导航栏图标颜色
+    final iconBrightness = themeBrightness == Brightness.dark
+        ? Brightness.light
+        : Brightness.dark;
+
+    return SystemUiOverlayStyle(
+      // Android: 设置系统导航栏背景颜色
+      systemNavigationBarColor: colorScheme.onSurface,
+      systemNavigationBarIconBrightness: iconBrightness,
+      statusBarColor: Colors.transparent,
+      // Android 使用 statusBarIconBrightness
+      statusBarIconBrightness: iconBrightness,
+      // iOS 使用 statusBarBrightness（语义相反）
+      statusBarBrightness: themeBrightness,
+      systemNavigationBarContrastEnforced: false,
     );
   }
 
@@ -101,7 +119,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     if (Platform.isIOS) {
       try {
         methodChannel.setMethodCallHandler((call) async {
-          final arguments = Map<String, dynamic>.from(call.arguments as Map);
           switch (call.method) {
             case 'completeTaskById':
               return true;
@@ -123,18 +140,27 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
       builder: (context, state) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          theme: state.getTheme(_brightness),
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          routerConfig: _appRouter.config(),
-          builder: (context, child) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _setupSystemNavigationBar();
-            });
-            return EasyLoading.init()(context, child);
-          },
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: _getSystemUiOverlayStyle(state),
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: state.getTheme(_brightness),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: _appRouter.config(),
+            builder: (context, child) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                // 只在 Android 上设置 edgeToEdge 模式
+                if (Platform.isAndroid) {
+                  SystemChrome.setEnabledSystemUIMode(
+                    SystemUiMode.edgeToEdge,
+                    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+                  );
+                }
+              });
+              return EasyLoading.init()(context, child);
+            },
+          ),
         );
       },
     );

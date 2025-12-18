@@ -84,7 +84,7 @@ class TaskSliverList extends StatelessWidget {
           itemBuilder: (context, index) {
             final task = tasks[index];
             return TaskListTile(
-              key: ValueKey(task.occurrence?.id ?? task.id),
+              key: ValueKey(task),
               task: task,
               onPressed: () {
                 if (onTaskPressed != null) {

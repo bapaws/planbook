@@ -1,0 +1,194 @@
+[
+  {
+    "id": "n1a2b3c4-1234-5678-9abc-def012345678",
+    "note": {
+      "id": "n1a2b3c4-1234-5678-9abc-def012345678",
+      "user_id": null,
+      "title": "Sunny Breakfast",
+      "content": "Got up early today, a rare morning without hitting snooze.\n\nMade myself a fancy breakfast: fried eggs, avocado toast, and a freshly ground cup of coffee. Sunlight streamed through the curtains, warm and cozy.\n\nThis slow-paced life is so healing. I've decided to treat myself like this every weekend.",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2025-12-21T08:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n2b3c4d5-2345-6789-abcd-ef0123456789",
+    "note": {
+      "id": "n2b3c4d5-2345-6789-abcd-ef0123456789",
+      "user_id": null,
+      "title": "Oppenheimer Review",
+      "content": "Finally finished watching Nolan's new masterpiece \"Oppenheimer\", a three-hour epic.\n\nThe film presents the life of the father of the atomic bomb through non-linear narrative. Cillian Murphy's performance was stunning. The hearing scenes were suffocating, and the score perfectly complemented the visuals.\n\nWhat struck me most was the exploration of science and morality. \"I am become death, the destroyer of worlds\" echoes in my mind.\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-13T22:15:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  },
+  {
+    "id": "n3c4d5e6-3456-7890-bcde-f01234567890",
+    "note": {
+      "id": "n3c4d5e6-3456-7890-bcde-f01234567890",
+      "user_id": null,
+      "title": "First Baking Attempt",
+      "content": "Had a sudden urge to learn how to bake today, bought a bunch of ingredients.\n\nFollowed the recipe step by step, my arm was sore from whipping egg whites. The final product didn't look perfect, but it tasted pretty good! My family was supportive and finished it all.\n\nNext time I'll try making a chiffon cake, hope it doesn't collapse 🍰",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-12T16:45:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n4d5e6f7-4567-8901-cdef-012345678901",
+    "note": {
+      "id": "n4d5e6f7-4567-8901-cdef-012345678901",
+      "user_id": null,
+      "title": "The First Slam Dunk Movie",
+      "content": "After all these years, the theatrical version is finally here!\n\nThe movie focuses on Ryota Miyagi's story, completing his background. The new 3D art style took some getting used to, but the basketball scenes were absolutely thrilling!\n\nThe last ten minutes recreating the Sannoh match, paired with the classic BGM, had me in tears. My youth came rushing back!\n\n\"Coach, I want to play basketball.\" 🏀\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-11T21:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  },
+  {
+    "id": "n5e6f7a8-5678-9012-def0-123456789012",
+    "note": {
+      "id": "n5e6f7a8-5678-9012-def0-123456789012",
+      "user_id": null,
+      "title": "Morning Run at the Park",
+      "content": "Day 30 of consistent morning runs!\n\nRan 5 kilometers today, pace of 5:40 per km, my best record so far. The morning air was especially fresh, met a few other joggers and exchanged greetings.\n\nRunning is really addictive. Now I feel uncomfortable if I don't run every day. Keep it up! 💪",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-10T07:15:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n6f7a8b9-6789-0123-ef01-234567890123",
+    "note": {
+      "id": "n6f7a8b9-6789-0123-ef01-234567890123",
+      "user_id": null,
+      "title": "The Wandering Earth 2 - Amazing",
+      "content": "Another pinnacle of Chinese sci-fi!\n\nThe prequel setting is grander than the first film - digital life, space elevator, lunar crisis - every concept is mind-blowing. Andy Lau's character Tu Hengyu's storyline was so touching.\n\nThe special effects are truly world-class, especially the moon falling and space elevator scenes. So proud of Chinese sci-fi cinema!\n\n\"A civilization without people is meaningless.\"\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-09T20:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  },
+  {
+    "id": "n7a8b9c0-7890-1234-f012-345678901234",
+    "note": {
+      "id": "n7a8b9c0-7890-1234-f012-345678901234",
+      "user_id": null,
+      "title": "New Coffee Machine",
+      "content": "After much research, finally ordered the semi-automatic coffee machine I've been eyeing!\n\nSo excited when unboxing, the machine looks gorgeous. The first extraction was a bit sour, but that crema looked beautiful.\n\nNow I need to learn about adjusting grind size and extraction time, aiming to make café-quality lattes soon ☕",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-08T14:20:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n8b9c0d1-8901-2345-0123-456789012345",
+    "note": {
+      "id": "n8b9c0d1-8901-2345-0123-456789012345",
+      "user_id": null,
+      "title": "Spider-Man: Across the Spider-Verse",
+      "content": "This is absolutely the most stunning animated film I've ever seen!\n\nEvery frame is wallpaper-worthy, the art style switches between universes are amazing. Miles' growth, Gwen's storyline, and that villain Spider-Man 2099...\n\nThe cliffhanger ending makes me eager for the sequel! It's rare to see such a perfect blend of artistry and commercial appeal.\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-07T19:45:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  },
+  {
+    "id": "n9c0d1e2-9012-3456-1234-567890123456",
+    "note": {
+      "id": "n9c0d1e2-9012-3456-1234-567890123456",
+      "user_id": null,
+      "title": "Weekend Bookstore Trip",
+      "content": "Went to my favorite indie bookstore alone this afternoon.\n\nWandered aimlessly through the shelves for two hours, ended up finding a rare hardcover edition of \"The Little Prince\" and Haruki Murakami's new book.\n\nOrdered a hot chocolate and sat in the corner reading, light rain falling outside the window. Such a beautiful feeling.\n\n\"All grown-ups were once children, but only few of them remember it.\" 📚",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-06T15:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n0d1e2f3-0123-4567-2345-678901234567",
+    "note": {
+      "id": "n0d1e2f3-0123-4567-2345-678901234567",
+      "user_id": null,
+      "title": "Journey to the West Editorial Department",
+      "content": "A very unique Chinese sci-fi film.\n\nThe mockumentary format is interesting, following a group of ordinary people obsessed with finding aliens. Despite the low budget, the simplicity and sincerity are touching.\n\nTang Zhijun's line \"I just want to know if we are the only intelligent life in the universe\" speaks to so many people's questions.\n\nThis is true Chinese romantic sci-fi.\n\nRating: ⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-05T21:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  },
+  {
+    "id": "n1e2f3a4-1234-5678-3456-789012345678",
+    "note": {
+      "id": "n1e2f3a4-1234-5678-3456-789012345678",
+      "user_id": null,
+      "title": "Reunion with Old Friends",
+      "content": "Met up with my college roommates today after three years!\n\nEveryone has changed so much - some got married, some moved to different cities, some started businesses. But the moment we met, it felt like we were back to those all-night gaming sessions.\n\nWe talked about old times and laughed until our stomachs hurt. Despite our busy lives, this friendship will never change. We promised to reunite in that city where we had our graduation trip!",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-04T18:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Life"]
+  },
+  {
+    "id": "n2f3a4b5-2345-6789-4567-890123456789",
+    "note": {
+      "id": "n2f3a4b5-2345-6789-4567-890123456789",
+      "user_id": null,
+      "title": "Barbie - Pink Storm",
+      "content": "Thought it would just be a commercial film, but what a pleasant surprise!\n\nOn the surface it's all pink bubbles, but underneath it explores many profound topics. Margot Robbie and Ryan Gosling's performances were fantastic, especially Ken singing \"I'm Just Ken\" - hilarious!\n\n\"You can be anything you want to be\" - such positive energy is truly healing.\n\nRating: ⭐⭐⭐⭐",
+      "images": null,
+      "cover_image": null,
+      "task_id": null,
+      "created_at": "2024-01-03T20:15:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": ["Movies"]
+  }
+]

@@ -27,11 +27,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
-
-    on<TaskListPriorityStyleRequested>(
-      _onPriorityStyleRequested,
-      transformer: restartable(),
-    );
   }
 
   final TasksRepository _tasksRepository;
@@ -45,8 +40,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListRequested event,
     Emitter<TaskListState> emit,
   ) async {
-    add(const TaskListPriorityStyleRequested());
-
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
     final stream = priority == null
@@ -134,16 +127,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     }
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
-    );
-  }
-
-  Future<void> _onPriorityStyleRequested(
-    TaskListPriorityStyleRequested event,
-    Emitter<TaskListState> emit,
-  ) async {
-    await emit.forEach(
-      _settingsRepository.onTaskPriorityStyleChange,
-      onData: (priorityStyle) => state.copyWith(priorityStyle: priorityStyle),
     );
   }
 }

@@ -46,7 +46,6 @@ class _TagPickerPage extends StatelessWidget {
         maxHeight: MediaQuery.of(context).size.height * 0.8,
       ),
       clipBehavior: Clip.hardEdge,
-
       child: Column(
         children: [
           AppBar(
@@ -56,10 +55,13 @@ class _TagPickerPage extends StatelessWidget {
               CupertinoButton(
                 onPressed: () {
                   final bloc = context.read<TagListBloc>();
+                  final tags = bloc.state.tags;
                   final selectedTagIds = bloc.state.selectedTagIds;
-                  final selectedTags = bloc.state.tags
-                      .where((tag) => selectedTagIds.contains(tag.id))
-                      .toList();
+                  final selectedTags = <TagEntity>[];
+                  for (final tagId in selectedTagIds) {
+                    final tag = tags.firstWhere((tag) => tag.id == tagId);
+                    selectedTags.add(tag);
+                  }
                   onSelected(selectedTags);
                   context.router.maybePop();
                 },

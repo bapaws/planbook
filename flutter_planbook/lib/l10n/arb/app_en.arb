@@ -2,6 +2,8 @@
   "@@locale": "en",
   "appName": "Planbook",
   "slogen": "Plan, Task, Note, All in One 👌",
+  "noteSlogen": "Pen the chapters of your life.",
+  "taskSlogen": "First complete, then perfect.",
   "list": "List",
   "save": "Save",
   "confirm": "Confirm",
@@ -299,5 +301,7 @@
   "completedSound": "Completed Sound",
   "background": "Background",
   "dot": "Dot",
-  "grid": "Grid"
+  "grid": "Grid",
+  "saveSuccess": "Save Success",
+  "saveFailed": "Save Failed"
 }

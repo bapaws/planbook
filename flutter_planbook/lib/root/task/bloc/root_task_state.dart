@@ -13,6 +13,7 @@ final class RootTaskState extends Equatable {
     this.showCompleted = false,
     this.tag,
     this.taskCounts = const {},
+    this.priorityStyle = TaskPriorityStyle.solidColorBackground,
   });
 
   final PageStatus status;
@@ -20,6 +21,8 @@ final class RootTaskState extends Equatable {
   final TaskListMode tab;
   final RootTaskViewType viewType;
   final bool showCompleted;
+
+  final TaskPriorityStyle priorityStyle;
 
   final TagEntity? tag;
 
@@ -35,6 +38,7 @@ final class RootTaskState extends Equatable {
     showCompleted,
     tag,
     taskCounts,
+    priorityStyle,
   ];
 
   RootTaskState copyWith({
@@ -44,6 +48,7 @@ final class RootTaskState extends Equatable {
     bool? showCompleted,
     TagEntity? tag,
     Map<TaskListMode, int>? taskCounts,
+    TaskPriorityStyle? priorityStyle,
   }) {
     return RootTaskState(
       status: status ?? this.status,
@@ -52,6 +57,7 @@ final class RootTaskState extends Equatable {
       showCompleted: showCompleted ?? this.showCompleted,
       tag: tag ?? this.tag,
       taskCounts: taskCounts ?? this.taskCounts,
+      priorityStyle: priorityStyle ?? this.priorityStyle,
     );
   }
 }

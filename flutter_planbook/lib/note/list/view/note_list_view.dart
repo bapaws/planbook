@@ -29,10 +29,12 @@ class NoteListView extends StatelessWidget {
       itemCount: notes.length,
       separatorBuilder: (context, index) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
+        final note = notes[index];
         return NoteListTile(
-          note: notes[index],
+          key: ValueKey(note.id),
+          note: note,
           showDate: showDate,
-          onDeleted: () => onDeleted?.call(notes[index]),
+          onDeleted: () => onDeleted?.call(note),
         );
       },
     );

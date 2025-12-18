@@ -1,3 +1,4 @@
+import 'package:cupertino_calendar_picker/cupertino_calendar_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,13 +28,7 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
       _selectedDate = tomorrow;
       widget.onDateChanged?.call(tomorrow);
     } else if (value == 2) {
-      FocusScope.of(context).unfocus();
-      Future.delayed(const Duration(milliseconds: 150), () {
-        final ctx = context;
-        if (ctx.mounted) {
-          ctx.read<TaskNewCubit>().onFocusChanged(TaskNewFocus.date);
-        }
-      });
+      return _showCupertinoDatePicker(context);
     } else if (value == 3) {
       _selectedDate = null;
       widget.onDateChanged?.call(null);
@@ -51,6 +46,36 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
     return _selectedDate != null &&
         !_selectedDate!.isSame(now, unit: Unit.day) &&
         !_selectedDate!.isSame(now.add(days: 1), unit: Unit.day);
+  }
+
+  void _showCupertinoDatePicker(BuildContext context) {
+    FocusScope.of(context).unfocus();
+
+    Future.delayed(const Duration(milliseconds: 250), () {
+      if (!context.mounted) return;
+
+      final renderBox = context.findRenderObject() as RenderBox?;
+      final colorScheme = Theme.of(context).colorScheme;
+      final now = Jiffy.now();
+      showCupertinoCalendarPicker(
+        context,
+        widgetRenderBox: renderBox,
+        minimumDateTime: DateTime(1970),
+        maximumDateTime: DateTime(2500, 12, 31),
+        initialDateTime: _selectedDate?.dateTime,
+        mainColor: colorScheme.primary,
+        firstDayOfWeekIndex: switch (now.startOfWeek) {
+          StartOfWeek.monday => DateTime.monday,
+          StartOfWeek.saturday => DateTime.saturday,
+          StartOfWeek.sunday => DateTime.sunday,
+        },
+        dismissBehavior: CalendarDismissBehavior.onOusideTapOrDateSelect,
+        onDateSelected: (date) {
+          _onDateChanged(Jiffy.parseFromDateTime(date));
+          widget.onDateChanged?.call(Jiffy.parseFromDateTime(date));
+        },
+      );
+    });
   }
 
   @override

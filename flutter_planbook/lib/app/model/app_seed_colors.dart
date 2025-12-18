@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 
 extension ColorSchemeJsonX on ColorScheme {
@@ -106,6 +107,15 @@ enum AppSeedColors {
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
         ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarIconBrightness: Brightness.dark,
+          statusBarColor: Colors.transparent,
+          // Android 使用 statusBarIconBrightness
+          statusBarIconBrightness: Brightness.dark,
+          // iOS 使用 statusBarBrightness（light 主题用 light = 黑色图标）
+          statusBarBrightness: Brightness.light,
+          systemNavigationBarContrastEnforced: false,
+        ),
       ),
       dividerColor: colorScheme.surfaceContainerHighest,
       colorScheme: colorScheme,
@@ -137,6 +147,15 @@ enum AppSeedColors {
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: colorScheme.onSurface,
+        ),
+        systemOverlayStyle: const SystemUiOverlayStyle(
+          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarColor: Colors.transparent,
+          // Android 使用 statusBarIconBrightness
+          statusBarIconBrightness: Brightness.light,
+          // iOS 使用 statusBarBrightness（dark 主题用 dark = 白色图标）
+          statusBarBrightness: Brightness.dark,
+          systemNavigationBarContrastEnforced: false,
         ),
       ),
       // bottomNavigationBarTheme: BottomNavigationBarThemeData

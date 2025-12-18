@@ -12,8 +12,8 @@ class JournalTimelinePage extends StatelessWidget {
     final theme = Theme.of(context);
     return BlocBuilder<JournalTimelineBloc, JournalTimelineState>(
       builder: (context, state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return ListView(
+          physics: const NeverScrollableScrollPhysics(),
           children: [
             Text('🌤️ ${context.l10n.morning}'),
             Divider(
@@ -51,6 +51,7 @@ class JournalTimelinePage extends StatelessWidget {
     final completedAt = task.activity?.completedAt;
     final colorScheme = ColorScheme.fromSeed(
       seedColor: task.priority.color,
+      brightness: Theme.of(context).brightness,
     );
     return Container(
       decoration: BoxDecoration(

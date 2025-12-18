@@ -25,6 +25,10 @@ final class RootTaskTagSelected extends RootTaskEvent {
   List<Object?> get props => [tag];
 }
 
+final class RootTaskCountRequested extends RootTaskEvent {
+  const RootTaskCountRequested();
+}
+
 final class RootTaskTaskCountRequested extends RootTaskEvent {
   const RootTaskTaskCountRequested({required this.mode});
 
@@ -50,4 +54,8 @@ final class RootTaskShowCompletedChanged extends RootTaskEvent {
 
   @override
   List<Object?> get props => [showCompleted];
+}
+
+final class RootTaskPriorityStyleRequested extends RootTaskEvent {
+  const RootTaskPriorityStyleRequested();
 }

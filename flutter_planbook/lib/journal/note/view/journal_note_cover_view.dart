@@ -20,8 +20,13 @@ class JournalNoteCoverView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.l10n.cover,
+          '📷 ${context.l10n.cover}',
           style: Theme.of(context).textTheme.titleMedium,
+        ),
+        Divider(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          height: 16,
+          thickness: 1,
         ),
         ClipRRect(
           borderRadius: BorderRadius.circular(8),

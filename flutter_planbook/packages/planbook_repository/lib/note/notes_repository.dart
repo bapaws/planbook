@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -121,6 +124,7 @@ class NotesRepository {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
+    NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
   }) {
     _syncNotes();
@@ -128,6 +132,7 @@ class NotesRepository {
       date,
       tagIds: tagIds,
       userId: userId,
+      mode: mode,
     );
   }
 
@@ -153,5 +158,34 @@ class NotesRepository {
   Future<void> deleteNoteById(String noteId) async {
     await _supabaseNoteApi.deleteByNoteId(noteId: noteId);
     return _dbNoteApi.deleteNoteById(noteId);
+  }
+
+  Future<void> createDefaultNotes({required String languageCode}) async {
+    if (!kDebugMode) return;
+
+    const uuid = Uuid();
+    final taskJsonString = await rootBundle.loadString(
+      'assets/files/${kDebugMode ? 'demo_' : ''}notes_$languageCode.json',
+    );
+    final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
+    for (final json in taskJson) {
+      final map = json as Map<String, dynamic>;
+      final noteMap = map['note'] as Map<String, dynamic>;
+      final note = Note.fromJson(noteMap).copyWith(
+        id: kDebugMode ? null : uuid.v4(),
+        createdAt: Jiffy.now(),
+      );
+
+      final tagNames = List<String>.from(map['tags'] as List<dynamic>);
+      final tags = await Future.wait(
+        tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),
+      );
+      await create(
+        title: note.title,
+        content: note.content,
+        tags: tags.nonNulls.toList(),
+        createdAt: note.createdAt,
+      );
+    }
   }
 }

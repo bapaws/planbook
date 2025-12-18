@@ -49,6 +49,28 @@ class RootNoteDrawer extends StatelessWidget {
                   },
                 ),
                 RootDrawerListTile(
+                  icon: FontAwesomeIcons.filePen,
+                  iconBackgroundColor: Colors.blue,
+                  title: context.l10n.note,
+                  onPressed: () {
+                    context.read<RootNoteBloc>().add(
+                      const RootNoteTabSelected(tab: RootNoteTab.written),
+                    );
+                    Scaffold.of(context).closeDrawer();
+                  },
+                ),
+                RootDrawerListTile(
+                  icon: FontAwesomeIcons.listCheck,
+                  iconBackgroundColor: Colors.brown,
+                  title: context.l10n.task,
+                  onPressed: () {
+                    context.read<RootNoteBloc>().add(
+                      const RootNoteTabSelected(tab: RootNoteTab.task),
+                    );
+                    Scaffold.of(context).closeDrawer();
+                  },
+                ),
+                RootDrawerListTile(
                   icon: FontAwesomeIcons.image,
                   iconBackgroundColor: Colors.green,
                   title: context.l10n.gallery,
@@ -59,7 +81,6 @@ class RootNoteDrawer extends StatelessWidget {
                     Scaffold.of(context).closeDrawer();
                   },
                 ),
-
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 32, 16, 8),
                   sliver: SliverToBoxAdapter(

@@ -4,13 +4,13 @@ final class TagListState extends Equatable {
   const TagListState({
     this.status = PageStatus.initial,
     this.tags = const [],
-    this.selectedTagIds = const {},
+    this.selectedTagIds = const [],
   });
 
   final List<TagEntity> tags;
   final PageStatus status;
 
-  final Set<String> selectedTagIds;
+  final List<String> selectedTagIds;
 
   bool get isAllSelected => selectedTagIds.length == tags.length;
 
@@ -20,7 +20,7 @@ final class TagListState extends Equatable {
   TagListState copyWith({
     PageStatus? status,
     List<TagEntity>? tags,
-    Set<String>? selectedTagIds,
+    List<String>? selectedTagIds,
   }) {
     return TagListState(
       status: status ?? this.status,

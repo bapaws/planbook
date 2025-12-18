@@ -2,6 +2,8 @@ part of 'root_note_bloc.dart';
 
 enum RootNoteTab {
   timeline,
+  written,
+  task,
   gallery,
   tag,
 }

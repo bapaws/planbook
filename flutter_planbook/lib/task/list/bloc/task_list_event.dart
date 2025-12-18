@@ -50,7 +50,3 @@ final class TaskListNoteCreated extends TaskListEvent {
   @override
   List<Object?> get props => [task, activity];
 }
-
-final class TaskListPriorityStyleRequested extends TaskListEvent {
-  const TaskListPriorityStyleRequested();
-}

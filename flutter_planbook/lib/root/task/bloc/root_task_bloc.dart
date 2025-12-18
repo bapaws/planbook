@@ -10,10 +10,14 @@ part 'root_task_state.dart';
 class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   RootTaskBloc({
     required TasksRepository tasksRepository,
+    required SettingsRepository settingsRepository,
   }) : _tasksRepository = tasksRepository,
+       _settingsRepository = settingsRepository,
        super(const RootTaskState()) {
     on<RootTaskTabSelected>(_onTabSelected);
     on<RootTaskTagSelected>(_onTagSelected);
+
+    on<RootTaskCountRequested>(_onCountRequested);
     on<RootTaskTaskCountRequested>(
       _onTaskCountRequested,
       transformer: concurrent(),
@@ -21,9 +25,11 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
     on<RootTaskViewTypeChanged>(_onViewTypeChanged);
     on<RootTaskShowCompletedChanged>(_onShowCompletedChanged);
+    on<RootTaskPriorityStyleRequested>(_onPriorityStyleRequested);
   }
 
   final TasksRepository _tasksRepository;
+  final SettingsRepository _settingsRepository;
 
   bool? get isCompleted => state.isCompleted;
 
@@ -63,6 +69,15 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     Emitter<RootTaskState> emit,
   ) async {
     emit(state.copyWith(tab: TaskListMode.tag, tag: event.tag));
+  }
+
+  Future<void> _onCountRequested(
+    RootTaskCountRequested event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    add(const RootTaskTaskCountRequested(mode: TaskListMode.inbox));
+    add(const RootTaskTaskCountRequested(mode: TaskListMode.today));
+    add(const RootTaskTaskCountRequested(mode: TaskListMode.overdue));
   }
 
   Future<void> _onTaskCountRequested(
@@ -105,6 +120,16 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       state.copyWith(
         showCompleted: event.showCompleted ?? !state.showCompleted,
       ),
+    );
+  }
+
+  Future<void> _onPriorityStyleRequested(
+    RootTaskPriorityStyleRequested event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    await emit.forEach(
+      _settingsRepository.onTaskPriorityStyleChange,
+      onData: (priorityStyle) => state.copyWith(priorityStyle: priorityStyle),
     );
   }
 }

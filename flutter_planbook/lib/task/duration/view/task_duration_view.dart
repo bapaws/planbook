@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/new/view/duration_text.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -12,35 +13,27 @@ enum TaskDurationSelectionMode {
 
 class TaskDurationView extends StatefulWidget {
   const TaskDurationView({
-    required this.startAt,
-    required this.endAt,
-    required this.isAllDay,
-    required this.onIsAllDayChanged,
-    required this.onStartAtChanged,
-    required this.onEndAtChanged,
+    required this.entity,
+    required this.onValueChanged,
     super.key,
   });
 
-  final Jiffy? startAt;
-  final Jiffy? endAt;
-  final bool isAllDay;
-  final ValueChanged<bool> onIsAllDayChanged;
-  final ValueChanged<Jiffy?> onStartAtChanged;
-  final ValueChanged<Jiffy?> onEndAtChanged;
+  final TaskDurationEntity entity;
+  final ValueChanged<TaskDurationEntity> onValueChanged;
 
   @override
   State<TaskDurationView> createState() => _TaskDurationViewState();
 }
 
 class _TaskDurationViewState extends State<TaskDurationView> {
-  late bool _isAllDay = widget.isAllDay;
+  late bool _isAllDay = widget.entity.isAllDay;
   bool get isAllDay => _isAllDay;
   set isAllDay(bool value) {
     if (value == _isAllDay) return;
     setState(() {
       _isAllDay = value;
     });
-    widget.onIsAllDayChanged(value);
+    widget.onValueChanged(widget.entity.copyWith(isAllDay: value));
   }
 
   late Jiffy _startAt;
@@ -50,7 +43,7 @@ class _TaskDurationViewState extends State<TaskDurationView> {
     setState(() {
       _startAt = value;
     });
-    widget.onStartAtChanged(value);
+    widget.onValueChanged(widget.entity.copyWith(startAt: value));
   }
 
   late Jiffy _endAt;
@@ -60,7 +53,7 @@ class _TaskDurationViewState extends State<TaskDurationView> {
     setState(() {
       _endAt = value;
     });
-    widget.onEndAtChanged(value);
+    widget.onValueChanged(widget.entity.copyWith(endAt: value));
   }
 
   TaskDurationSelectionMode _previousSelectionMode =
@@ -78,8 +71,8 @@ class _TaskDurationViewState extends State<TaskDurationView> {
   @override
   void initState() {
     final now = Jiffy.now().startOf(Unit.minute);
-    _startAt = widget.startAt ?? now;
-    _endAt = widget.endAt ?? now.add(hours: 1);
+    _startAt = widget.entity.startAt ?? now;
+    _endAt = widget.entity.endAt ?? now.add(hours: 1);
     super.initState();
   }
 

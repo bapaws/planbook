@@ -22,17 +22,15 @@ class TaskDetailRepeatView extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     return TaskDetailSliverTile(
-      onPressed: () {
+      onPressed: () async {
         final bloc = context.read<TaskDetailBloc>();
-        context.router.push(
-          TaskRecurrenceRoute(
-            onRecurrenceRuleChanged: (recurrenceRule) {
-              bloc.add(
-                TaskDetailRecurrenceRuleChanged(
-                  recurrenceRule: recurrenceRule,
-                ),
-              );
-            },
+        final recurrenceRule = await context.router.push(
+          TaskRecurrenceRoute(),
+        );
+        if (recurrenceRule is! RecurrenceRule || !context.mounted) return;
+        bloc.add(
+          TaskDetailRecurrenceRuleChanged(
+            recurrenceRule: recurrenceRule,
           ),
         );
       },

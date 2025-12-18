@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/view/app_empty_task_view.dart';
+import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -48,22 +48,24 @@ class _TaskInboxPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocSelector<TaskInboxBloc, TaskInboxState, bool>(
       selector: (state) => state.count == 0,
-      builder: (context, isEmpty) =>
-          BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
-            selector: (state) => state.viewType,
-            builder: (context, viewType) => AnimatedSwitcher(
-              duration: Durations.medium1,
-              child: isEmpty
-                  ? const AppEmptyTaskView()
-                  : switch (viewType) {
-                      RootTaskViewType.list => const _TaskInboxListPage(),
-                      RootTaskViewType.priority => TaskPriorityPage(
-                        mode: TaskListMode.inbox,
-                        isCompleted: context.read<RootTaskBloc>().isCompleted,
-                      ),
-                    },
-            ),
-          ),
+      builder: (context, isEmpty) => AnimatedSwitcher(
+        duration: Durations.medium1,
+        child: isEmpty
+            ? const AppEmptyTaskView()
+            : BlocBuilder<RootTaskBloc, RootTaskState>(
+                buildWhen: (previous, current) =>
+                    previous.viewType != current.viewType ||
+                    previous.priorityStyle != current.priorityStyle,
+                builder: (context, state) => switch (state.viewType) {
+                  RootTaskViewType.list => const _TaskInboxListPage(),
+                  RootTaskViewType.priority => TaskPriorityPage(
+                    style: state.priorityStyle,
+                    mode: TaskListMode.inbox,
+                    isCompleted: context.read<RootTaskBloc>().isCompleted,
+                  ),
+                },
+              ),
+      ),
     );
   }
 }

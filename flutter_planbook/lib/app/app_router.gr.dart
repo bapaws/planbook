@@ -142,12 +142,11 @@ class FeedbackRoute extends _i45.PageRouteInfo<void> {
 class JournalDayRoute extends _i45.PageRouteInfo<JournalDayRouteArgs> {
   JournalDayRoute({
     required _i46.Jiffy date,
-    required double scale,
     _i47.Key? key,
     List<_i45.PageRouteInfo>? children,
   }) : super(
          JournalDayRoute.name,
-         args: JournalDayRouteArgs(date: date, scale: scale, key: key),
+         args: JournalDayRouteArgs(date: date, key: key),
          initialChildren: children,
        );
 
@@ -157,42 +156,32 @@ class JournalDayRoute extends _i45.PageRouteInfo<JournalDayRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<JournalDayRouteArgs>();
-      return _i4.JournalDayPage(
-        date: args.date,
-        scale: args.scale,
-        key: args.key,
-      );
+      return _i4.JournalDayPage(date: args.date, key: args.key);
     },
   );
 }
 
 class JournalDayRouteArgs {
-  const JournalDayRouteArgs({
-    required this.date,
-    required this.scale,
-    this.key,
-  });
+  const JournalDayRouteArgs({required this.date, this.key});
 
   final _i46.Jiffy date;
-
-  final double scale;
 
   final _i47.Key? key;
 
   @override
   String toString() {
-    return 'JournalDayRouteArgs{date: $date, scale: $scale, key: $key}';
+    return 'JournalDayRouteArgs{date: $date, key: $key}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! JournalDayRouteArgs) return false;
-    return date == other.date && scale == other.scale && key == other.key;
+    return date == other.date && key == other.key;
   }
 
   @override
-  int get hashCode => date.hashCode ^ scale.hashCode ^ key.hashCode;
+  int get hashCode => date.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -535,18 +524,51 @@ class NoteTagRouteArgs {
 
 /// generated route for
 /// [_i17.NoteTimelinePage]
-class NoteTimelineRoute extends _i45.PageRouteInfo<void> {
-  const NoteTimelineRoute({List<_i45.PageRouteInfo>? children})
-    : super(NoteTimelineRoute.name, initialChildren: children);
+class NoteTimelineRoute extends _i45.PageRouteInfo<NoteTimelineRouteArgs> {
+  NoteTimelineRoute({
+    _i47.Key? key,
+    _i48.NoteListMode mode = _i48.NoteListMode.all,
+    List<_i45.PageRouteInfo>? children,
+  }) : super(
+         NoteTimelineRoute.name,
+         args: NoteTimelineRouteArgs(key: key, mode: mode),
+         initialChildren: children,
+       );
 
   static const String name = 'NoteTimelineRoute';
 
   static _i45.PageInfo page = _i45.PageInfo(
     name,
     builder: (data) {
-      return const _i17.NoteTimelinePage();
+      final args = data.argsAs<NoteTimelineRouteArgs>(
+        orElse: () => const NoteTimelineRouteArgs(),
+      );
+      return _i17.NoteTimelinePage(key: args.key, mode: args.mode);
     },
   );
+}
+
+class NoteTimelineRouteArgs {
+  const NoteTimelineRouteArgs({this.key, this.mode = _i48.NoteListMode.all});
+
+  final _i47.Key? key;
+
+  final _i48.NoteListMode mode;
+
+  @override
+  String toString() {
+    return 'NoteTimelineRouteArgs{key: $key, mode: $mode}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! NoteTimelineRouteArgs) return false;
+    return key == other.key && mode == other.mode;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ mode.hashCode;
 }
 
 /// generated route for
@@ -1060,9 +1082,6 @@ class TaskDurationRoute extends _i45.PageRouteInfo<TaskDurationRouteArgs> {
     required _i46.Jiffy? startAt,
     required _i46.Jiffy? endAt,
     required bool isAllDay,
-    required _i50.ValueChanged<bool> onIsAllDayChanged,
-    required _i50.ValueChanged<_i46.Jiffy?> onStartAtChanged,
-    required _i50.ValueChanged<_i46.Jiffy?> onEndAtChanged,
     _i50.Key? key,
     List<_i45.PageRouteInfo>? children,
   }) : super(
@@ -1071,9 +1090,6 @@ class TaskDurationRoute extends _i45.PageRouteInfo<TaskDurationRouteArgs> {
            startAt: startAt,
            endAt: endAt,
            isAllDay: isAllDay,
-           onIsAllDayChanged: onIsAllDayChanged,
-           onStartAtChanged: onStartAtChanged,
-           onEndAtChanged: onEndAtChanged,
            key: key,
          ),
          initialChildren: children,
@@ -1089,9 +1105,6 @@ class TaskDurationRoute extends _i45.PageRouteInfo<TaskDurationRouteArgs> {
         startAt: args.startAt,
         endAt: args.endAt,
         isAllDay: args.isAllDay,
-        onIsAllDayChanged: args.onIsAllDayChanged,
-        onStartAtChanged: args.onStartAtChanged,
-        onEndAtChanged: args.onEndAtChanged,
         key: args.key,
       );
     },
@@ -1103,9 +1116,6 @@ class TaskDurationRouteArgs {
     required this.startAt,
     required this.endAt,
     required this.isAllDay,
-    required this.onIsAllDayChanged,
-    required this.onStartAtChanged,
-    required this.onEndAtChanged,
     this.key,
   });
 
@@ -1115,17 +1125,11 @@ class TaskDurationRouteArgs {
 
   final bool isAllDay;
 
-  final _i50.ValueChanged<bool> onIsAllDayChanged;
-
-  final _i50.ValueChanged<_i46.Jiffy?> onStartAtChanged;
-
-  final _i50.ValueChanged<_i46.Jiffy?> onEndAtChanged;
-
   final _i50.Key? key;
 
   @override
   String toString() {
-    return 'TaskDurationRouteArgs{startAt: $startAt, endAt: $endAt, isAllDay: $isAllDay, onIsAllDayChanged: $onIsAllDayChanged, onStartAtChanged: $onStartAtChanged, onEndAtChanged: $onEndAtChanged, key: $key}';
+    return 'TaskDurationRouteArgs{startAt: $startAt, endAt: $endAt, isAllDay: $isAllDay, key: $key}';
   }
 
   @override
@@ -1135,21 +1139,12 @@ class TaskDurationRouteArgs {
     return startAt == other.startAt &&
         endAt == other.endAt &&
         isAllDay == other.isAllDay &&
-        onIsAllDayChanged == other.onIsAllDayChanged &&
-        onStartAtChanged == other.onStartAtChanged &&
-        onEndAtChanged == other.onEndAtChanged &&
         key == other.key;
   }
 
   @override
   int get hashCode =>
-      startAt.hashCode ^
-      endAt.hashCode ^
-      isAllDay.hashCode ^
-      onIsAllDayChanged.hashCode ^
-      onStartAtChanged.hashCode ^
-      onEndAtChanged.hashCode ^
-      key.hashCode;
+      startAt.hashCode ^ endAt.hashCode ^ isAllDay.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -1424,7 +1419,6 @@ class TaskPriorityPickerRouteArgs {
 /// [_i42.TaskRecurrencePage]
 class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
   TaskRecurrenceRoute({
-    required _i50.ValueChanged<_i54.RecurrenceRule?> onRecurrenceRuleChanged,
     _i46.Jiffy? taskDate,
     _i54.RecurrenceRule? initialRecurrenceRule,
     _i50.Key? key,
@@ -1432,7 +1426,6 @@ class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
   }) : super(
          TaskRecurrenceRoute.name,
          args: TaskRecurrenceRouteArgs(
-           onRecurrenceRuleChanged: onRecurrenceRuleChanged,
            taskDate: taskDate,
            initialRecurrenceRule: initialRecurrenceRule,
            key: key,
@@ -1445,9 +1438,10 @@ class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
   static _i45.PageInfo page = _i45.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<TaskRecurrenceRouteArgs>();
+      final args = data.argsAs<TaskRecurrenceRouteArgs>(
+        orElse: () => const TaskRecurrenceRouteArgs(),
+      );
       return _i42.TaskRecurrencePage(
-        onRecurrenceRuleChanged: args.onRecurrenceRuleChanged,
         taskDate: args.taskDate,
         initialRecurrenceRule: args.initialRecurrenceRule,
         key: args.key,
@@ -1458,13 +1452,10 @@ class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
 
 class TaskRecurrenceRouteArgs {
   const TaskRecurrenceRouteArgs({
-    required this.onRecurrenceRuleChanged,
     this.taskDate,
     this.initialRecurrenceRule,
     this.key,
   });
-
-  final _i50.ValueChanged<_i54.RecurrenceRule?> onRecurrenceRuleChanged;
 
   final _i46.Jiffy? taskDate;
 
@@ -1474,25 +1465,21 @@ class TaskRecurrenceRouteArgs {
 
   @override
   String toString() {
-    return 'TaskRecurrenceRouteArgs{onRecurrenceRuleChanged: $onRecurrenceRuleChanged, taskDate: $taskDate, initialRecurrenceRule: $initialRecurrenceRule, key: $key}';
+    return 'TaskRecurrenceRouteArgs{taskDate: $taskDate, initialRecurrenceRule: $initialRecurrenceRule, key: $key}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! TaskRecurrenceRouteArgs) return false;
-    return onRecurrenceRuleChanged == other.onRecurrenceRuleChanged &&
-        taskDate == other.taskDate &&
+    return taskDate == other.taskDate &&
         initialRecurrenceRule == other.initialRecurrenceRule &&
         key == other.key;
   }
 
   @override
   int get hashCode =>
-      onRecurrenceRuleChanged.hashCode ^
-      taskDate.hashCode ^
-      initialRecurrenceRule.hashCode ^
-      key.hashCode;
+      taskDate.hashCode ^ initialRecurrenceRule.hashCode ^ key.hashCode;
 }
 
 /// generated route for

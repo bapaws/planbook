@@ -1,8 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' as material;
+import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/tag/supabase_tag_api.dart';
 import 'package:uuid/uuid.dart';
@@ -30,7 +37,7 @@ class TagsRepository {
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
   }) async* {
-    await _syncTags();
+    unawaited(_syncTags());
     yield* _tagApi.getAllTags(
       notIncludeTagIds: notIncludeTagIds,
       userId: userId,
@@ -78,7 +85,7 @@ class TagsRepository {
       parentId: parentTag?.id,
       userId: userId,
       order: 0,
-      level: (parentTag?.level ?? 0) + 1,
+      level: (parentTag?.level ?? -1) + 1,
       createdAt: Jiffy.now().toUtc(),
     );
     await _supabaseTagApi.create(tag: tag);
@@ -100,7 +107,7 @@ class TagsRepository {
       lightColorScheme: Value(lightColorScheme),
       darkColorScheme: Value(darkColorScheme),
       parentId: Value(parentTag?.id),
-      level: (parentTag?.level ?? 0) + 1,
+      level: (parentTag?.level ?? -1) + 1,
       updatedAt: Value(Jiffy.now().toUtc()),
     );
     await _supabaseTagApi.update(tag: newTag);
@@ -115,5 +122,34 @@ class TagsRepository {
 
   Future<void> deleteAllTags() async {
     await _tagApi.deleteAllTags();
+  }
+
+  Future<void> createDefaultTags({required String languageCode}) async {
+    final tagJsonString = await rootBundle.loadString(
+      'assets/files/${kDebugMode ? 'demo_' : ''}tags_$languageCode.json',
+    );
+    final tagJson = jsonDecode(tagJsonString) as List<dynamic>;
+
+    const uuid = Uuid();
+    for (final json in tagJson) {
+      final tag = Tag.fromJson(json as Map<String, dynamic>);
+      final color = tag.color?.toColor ?? material.Colors.yellow;
+
+      await createTag(
+        id: kDebugMode ? tag.id : uuid.v4(),
+        name: tag.name,
+        lightColorScheme: ColorScheme.fromColorScheme(
+          material.ColorScheme.fromSeed(
+            seedColor: color,
+          ),
+        ),
+        darkColorScheme: ColorScheme.fromColorScheme(
+          material.ColorScheme.fromSeed(
+            seedColor: color,
+            brightness: material.Brightness.dark,
+          ),
+        ),
+      );
+    }
   }
 }
