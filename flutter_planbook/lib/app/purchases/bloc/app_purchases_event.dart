@@ -11,6 +11,10 @@ class AppPurchasesSubscriptionRequested extends AppPurchasesEvent {
   const AppPurchasesSubscriptionRequested();
 }
 
+class AppPurchasesUserRequested extends AppPurchasesEvent {
+  const AppPurchasesUserRequested();
+}
+
 class AppPurchasesPackageRequested extends AppPurchasesEvent {
   const AppPurchasesPackageRequested();
 }

@@ -9,7 +9,6 @@ class SignHomeSloganView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final query = MediaQuery.of(context);
     final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,

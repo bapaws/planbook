@@ -1,7 +1,8 @@
-import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:purchases_flutter/models/package_wrapper.dart';
@@ -14,11 +15,14 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
     required TagsRepository tagsRepository,
+    required UsersRepository usersRepository,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _tagsRepository = tagsRepository,
+       _usersRepository = usersRepository,
        super(const AppPurchasesState()) {
     on<AppPurchasesSubscriptionRequested>(_onSubscriptionRequested);
+    on<AppPurchasesUserRequested>(_onUserRequested);
     on<AppPurchasesPackageRequested>(_onPackageRequested);
     on<AppPurchasesRestored>(_onRestored);
     on<AppPurchasesLogin>(_onLogin);
@@ -31,6 +35,8 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
   final TagsRepository _tagsRepository;
+
+  final UsersRepository _usersRepository;
 
   bool get isPremium => state.isPremium;
   bool get isLifetime => state.isLifetime;
@@ -74,6 +80,23 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         }
         return state.copyWith(
           activeProductIdentifier: info?.activeProductIdentifier,
+        );
+      },
+    );
+  }
+
+  Future<void> _onUserRequested(
+    AppPurchasesUserRequested event,
+    Emitter<AppPurchasesState> emit,
+  ) async {
+    await emit.forEach(
+      _usersRepository.onAuthStateChange,
+      onData: (user) {
+        final id = user?.session?.user.id;
+        if (id == null || id == state.userId) return state;
+        add(AppPurchasesLogin(userId: id));
+        return state.copyWith(
+          userId: id,
         );
       },
     );
@@ -201,4 +224,8 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
       ),
     );
   }
+}
+
+extension AppPurchasesBlocX on BuildContext {
+  bool get isPremium => read<AppPurchasesBloc>().state.isPremium;
 }

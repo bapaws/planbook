@@ -7,6 +7,7 @@ class AppPurchasesState extends Equatable {
     this.activeProductIdentifier,
     this.activePackage,
     this.originalPackages = const [],
+    this.userId,
   });
 
   final String? activeProductIdentifier;
@@ -17,20 +18,23 @@ class AppPurchasesState extends Equatable {
 
   final List<Package> originalPackages;
 
+  final String? userId;
+
   bool get isPremium => activeProductIdentifier != null;
   bool get isLifetime =>
       activeProductIdentifier?.toLowerCase().contains('lifetime') ?? false;
 
   @override
   List<Object?> get props => [
-        isPremium,
-        isLifetime,
-        activeProductIdentifier,
-        selectedPackage,
-        availablePackages,
-        activePackage,
-        originalPackages,
-      ];
+    isPremium,
+    isLifetime,
+    activeProductIdentifier,
+    selectedPackage,
+    availablePackages,
+    activePackage,
+    originalPackages,
+    userId,
+  ];
 
   AppPurchasesState copyWith({
     Package? selectedPackage,
@@ -38,6 +42,7 @@ class AppPurchasesState extends Equatable {
     String? activeProductIdentifier,
     Package? activePackage,
     List<Package>? originalPackages,
+    String? userId,
   }) {
     return AppPurchasesState(
       selectedPackage: selectedPackage ?? this.selectedPackage,
@@ -46,6 +51,7 @@ class AppPurchasesState extends Equatable {
           activeProductIdentifier ?? this.activeProductIdentifier,
       activePackage: activePackage ?? this.activePackage,
       originalPackages: originalPackages ?? this.originalPackages,
+      userId: userId ?? this.userId,
     );
   }
 }

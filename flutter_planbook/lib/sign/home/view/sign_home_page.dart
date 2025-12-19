@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
-import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:flutter_planbook/sign/home/view/sign_home_slogan_view.dart';
 import 'package:flutter_planbook/sign/in/cubit/sign_in_cubit.dart';
@@ -39,7 +38,6 @@ class _SignHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     final theme = Theme.of(context);
     final query = MediaQuery.of(context);
     return BlocBuilder<SignHomeCubit, SignHomeState>(
@@ -50,14 +48,8 @@ class _SignHomePage extends StatelessWidget {
             FocusScope.of(context).unfocus();
           },
           child: AppScaffold(
-            // appBar: AppBar(
-            //   leading: const NavigationBarCloseButton(),
-            //   title: Text(context.l10n.appName.toUpperCase()),
-            //   forceMaterialTransparency: true,
-            // ),
             body: Stack(
               children: [
-                // SizedBox(height: query.padding.top),
                 Positioned(
                   top: query.padding.top,
                   left: 0,
