@@ -108,6 +108,7 @@ Future<Widget> _initApp() async {
                   usersRepository: context.read(),
                 )
                 ..add(const AppPurchasesSubscriptionRequested())
+                ..add(const AppPurchasesUserRequested())
                 ..add(const AppPurchasesPackageRequested()),
         ),
         BlocProvider(

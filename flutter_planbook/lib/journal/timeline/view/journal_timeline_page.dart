@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/journal/timeline/bloc/journal_timeline_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -49,10 +50,7 @@ class JournalTimelinePage extends StatelessWidget {
 
   Widget _buildTaskListTile(BuildContext context, TaskEntity task) {
     final completedAt = task.activity?.completedAt;
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: task.priority.color,
-      brightness: Theme.of(context).brightness,
-    );
+    final colorScheme = task.priority.getColorScheme(context);
     return Container(
       decoration: BoxDecoration(
         border: Border(

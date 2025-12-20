@@ -9,10 +9,10 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i45;
-import 'package:collection/collection.dart' as _i52;
-import 'package:flutter/cupertino.dart' as _i50;
-import 'package:flutter/material.dart' as _i47;
+import 'package:auto_route/auto_route.dart' as _i47;
+import 'package:collection/collection.dart' as _i54;
+import 'package:flutter/cupertino.dart' as _i51;
+import 'package:flutter/material.dart' as _i49;
 import 'package:flutter_planbook/app/purchases/view/app_purchases_page.dart'
     as _i2;
 import 'package:flutter_planbook/journal/day/view/journal_day_page.dart' as _i4;
@@ -27,77 +27,79 @@ import 'package:flutter_planbook/mine/password/view/mine_password_page.dart'
 import 'package:flutter_planbook/mine/phone/view/mine_phone_page.dart' as _i10;
 import 'package:flutter_planbook/mine/profile/view/mine_profile_page.dart'
     as _i11;
+import 'package:flutter_planbook/note/focus/view/note_focus_page.dart' as _i12;
 import 'package:flutter_planbook/note/gallery/view/note_gallery_page.dart'
-    as _i12;
-import 'package:flutter_planbook/note/list/view/note_list_page.dart' as _i13;
+    as _i13;
+import 'package:flutter_planbook/note/list/view/note_list_page.dart' as _i14;
 import 'package:flutter_planbook/note/new/view/note_new_fullscreen_page.dart'
-    as _i14;
-import 'package:flutter_planbook/note/new/view/note_new_page.dart' as _i15;
-import 'package:flutter_planbook/note/tag/view/note_tag_page.dart' as _i16;
+    as _i15;
+import 'package:flutter_planbook/note/new/view/note_new_page.dart' as _i16;
+import 'package:flutter_planbook/note/tag/view/note_tag_page.dart' as _i17;
 import 'package:flutter_planbook/note/timeline/view/note_timeline_page.dart'
-    as _i17;
-import 'package:flutter_planbook/root/home/view/root_home_page.dart' as _i18;
+    as _i18;
+import 'package:flutter_planbook/root/home/view/root_home_page.dart' as _i19;
 import 'package:flutter_planbook/root/journal/view/root_journal_page.dart'
-    as _i19;
-import 'package:flutter_planbook/root/note/view/root_note_page.dart' as _i20;
-import 'package:flutter_planbook/root/task/view/root_task_page.dart' as _i21;
+    as _i20;
+import 'package:flutter_planbook/root/note/view/root_note_page.dart' as _i21;
+import 'package:flutter_planbook/root/task/view/root_task_page.dart' as _i22;
 import 'package:flutter_planbook/settings/about/view/about_page.dart' as _i1;
 import 'package:flutter_planbook/settings/background/view/settings_background_page.dart'
-    as _i22;
-import 'package:flutter_planbook/settings/color/view/settings_seed_color_page.dart'
-    as _i26;
-import 'package:flutter_planbook/settings/dark/view/settings_dark_mode_page.dart'
     as _i23;
+import 'package:flutter_planbook/settings/color/view/settings_seed_color_page.dart'
+    as _i27;
+import 'package:flutter_planbook/settings/dark/view/settings_dark_mode_page.dart'
+    as _i24;
 import 'package:flutter_planbook/settings/feedback/view/feedback_page.dart'
     as _i3;
 import 'package:flutter_planbook/settings/home/view/settings_home_page.dart'
-    as _i24;
-import 'package:flutter_planbook/settings/icon/view/settings_icon_page.dart'
     as _i25;
+import 'package:flutter_planbook/settings/icon/view/settings_icon_page.dart'
+    as _i26;
 import 'package:flutter_planbook/settings/task/view/settings_task_page.dart'
-    as _i27;
-import 'package:flutter_planbook/sign/home/view/sign_home_page.dart' as _i28;
-import 'package:flutter_planbook/tag/list/bloc/tag_list_bloc.dart' as _i51;
-import 'package:flutter_planbook/tag/list/view/tag_list_page.dart' as _i29;
-import 'package:flutter_planbook/tag/new/view/tag_new_page.dart' as _i30;
-import 'package:flutter_planbook/tag/picker/view/tag_picker_page.dart' as _i31;
+    as _i28;
+import 'package:flutter_planbook/sign/home/view/sign_home_page.dart' as _i29;
+import 'package:flutter_planbook/tag/list/bloc/tag_list_bloc.dart' as _i53;
+import 'package:flutter_planbook/tag/list/view/tag_list_page.dart' as _i30;
+import 'package:flutter_planbook/tag/new/view/tag_new_page.dart' as _i31;
+import 'package:flutter_planbook/tag/picker/view/tag_picker_page.dart' as _i32;
 import 'package:flutter_planbook/task/detail/view/task_detail_page.dart'
-    as _i33;
-import 'package:flutter_planbook/task/duration/view/task_duration_page.dart'
     as _i34;
-import 'package:flutter_planbook/task/inbox/view/task_inbox_page.dart' as _i35;
-import 'package:flutter_planbook/task/list/view/task_list_page.dart' as _i36;
-import 'package:flutter_planbook/task/new/view/task_new_page.dart' as _i37;
+import 'package:flutter_planbook/task/duration/view/task_duration_page.dart'
+    as _i35;
+import 'package:flutter_planbook/task/inbox/view/task_inbox_page.dart' as _i36;
+import 'package:flutter_planbook/task/list/view/task_list_page.dart' as _i37;
+import 'package:flutter_planbook/task/new/view/task_new_page.dart' as _i38;
 import 'package:flutter_planbook/task/overdue/view/task_overdue_page.dart'
-    as _i39;
-import 'package:flutter_planbook/task/picker/view/task_date_picker_page.dart'
-    as _i32;
-import 'package:flutter_planbook/task/picker/view/task_picker_page.dart'
     as _i40;
-import 'package:flutter_planbook/task/picker/view/task_priority_picker_page.dart'
+import 'package:flutter_planbook/task/picker/view/task_date_picker_page.dart'
+    as _i33;
+import 'package:flutter_planbook/task/picker/view/task_picker_page.dart'
     as _i41;
-import 'package:flutter_planbook/task/recurrence/view/task_recurrence_ends_page.dart'
-    as _i38;
-import 'package:flutter_planbook/task/recurrence/view/task_recurrence_page.dart'
+import 'package:flutter_planbook/task/picker/view/task_priority_picker_page.dart'
     as _i42;
-import 'package:flutter_planbook/task/tag/view/task_tag_page.dart' as _i43;
-import 'package:flutter_planbook/task/today/view/task_today_page.dart' as _i44;
-import 'package:jiffy/jiffy.dart' as _i46;
-import 'package:planbook_api/database/recurrence_rule.dart' as _i54;
-import 'package:planbook_api/database/task_priority.dart' as _i55;
-import 'package:planbook_api/entity/tag_entity.dart' as _i49;
-import 'package:planbook_api/planbook_api.dart' as _i53;
-import 'package:planbook_repository/planbook_repository.dart' as _i48;
+import 'package:flutter_planbook/task/recurrence/view/task_recurrence_ends_page.dart'
+    as _i39;
+import 'package:flutter_planbook/task/recurrence/view/task_recurrence_page.dart'
+    as _i43;
+import 'package:flutter_planbook/task/tag/view/task_tag_page.dart' as _i44;
+import 'package:flutter_planbook/task/today/view/task_today_page.dart' as _i45;
+import 'package:flutter_planbook/task/week/view/task_week_page.dart' as _i46;
+import 'package:jiffy/jiffy.dart' as _i48;
+import 'package:planbook_api/database/recurrence_rule.dart' as _i56;
+import 'package:planbook_api/database/task_priority.dart' as _i57;
+import 'package:planbook_api/entity/tag_entity.dart' as _i52;
+import 'package:planbook_api/planbook_api.dart' as _i55;
+import 'package:planbook_repository/planbook_repository.dart' as _i50;
 
 /// generated route for
 /// [_i1.AboutPage]
-class AboutRoute extends _i45.PageRouteInfo<void> {
-  const AboutRoute({List<_i45.PageRouteInfo>? children})
+class AboutRoute extends _i47.PageRouteInfo<void> {
+  const AboutRoute({List<_i47.PageRouteInfo>? children})
     : super(AboutRoute.name, initialChildren: children);
 
   static const String name = 'AboutRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i1.AboutPage();
@@ -107,13 +109,13 @@ class AboutRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.AppPurchasesPage]
-class AppPurchasesRoute extends _i45.PageRouteInfo<void> {
-  const AppPurchasesRoute({List<_i45.PageRouteInfo>? children})
+class AppPurchasesRoute extends _i47.PageRouteInfo<void> {
+  const AppPurchasesRoute({List<_i47.PageRouteInfo>? children})
     : super(AppPurchasesRoute.name, initialChildren: children);
 
   static const String name = 'AppPurchasesRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i2.AppPurchasesPage();
@@ -123,13 +125,13 @@ class AppPurchasesRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.FeedbackPage]
-class FeedbackRoute extends _i45.PageRouteInfo<void> {
-  const FeedbackRoute({List<_i45.PageRouteInfo>? children})
+class FeedbackRoute extends _i47.PageRouteInfo<void> {
+  const FeedbackRoute({List<_i47.PageRouteInfo>? children})
     : super(FeedbackRoute.name, initialChildren: children);
 
   static const String name = 'FeedbackRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i3.FeedbackPage();
@@ -139,11 +141,11 @@ class FeedbackRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i4.JournalDayPage]
-class JournalDayRoute extends _i45.PageRouteInfo<JournalDayRouteArgs> {
+class JournalDayRoute extends _i47.PageRouteInfo<JournalDayRouteArgs> {
   JournalDayRoute({
-    required _i46.Jiffy date,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i48.Jiffy date,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          JournalDayRoute.name,
          args: JournalDayRouteArgs(date: date, key: key),
@@ -152,7 +154,7 @@ class JournalDayRoute extends _i45.PageRouteInfo<JournalDayRouteArgs> {
 
   static const String name = 'JournalDayRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<JournalDayRouteArgs>();
@@ -164,9 +166,9 @@ class JournalDayRoute extends _i45.PageRouteInfo<JournalDayRouteArgs> {
 class JournalDayRouteArgs {
   const JournalDayRouteArgs({required this.date, this.key});
 
-  final _i46.Jiffy date;
+  final _i48.Jiffy date;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -186,11 +188,11 @@ class JournalDayRouteArgs {
 
 /// generated route for
 /// [_i5.JournalNotePage]
-class JournalNoteRoute extends _i45.PageRouteInfo<JournalNoteRouteArgs> {
+class JournalNoteRoute extends _i47.PageRouteInfo<JournalNoteRouteArgs> {
   JournalNoteRoute({
-    required _i46.Jiffy date,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i48.Jiffy date,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          JournalNoteRoute.name,
          args: JournalNoteRouteArgs(date: date, key: key),
@@ -199,7 +201,7 @@ class JournalNoteRoute extends _i45.PageRouteInfo<JournalNoteRouteArgs> {
 
   static const String name = 'JournalNoteRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<JournalNoteRouteArgs>();
@@ -211,9 +213,9 @@ class JournalNoteRoute extends _i45.PageRouteInfo<JournalNoteRouteArgs> {
 class JournalNoteRouteArgs {
   const JournalNoteRouteArgs({required this.date, this.key});
 
-  final _i46.Jiffy date;
+  final _i48.Jiffy date;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -233,13 +235,13 @@ class JournalNoteRouteArgs {
 
 /// generated route for
 /// [_i6.JournalPriorityPage]
-class JournalPriorityRoute extends _i45.PageRouteInfo<void> {
-  const JournalPriorityRoute({List<_i45.PageRouteInfo>? children})
+class JournalPriorityRoute extends _i47.PageRouteInfo<void> {
+  const JournalPriorityRoute({List<_i47.PageRouteInfo>? children})
     : super(JournalPriorityRoute.name, initialChildren: children);
 
   static const String name = 'JournalPriorityRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i6.JournalPriorityPage();
@@ -249,13 +251,13 @@ class JournalPriorityRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i7.MineDeletePage]
-class MineDeleteRoute extends _i45.PageRouteInfo<void> {
-  const MineDeleteRoute({List<_i45.PageRouteInfo>? children})
+class MineDeleteRoute extends _i47.PageRouteInfo<void> {
+  const MineDeleteRoute({List<_i47.PageRouteInfo>? children})
     : super(MineDeleteRoute.name, initialChildren: children);
 
   static const String name = 'MineDeleteRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i7.MineDeletePage();
@@ -265,13 +267,13 @@ class MineDeleteRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i8.MineEmailPage]
-class MineEmailRoute extends _i45.PageRouteInfo<void> {
-  const MineEmailRoute({List<_i45.PageRouteInfo>? children})
+class MineEmailRoute extends _i47.PageRouteInfo<void> {
+  const MineEmailRoute({List<_i47.PageRouteInfo>? children})
     : super(MineEmailRoute.name, initialChildren: children);
 
   static const String name = 'MineEmailRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i8.MineEmailPage();
@@ -281,13 +283,13 @@ class MineEmailRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i9.MinePasswordPage]
-class MinePasswordRoute extends _i45.PageRouteInfo<void> {
-  const MinePasswordRoute({List<_i45.PageRouteInfo>? children})
+class MinePasswordRoute extends _i47.PageRouteInfo<void> {
+  const MinePasswordRoute({List<_i47.PageRouteInfo>? children})
     : super(MinePasswordRoute.name, initialChildren: children);
 
   static const String name = 'MinePasswordRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i9.MinePasswordPage();
@@ -297,13 +299,13 @@ class MinePasswordRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i10.MinePhonePage]
-class MinePhoneRoute extends _i45.PageRouteInfo<void> {
-  const MinePhoneRoute({List<_i45.PageRouteInfo>? children})
+class MinePhoneRoute extends _i47.PageRouteInfo<void> {
+  const MinePhoneRoute({List<_i47.PageRouteInfo>? children})
     : super(MinePhoneRoute.name, initialChildren: children);
 
   static const String name = 'MinePhoneRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i10.MinePhonePage();
@@ -313,13 +315,13 @@ class MinePhoneRoute extends _i45.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i11.MineProfilePage]
-class MineProfileRoute extends _i45.PageRouteInfo<void> {
-  const MineProfileRoute({List<_i45.PageRouteInfo>? children})
+class MineProfileRoute extends _i47.PageRouteInfo<void> {
+  const MineProfileRoute({List<_i47.PageRouteInfo>? children})
     : super(MineProfileRoute.name, initialChildren: children);
 
   static const String name = 'MineProfileRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       return const _i11.MineProfilePage();
@@ -328,45 +330,117 @@ class MineProfileRoute extends _i45.PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [_i12.NoteGalleryPage]
-class NoteGalleryRoute extends _i45.PageRouteInfo<void> {
-  const NoteGalleryRoute({List<_i45.PageRouteInfo>? children})
+/// [_i12.NoteFocusPage]
+class NoteFocusRoute extends _i47.PageRouteInfo<NoteFocusRouteArgs> {
+  NoteFocusRoute({
+    required _i50.NoteType type,
+    required _i50.Jiffy focusAt,
+    _i50.Note? initialNote,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
+  }) : super(
+         NoteFocusRoute.name,
+         args: NoteFocusRouteArgs(
+           type: type,
+           focusAt: focusAt,
+           initialNote: initialNote,
+           key: key,
+         ),
+         initialChildren: children,
+       );
+
+  static const String name = 'NoteFocusRoute';
+
+  static _i47.PageInfo page = _i47.PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<NoteFocusRouteArgs>();
+      return _i12.NoteFocusPage(
+        type: args.type,
+        focusAt: args.focusAt,
+        initialNote: args.initialNote,
+        key: args.key,
+      );
+    },
+  );
+}
+
+class NoteFocusRouteArgs {
+  const NoteFocusRouteArgs({
+    required this.type,
+    required this.focusAt,
+    this.initialNote,
+    this.key,
+  });
+
+  final _i50.NoteType type;
+
+  final _i50.Jiffy focusAt;
+
+  final _i50.Note? initialNote;
+
+  final _i51.Key? key;
+
+  @override
+  String toString() {
+    return 'NoteFocusRouteArgs{type: $type, focusAt: $focusAt, initialNote: $initialNote, key: $key}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! NoteFocusRouteArgs) return false;
+    return type == other.type &&
+        focusAt == other.focusAt &&
+        initialNote == other.initialNote &&
+        key == other.key;
+  }
+
+  @override
+  int get hashCode =>
+      type.hashCode ^ focusAt.hashCode ^ initialNote.hashCode ^ key.hashCode;
+}
+
+/// generated route for
+/// [_i13.NoteGalleryPage]
+class NoteGalleryRoute extends _i47.PageRouteInfo<void> {
+  const NoteGalleryRoute({List<_i47.PageRouteInfo>? children})
     : super(NoteGalleryRoute.name, initialChildren: children);
 
   static const String name = 'NoteGalleryRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i12.NoteGalleryPage();
+      return const _i13.NoteGalleryPage();
     },
   );
 }
 
 /// generated route for
-/// [_i13.NoteListPage]
-class NoteListRoute extends _i45.PageRouteInfo<void> {
-  const NoteListRoute({List<_i45.PageRouteInfo>? children})
+/// [_i14.NoteListPage]
+class NoteListRoute extends _i47.PageRouteInfo<void> {
+  const NoteListRoute({List<_i47.PageRouteInfo>? children})
     : super(NoteListRoute.name, initialChildren: children);
 
   static const String name = 'NoteListRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i13.NoteListPage();
+      return const _i14.NoteListPage();
     },
   );
 }
 
 /// generated route for
-/// [_i14.NoteNewFullscreenPage]
+/// [_i15.NoteNewFullscreenPage]
 class NoteNewFullscreenRoute
-    extends _i45.PageRouteInfo<NoteNewFullscreenRouteArgs> {
+    extends _i47.PageRouteInfo<NoteNewFullscreenRouteArgs> {
   NoteNewFullscreenRoute({
-    _i48.NoteEntity? initialNote,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i50.NoteEntity? initialNote,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          NoteNewFullscreenRoute.name,
          args: NoteNewFullscreenRouteArgs(initialNote: initialNote, key: key),
@@ -375,13 +449,13 @@ class NoteNewFullscreenRoute
 
   static const String name = 'NoteNewFullscreenRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NoteNewFullscreenRouteArgs>(
         orElse: () => const NoteNewFullscreenRouteArgs(),
       );
-      return _i14.NoteNewFullscreenPage(
+      return _i15.NoteNewFullscreenPage(
         initialNote: args.initialNote,
         key: args.key,
       );
@@ -392,9 +466,9 @@ class NoteNewFullscreenRoute
 class NoteNewFullscreenRouteArgs {
   const NoteNewFullscreenRouteArgs({this.initialNote, this.key});
 
-  final _i48.NoteEntity? initialNote;
+  final _i50.NoteEntity? initialNote;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -413,13 +487,13 @@ class NoteNewFullscreenRouteArgs {
 }
 
 /// generated route for
-/// [_i15.NoteNewPage]
-class NoteNewRoute extends _i45.PageRouteInfo<NoteNewRouteArgs> {
+/// [_i16.NoteNewPage]
+class NoteNewRoute extends _i47.PageRouteInfo<NoteNewRouteArgs> {
   NoteNewRoute({
-    _i48.NoteEntity? initialNote,
-    _i48.TaskEntity? initialTask,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i50.NoteEntity? initialNote,
+    _i50.TaskEntity? initialTask,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          NoteNewRoute.name,
          args: NoteNewRouteArgs(
@@ -432,13 +506,13 @@ class NoteNewRoute extends _i45.PageRouteInfo<NoteNewRouteArgs> {
 
   static const String name = 'NoteNewRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NoteNewRouteArgs>(
         orElse: () => const NoteNewRouteArgs(),
       );
-      return _i15.NoteNewPage(
+      return _i16.NoteNewPage(
         initialNote: args.initialNote,
         initialTask: args.initialTask,
         key: args.key,
@@ -450,11 +524,11 @@ class NoteNewRoute extends _i45.PageRouteInfo<NoteNewRouteArgs> {
 class NoteNewRouteArgs {
   const NoteNewRouteArgs({this.initialNote, this.initialTask, this.key});
 
-  final _i48.NoteEntity? initialNote;
+  final _i50.NoteEntity? initialNote;
 
-  final _i48.TaskEntity? initialTask;
+  final _i50.TaskEntity? initialTask;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -476,12 +550,12 @@ class NoteNewRouteArgs {
 }
 
 /// generated route for
-/// [_i16.NoteTagPage]
-class NoteTagRoute extends _i45.PageRouteInfo<NoteTagRouteArgs> {
+/// [_i17.NoteTagPage]
+class NoteTagRoute extends _i47.PageRouteInfo<NoteTagRouteArgs> {
   NoteTagRoute({
-    required _i49.TagEntity tag,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i52.TagEntity tag,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          NoteTagRoute.name,
          args: NoteTagRouteArgs(tag: tag, key: key),
@@ -490,11 +564,11 @@ class NoteTagRoute extends _i45.PageRouteInfo<NoteTagRouteArgs> {
 
   static const String name = 'NoteTagRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NoteTagRouteArgs>();
-      return _i16.NoteTagPage(tag: args.tag, key: args.key);
+      return _i17.NoteTagPage(tag: args.tag, key: args.key);
     },
   );
 }
@@ -502,9 +576,9 @@ class NoteTagRoute extends _i45.PageRouteInfo<NoteTagRouteArgs> {
 class NoteTagRouteArgs {
   const NoteTagRouteArgs({required this.tag, this.key});
 
-  final _i49.TagEntity tag;
+  final _i52.TagEntity tag;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -523,12 +597,12 @@ class NoteTagRouteArgs {
 }
 
 /// generated route for
-/// [_i17.NoteTimelinePage]
-class NoteTimelineRoute extends _i45.PageRouteInfo<NoteTimelineRouteArgs> {
+/// [_i18.NoteTimelinePage]
+class NoteTimelineRoute extends _i47.PageRouteInfo<NoteTimelineRouteArgs> {
   NoteTimelineRoute({
-    _i47.Key? key,
-    _i48.NoteListMode mode = _i48.NoteListMode.all,
-    List<_i45.PageRouteInfo>? children,
+    _i49.Key? key,
+    _i50.NoteListMode mode = _i50.NoteListMode.all,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          NoteTimelineRoute.name,
          args: NoteTimelineRouteArgs(key: key, mode: mode),
@@ -537,23 +611,23 @@ class NoteTimelineRoute extends _i45.PageRouteInfo<NoteTimelineRouteArgs> {
 
   static const String name = 'NoteTimelineRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<NoteTimelineRouteArgs>(
         orElse: () => const NoteTimelineRouteArgs(),
       );
-      return _i17.NoteTimelinePage(key: args.key, mode: args.mode);
+      return _i18.NoteTimelinePage(key: args.key, mode: args.mode);
     },
   );
 }
 
 class NoteTimelineRouteArgs {
-  const NoteTimelineRouteArgs({this.key, this.mode = _i48.NoteListMode.all});
+  const NoteTimelineRouteArgs({this.key, this.mode = _i50.NoteListMode.all});
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
-  final _i48.NoteListMode mode;
+  final _i50.NoteListMode mode;
 
   @override
   String toString() {
@@ -572,217 +646,189 @@ class NoteTimelineRouteArgs {
 }
 
 /// generated route for
-/// [_i18.RootHomePage]
-class RootHomeRoute extends _i45.PageRouteInfo<void> {
-  const RootHomeRoute({List<_i45.PageRouteInfo>? children})
+/// [_i19.RootHomePage]
+class RootHomeRoute extends _i47.PageRouteInfo<void> {
+  const RootHomeRoute({List<_i47.PageRouteInfo>? children})
     : super(RootHomeRoute.name, initialChildren: children);
 
   static const String name = 'RootHomeRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i18.RootHomePage();
+      return const _i19.RootHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i19.RootJournalPage]
-class RootJournalRoute extends _i45.PageRouteInfo<void> {
-  const RootJournalRoute({List<_i45.PageRouteInfo>? children})
+/// [_i20.RootJournalPage]
+class RootJournalRoute extends _i47.PageRouteInfo<void> {
+  const RootJournalRoute({List<_i47.PageRouteInfo>? children})
     : super(RootJournalRoute.name, initialChildren: children);
 
   static const String name = 'RootJournalRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i19.RootJournalPage();
+      return const _i20.RootJournalPage();
     },
   );
 }
 
 /// generated route for
-/// [_i20.RootNotePage]
-class RootNoteRoute extends _i45.PageRouteInfo<void> {
-  const RootNoteRoute({List<_i45.PageRouteInfo>? children})
+/// [_i21.RootNotePage]
+class RootNoteRoute extends _i47.PageRouteInfo<void> {
+  const RootNoteRoute({List<_i47.PageRouteInfo>? children})
     : super(RootNoteRoute.name, initialChildren: children);
 
   static const String name = 'RootNoteRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i20.RootNotePage();
+      return const _i21.RootNotePage();
     },
   );
 }
 
 /// generated route for
-/// [_i21.RootTaskPage]
-class RootTaskRoute extends _i45.PageRouteInfo<RootTaskRouteArgs> {
-  RootTaskRoute({_i50.Key? key, List<_i45.PageRouteInfo>? children})
-    : super(
-        RootTaskRoute.name,
-        args: RootTaskRouteArgs(key: key),
-        initialChildren: children,
-      );
+/// [_i22.RootTaskPage]
+class RootTaskRoute extends _i47.PageRouteInfo<void> {
+  const RootTaskRoute({List<_i47.PageRouteInfo>? children})
+    : super(RootTaskRoute.name, initialChildren: children);
 
   static const String name = 'RootTaskRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<RootTaskRouteArgs>(
-        orElse: () => const RootTaskRouteArgs(),
-      );
-      return _i21.RootTaskPage(key: args.key);
+      return const _i22.RootTaskPage();
     },
   );
 }
 
-class RootTaskRouteArgs {
-  const RootTaskRouteArgs({this.key});
-
-  final _i50.Key? key;
-
-  @override
-  String toString() {
-    return 'RootTaskRouteArgs{key: $key}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! RootTaskRouteArgs) return false;
-    return key == other.key;
-  }
-
-  @override
-  int get hashCode => key.hashCode;
-}
-
 /// generated route for
-/// [_i22.SettingsBackgroundPage]
-class SettingsBackgroundRoute extends _i45.PageRouteInfo<void> {
-  const SettingsBackgroundRoute({List<_i45.PageRouteInfo>? children})
+/// [_i23.SettingsBackgroundPage]
+class SettingsBackgroundRoute extends _i47.PageRouteInfo<void> {
+  const SettingsBackgroundRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsBackgroundRoute.name, initialChildren: children);
 
   static const String name = 'SettingsBackgroundRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i22.SettingsBackgroundPage();
+      return const _i23.SettingsBackgroundPage();
     },
   );
 }
 
 /// generated route for
-/// [_i23.SettingsDarkModePage]
-class SettingsDarkModeRoute extends _i45.PageRouteInfo<void> {
-  const SettingsDarkModeRoute({List<_i45.PageRouteInfo>? children})
+/// [_i24.SettingsDarkModePage]
+class SettingsDarkModeRoute extends _i47.PageRouteInfo<void> {
+  const SettingsDarkModeRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsDarkModeRoute.name, initialChildren: children);
 
   static const String name = 'SettingsDarkModeRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i23.SettingsDarkModePage();
+      return const _i24.SettingsDarkModePage();
     },
   );
 }
 
 /// generated route for
-/// [_i24.SettingsHomePage]
-class SettingsHomeRoute extends _i45.PageRouteInfo<void> {
-  const SettingsHomeRoute({List<_i45.PageRouteInfo>? children})
+/// [_i25.SettingsHomePage]
+class SettingsHomeRoute extends _i47.PageRouteInfo<void> {
+  const SettingsHomeRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsHomeRoute.name, initialChildren: children);
 
   static const String name = 'SettingsHomeRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i24.SettingsHomePage();
+      return const _i25.SettingsHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i25.SettingsIconPage]
-class SettingsIconRoute extends _i45.PageRouteInfo<void> {
-  const SettingsIconRoute({List<_i45.PageRouteInfo>? children})
+/// [_i26.SettingsIconPage]
+class SettingsIconRoute extends _i47.PageRouteInfo<void> {
+  const SettingsIconRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsIconRoute.name, initialChildren: children);
 
   static const String name = 'SettingsIconRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i25.SettingsIconPage();
+      return const _i26.SettingsIconPage();
     },
   );
 }
 
 /// generated route for
-/// [_i26.SettingsSeedColorPage]
-class SettingsSeedColorRoute extends _i45.PageRouteInfo<void> {
-  const SettingsSeedColorRoute({List<_i45.PageRouteInfo>? children})
+/// [_i27.SettingsSeedColorPage]
+class SettingsSeedColorRoute extends _i47.PageRouteInfo<void> {
+  const SettingsSeedColorRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsSeedColorRoute.name, initialChildren: children);
 
   static const String name = 'SettingsSeedColorRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i26.SettingsSeedColorPage();
+      return const _i27.SettingsSeedColorPage();
     },
   );
 }
 
 /// generated route for
-/// [_i27.SettingsTaskPage]
-class SettingsTaskRoute extends _i45.PageRouteInfo<void> {
-  const SettingsTaskRoute({List<_i45.PageRouteInfo>? children})
+/// [_i28.SettingsTaskPage]
+class SettingsTaskRoute extends _i47.PageRouteInfo<void> {
+  const SettingsTaskRoute({List<_i47.PageRouteInfo>? children})
     : super(SettingsTaskRoute.name, initialChildren: children);
 
   static const String name = 'SettingsTaskRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i27.SettingsTaskPage();
+      return const _i28.SettingsTaskPage();
     },
   );
 }
 
 /// generated route for
-/// [_i28.SignHomePage]
-class SignHomeRoute extends _i45.PageRouteInfo<void> {
-  const SignHomeRoute({List<_i45.PageRouteInfo>? children})
+/// [_i29.SignHomePage]
+class SignHomeRoute extends _i47.PageRouteInfo<void> {
+  const SignHomeRoute({List<_i47.PageRouteInfo>? children})
     : super(SignHomeRoute.name, initialChildren: children);
 
   static const String name = 'SignHomeRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i28.SignHomePage();
+      return const _i29.SignHomePage();
     },
   );
 }
 
 /// generated route for
-/// [_i29.TagListPage]
-class TagListRoute extends _i45.PageRouteInfo<TagListRouteArgs> {
+/// [_i30.TagListPage]
+class TagListRoute extends _i47.PageRouteInfo<TagListRouteArgs> {
   TagListRoute({
-    required _i51.TagListMode mode,
-    required List<_i48.TagEntity> selectedTags,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i53.TagListMode mode,
+    required List<_i50.TagEntity> selectedTags,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TagListRoute.name,
          args: TagListRouteArgs(
@@ -795,11 +841,11 @@ class TagListRoute extends _i45.PageRouteInfo<TagListRouteArgs> {
 
   static const String name = 'TagListRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TagListRouteArgs>();
-      return _i29.TagListPage(
+      return _i30.TagListPage(
         mode: args.mode,
         selectedTags: args.selectedTags,
         key: args.key,
@@ -815,11 +861,11 @@ class TagListRouteArgs {
     this.key,
   });
 
-  final _i51.TagListMode mode;
+  final _i53.TagListMode mode;
 
-  final List<_i48.TagEntity> selectedTags;
+  final List<_i50.TagEntity> selectedTags;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -831,7 +877,7 @@ class TagListRouteArgs {
     if (identical(this, other)) return true;
     if (other is! TagListRouteArgs) return false;
     return mode == other.mode &&
-        const _i52.ListEquality<_i48.TagEntity>().equals(
+        const _i54.ListEquality<_i50.TagEntity>().equals(
           selectedTags,
           other.selectedTags,
         ) &&
@@ -841,17 +887,17 @@ class TagListRouteArgs {
   @override
   int get hashCode =>
       mode.hashCode ^
-      const _i52.ListEquality<_i48.TagEntity>().hash(selectedTags) ^
+      const _i54.ListEquality<_i50.TagEntity>().hash(selectedTags) ^
       key.hashCode;
 }
 
 /// generated route for
-/// [_i30.TagNewPage]
-class TagNewRoute extends _i45.PageRouteInfo<TagNewRouteArgs> {
+/// [_i31.TagNewPage]
+class TagNewRoute extends _i47.PageRouteInfo<TagNewRouteArgs> {
   TagNewRoute({
-    _i53.TagEntity? initialTag,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i55.TagEntity? initialTag,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TagNewRoute.name,
          args: TagNewRouteArgs(initialTag: initialTag, key: key),
@@ -860,13 +906,13 @@ class TagNewRoute extends _i45.PageRouteInfo<TagNewRouteArgs> {
 
   static const String name = 'TagNewRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TagNewRouteArgs>(
         orElse: () => const TagNewRouteArgs(),
       );
-      return _i30.TagNewPage(initialTag: args.initialTag, key: args.key);
+      return _i31.TagNewPage(initialTag: args.initialTag, key: args.key);
     },
   );
 }
@@ -874,9 +920,9 @@ class TagNewRoute extends _i45.PageRouteInfo<TagNewRouteArgs> {
 class TagNewRouteArgs {
   const TagNewRouteArgs({this.initialTag, this.key});
 
-  final _i53.TagEntity? initialTag;
+  final _i55.TagEntity? initialTag;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -895,13 +941,13 @@ class TagNewRouteArgs {
 }
 
 /// generated route for
-/// [_i31.TagPickerPage]
-class TagPickerRoute extends _i45.PageRouteInfo<TagPickerRouteArgs> {
+/// [_i32.TagPickerPage]
+class TagPickerRoute extends _i47.PageRouteInfo<TagPickerRouteArgs> {
   TagPickerRoute({
-    required List<_i49.TagEntity> selectedTags,
-    required _i50.ValueChanged<List<_i49.TagEntity>> onSelected,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required List<_i52.TagEntity> selectedTags,
+    required _i51.ValueChanged<List<_i52.TagEntity>> onSelected,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TagPickerRoute.name,
          args: TagPickerRouteArgs(
@@ -914,11 +960,11 @@ class TagPickerRoute extends _i45.PageRouteInfo<TagPickerRouteArgs> {
 
   static const String name = 'TagPickerRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TagPickerRouteArgs>();
-      return _i31.TagPickerPage(
+      return _i32.TagPickerPage(
         selectedTags: args.selectedTags,
         onSelected: args.onSelected,
         key: args.key,
@@ -934,11 +980,11 @@ class TagPickerRouteArgs {
     this.key,
   });
 
-  final List<_i49.TagEntity> selectedTags;
+  final List<_i52.TagEntity> selectedTags;
 
-  final _i50.ValueChanged<List<_i49.TagEntity>> onSelected;
+  final _i51.ValueChanged<List<_i52.TagEntity>> onSelected;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -949,7 +995,7 @@ class TagPickerRouteArgs {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! TagPickerRouteArgs) return false;
-    return const _i52.ListEquality<_i49.TagEntity>().equals(
+    return const _i54.ListEquality<_i52.TagEntity>().equals(
           selectedTags,
           other.selectedTags,
         ) &&
@@ -959,19 +1005,19 @@ class TagPickerRouteArgs {
 
   @override
   int get hashCode =>
-      const _i52.ListEquality<_i49.TagEntity>().hash(selectedTags) ^
+      const _i54.ListEquality<_i52.TagEntity>().hash(selectedTags) ^
       onSelected.hashCode ^
       key.hashCode;
 }
 
 /// generated route for
-/// [_i32.TaskDatePickerPage]
-class TaskDatePickerRoute extends _i45.PageRouteInfo<TaskDatePickerRouteArgs> {
+/// [_i33.TaskDatePickerPage]
+class TaskDatePickerRoute extends _i47.PageRouteInfo<TaskDatePickerRouteArgs> {
   TaskDatePickerRoute({
-    required _i48.Jiffy date,
-    _i50.ValueChanged<_i48.Jiffy?>? onDateChanged,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i50.Jiffy date,
+    _i51.ValueChanged<_i50.Jiffy?>? onDateChanged,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskDatePickerRoute.name,
          args: TaskDatePickerRouteArgs(
@@ -984,11 +1030,11 @@ class TaskDatePickerRoute extends _i45.PageRouteInfo<TaskDatePickerRouteArgs> {
 
   static const String name = 'TaskDatePickerRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskDatePickerRouteArgs>();
-      return _i32.TaskDatePickerPage(
+      return _i33.TaskDatePickerPage(
         date: args.date,
         onDateChanged: args.onDateChanged,
         key: args.key,
@@ -1004,11 +1050,11 @@ class TaskDatePickerRouteArgs {
     this.key,
   });
 
-  final _i48.Jiffy date;
+  final _i50.Jiffy date;
 
-  final _i50.ValueChanged<_i48.Jiffy?>? onDateChanged;
+  final _i51.ValueChanged<_i50.Jiffy?>? onDateChanged;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1029,12 +1075,12 @@ class TaskDatePickerRouteArgs {
 }
 
 /// generated route for
-/// [_i33.TaskDetailPage]
-class TaskDetailRoute extends _i45.PageRouteInfo<TaskDetailRouteArgs> {
+/// [_i34.TaskDetailPage]
+class TaskDetailRoute extends _i47.PageRouteInfo<TaskDetailRouteArgs> {
   TaskDetailRoute({
     required String taskId,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskDetailRoute.name,
          args: TaskDetailRouteArgs(taskId: taskId, key: key),
@@ -1043,11 +1089,11 @@ class TaskDetailRoute extends _i45.PageRouteInfo<TaskDetailRouteArgs> {
 
   static const String name = 'TaskDetailRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskDetailRouteArgs>();
-      return _i33.TaskDetailPage(taskId: args.taskId, key: args.key);
+      return _i34.TaskDetailPage(taskId: args.taskId, key: args.key);
     },
   );
 }
@@ -1057,7 +1103,7 @@ class TaskDetailRouteArgs {
 
   final String taskId;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1076,14 +1122,14 @@ class TaskDetailRouteArgs {
 }
 
 /// generated route for
-/// [_i34.TaskDurationPage]
-class TaskDurationRoute extends _i45.PageRouteInfo<TaskDurationRouteArgs> {
+/// [_i35.TaskDurationPage]
+class TaskDurationRoute extends _i47.PageRouteInfo<TaskDurationRouteArgs> {
   TaskDurationRoute({
-    required _i46.Jiffy? startAt,
-    required _i46.Jiffy? endAt,
+    required _i48.Jiffy? startAt,
+    required _i48.Jiffy? endAt,
     required bool isAllDay,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskDurationRoute.name,
          args: TaskDurationRouteArgs(
@@ -1097,11 +1143,11 @@ class TaskDurationRoute extends _i45.PageRouteInfo<TaskDurationRouteArgs> {
 
   static const String name = 'TaskDurationRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskDurationRouteArgs>();
-      return _i34.TaskDurationPage(
+      return _i35.TaskDurationPage(
         startAt: args.startAt,
         endAt: args.endAt,
         isAllDay: args.isAllDay,
@@ -1119,13 +1165,13 @@ class TaskDurationRouteArgs {
     this.key,
   });
 
-  final _i46.Jiffy? startAt;
+  final _i48.Jiffy? startAt;
 
-  final _i46.Jiffy? endAt;
+  final _i48.Jiffy? endAt;
 
   final bool isAllDay;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1148,45 +1194,45 @@ class TaskDurationRouteArgs {
 }
 
 /// generated route for
-/// [_i35.TaskInboxPage]
-class TaskInboxRoute extends _i45.PageRouteInfo<void> {
-  const TaskInboxRoute({List<_i45.PageRouteInfo>? children})
+/// [_i36.TaskInboxPage]
+class TaskInboxRoute extends _i47.PageRouteInfo<void> {
+  const TaskInboxRoute({List<_i47.PageRouteInfo>? children})
     : super(TaskInboxRoute.name, initialChildren: children);
 
   static const String name = 'TaskInboxRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i35.TaskInboxPage();
+      return const _i36.TaskInboxPage();
     },
   );
 }
 
 /// generated route for
-/// [_i36.TaskListPage]
-class TaskListRoute extends _i45.PageRouteInfo<void> {
-  const TaskListRoute({List<_i45.PageRouteInfo>? children})
+/// [_i37.TaskListPage]
+class TaskListRoute extends _i47.PageRouteInfo<void> {
+  const TaskListRoute({List<_i47.PageRouteInfo>? children})
     : super(TaskListRoute.name, initialChildren: children);
 
   static const String name = 'TaskListRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i36.TaskListPage();
+      return const _i37.TaskListPage();
     },
   );
 }
 
 /// generated route for
-/// [_i37.TaskNewPage]
-class TaskNewRoute extends _i45.PageRouteInfo<TaskNewRouteArgs> {
+/// [_i38.TaskNewPage]
+class TaskNewRoute extends _i47.PageRouteInfo<TaskNewRouteArgs> {
   TaskNewRoute({
-    _i48.TaskEntity? initialTask,
-    _i48.Jiffy? dueAt,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i50.TaskEntity? initialTask,
+    _i50.Jiffy? dueAt,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskNewRoute.name,
          args: TaskNewRouteArgs(
@@ -1199,13 +1245,13 @@ class TaskNewRoute extends _i45.PageRouteInfo<TaskNewRouteArgs> {
 
   static const String name = 'TaskNewRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskNewRouteArgs>(
         orElse: () => const TaskNewRouteArgs(),
       );
-      return _i37.TaskNewPage(
+      return _i38.TaskNewPage(
         initialTask: args.initialTask,
         dueAt: args.dueAt,
         key: args.key,
@@ -1217,11 +1263,11 @@ class TaskNewRoute extends _i45.PageRouteInfo<TaskNewRouteArgs> {
 class TaskNewRouteArgs {
   const TaskNewRouteArgs({this.initialTask, this.dueAt, this.key});
 
-  final _i48.TaskEntity? initialTask;
+  final _i50.TaskEntity? initialTask;
 
-  final _i48.Jiffy? dueAt;
+  final _i50.Jiffy? dueAt;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -1242,15 +1288,15 @@ class TaskNewRouteArgs {
 }
 
 /// generated route for
-/// [_i38.TaskNewRecurrenceEndAtPage]
+/// [_i39.TaskNewRecurrenceEndAtPage]
 class TaskNewRecurrenceEndAtRoute
-    extends _i45.PageRouteInfo<TaskNewRecurrenceEndAtRouteArgs> {
+    extends _i47.PageRouteInfo<TaskNewRecurrenceEndAtRouteArgs> {
   TaskNewRecurrenceEndAtRoute({
-    required _i46.Jiffy? minimumDateTime,
-    required _i54.RecurrenceEnd? initialRecurrenceEnd,
-    required _i50.ValueChanged<_i54.RecurrenceEnd?> onRecurrenceEndChanged,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i48.Jiffy? minimumDateTime,
+    required _i56.RecurrenceEnd? initialRecurrenceEnd,
+    required _i51.ValueChanged<_i56.RecurrenceEnd?> onRecurrenceEndChanged,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskNewRecurrenceEndAtRoute.name,
          args: TaskNewRecurrenceEndAtRouteArgs(
@@ -1264,11 +1310,11 @@ class TaskNewRecurrenceEndAtRoute
 
   static const String name = 'TaskNewRecurrenceEndAtRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskNewRecurrenceEndAtRouteArgs>();
-      return _i38.TaskNewRecurrenceEndAtPage(
+      return _i39.TaskNewRecurrenceEndAtPage(
         minimumDateTime: args.minimumDateTime,
         initialRecurrenceEnd: args.initialRecurrenceEnd,
         onRecurrenceEndChanged: args.onRecurrenceEndChanged,
@@ -1286,13 +1332,13 @@ class TaskNewRecurrenceEndAtRouteArgs {
     this.key,
   });
 
-  final _i46.Jiffy? minimumDateTime;
+  final _i48.Jiffy? minimumDateTime;
 
-  final _i54.RecurrenceEnd? initialRecurrenceEnd;
+  final _i56.RecurrenceEnd? initialRecurrenceEnd;
 
-  final _i50.ValueChanged<_i54.RecurrenceEnd?> onRecurrenceEndChanged;
+  final _i51.ValueChanged<_i56.RecurrenceEnd?> onRecurrenceEndChanged;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1318,46 +1364,46 @@ class TaskNewRecurrenceEndAtRouteArgs {
 }
 
 /// generated route for
-/// [_i39.TaskOverduePage]
-class TaskOverdueRoute extends _i45.PageRouteInfo<void> {
-  const TaskOverdueRoute({List<_i45.PageRouteInfo>? children})
+/// [_i40.TaskOverduePage]
+class TaskOverdueRoute extends _i47.PageRouteInfo<void> {
+  const TaskOverdueRoute({List<_i47.PageRouteInfo>? children})
     : super(TaskOverdueRoute.name, initialChildren: children);
 
   static const String name = 'TaskOverdueRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i39.TaskOverduePage();
+      return const _i40.TaskOverduePage();
     },
   );
 }
 
 /// generated route for
-/// [_i40.TaskPickerPage]
-class TaskPickerRoute extends _i45.PageRouteInfo<void> {
-  const TaskPickerRoute({List<_i45.PageRouteInfo>? children})
+/// [_i41.TaskPickerPage]
+class TaskPickerRoute extends _i47.PageRouteInfo<void> {
+  const TaskPickerRoute({List<_i47.PageRouteInfo>? children})
     : super(TaskPickerRoute.name, initialChildren: children);
 
   static const String name = 'TaskPickerRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i40.TaskPickerPage();
+      return const _i41.TaskPickerPage();
     },
   );
 }
 
 /// generated route for
-/// [_i41.TaskPriorityPickerPage]
+/// [_i42.TaskPriorityPickerPage]
 class TaskPriorityPickerRoute
-    extends _i45.PageRouteInfo<TaskPriorityPickerRouteArgs> {
+    extends _i47.PageRouteInfo<TaskPriorityPickerRouteArgs> {
   TaskPriorityPickerRoute({
-    required _i55.TaskPriority selectedPriority,
-    _i50.ValueChanged<_i55.TaskPriority>? onSelected,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i57.TaskPriority selectedPriority,
+    _i51.ValueChanged<_i57.TaskPriority>? onSelected,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskPriorityPickerRoute.name,
          args: TaskPriorityPickerRouteArgs(
@@ -1370,11 +1416,11 @@ class TaskPriorityPickerRoute
 
   static const String name = 'TaskPriorityPickerRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskPriorityPickerRouteArgs>();
-      return _i41.TaskPriorityPickerPage(
+      return _i42.TaskPriorityPickerPage(
         selectedPriority: args.selectedPriority,
         onSelected: args.onSelected,
         key: args.key,
@@ -1390,11 +1436,11 @@ class TaskPriorityPickerRouteArgs {
     this.key,
   });
 
-  final _i55.TaskPriority selectedPriority;
+  final _i57.TaskPriority selectedPriority;
 
-  final _i50.ValueChanged<_i55.TaskPriority>? onSelected;
+  final _i51.ValueChanged<_i57.TaskPriority>? onSelected;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1416,13 +1462,13 @@ class TaskPriorityPickerRouteArgs {
 }
 
 /// generated route for
-/// [_i42.TaskRecurrencePage]
-class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
+/// [_i43.TaskRecurrencePage]
+class TaskRecurrenceRoute extends _i47.PageRouteInfo<TaskRecurrenceRouteArgs> {
   TaskRecurrenceRoute({
-    _i46.Jiffy? taskDate,
-    _i54.RecurrenceRule? initialRecurrenceRule,
-    _i50.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    _i48.Jiffy? taskDate,
+    _i56.RecurrenceRule? initialRecurrenceRule,
+    _i51.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskRecurrenceRoute.name,
          args: TaskRecurrenceRouteArgs(
@@ -1435,13 +1481,13 @@ class TaskRecurrenceRoute extends _i45.PageRouteInfo<TaskRecurrenceRouteArgs> {
 
   static const String name = 'TaskRecurrenceRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskRecurrenceRouteArgs>(
         orElse: () => const TaskRecurrenceRouteArgs(),
       );
-      return _i42.TaskRecurrencePage(
+      return _i43.TaskRecurrencePage(
         taskDate: args.taskDate,
         initialRecurrenceRule: args.initialRecurrenceRule,
         key: args.key,
@@ -1457,11 +1503,11 @@ class TaskRecurrenceRouteArgs {
     this.key,
   });
 
-  final _i46.Jiffy? taskDate;
+  final _i48.Jiffy? taskDate;
 
-  final _i54.RecurrenceRule? initialRecurrenceRule;
+  final _i56.RecurrenceRule? initialRecurrenceRule;
 
-  final _i50.Key? key;
+  final _i51.Key? key;
 
   @override
   String toString() {
@@ -1483,12 +1529,12 @@ class TaskRecurrenceRouteArgs {
 }
 
 /// generated route for
-/// [_i43.TaskTagPage]
-class TaskTagRoute extends _i45.PageRouteInfo<TaskTagRouteArgs> {
+/// [_i44.TaskTagPage]
+class TaskTagRoute extends _i47.PageRouteInfo<TaskTagRouteArgs> {
   TaskTagRoute({
-    required _i53.TagEntity tag,
-    _i47.Key? key,
-    List<_i45.PageRouteInfo>? children,
+    required _i55.TagEntity tag,
+    _i49.Key? key,
+    List<_i47.PageRouteInfo>? children,
   }) : super(
          TaskTagRoute.name,
          args: TaskTagRouteArgs(tag: tag, key: key),
@@ -1497,11 +1543,11 @@ class TaskTagRoute extends _i45.PageRouteInfo<TaskTagRouteArgs> {
 
   static const String name = 'TaskTagRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<TaskTagRouteArgs>();
-      return _i43.TaskTagPage(tag: args.tag, key: args.key);
+      return _i44.TaskTagPage(tag: args.tag, key: args.key);
     },
   );
 }
@@ -1509,9 +1555,9 @@ class TaskTagRoute extends _i45.PageRouteInfo<TaskTagRouteArgs> {
 class TaskTagRouteArgs {
   const TaskTagRouteArgs({required this.tag, this.key});
 
-  final _i53.TagEntity tag;
+  final _i55.TagEntity tag;
 
-  final _i47.Key? key;
+  final _i49.Key? key;
 
   @override
   String toString() {
@@ -1530,17 +1576,33 @@ class TaskTagRouteArgs {
 }
 
 /// generated route for
-/// [_i44.TaskTodayPage]
-class TaskTodayRoute extends _i45.PageRouteInfo<void> {
-  const TaskTodayRoute({List<_i45.PageRouteInfo>? children})
+/// [_i45.TaskTodayPage]
+class TaskTodayRoute extends _i47.PageRouteInfo<void> {
+  const TaskTodayRoute({List<_i47.PageRouteInfo>? children})
     : super(TaskTodayRoute.name, initialChildren: children);
 
   static const String name = 'TaskTodayRoute';
 
-  static _i45.PageInfo page = _i45.PageInfo(
+  static _i47.PageInfo page = _i47.PageInfo(
     name,
     builder: (data) {
-      return const _i44.TaskTodayPage();
+      return const _i45.TaskTodayPage();
+    },
+  );
+}
+
+/// generated route for
+/// [_i46.TaskWeekPage]
+class TaskWeekRoute extends _i47.PageRouteInfo<void> {
+  const TaskWeekRoute({List<_i47.PageRouteInfo>? children})
+    : super(TaskWeekRoute.name, initialChildren: children);
+
+  static const String name = 'TaskWeekRoute';
+
+  static _i47.PageInfo page = _i47.PageInfo(
+    name,
+    builder: (data) {
+      return const _i46.TaskWeekPage();
     },
   );
 }

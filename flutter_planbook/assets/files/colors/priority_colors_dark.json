@@ -1,0 +1,18 @@
+[
+  {
+    "priority": "high",
+    "color": "#FF0000"
+  },
+  {
+    "priority": "medium",
+    "color": "#00FF00"
+  },
+  {
+    "priority": "low",
+    "color": "#0000FF"
+  },
+  {
+    "priority": "none",
+    "color": "#000000"
+  }
+]

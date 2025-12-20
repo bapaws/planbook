@@ -22,6 +22,21 @@ final class TaskListRequested extends TaskListEvent {
   List<Object?> get props => [date, tagId, isCompleted];
 }
 
+final class TaskListDayAllRequested extends TaskListEvent {
+  const TaskListDayAllRequested({
+    this.date,
+    this.tagId,
+    this.isCompleted,
+  });
+
+  final Jiffy? date;
+  final String? tagId;
+  final bool? isCompleted;
+
+  @override
+  List<Object?> get props => [date, tagId, isCompleted];
+}
+
 final class TaskListCompleted extends TaskListEvent {
   const TaskListCompleted({required this.task, this.occurrenceAt});
 

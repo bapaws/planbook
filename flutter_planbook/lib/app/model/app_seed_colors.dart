@@ -142,6 +142,7 @@ enum AppSeedColors {
       ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
+        toolbarHeight: kMinInteractiveDimension,
         backgroundColor: Colors.transparent,
         titleTextStyle: TextStyle(
           fontSize: 20,

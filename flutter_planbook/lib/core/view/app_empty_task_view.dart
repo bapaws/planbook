@@ -12,17 +12,12 @@ class AppEmptyTaskView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     const imageHeight = 280.0;
-    final query = MediaQuery.of(context);
-    final bottom =
-        (query.size.height -
-            query.padding.vertical -
-            imageHeight -
-            kToolbarHeight) /
-        2;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const SizedBox(width: double.infinity),
+        SizedBox(
+          width: double.infinity,
+          height: showSlogan ? kToolbarHeight : 0,
+        ),
         SvgPicture.asset(
           'assets/images/Chill-Time.svg',
           width: imageHeight,
@@ -52,7 +47,6 @@ class AppEmptyTaskView extends StatelessWidget {
               totalRepeatCount: 1,
             ),
           ),
-          SizedBox(height: bottom),
         ],
       ],
     );

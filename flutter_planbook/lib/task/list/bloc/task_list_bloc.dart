@@ -24,6 +24,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
        _settingsRepository = settingsRepository,
        super(TaskListState(tag: tag)) {
     on<TaskListRequested>(_onRequested, transformer: restartable());
+    on<TaskListDayAllRequested>(_onDayAllRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
@@ -42,20 +43,34 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
-    final stream = priority == null
-        ? _tasksRepository.getTaskEntities(
-            mode: _mode,
-            date: date,
-            tagId: event.tagId,
-            isCompleted: event.isCompleted,
-          )
-        : _tasksRepository.getAllTodayTaskEntities(
-            mode: _mode,
-            day: date,
-            tagId: event.tagId,
-            priority: priority,
-            isCompleted: event.isCompleted,
-          );
+    final stream = _tasksRepository.getTaskEntities(
+      mode: _mode,
+      date: date,
+      tagId: event.tagId,
+      isCompleted: event.isCompleted,
+    );
+    await emit.forEach(
+      stream,
+      onData: (tasks) => state.copyWith(
+        status: PageStatus.success,
+        tasks: tasks,
+      ),
+    );
+  }
+
+  Future<void> _onDayAllRequested(
+    TaskListDayAllRequested event,
+    Emitter<TaskListState> emit,
+  ) async {
+    final date = event.date ?? state.date ?? Jiffy.now();
+    emit(state.copyWith(status: PageStatus.loading, date: date));
+    final stream = _tasksRepository.getAllTodayTaskEntities(
+      mode: _mode,
+      day: date,
+      tagId: event.tagId,
+      priority: priority,
+      isCompleted: event.isCompleted,
+    );
     await emit.forEach(
       stream,
       onData: (tasks) => state.copyWith(

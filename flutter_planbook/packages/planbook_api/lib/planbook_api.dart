@@ -9,6 +9,7 @@ export 'database/detached_reason.dart';
 export 'database/event_alarm.dart';
 export 'database/jiffy_converter.dart';
 export 'database/list_converter.dart';
+export 'database/note_type.dart';
 export 'database/recurrence_rule.dart';
 export 'database/task_priority.dart';
 export 'entity/note_entity.dart';

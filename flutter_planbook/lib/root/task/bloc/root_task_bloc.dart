@@ -1,5 +1,6 @@
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -37,7 +38,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   RootTaskState? fromJson(Map<String, dynamic> json) {
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
-      tab: TaskListMode.values.byName(json['tab'] as String),
+      tab: RootTaskTab.values.byName(json['tab'] as String),
       viewType: RootTaskViewType.values.byName(json['viewType'] as String),
       tag: json['tag'] != null
           ? TagEntity.fromJson(json['tag'] as Map<String, dynamic>)
@@ -68,7 +69,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     RootTaskTagSelected event,
     Emitter<RootTaskState> emit,
   ) async {
-    emit(state.copyWith(tab: TaskListMode.tag, tag: event.tag));
+    emit(state.copyWith(tab: RootTaskTab.tag, tag: event.tag));
   }
 
   Future<void> _onCountRequested(

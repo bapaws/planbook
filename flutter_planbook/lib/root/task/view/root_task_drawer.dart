@@ -6,12 +6,11 @@ import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
-import 'package:flutter_planbook/root/task/model/task_list_mode_x.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_drawer_list_tile.dart';
 import 'package:flutter_planbook/root/task/view/root_user_header.dart';
 import 'package:flutter_planbook/tag/list/view/tag_list_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:planbook_api/entity/task_entity.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 class RootTaskDrawer extends StatelessWidget {
@@ -39,22 +38,23 @@ class RootTaskDrawer extends StatelessWidget {
                     height: 16,
                   ),
                 ),
-                for (final mode in [
-                  TaskListMode.inbox,
-                  TaskListMode.overdue,
-                  TaskListMode.today,
+                for (final tab in [
+                  RootTaskTab.inbox,
+                  RootTaskTab.overdue,
+                  RootTaskTab.day,
+                  RootTaskTab.week,
                 ])
-                  BlocSelector<RootTaskBloc, RootTaskState, int>(
-                    selector: (state) => state.taskCounts[mode] ?? 0,
+                  BlocSelector<RootTaskBloc, RootTaskState, int?>(
+                    selector: (state) => state.taskCounts[tab.mode],
                     builder: (context, count) {
                       return RootDrawerListTile(
-                        icon: mode.icon,
-                        iconBackgroundColor: mode.color,
-                        title: mode.getName(context),
+                        icon: tab.icon,
+                        iconBackgroundColor: tab.color,
+                        title: tab.getName(context),
                         count: count,
                         onPressed: () {
                           context.read<RootTaskBloc>().add(
-                            RootTaskTabSelected(tab: mode),
+                            RootTaskTabSelected(tab: tab),
                           );
 
                           Scaffold.of(context).closeDrawer();

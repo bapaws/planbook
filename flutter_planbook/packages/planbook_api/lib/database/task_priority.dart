@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 /// 任务优先级（参照 EventKit 的 EKReminderPriority）
 ///
 /// 优先级从高到低：none < low < medium < high
@@ -68,18 +66,6 @@ enum TaskPriority {
 
   /// 是否为紧急任务（第一、三象限）
   bool get isUrgent => this == TaskPriority.high || this == TaskPriority.low;
-
-  Color get color => switch (this) {
-    TaskPriority.high => Colors.red,
-    TaskPriority.medium => Colors.blue,
-    TaskPriority.low => Colors.amber,
-    TaskPriority.none => Colors.green,
-  };
-
-  ColorScheme getColorScheme(BuildContext context) => ColorScheme.fromSeed(
-    seedColor: color,
-    brightness: Theme.of(context).brightness,
-  );
 }
 
 /// 四象限分类（基于 Eisenhower Matrix）

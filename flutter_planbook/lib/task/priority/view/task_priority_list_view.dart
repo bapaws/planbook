@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_color_header.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_flag_header.dart';
@@ -26,12 +27,8 @@ class TaskPriorityListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final priority = context.read<TaskListBloc>().priority!;
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: priority.color,
-      brightness: theme.brightness,
-    );
+    final colorScheme = priority.getColorScheme(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

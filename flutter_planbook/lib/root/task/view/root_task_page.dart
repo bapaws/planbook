@@ -7,19 +7,46 @@ import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_task_drawer.dart';
+import 'package:flutter_planbook/root/task/view/root_task_week_title_view.dart';
 import 'package:flutter_planbook/task/inbox/view/task_inbox_page.dart';
 import 'package:flutter_planbook/task/overdue/view/task_overdue_page.dart';
 import 'package:flutter_planbook/task/tag/view/task_tag_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/today/view/task_today_page.dart';
+import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
+import 'package:flutter_planbook/task/week/view/task_week_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 @RoutePage()
 class RootTaskPage extends StatelessWidget {
-  RootTaskPage({super.key});
+  const RootTaskPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => TaskTodayBloc(
+            tasksRepository: context.read(),
+          )..add(TaskTodayDateSelected(date: Jiffy.now())),
+        ),
+        BlocProvider(
+          create: (context) => TaskWeekBloc(
+            notesRepository: context.read(),
+          )..add(TaskWeekDateSelected(date: Jiffy.now())),
+        ),
+      ],
+      child: _RootTaskPage(),
+    );
+  }
+}
+
+class _RootTaskPage extends StatelessWidget {
+  _RootTaskPage();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -44,7 +71,7 @@ class RootTaskPage extends StatelessWidget {
           builder: (context, state) => AnimatedSwitcher(
             duration: Durations.medium1,
             child: switch (state.tab) {
-              TaskListMode.today => BlocBuilder<TaskTodayBloc, TaskTodayState>(
+              RootTaskTab.day => BlocBuilder<TaskTodayBloc, TaskTodayState>(
                 builder: (context, state) {
                   return AppCalendarDateView(
                     date: state.date,
@@ -71,9 +98,10 @@ class RootTaskPage extends StatelessWidget {
                   );
                 },
               ),
-              TaskListMode.inbox => Text(context.l10n.inbox),
-              TaskListMode.overdue => Text(context.l10n.overdue),
-              TaskListMode.tag => Row(
+              RootTaskTab.inbox => Text(context.l10n.inbox),
+              RootTaskTab.overdue => Text(context.l10n.overdue),
+              RootTaskTab.week => const RootTaskWeekTitleView(),
+              RootTaskTab.tag => Row(
                 children: [
                   AppTagIcon.fromTagEntity(state.tag!),
                   const SizedBox(width: 4),
@@ -126,7 +154,7 @@ class RootTaskPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (bloc.state.tab != TaskListMode.overdue) ...[
+                if (bloc.state.tab != RootTaskTab.overdue) ...[
                   const PullDownMenuDivider.large(),
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.solidCircleCheck,
@@ -161,10 +189,11 @@ class RootTaskPage extends StatelessWidget {
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
         child: switch (state.tab) {
-          TaskListMode.today => const TaskTodayPage(),
-          TaskListMode.inbox => const TaskInboxPage(),
-          TaskListMode.overdue => const TaskOverduePage(),
-          TaskListMode.tag => TaskTagPage(
+          RootTaskTab.day => const TaskTodayPage(),
+          RootTaskTab.inbox => const TaskInboxPage(),
+          RootTaskTab.overdue => const TaskOverduePage(),
+          RootTaskTab.week => const TaskWeekPage(),
+          RootTaskTab.tag => TaskTagPage(
             key: ValueKey(state.tag!.id),
             tag: state.tag!,
           ),

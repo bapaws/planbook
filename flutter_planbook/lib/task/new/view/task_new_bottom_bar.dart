@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -28,11 +29,7 @@ class TaskNewBottomBar extends StatelessWidget {
             BlocSelector<TaskNewCubit, TaskNewState, TaskPriority>(
               selector: (state) => state.priority,
               builder: (context, priority) {
-                final brightness = Theme.of(context).brightness;
-                final colorScheme = ColorScheme.fromSeed(
-                  seedColor: priority.color,
-                  brightness: brightness,
-                );
+                final colorScheme = priority.getColorScheme(context);
                 return CupertinoButton(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   minimumSize: const Size.square(kMinInteractiveDimension),

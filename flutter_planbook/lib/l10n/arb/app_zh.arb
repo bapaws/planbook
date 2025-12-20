@@ -48,6 +48,14 @@
   "orange": "橙色",
   "teal": "青色",
   "indigo": "靛蓝",
+  "deepPurple": "深紫色",
+  "lightBlue": "浅蓝",
+  "cyan": "蓝绿",
+  "lightGreen": "浅绿",
+  "lime": "柠檬",
+  "amber": "琥珀",
+  "deepOrange": "深橙",
+  "brown": "棕色",
   "darkMode": "深色模式",
   "lightMode": "浅色模式",
   "dark": "深色",
@@ -258,6 +266,13 @@
   "dot": "点",
   "grid": "格子",
   "saveSuccess": "保存成功",
-  "saveFailed": "保存失败"
+  "saveFailed": "保存失败",
+  "dailyFocus": "每日重点",
+  "weeklyFocus": "每周重点",
+  "journal": "日志",
+  "thinkAboutWeeklyFocus": "想一想本周最重要的事情...",
+  "thinkAboutDailyFocus": "想一想今天最重要的事情...",
+  "thisWeek": "本周",
+  "lastWeek": "上周"
 }
 

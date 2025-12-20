@@ -7,6 +7,7 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -165,8 +166,8 @@ class RootHomeBottomBar extends StatelessWidget {
         }
         final mode = context.read<RootTaskBloc>().state.tab;
         final dueAt = switch (mode) {
-          TaskListMode.inbox => null,
-          TaskListMode.today => context.read<TaskTodayBloc>().state.date,
+          RootTaskTab.inbox => null,
+          RootTaskTab.day => context.read<TaskTodayBloc>().state.date,
           _ => Jiffy.now().startOf(Unit.day),
         };
         await context.router.push(TaskNewRoute(dueAt: dueAt));

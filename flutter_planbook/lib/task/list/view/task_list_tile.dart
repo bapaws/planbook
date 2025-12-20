@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -41,6 +42,7 @@ class _TaskListTileState extends State<TaskListTile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
+    final colorScheme = _task.priority.getColorScheme(context);
     return PullDownButton(
       itemBuilder: (context) => [
         PullDownMenuItem(
@@ -82,8 +84,8 @@ class _TaskListTileState extends State<TaskListTile> {
                       : FontAwesomeIcons.square,
                   size: 18,
                   color: _isCompleted
-                      ? theme.colorScheme.outline
-                      : theme.colorScheme.onSurface,
+                      ? colorScheme.outline
+                      : colorScheme.onSurface,
                 ),
               ),
             ),
@@ -92,8 +94,8 @@ class _TaskListTileState extends State<TaskListTile> {
                 duration: Durations.short2,
                 style: theme.textTheme.titleMedium!.copyWith(
                   color: _isCompleted
-                      ? theme.colorScheme.outline
-                      : theme.colorScheme.onSurface,
+                      ? colorScheme.outline
+                      : colorScheme.onSurface,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

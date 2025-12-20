@@ -5,6 +5,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/core/view/app_empty_note_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -112,10 +113,7 @@ class _TaskDetailPage extends StatelessWidget {
               final task = state.task;
               if (task == null) return const SizedBox.shrink();
 
-              final colorScheme = ColorScheme.fromSeed(
-                seedColor: task.priority.color,
-                brightness: theme.brightness,
-              );
+              final colorScheme = task.priority.getColorScheme(context);
               final tagColorScheme = (theme.brightness == Brightness.dark
                   ? task.tags.firstOrNull?.dark
                   : task.tags.firstOrNull?.light);

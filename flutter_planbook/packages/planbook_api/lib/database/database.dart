@@ -12,6 +12,7 @@ import 'package:planbook_api/database/detached_reason.dart';
 import 'package:planbook_api/database/event_alarm.dart';
 import 'package:planbook_api/database/jiffy_converter.dart';
 import 'package:planbook_api/database/list_converter.dart';
+import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_api/database/recurrence_rule.dart';
 import 'package:planbook_api/database/task_priority.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -117,6 +118,15 @@ class Notes extends Table {
     #id,
     onDelete: KeyAction.setNull,
   )();
+
+  // 笔记类型（日记、每日目标、每周目标）
+  TextColumn get type => textEnum<NoteType>().nullable()();
+
+  // 目标日期（用于每日目标和每周目标，标识目标对应的日期）
+  // 对于每日目标，存储具体的日期
+  // 对于每周目标，存储该周的某一天（通常是周一）
+  DateTimeColumn get focusAt =>
+      dateTime().map(const JiffyConverter()).nullable()();
 
   DateTimeColumn get createdAt =>
       dateTime().map(const JiffyConverter()).withDefault(currentDateAndTime)();
@@ -332,7 +342,22 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        if (from < 2) {
+          await m.addColumn(notes, notes.type);
+          await m.addColumn(notes, notes.focusAt);
+        }
+      },
+    );
+  }
 
   static QueryExecutor _openConnection() {
     // `driftDatabase` from `package:drift_flutter` stores the database in

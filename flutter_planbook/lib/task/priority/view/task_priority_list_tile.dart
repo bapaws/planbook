@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -41,6 +42,7 @@ class _TaskPriorityListTileState extends State<TaskPriorityListTile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = context.l10n;
+    final colorScheme = _task.priority.getColorScheme(context);
     return PullDownButton(
       itemBuilder: (context) => [
         PullDownMenuItem(
@@ -58,7 +60,8 @@ class _TaskPriorityListTileState extends State<TaskPriorityListTile> {
       ],
       buttonBuilder: (context, showMenu) => CupertinoButton(
         padding: EdgeInsets.zero,
-        minimumSize: const Size.square(kMinInteractiveDimensionCupertino),
+        minimumSize: Size.zero,
+        // minimumSize: const Size.square(kMinInteractiveDimensionCupertino),
         onLongPress: showMenu,
         onPressed: widget.onPressed,
         child: Row(
@@ -78,7 +81,9 @@ class _TaskPriorityListTileState extends State<TaskPriorityListTile> {
                       ? FontAwesomeIcons.solidSquareCheck
                       : FontAwesomeIcons.square,
                   size: 16,
-                  color: theme.colorScheme.onSurface,
+                  color: _isCompleted
+                      ? colorScheme.outline
+                      : colorScheme.primary,
                 ),
               ),
             ),
@@ -87,8 +92,8 @@ class _TaskPriorityListTileState extends State<TaskPriorityListTile> {
                 duration: Durations.short2,
                 style: theme.textTheme.bodyMedium!.copyWith(
                   color: _isCompleted
-                      ? Colors.grey
-                      : theme.colorScheme.onSurface,
+                      ? colorScheme.outline
+                      : colorScheme.onSurface,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

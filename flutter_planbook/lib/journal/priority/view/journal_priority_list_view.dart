@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/journal/priority/bloc/journal_priority_bloc.dart';
 import 'package:flutter_planbook/journal/priority/view/journal_priority_list_tile.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_flag_header.dart';
-import 'package:planbook_repository/planbook_repository.dart' hide ColorScheme;
+import 'package:planbook_repository/planbook_repository.dart';
 
 class JournalPriorityListView extends StatelessWidget {
   const JournalPriorityListView({
@@ -15,11 +16,7 @@ class JournalPriorityListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = ColorScheme.fromSeed(
-      seedColor: priority.color,
-      brightness: theme.brightness,
-    );
+    final colorScheme = priority.getColorScheme(context);
     return BlocSelector<
       JournalPriorityBloc,
       JournalPriorityState,

@@ -8,7 +8,7 @@ enum RootTaskViewType {
 final class RootTaskState extends Equatable {
   const RootTaskState({
     this.status = PageStatus.initial,
-    this.tab = TaskListMode.today,
+    this.tab = RootTaskTab.day,
     this.viewType = RootTaskViewType.list,
     this.showCompleted = false,
     this.tag,
@@ -18,7 +18,7 @@ final class RootTaskState extends Equatable {
 
   final PageStatus status;
 
-  final TaskListMode tab;
+  final RootTaskTab tab;
   final RootTaskViewType viewType;
   final bool showCompleted;
 
@@ -43,7 +43,7 @@ final class RootTaskState extends Equatable {
 
   RootTaskState copyWith({
     PageStatus? status,
-    TaskListMode? tab,
+    RootTaskTab? tab,
     RootTaskViewType? viewType,
     bool? showCompleted,
     TagEntity? tag,

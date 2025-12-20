@@ -136,7 +136,7 @@ class TagsRepository {
       final color = tag.color?.toColor ?? material.Colors.yellow;
 
       await createTag(
-        id: kDebugMode ? tag.id : uuid.v4(),
+        id: uuid.v4(),
         name: tag.name,
         lightColorScheme: ColorScheme.fromColorScheme(
           material.ColorScheme.fromSeed(

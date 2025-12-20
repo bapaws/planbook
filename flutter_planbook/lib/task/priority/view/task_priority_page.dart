@@ -111,7 +111,7 @@ class TaskPriorityPage extends StatelessWidget {
             mode: mode,
             priority: priority,
           )..add(
-            TaskListRequested(
+            TaskListDayAllRequested(
               date: date,
               tagId: tag?.id,
               isCompleted: isCompleted,

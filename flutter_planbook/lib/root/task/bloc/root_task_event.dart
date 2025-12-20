@@ -10,7 +10,7 @@ sealed class RootTaskEvent extends Equatable {
 final class RootTaskTabSelected extends RootTaskEvent {
   const RootTaskTabSelected({required this.tab});
 
-  final TaskListMode tab;
+  final RootTaskTab tab;
 
   @override
   List<Object?> get props => [tab];

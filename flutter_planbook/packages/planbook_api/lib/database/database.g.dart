@@ -1411,6 +1411,24 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
     ),
   );
   @override
+  late final GeneratedColumnWithTypeConverter<NoteType?, String> type =
+      GeneratedColumn<String>(
+        'type',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      ).withConverter<NoteType?>($NotesTable.$convertertypen);
+  @override
+  late final GeneratedColumnWithTypeConverter<Jiffy?, DateTime> focusAt =
+      GeneratedColumn<DateTime>(
+        'focus_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      ).withConverter<Jiffy?>($NotesTable.$converterfocusAtn);
+  @override
   late final GeneratedColumnWithTypeConverter<Jiffy, DateTime> createdAt =
       GeneratedColumn<DateTime>(
         'created_at',
@@ -1447,6 +1465,8 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
     images,
     coverImage,
     taskId,
+    type,
+    focusAt,
     createdAt,
     updatedAt,
     deletedAt,
@@ -1537,6 +1557,18 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
         DriftSqlType.string,
         data['${effectivePrefix}task_id'],
       ),
+      type: $NotesTable.$convertertypen.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}type'],
+        ),
+      ),
+      focusAt: $NotesTable.$converterfocusAtn.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}focus_at'],
+        ),
+      ),
       createdAt: $NotesTable.$convertercreatedAt.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
@@ -1565,6 +1597,14 @@ class $NotesTable extends Notes with TableInfo<$NotesTable, Note> {
 
   static JsonTypeConverter2<List<String>, String?, String?> $converterimages =
       const ListConverter<String>();
+  static JsonTypeConverter2<NoteType, String, String> $convertertype =
+      const EnumNameConverter<NoteType>(NoteType.values);
+  static JsonTypeConverter2<NoteType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
+  static JsonTypeConverter2<Jiffy, DateTime, String> $converterfocusAt =
+      const JiffyConverter();
+  static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterfocusAtn =
+      JsonTypeConverter2.asNullable($converterfocusAt);
   static JsonTypeConverter2<Jiffy, DateTime, String> $convertercreatedAt =
       const JiffyConverter();
   static JsonTypeConverter2<Jiffy, DateTime, String> $converterupdatedAt =
@@ -1585,6 +1625,8 @@ class Note extends DataClass implements Insertable<Note> {
   final List<String> images;
   final String? coverImage;
   final String? taskId;
+  final NoteType? type;
+  final Jiffy? focusAt;
   final Jiffy createdAt;
   final Jiffy? updatedAt;
   final Jiffy? deletedAt;
@@ -1596,6 +1638,8 @@ class Note extends DataClass implements Insertable<Note> {
     required this.images,
     this.coverImage,
     this.taskId,
+    this.type,
+    this.focusAt,
     required this.createdAt,
     this.updatedAt,
     this.deletedAt,
@@ -1621,6 +1665,14 @@ class Note extends DataClass implements Insertable<Note> {
     }
     if (!nullToAbsent || taskId != null) {
       map['task_id'] = Variable<String>(taskId);
+    }
+    if (!nullToAbsent || type != null) {
+      map['type'] = Variable<String>($NotesTable.$convertertypen.toSql(type));
+    }
+    if (!nullToAbsent || focusAt != null) {
+      map['focus_at'] = Variable<DateTime>(
+        $NotesTable.$converterfocusAtn.toSql(focusAt),
+      );
     }
     {
       map['created_at'] = Variable<DateTime>(
@@ -1657,6 +1709,10 @@ class Note extends DataClass implements Insertable<Note> {
       taskId: taskId == null && nullToAbsent
           ? const Value.absent()
           : Value(taskId),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+      focusAt: focusAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(focusAt),
       createdAt: Value(createdAt),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -1682,6 +1738,12 @@ class Note extends DataClass implements Insertable<Note> {
       ),
       coverImage: serializer.fromJson<String?>(json['cover_image']),
       taskId: serializer.fromJson<String?>(json['task_id']),
+      type: $NotesTable.$convertertypen.fromJson(
+        serializer.fromJson<String?>(json['type']),
+      ),
+      focusAt: $NotesTable.$converterfocusAtn.fromJson(
+        serializer.fromJson<String?>(json['focus_at']),
+      ),
       createdAt: $NotesTable.$convertercreatedAt.fromJson(
         serializer.fromJson<String>(json['created_at']),
       ),
@@ -1706,6 +1768,12 @@ class Note extends DataClass implements Insertable<Note> {
       ),
       'cover_image': serializer.toJson<String?>(coverImage),
       'task_id': serializer.toJson<String?>(taskId),
+      'type': serializer.toJson<String?>(
+        $NotesTable.$convertertypen.toJson(type),
+      ),
+      'focus_at': serializer.toJson<String?>(
+        $NotesTable.$converterfocusAtn.toJson(focusAt),
+      ),
       'created_at': serializer.toJson<String>(
         $NotesTable.$convertercreatedAt.toJson(createdAt),
       ),
@@ -1726,6 +1794,8 @@ class Note extends DataClass implements Insertable<Note> {
     List<String>? images,
     Value<String?> coverImage = const Value.absent(),
     Value<String?> taskId = const Value.absent(),
+    Value<NoteType?> type = const Value.absent(),
+    Value<Jiffy?> focusAt = const Value.absent(),
     Jiffy? createdAt,
     Value<Jiffy?> updatedAt = const Value.absent(),
     Value<Jiffy?> deletedAt = const Value.absent(),
@@ -1737,6 +1807,8 @@ class Note extends DataClass implements Insertable<Note> {
     images: images ?? this.images,
     coverImage: coverImage.present ? coverImage.value : this.coverImage,
     taskId: taskId.present ? taskId.value : this.taskId,
+    type: type.present ? type.value : this.type,
+    focusAt: focusAt.present ? focusAt.value : this.focusAt,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
@@ -1752,6 +1824,8 @@ class Note extends DataClass implements Insertable<Note> {
           ? data.coverImage.value
           : this.coverImage,
       taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      type: data.type.present ? data.type.value : this.type,
+      focusAt: data.focusAt.present ? data.focusAt.value : this.focusAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
@@ -1768,6 +1842,8 @@ class Note extends DataClass implements Insertable<Note> {
           ..write('images: $images, ')
           ..write('coverImage: $coverImage, ')
           ..write('taskId: $taskId, ')
+          ..write('type: $type, ')
+          ..write('focusAt: $focusAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
@@ -1784,6 +1860,8 @@ class Note extends DataClass implements Insertable<Note> {
     images,
     coverImage,
     taskId,
+    type,
+    focusAt,
     createdAt,
     updatedAt,
     deletedAt,
@@ -1799,6 +1877,8 @@ class Note extends DataClass implements Insertable<Note> {
           other.images == this.images &&
           other.coverImage == this.coverImage &&
           other.taskId == this.taskId &&
+          other.type == this.type &&
+          other.focusAt == this.focusAt &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.deletedAt == this.deletedAt);
@@ -1812,6 +1892,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
   final Value<List<String>> images;
   final Value<String?> coverImage;
   final Value<String?> taskId;
+  final Value<NoteType?> type;
+  final Value<Jiffy?> focusAt;
   final Value<Jiffy> createdAt;
   final Value<Jiffy?> updatedAt;
   final Value<Jiffy?> deletedAt;
@@ -1824,6 +1906,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.images = const Value.absent(),
     this.coverImage = const Value.absent(),
     this.taskId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.focusAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1837,6 +1921,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
     this.images = const Value.absent(),
     this.coverImage = const Value.absent(),
     this.taskId = const Value.absent(),
+    this.type = const Value.absent(),
+    this.focusAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.deletedAt = const Value.absent(),
@@ -1850,6 +1936,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Expression<String>? images,
     Expression<String>? coverImage,
     Expression<String>? taskId,
+    Expression<String>? type,
+    Expression<DateTime>? focusAt,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? deletedAt,
@@ -1863,6 +1951,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
       if (images != null) 'images': images,
       if (coverImage != null) 'cover_image': coverImage,
       if (taskId != null) 'task_id': taskId,
+      if (type != null) 'type': type,
+      if (focusAt != null) 'focus_at': focusAt,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (deletedAt != null) 'deleted_at': deletedAt,
@@ -1878,6 +1968,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
     Value<List<String>>? images,
     Value<String?>? coverImage,
     Value<String?>? taskId,
+    Value<NoteType?>? type,
+    Value<Jiffy?>? focusAt,
     Value<Jiffy>? createdAt,
     Value<Jiffy?>? updatedAt,
     Value<Jiffy?>? deletedAt,
@@ -1891,6 +1983,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
       images: images ?? this.images,
       coverImage: coverImage ?? this.coverImage,
       taskId: taskId ?? this.taskId,
+      type: type ?? this.type,
+      focusAt: focusAt ?? this.focusAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       deletedAt: deletedAt ?? this.deletedAt,
@@ -1924,6 +2018,16 @@ class NotesCompanion extends UpdateCompanion<Note> {
     if (taskId.present) {
       map['task_id'] = Variable<String>(taskId.value);
     }
+    if (type.present) {
+      map['type'] = Variable<String>(
+        $NotesTable.$convertertypen.toSql(type.value),
+      );
+    }
+    if (focusAt.present) {
+      map['focus_at'] = Variable<DateTime>(
+        $NotesTable.$converterfocusAtn.toSql(focusAt.value),
+      );
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(
         $NotesTable.$convertercreatedAt.toSql(createdAt.value),
@@ -1955,6 +2059,8 @@ class NotesCompanion extends UpdateCompanion<Note> {
           ..write('images: $images, ')
           ..write('coverImage: $coverImage, ')
           ..write('taskId: $taskId, ')
+          ..write('type: $type, ')
+          ..write('focusAt: $focusAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt, ')
@@ -6394,6 +6500,8 @@ typedef $$NotesTableCreateCompanionBuilder =
       Value<List<String>> images,
       Value<String?> coverImage,
       Value<String?> taskId,
+      Value<NoteType?> type,
+      Value<Jiffy?> focusAt,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -6408,6 +6516,8 @@ typedef $$NotesTableUpdateCompanionBuilder =
       Value<List<String>> images,
       Value<String?> coverImage,
       Value<String?> taskId,
+      Value<NoteType?> type,
+      Value<Jiffy?> focusAt,
       Value<Jiffy> createdAt,
       Value<Jiffy?> updatedAt,
       Value<Jiffy?> deletedAt,
@@ -6493,6 +6603,18 @@ class $$NotesTableFilterComposer extends Composer<_$AppDatabase, $NotesTable> {
     column: $table.coverImage,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnWithTypeConverterFilters<NoteType?, NoteType, String> get type =>
+      $composableBuilder(
+        column: $table.type,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnWithTypeConverterFilters<Jiffy?, Jiffy, DateTime> get focusAt =>
+      $composableBuilder(
+        column: $table.focusAt,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
 
   ColumnWithTypeConverterFilters<Jiffy, Jiffy, DateTime> get createdAt =>
       $composableBuilder(
@@ -6600,6 +6722,16 @@ class $$NotesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get focusAt => $composableBuilder(
+    column: $table.focusAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -6667,6 +6799,12 @@ class $$NotesTableAnnotationComposer
     column: $table.coverImage,
     builder: (column) => column,
   );
+
+  GeneratedColumnWithTypeConverter<NoteType?, String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<Jiffy?, DateTime> get focusAt =>
+      $composableBuilder(column: $table.focusAt, builder: (column) => column);
 
   GeneratedColumnWithTypeConverter<Jiffy, DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -6761,6 +6899,8 @@ class $$NotesTableTableManager
                 Value<List<String>> images = const Value.absent(),
                 Value<String?> coverImage = const Value.absent(),
                 Value<String?> taskId = const Value.absent(),
+                Value<NoteType?> type = const Value.absent(),
+                Value<Jiffy?> focusAt = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
@@ -6773,6 +6913,8 @@ class $$NotesTableTableManager
                 images: images,
                 coverImage: coverImage,
                 taskId: taskId,
+                type: type,
+                focusAt: focusAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,
@@ -6787,6 +6929,8 @@ class $$NotesTableTableManager
                 Value<List<String>> images = const Value.absent(),
                 Value<String?> coverImage = const Value.absent(),
                 Value<String?> taskId = const Value.absent(),
+                Value<NoteType?> type = const Value.absent(),
+                Value<Jiffy?> focusAt = const Value.absent(),
                 Value<Jiffy> createdAt = const Value.absent(),
                 Value<Jiffy?> updatedAt = const Value.absent(),
                 Value<Jiffy?> deletedAt = const Value.absent(),
@@ -6799,6 +6943,8 @@ class $$NotesTableTableManager
                 images: images,
                 coverImage: coverImage,
                 taskId: taskId,
+                type: type,
+                focusAt: focusAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 deletedAt: deletedAt,

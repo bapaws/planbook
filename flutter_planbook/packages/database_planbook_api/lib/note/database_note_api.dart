@@ -68,7 +68,7 @@ class DatabaseNoteApi {
 
   Future<void> create({
     required Note note,
-    required List<NoteTag> noteTags,
+    List<NoteTag> noteTags = const [],
   }) async {
     await db.transaction(() async {
       await db.into(db.notes).insert(note);
@@ -80,7 +80,7 @@ class DatabaseNoteApi {
 
   Future<void> update({
     required Note note,
-    required List<NoteTag> noteTags,
+    List<NoteTag> noteTags = const [],
   }) async {
     await db.transaction(() async {
       await (db.update(
@@ -334,6 +334,29 @@ class DatabaseNoteApi {
         .asyncMap(buildNoteEntities);
   }
 
+  Stream<Note?> getNoteByFocusAt(
+    Jiffy focusAt, {
+    NoteType type = NoteType.dailyFocus,
+    String? userId,
+  }) {
+    final start = focusAt.startOf(
+      type == NoteType.dailyFocus ? Unit.day : Unit.week,
+    );
+    final end = focusAt.endOf(
+      type == NoteType.dailyFocus ? Unit.day : Unit.week,
+    );
+    return (db.select(db.notes)
+          ..where(
+            (n) =>
+                n.focusAt.isBiggerOrEqualValue(start.toUtc().dateTime) &
+                n.focusAt.isSmallerOrEqualValue(end.toUtc().dateTime) &
+                n.type.equals(type.name) &
+                (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
+          )
+          ..limit(1))
+        .watchSingleOrNull();
+  }
+
   Future<Jiffy?> getStartDate({String? userId}) async {
     final row =
         await (db.select(
@@ -351,9 +374,16 @@ class DatabaseNoteApi {
   }
 
   Future<void> deleteNoteById(String noteId) async {
-    await (db.update(db.notes)..where(
-          (n) => n.id.equals(noteId) & n.deletedAt.isNull(),
-        ))
-        .write(NotesCompanion(deletedAt: Value(Jiffy.now())));
+    final now = Jiffy.now();
+    await db.transaction(() async {
+      await (db.update(db.notes)..where(
+            (n) => n.id.equals(noteId) & n.deletedAt.isNull(),
+          ))
+          .write(NotesCompanion(deletedAt: Value(now)));
+      await (db.update(db.noteTags)..where(
+            (nt) => nt.noteId.equals(noteId) & nt.deletedAt.isNull(),
+          ))
+          .write(NoteTagsCompanion(deletedAt: Value(now)));
+    });
   }
 }

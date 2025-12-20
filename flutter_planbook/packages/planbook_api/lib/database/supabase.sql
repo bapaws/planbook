@@ -88,6 +88,10 @@ CREATE TABLE IF NOT EXISTS planbook.notes (
     images TEXT,
     cover_image TEXT,
     task_id TEXT REFERENCES planbook.tasks(id) ON DELETE SET NULL,
+    -- 笔记类型（journal: 日记, dailyFocus: 每日目标, weeklyFocus: 每周目标）
+    type TEXT CHECK (type IN ('journal', 'dailyFocus', 'weeklyFocus')),
+    -- 目标日期（用于 dailyFocus 和 weeklyFocus 类型，标识目标对应的日期）
+    focus_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
@@ -96,6 +100,8 @@ CREATE TABLE IF NOT EXISTS planbook.notes (
 -- Notes 表索引
 CREATE INDEX IF NOT EXISTS idx_notes_user_id ON planbook.notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_notes_task_id ON planbook.notes(task_id);
+CREATE INDEX IF NOT EXISTS idx_notes_type ON planbook.notes(type);
+CREATE INDEX IF NOT EXISTS idx_notes_focus_at ON planbook.notes(focus_at);
 CREATE INDEX IF NOT EXISTS idx_notes_deleted_at ON planbook.notes(deleted_at) WHERE deleted_at IS NULL;
 
 -- ============================================
@@ -420,3 +426,37 @@ CREATE POLICY "Allow users to delete their own note images"
   USING (
     bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- ============================================
+-- 迁移脚本（用于已有数据库升级）
+-- ============================================
+-- 迁移 v2: 为 Notes 表添加 type 和 focus_at 字段
+-- 如果字段已存在则跳过
+DO $$
+BEGIN
+    -- 添加 type 字段
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'planbook' 
+        AND table_name = 'notes' 
+        AND column_name = 'type'
+    ) THEN
+        ALTER TABLE planbook.notes 
+        ADD COLUMN type TEXT CHECK (type IN ('journal', 'dailyFocus', 'weeklyFocus'));
+        
+        CREATE INDEX IF NOT EXISTS idx_notes_type ON planbook.notes(type);
+    END IF;
+
+    -- 添加 focus_at 字段
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_schema = 'planbook' 
+        AND table_name = 'notes' 
+        AND column_name = 'focus_at'
+    ) THEN
+        ALTER TABLE planbook.notes 
+        ADD COLUMN focus_at TIMESTAMPTZ;
+        
+        CREATE INDEX IF NOT EXISTS idx_notes_focus_at ON planbook.notes(focus_at);
+    END IF;
+END $$;

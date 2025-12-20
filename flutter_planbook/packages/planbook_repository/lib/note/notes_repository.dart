@@ -22,6 +22,7 @@ class NotesRepository {
        _tagApi = tagApi;
 
   final DatabaseNoteApi _dbNoteApi;
+
   final SupabaseNoteApi _supabaseNoteApi;
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
@@ -48,6 +49,8 @@ class NotesRepository {
     List<TagEntity>? tags,
     String? taskId,
     Jiffy? createdAt,
+    Jiffy? focusAt,
+    NoteType? type,
   }) async {
     final noteId = const Uuid().v4();
 
@@ -59,6 +62,8 @@ class NotesRepository {
       taskId: taskId,
       createdAt: createdAt ?? Jiffy.now(),
       userId: userId,
+      focusAt: focusAt,
+      type: type,
     );
     final noteTags = _dbNoteApi.generateNoteTags(
       tags: tags,
@@ -149,6 +154,13 @@ class NotesRepository {
       tagIds: tagIds,
       userId: userId,
     );
+  }
+
+  Stream<Note?> getNoteByFocusAt(
+    Jiffy focusAt, {
+    NoteType type = NoteType.dailyFocus,
+  }) {
+    return _dbNoteApi.getNoteByFocusAt(focusAt, type: type, userId: userId);
   }
 
   Future<Jiffy?> getStartDate() async {

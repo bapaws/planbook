@@ -48,6 +48,14 @@
   "orange": "Orange",
   "teal": "Teal",
   "indigo": "Indigo",
+  "deepPurple": "Deep Purple",
+  "lightBlue": "Light Blue",
+  "cyan": "Cyan",
+  "lightGreen": "Light Green",
+  "lime": "Lime",
+  "amber": "Amber",
+  "deepOrange": "Deep Orange",
+  "brown": "Brown",
   "darkMode": "Dark Mode",
   "lightMode": "Light Mode",
   "dark": "Dark",
@@ -303,5 +311,12 @@
   "dot": "Dot",
   "grid": "Grid",
   "saveSuccess": "Save Success",
-  "saveFailed": "Save Failed"
+  "saveFailed": "Save Failed",
+  "dailyFocus": "Daily Focus",
+  "weeklyFocus": "Weekly Focus",
+  "journal": "Journal",
+  "thinkAboutWeeklyFocus": "Think about what matters most this week.",
+  "thinkAboutDailyFocus": "Think about what matters most today.",
+  "thisWeek": "This Week",
+  "lastWeek": "Last Week"
 }
