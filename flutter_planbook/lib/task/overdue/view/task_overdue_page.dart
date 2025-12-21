@@ -9,6 +9,7 @@ import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
@@ -65,6 +66,9 @@ class _TaskOverdueListPage extends StatelessWidget {
   }
 
   Widget _buildTaskList(BuildContext context, {TagEntity? tag}) {
+    final date = Jiffy.now();
+    final yesterday = Jiffy.parseFromList([2025, 12, 20, 12]);
+    print(date.diff(yesterday, unit: Unit.day).toInt());
     return BlocProvider(
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
       create: (context) =>
@@ -89,6 +93,11 @@ class _TaskOverdueListPage extends StatelessWidget {
           builder: (context, state) => TaskListView(
             tasks: state.tasks,
             header: tag != null ? TaskListHeader(tag: tag) : null,
+            onTaskDelayed: (task) {
+              context.read<TaskListBloc>().add(
+                TaskListTaskDelayed(task: task, delayTo: Jiffy.now()),
+              );
+            },
           ),
         ),
       ),

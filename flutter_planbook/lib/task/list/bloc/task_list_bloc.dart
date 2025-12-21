@@ -28,6 +28,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
+    on<TaskListTaskDelayed>(_onTaskDelayed);
   }
 
   final TasksRepository _tasksRepository;
@@ -143,5 +144,21 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
     );
+  }
+
+  /// 延迟任务到指定时间
+  ///
+  /// 对于非重复任务：直接修改 dueAt/startAt/endAt 时间
+  /// 对于重复任务：创建分离实例（仅延迟这一个实例）
+  Future<void> _onTaskDelayed(
+    TaskListTaskDelayed event,
+    Emitter<TaskListState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _tasksRepository.delayTask(
+      entity: event.task,
+      delayTo: event.delayTo ?? Jiffy.now(),
+    );
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

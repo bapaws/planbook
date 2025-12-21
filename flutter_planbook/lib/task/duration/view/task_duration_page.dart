@@ -57,7 +57,9 @@ class _TaskDurationPageState extends State<TaskDurationPage> {
               titleSpacing: 0,
               title: CupertinoButton(
                 onPressed: () {
-                  context.router.maybePop();
+                  context.router.maybePop(
+                    const TaskDurationEntity(isAllDay: true),
+                  );
                 },
                 child: Text(context.l10n.allDay),
               ),

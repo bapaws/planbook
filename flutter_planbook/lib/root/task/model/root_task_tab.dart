@@ -42,7 +42,7 @@ enum RootTaskTab {
       RootTaskTab.inbox => context.l10n.inbox,
       RootTaskTab.day => context.l10n.today,
       RootTaskTab.overdue => context.l10n.overdue,
-      RootTaskTab.week => context.l10n.week,
+      RootTaskTab.week => context.l10n.thisWeek,
       _ => throw UnimplementedError(),
     };
   }

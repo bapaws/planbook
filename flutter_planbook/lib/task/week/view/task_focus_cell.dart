@@ -44,7 +44,7 @@ class TaskFocusCell extends StatelessWidget {
                   ),
                   child: Text(
                     note?.title ?? context.l10n.thinkAboutWeeklyFocus,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: note == null
                           ? theme.colorScheme.outlineVariant
                           : theme.colorScheme.primary,

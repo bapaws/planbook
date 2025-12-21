@@ -14,6 +14,7 @@ class TaskListView extends StatelessWidget {
     this.onTaskDeleted,
     this.onTaskEdited,
     this.header,
+    this.onTaskDelayed,
     super.key,
   });
 
@@ -24,6 +25,8 @@ class TaskListView extends StatelessWidget {
   final ValueChanged<TaskEntity>? onTaskCompleted;
   final ValueChanged<TaskEntity>? onTaskDeleted;
   final ValueChanged<TaskEntity>? onTaskEdited;
+
+  final ValueChanged<TaskEntity>? onTaskDelayed;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +48,7 @@ class TaskListView extends StatelessWidget {
         onTaskCompleted: onTaskCompleted,
         onTaskDeleted: onTaskDeleted,
         onTaskEdited: onTaskEdited,
+        onTaskDelayed: onTaskDelayed,
       ),
     );
   }
@@ -58,6 +62,7 @@ class TaskSliverList extends StatelessWidget {
     this.onTaskCompleted,
     this.onTaskDeleted,
     this.onTaskEdited,
+    this.onTaskDelayed,
     super.key,
   });
 
@@ -68,6 +73,7 @@ class TaskSliverList extends StatelessWidget {
   final ValueChanged<TaskEntity>? onTaskCompleted;
   final ValueChanged<TaskEntity>? onTaskDeleted;
   final ValueChanged<TaskEntity>? onTaskEdited;
+  final ValueChanged<TaskEntity>? onTaskDelayed;
 
   @override
   Widget build(BuildContext context) {
@@ -114,6 +120,11 @@ class TaskSliverList extends StatelessWidget {
               onEdited: () {
                 context.router.push(TaskNewRoute(initialTask: task));
               },
+              onDelayed: onTaskDelayed != null
+                  ? () {
+                      onTaskDelayed?.call(task);
+                    }
+                  : null,
             );
           },
         ),

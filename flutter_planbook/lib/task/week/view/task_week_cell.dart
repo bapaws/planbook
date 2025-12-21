@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/week/view/task_week_header.dart';
-import 'package:flutter_planbook/task/week/view/task_week_list_tile.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class TaskWeekCell extends StatelessWidget {
@@ -56,7 +56,8 @@ class TaskWeekCell extends StatelessWidget {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
-            return TaskWeekListTile(
+            return TaskListTile.week(
+              key: ValueKey(task),
               task: task,
               onPressed: () =>
                   context.router.push(TaskDetailRoute(taskId: task.id)),

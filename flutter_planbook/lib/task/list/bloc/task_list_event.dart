@@ -65,3 +65,22 @@ final class TaskListNoteCreated extends TaskListEvent {
   @override
   List<Object?> get props => [task, activity];
 }
+
+final class TaskListTaskDelayed extends TaskListEvent {
+  const TaskListTaskDelayed({
+    required this.task,
+    this.delayTo,
+    this.occurrenceAt,
+  });
+
+  final TaskEntity task;
+
+  /// 延迟到的目标时间
+  final Jiffy? delayTo;
+
+  /// 重复任务的发生时间（用于标识是哪个实例被延迟）
+  final Jiffy? occurrenceAt;
+
+  @override
+  List<Object?> get props => [task, delayTo, occurrenceAt];
+}

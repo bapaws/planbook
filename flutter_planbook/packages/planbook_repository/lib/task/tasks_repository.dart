@@ -23,7 +23,11 @@ class TasksRepository {
        _dbTaskInboxApi = DatabaseTaskInboxApi(db: db, tagApi: tagApi),
        _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi),
        _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi),
-       _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi);
+       _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi),
+       _dbTaskDelayApi = DatabaseTaskDelayApi(
+         db: db,
+         tagApi: tagApi,
+       );
 
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
@@ -33,6 +37,7 @@ class TasksRepository {
   final DatabaseTaskOverdueApi _dbTaskOverdueApi;
   final DatabaseTaskTodayApi _dbTaskTodayApi;
   final DatabaseTaskCompletionApi _dbTaskCompletionApi;
+  final DatabaseTaskDelayApi _dbTaskDelayApi;
 
   final SupabaseTaskApi _supabaseTaskApi;
 
@@ -258,6 +263,55 @@ class TasksRepository {
 
   Future<Jiffy?> getStartDate() async {
     return _dbTaskApi.getStartDate();
+  }
+
+  /// 延迟任务到指定时间（Apple Calendar 风格）
+  ///
+  /// 对于非重复任务：直接修改 dueAt/startAt/endAt 时间
+  /// 对于重复任务：创建分离实例（仅延迟这一个实例）
+  ///
+  /// 注意：延迟任务只处理单个实例。如果需要修改整个重复序列，
+  /// 应该使用"编辑任务"功能，并让用户选择修改模式。
+  ///
+  /// [entity] 要延迟的任务实体
+  /// [delayTo] 延迟到的目标时间
+
+  Future<void> delayTask({
+    required TaskEntity entity,
+    required Jiffy delayTo,
+  }) async {
+    if (entity.dueAt == null &&
+        entity.startAt == null &&
+        entity.endAt == null) {
+      return;
+    }
+
+    final newTask = _dbTaskDelayApi.prepareDelayTask(
+      entity: entity,
+      delayTo: delayTo,
+      userId: userId,
+    );
+    final taskTags = _dbTaskApi.generateTaskTags(
+      task: newTask,
+      tags: entity.tags,
+      userId: userId,
+    );
+
+    if (entity.recurrenceRule != null) {
+      // 重复任务创建了新的分离实例
+      await _supabaseTaskApi.create(
+        task: newTask,
+        taskTags: taskTags,
+      );
+      await _dbTaskApi.create(task: newTask, taskTags: taskTags);
+    } else {
+      // 非重复任务更新了时间
+      await _supabaseTaskApi.update(
+        task: newTask,
+        taskTags: taskTags,
+      );
+      await _dbTaskApi.update(task: newTask, taskTags: taskTags);
+    }
   }
 
   Future<void> createDefaultTasks({required String languageCode}) async {

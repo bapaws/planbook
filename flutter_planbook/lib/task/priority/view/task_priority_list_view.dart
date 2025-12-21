@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_color_header.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_flag_header.dart';
-import 'package:flutter_planbook/task/priority/view/task_priority_list_tile.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class TaskPriorityListView extends StatelessWidget {
@@ -16,6 +16,7 @@ class TaskPriorityListView extends StatelessWidget {
     this.onTaskCompleted,
     this.onTaskDeleted,
     this.onTaskEdited,
+    this.onTaskDelayed,
   });
 
   final TaskPriorityStyle style;
@@ -24,6 +25,7 @@ class TaskPriorityListView extends StatelessWidget {
   final ValueChanged<TaskEntity>? onTaskCompleted;
   final ValueChanged<TaskEntity>? onTaskDeleted;
   final ValueChanged<TaskEntity>? onTaskEdited;
+  final ValueChanged<TaskEntity>? onTaskDelayed;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +58,7 @@ class TaskPriorityListView extends StatelessWidget {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
-                  return TaskPriorityListTile(
+                  return TaskListTile.priority(
                     key: ValueKey(task.occurrence?.id ?? task.id),
                     task: task,
                     onPressed: () {
@@ -89,6 +91,11 @@ class TaskPriorityListView extends StatelessWidget {
                     onEdited: () {
                       context.router.push(TaskNewRoute(initialTask: task));
                     },
+                    onDelayed: onTaskDelayed != null
+                        ? () {
+                            onTaskDelayed!(task);
+                          }
+                        : null,
                   );
                 },
               );

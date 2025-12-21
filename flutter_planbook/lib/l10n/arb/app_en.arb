@@ -108,6 +108,7 @@
   "otherDate": "Other Date",
   "inbox": "Inbox",
   "overdue": "Overdue",
+  "delayToToday": "Delay to Today",
   "addTag": "Add Tag",
   "tags": "Tags",
   "tag": "Tag",

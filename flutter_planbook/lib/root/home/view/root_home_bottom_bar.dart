@@ -147,13 +147,6 @@ class RootHomeBottomBar extends StatelessWidget {
     context.tabsRouter.setActiveIndex(tab.index);
   }
 
-  void _onTabDoubleTapped(BuildContext context, RootHomeTab tab) {
-    // final activeIndex = context.tabsRouter.activeIndex;
-    // if (activeIndex != index) {
-    //   return;
-    // }
-  }
-
   Future<void> _onActionTapped(BuildContext context, RootHomeTab tab) async {
     unawaited(HapticFeedback.lightImpact());
 

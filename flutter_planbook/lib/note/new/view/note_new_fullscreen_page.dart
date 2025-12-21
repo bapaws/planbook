@@ -6,7 +6,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/new/cubit/note_new_cubit.dart';
 import 'package:flutter_planbook/note/new/view/note_new_view.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
-import 'package:planbook_repository/planbook_repository.dart' hide Column;
+import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class NoteNewFullscreenPage extends StatelessWidget {

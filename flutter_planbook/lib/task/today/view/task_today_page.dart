@@ -48,6 +48,7 @@ class TaskTodayPage extends StatelessWidget {
           child: BlocBuilder<RootTaskBloc, RootTaskState>(
             buildWhen: (previous, current) =>
                 previous.viewType != current.viewType ||
+                previous.showCompleted != current.showCompleted ||
                 previous.priorityStyle != current.priorityStyle,
             builder: (context, rootTaskState) => AnimatedSwitcher(
               duration: Durations.medium1,
@@ -59,7 +60,7 @@ class TaskTodayPage extends StatelessWidget {
                   style: rootTaskState.priorityStyle,
                   mode: TaskListMode.today,
                   date: todayState.date,
-                  isCompleted: context.read<RootTaskBloc>().isCompleted,
+                  isCompleted: rootTaskState.isCompleted,
                 ),
               },
             ),

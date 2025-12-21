@@ -22,9 +22,9 @@ class DatabaseTaskApi {
       ..addColumns([db.tasks.id.count()])
       ..where(
         db.tasks.deletedAt.isNull() &
-        (userId == null
-            ? db.tasks.userId.isNull()
-            : db.tasks.userId.equals(userId)),
+            (userId == null
+                ? db.tasks.userId.isNull()
+                : db.tasks.userId.equals(userId)),
       );
     final result = await query.getSingleOrNull();
     return result?.read(db.tasks.id.count()) ?? 0;
