@@ -27,12 +27,14 @@ class NoteFocusPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return BlocProvider(
       create: (context) => NoteFocusCubit(
         notesRepository: context.read(),
         initialNote: initialNote,
         type: type,
         focusAt: focusAt,
+        l10n: l10n,
       ),
       child: BlocListener<NoteFocusCubit, NoteFocusState>(
         listenWhen: (previous, current) => previous.status != current.status,
@@ -78,7 +80,7 @@ class _NoteFocusPage extends StatelessWidget {
             TextFormField(
               autofocus: true,
               maxLines: 6,
-              initialValue: context.read<NoteFocusCubit>().state.title,
+              initialValue: context.read<NoteFocusCubit>().state.content,
               textInputAction: TextInputAction.newline,
               decoration: InputDecoration(
                 border: InputBorder.none,
@@ -90,7 +92,7 @@ class _NoteFocusPage extends StatelessWidget {
                   horizontal: 16,
                 ),
               ),
-              onChanged: context.read<NoteFocusCubit>().onTitleChanged,
+              onChanged: context.read<NoteFocusCubit>().onContentChanged,
             ),
             Row(
               children: [

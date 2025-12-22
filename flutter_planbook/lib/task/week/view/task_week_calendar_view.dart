@@ -23,6 +23,11 @@ class TaskWeekCalendarView extends StatelessWidget {
       headerVisible: false,
       rangeStartDay: date.startOf(Unit.week).dateTime,
       rangeEndDay: date.endOf(Unit.week).dateTime,
+      startingDayOfWeek: switch (date.startOfWeek) {
+        StartOfWeek.monday => StartingDayOfWeek.monday,
+        StartOfWeek.saturday => StartingDayOfWeek.saturday,
+        StartOfWeek.sunday => StartingDayOfWeek.sunday,
+      },
       // selectedDayPredicate: (day) {
       //   return Jiffy.parseFromDateTime(day).isSame(
       //     Jiffy.now(),

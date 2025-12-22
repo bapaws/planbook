@@ -7,8 +7,8 @@ import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 
-class TaskFocusCell extends StatelessWidget {
-  const TaskFocusCell({required this.note, super.key});
+class TaskWeekFocusCell extends StatelessWidget {
+  const TaskWeekFocusCell({required this.note, super.key});
 
   final Note? note;
 
@@ -43,7 +43,7 @@ class TaskFocusCell extends StatelessWidget {
                     vertical: 8,
                   ),
                   child: Text(
-                    note?.title ?? context.l10n.thinkAboutWeeklyFocus,
+                    note?.content ?? context.l10n.thinkAboutWeeklyFocus,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: note == null
                           ? theme.colorScheme.outlineVariant

@@ -89,6 +89,16 @@
   "week": "Week", 
   "month": "Month",
   "year": "Year",
+  "weekOfYear": "W{week}",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
   "task": "Task",
   "morning": "Morning",
   "afternoon": "Afternoon",
@@ -315,6 +325,16 @@
   "saveFailed": "Save Failed",
   "dailyFocus": "Daily Focus",
   "weeklyFocus": "Weekly Focus",
+  "weeklyFocusTitle": "Weekly Focus - W{week}",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
   "journal": "Journal",
   "thinkAboutWeeklyFocus": "Think about what matters most this week.",
   "thinkAboutDailyFocus": "Think about what matters most today.",

@@ -6,9 +6,9 @@ import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
-import 'package:flutter_planbook/task/week/view/task_focus_cell.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
 import 'package:flutter_planbook/task/week/view/task_week_cell.dart';
+import 'package:flutter_planbook/task/week/view/task_week_focus_cell.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -199,7 +199,7 @@ class _TaskWeekPage extends StatelessWidget {
   Widget _buildInboxCell(BuildContext context) {
     return BlocSelector<TaskWeekBloc, TaskWeekState, Note?>(
       selector: (state) => state.note,
-      builder: (context, note) => TaskFocusCell(note: note),
+      builder: (context, note) => TaskWeekFocusCell(note: note),
     );
   }
 

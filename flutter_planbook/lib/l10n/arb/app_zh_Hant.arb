@@ -89,6 +89,7 @@
   "week": "週",
   "month": "月",
   "year": "年",
+  "weekOfYear": "第{week}週",
   "task": "任務",
   "morning": "上午",
   "afternoon": "下午",
@@ -269,10 +270,11 @@
   "saveSuccess": "儲存成功",
   "saveFailed": "儲存失敗",
   "dailyFocus": "每日重點",
-  "weeklyFocus": "每周重點",
+  "weeklyFocus": "本週重點",
+  "weeklyFocusTitle": "週重點 - 第{week}週",
   "journal": "日誌",
-  "thinkAboutWeeklyFocus": "想一想本周最重要的事情...",
+  "thinkAboutWeeklyFocus": "想一想本週最重要的事情...",
   "thinkAboutDailyFocus": "想一想今天最重要的事情...",
-  "thisWeek": "本周",
-  "lastWeek": "上周"
+  "thisWeek": "本週",
+  "lastWeek": "上週"
 }
