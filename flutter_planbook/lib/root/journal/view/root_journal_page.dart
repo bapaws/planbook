@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_core/planbook_core.dart';
-import 'package:screenshot/screenshot.dart';
 
 @RoutePage()
 class RootJournalPage extends StatelessWidget {
@@ -44,8 +44,6 @@ class _RootJournalPage extends StatefulWidget {
 
 class _RootJournalPageState extends State<_RootJournalPage> {
   late final FlipPageController _controller;
-
-  late final screenshotController = ScreenshotController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -123,7 +121,6 @@ class _RootJournalPageState extends State<_RootJournalPage> {
                   initialPage: initialPage,
                   itemsCount: state.days,
                   controller: _controller,
-                  captureController: screenshotController,
                   itemBuilder: (context, index) {
                     final date = startOfYear.add(days: index);
                     return FittedBox(
@@ -143,15 +140,28 @@ class _RootJournalPageState extends State<_RootJournalPage> {
   Future<void> _capture(BuildContext context, Jiffy date) async {
     await EasyLoading.show();
     if (!context.mounted) return;
-    final imageBytes = await screenshotController.capture();
-
-    if (!context.mounted) return;
-    if (imageBytes == null || !context.mounted) {
-      await EasyLoading.showError(context.l10n.saveFailed);
-      return;
-    }
 
     try {
+      // 使用 controller 截图
+      final image = await _controller.captureToImage(
+        pixelRatio: MediaQuery.of(context).devicePixelRatio,
+      );
+
+      if (!context.mounted) return;
+      if (image == null) {
+        await EasyLoading.showError(context.l10n.saveFailed);
+        return;
+      }
+
+      // 将 ui.Image 转换为 PNG 字节数据
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      if (!context.mounted) return;
+      if (byteData == null) {
+        await EasyLoading.showError(context.l10n.saveFailed);
+        return;
+      }
+
+      final imageBytes = byteData.buffer.asUint8List();
       final dateStr =
           '${date.year}-'
           '${date.month.toString().padLeft(2, '0')}-'

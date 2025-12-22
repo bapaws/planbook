@@ -1,8 +1,9 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:screenshot/screenshot.dart';
+import 'package:flutter/rendering.dart';
 
 enum FlipPageDirection {
   left(-1),
@@ -47,10 +48,19 @@ class FlipPageController extends ChangeNotifier {
   /// The page to show when first creating the [FlipPageView].
   final int initialPage;
 
+  /// 当前页面的 RenderRepaintBoundary（用于截图）
+  RenderRepaintBoundary? _currentBoundary;
+
   _AnimateToPageCallback? _animateToPageCallback;
   _JumpToPageCallback? _jumpToPageCallback;
   _GetCurrentPageCallback? _getCurrentPageCallback;
   _GetItemsCountCallback? _getItemsCountCallback;
+
+  /// 注册当前页面的 RenderRepaintBoundary（由 FlipPageView 内部调用）
+  void _registerCurrentBoundary(RenderRepaintBoundary? boundary) {
+    if (_currentBoundary == boundary) return;
+    _currentBoundary = boundary;
+  }
 
   /// Whether this controller is attached to a [FlipPageView].
   bool get hasClients =>
@@ -116,6 +126,15 @@ class FlipPageController extends ChangeNotifier {
     return animateToPage(prevPageIndex, duration: duration, curve: curve);
   }
 
+  /// 将当前页面捕获为图片
+  ///
+  /// [pixelRatio] 图片的像素密度，默认为 1.0
+  /// 返回 [ui.Image]，可通过 `toByteData()` 转换为字节数据
+  Future<ui.Image?> captureToImage({double pixelRatio = 1.0}) async {
+    if (_currentBoundary == null) return null;
+    return _currentBoundary!.toImage(pixelRatio: pixelRatio);
+  }
+
   void _attach({
     required _AnimateToPageCallback animateToPage,
     required _JumpToPageCallback jumpToPage,
@@ -133,6 +152,7 @@ class FlipPageController extends ChangeNotifier {
     _jumpToPageCallback = null;
     _getCurrentPageCallback = null;
     _getItemsCountCallback = null;
+    _currentBoundary = null; // 清除对 RenderObject 的引用，避免内存泄漏
   }
 
   void _notifyPageChanged() {
@@ -153,7 +173,6 @@ class FlipPageView extends StatefulWidget {
     this.initialPage = 0,
     this.controller,
     this.spacing,
-    this.captureController,
     super.key,
   });
 
@@ -162,8 +181,6 @@ class FlipPageView extends StatefulWidget {
   final int initialPage;
   final FlipPageController? controller;
   final double? spacing;
-
-  final ScreenshotController? captureController;
 
   @override
   State<FlipPageView> createState() => _FlipPageViewState();
@@ -458,6 +475,27 @@ class _FlipPageViewState extends State<FlipPageView>
     setState(() {});
   }
 
+  /// 构建页面内容，所有页面使用相同结构
+  /// [index] 页面索引
+  /// [isCurrentPage] 是否是当前页面（用于注册截图 boundary）
+  Widget _buildPageContent(int index, {required bool isCurrentPage}) {
+    return RepaintBoundary(
+      child: Builder(
+        builder: (context) {
+          if (isCurrentPage) {
+            // 在 frame 结束后注册 boundary，避免在 build 中同步调用
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              final boundary = context
+                  .findAncestorRenderObjectOfType<RenderRepaintBoundary>();
+              widget.controller?._registerCurrentBoundary(boundary);
+            });
+          }
+          return widget.itemBuilder!(context, index);
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -486,11 +524,11 @@ class _FlipPageViewState extends State<FlipPageView>
                     child: Align(
                       alignment: Alignment.centerLeft,
                       widthFactor: 0.5,
-                      child: widget.itemBuilder!(
-                        context,
+                      child: _buildPageContent(
                         _currentIndex <= 1
                             ? widget.itemsCount - 2 + _currentIndex
                             : _currentIndex - 2,
+                        isCurrentPage: false,
                       ),
                     ),
                   ),
@@ -516,11 +554,11 @@ class _FlipPageViewState extends State<FlipPageView>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     widthFactor: 0.5,
-                    child: widget.itemBuilder!(
-                      context,
+                    child: _buildPageContent(
                       _currentIndex == 0
                           ? widget.itemsCount - 1
                           : _currentIndex - 1,
+                      isCurrentPage: false,
                     ),
                   ),
                 ),
@@ -535,9 +573,9 @@ class _FlipPageViewState extends State<FlipPageView>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     widthFactor: 0.5,
-                    child: widget.itemBuilder!(
-                      context,
+                    child: _buildPageContent(
                       _currentIndex,
+                      isCurrentPage: false, // 左半边不需要注册，右半边注册
                     ),
                   ),
                 ),
@@ -564,11 +602,11 @@ class _FlipPageViewState extends State<FlipPageView>
                     child: Align(
                       alignment: Alignment.centerRight,
                       widthFactor: 0.5,
-                      child: widget.itemBuilder!(
-                        context,
+                      child: _buildPageContent(
                         _currentIndex >= widget.itemsCount - 2
                             ? _currentIndex - widget.itemsCount + 2
                             : _currentIndex + 2,
+                        isCurrentPage: false,
                       ),
                     ),
                   ),
@@ -593,11 +631,11 @@ class _FlipPageViewState extends State<FlipPageView>
                   child: Align(
                     alignment: Alignment.centerRight,
                     widthFactor: 0.5,
-                    child: widget.itemBuilder!(
-                      context,
+                    child: _buildPageContent(
                       _currentIndex == widget.itemsCount - 1
                           ? 0
                           : _currentIndex + 1,
+                      isCurrentPage: false,
                     ),
                   ),
                 ),
@@ -612,12 +650,10 @@ class _FlipPageViewState extends State<FlipPageView>
                   child: Align(
                     alignment: Alignment.centerRight,
                     widthFactor: 0.5,
-                    child: widget.captureController != null
-                        ? Screenshot(
-                            controller: widget.captureController!,
-                            child: widget.itemBuilder!(context, _currentIndex),
-                          )
-                        : widget.itemBuilder!(context, _currentIndex),
+                    child: _buildPageContent(
+                      _currentIndex,
+                      isCurrentPage: true, // 右半边注册用于截图
+                    ),
                   ),
                 ),
               ),
