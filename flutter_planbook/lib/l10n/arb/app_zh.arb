@@ -271,10 +271,11 @@
   "saveFailed": "保存失败",
   "dailyFocus": "每日重点",
   "weeklyFocus": "本周重点",
-  "weeklyFocusTitle": "周重点 - 第{week}周",
+  "weeklyFocusTitle": "第{week}周重点",
+  "dailyFocusTitle": "{date}重点",
   "journal": "日志",
-  "thinkAboutWeeklyFocus": "想一想本周最重要的事情...",
-  "thinkAboutDailyFocus": "想一想今天最重要的事情...",
+  "thinkAboutWeeklyFocus": "本周最想完成什么？",
+  "thinkAboutDailyFocus": "今天最想完成什么？",
   "thisWeek": "本周",
   "lastWeek": "上周"
 }

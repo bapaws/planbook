@@ -49,35 +49,42 @@ class _NoteTimelinePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<NoteTimelineBloc, NoteTimelineState>(
       builder: (context, state) {
-        return AppCalendarView<void>(
-          date: state.date,
-          calendarFormat: state.calendarFormat,
-          onDateSelected: (date) {
-            context.read<NoteTimelineBloc>().add(
-              NoteTimelineDateSelected(date: date),
-            );
-          },
-          child: BlocSelector<NoteListBloc, NoteListState, List<NoteEntity>>(
-            selector: (state) => state.notes,
-            builder: (context, notes) {
-              if (notes.isEmpty) {
-                return const AppEmptyNoteView();
-              }
-              final key = ValueKey(state.date.dateKey);
-              return AnimatedSwitcher(
-                duration: Durations.medium1,
-                child: NoteListView(
-                  key: key,
-                  notes: notes,
-                  onDeleted: (note) {
-                    context.read<NoteListBloc>().add(
-                      NoteListDeleted(note: note),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
+        return Column(
+          children: [
+            AppCalendarView<void>(
+              date: state.date,
+              calendarFormat: state.calendarFormat,
+              onDateSelected: (date) {
+                context.read<NoteTimelineBloc>().add(
+                  NoteTimelineDateSelected(date: date),
+                );
+              },
+            ),
+            Expanded(
+              child:
+                  BlocSelector<NoteListBloc, NoteListState, List<NoteEntity>>(
+                    selector: (state) => state.notes,
+                    builder: (context, notes) {
+                      if (notes.isEmpty) {
+                        return const AppEmptyNoteView();
+                      }
+                      final key = ValueKey(state.date.dateKey);
+                      return AnimatedSwitcher(
+                        duration: Durations.medium1,
+                        child: NoteListView(
+                          key: key,
+                          notes: notes,
+                          onDeleted: (note) {
+                            context.read<NoteListBloc>().add(
+                              NoteListDeleted(note: note),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+            ),
+          ],
         );
       },
     );

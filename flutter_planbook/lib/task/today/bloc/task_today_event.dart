@@ -25,3 +25,12 @@ final class TaskTodayCalendarFormatChanged extends TaskTodayEvent {
   @override
   List<Object?> get props => [calendarFormat];
 }
+
+final class TaskTodayFocusNoteRequested extends TaskTodayEvent {
+  const TaskTodayFocusNoteRequested({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object?> get props => [date];
+}

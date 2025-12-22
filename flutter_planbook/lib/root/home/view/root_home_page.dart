@@ -47,6 +47,7 @@ class RootHomePage extends StatelessWidget {
         BlocProvider(
           create: (context) => TaskTodayBloc(
             tasksRepository: context.read(),
+            notesRepository: context.read(),
           )..add(TaskTodayDateSelected(date: Jiffy.now())),
         ),
       ],

@@ -29,18 +29,34 @@ class NoteFocusCubit extends Cubit<NoteFocusState> {
 
   Future<void> onSave() async {
     emit(state.copyWith(status: PageStatus.loading));
-    // 使用该周的周一作为 focusAt
-    // dayOfWeek: 1=周一, 7=周日 (ISO 8601)
-    final monday = focusAt
-        .subtract(days: focusAt.dateTime.weekday - 1)
-        .toUtc()
-        .startOf(Unit.day);
-    final title = _l10n.weeklyFocusTitle(monday.weekOfYear);
+
+    final Jiffy normalizedFocusAt;
+    final String title;
+
+    switch (type) {
+      case NoteType.weeklyFocus:
+        // 周目标：使用该周的周一作为 focusAt
+        // weekday: 1=周一, 7=周日 (ISO 8601)
+        normalizedFocusAt = focusAt
+            .subtract(days: focusAt.dateTime.weekday - 1)
+            .toUtc()
+            .startOf(Unit.day);
+        title = _l10n.weeklyFocusTitle(normalizedFocusAt.weekOfYear);
+      case NoteType.dailyFocus:
+        // 日目标：使用当天开始作为 focusAt
+        normalizedFocusAt = focusAt.toUtc().startOf(Unit.day);
+        title = _l10n.dailyFocusTitle(focusAt.dateTime);
+      case NoteType.journal:
+        // 日记类型不应该在这里处理
+        normalizedFocusAt = focusAt.toUtc().startOf(Unit.day);
+        title = '';
+    }
+
     if (state.initialNote == null) {
       await _notesRepository.create(
         title: title,
         content: state.content,
-        focusAt: monday,
+        focusAt: normalizedFocusAt,
         type: type,
       );
     } else {

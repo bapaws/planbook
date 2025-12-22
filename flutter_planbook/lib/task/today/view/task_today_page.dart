@@ -11,6 +11,7 @@ import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
+import 'package:flutter_planbook/task/today/view/task_today_focus_view.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -23,48 +24,56 @@ class TaskTodayPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TaskTodayBloc, TaskTodayState>(
       builder: (context, todayState) {
-        return AppCalendarView<TaskEntity>(
-          date: todayState.date,
-          calendarFormat: todayState.calendarFormat,
-          // eventLoader: (day) {
-          //   final date = Jiffy.parseFromDateTime(day);
-          //   final count = todayState.taskCounts[date.dateKey];
-          //   if (count == null) {
-          //     context.read<TaskTodayBloc>().add(
-          //       TaskTodayTaskCountRequested(date),
-          //     );
-          //     return [];
-          //   }
-          //   return [];
-          // },
-          onDateSelected: (date) {
-            context.read<TaskTodayBloc>().add(
-              TaskTodayDateSelected(
-                date: date,
-                isCompleted: context.read<RootTaskBloc>().isCompleted,
-              ),
-            );
-          },
-          child: BlocBuilder<RootTaskBloc, RootTaskState>(
-            buildWhen: (previous, current) =>
-                previous.viewType != current.viewType ||
-                previous.showCompleted != current.showCompleted ||
-                previous.priorityStyle != current.priorityStyle,
-            builder: (context, rootTaskState) => AnimatedSwitcher(
-              duration: Durations.medium1,
-              child: switch (rootTaskState.viewType) {
-                RootTaskViewType.list => _TaskTodayListPage(
-                  day: todayState.date,
-                ),
-                RootTaskViewType.priority => TaskPriorityPage(
-                  style: rootTaskState.priorityStyle,
-                  mode: TaskListMode.today,
-                  date: todayState.date,
-                  isCompleted: rootTaskState.isCompleted,
-                ),
+        return Column(
+          children: [
+            AppCalendarView<TaskEntity>(
+              date: todayState.date,
+              calendarFormat: todayState.calendarFormat,
+              // eventLoader: (day) {
+              //   final date = Jiffy.parseFromDateTime(day);
+              //   final count = todayState.taskCounts[date.dateKey];
+              //   if (count == null) {
+              //     context.read<TaskTodayBloc>().add(
+              //       TaskTodayTaskCountRequested(date),
+              //     );
+              //     return [];
+              //   }
+              //   return [];
+              // },
+              onDateSelected: (date) {
+                context.read<TaskTodayBloc>().add(
+                  TaskTodayDateSelected(
+                    date: date,
+                    isCompleted: context.read<RootTaskBloc>().isCompleted,
+                  ),
+                );
               },
             ),
-          ),
+            TaskTodayFocusView(note: todayState.focusNote),
+            const SizedBox(height: 8),
+            Expanded(
+              child: BlocBuilder<RootTaskBloc, RootTaskState>(
+                buildWhen: (previous, current) =>
+                    previous.viewType != current.viewType ||
+                    previous.showCompleted != current.showCompleted ||
+                    previous.priorityStyle != current.priorityStyle,
+                builder: (context, rootTaskState) => AnimatedSwitcher(
+                  duration: Durations.medium1,
+                  child: switch (rootTaskState.viewType) {
+                    RootTaskViewType.list => _TaskTodayListPage(
+                      day: todayState.date,
+                    ),
+                    RootTaskViewType.priority => TaskPriorityPage(
+                      style: rootTaskState.priorityStyle,
+                      mode: TaskListMode.today,
+                      date: todayState.date,
+                      isCompleted: rootTaskState.isCompleted,
+                    ),
+                  },
+                ),
+              ),
+            ),
+          ],
         );
       },
     );

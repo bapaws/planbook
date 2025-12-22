@@ -325,7 +325,7 @@
   "saveFailed": "Save Failed",
   "dailyFocus": "Daily Focus",
   "weeklyFocus": "Weekly Focus",
-  "weeklyFocusTitle": "Weekly Focus - W{week}",
+  "weeklyFocusTitle": "Focus for Week {week}",
   "@weeklyFocusTitle": {
     "description": "Weekly Focus Title",
     "placeholders": {
@@ -335,9 +335,19 @@
       }
     }
   },
+  "dailyFocusTitle": "Focus for {date}",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
   "journal": "Journal",
-  "thinkAboutWeeklyFocus": "Think about what matters most this week.",
-  "thinkAboutDailyFocus": "Think about what matters most today.",
+  "thinkAboutWeeklyFocus": "What do you want to focus on this week?",
+  "thinkAboutDailyFocus": "What do you want to focus on today?",
   "thisWeek": "This Week",
   "lastWeek": "Last Week"
 }

@@ -108,8 +108,8 @@ class NoteListTile extends StatelessWidget {
                         if (note.title.isNotEmpty)
                           Text(
                             note.title,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
                               color: theme.colorScheme.onSurface,
                             ),
                           ),

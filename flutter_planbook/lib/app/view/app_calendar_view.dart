@@ -91,7 +91,6 @@ class AppCalendarDateView extends StatelessWidget {
 
 class AppCalendarView<T> extends StatelessWidget {
   AppCalendarView({
-    required this.child,
     required this.onDateSelected,
     Jiffy? date,
     this.calendarFormat = CalendarFormat.week,
@@ -99,7 +98,6 @@ class AppCalendarView<T> extends StatelessWidget {
     this.eventLoader,
   }) : date = date ?? Jiffy.now();
 
-  final Widget child;
   final Jiffy date;
   final CalendarFormat calendarFormat;
 
@@ -108,66 +106,59 @@ class AppCalendarView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TableCalendar<T>(
-          firstDay: firstDay,
-          lastDay: lastDay,
-          focusedDay: date.dateTime,
-          startingDayOfWeek: switch (date.startOfWeek) {
-            StartOfWeek.monday => StartingDayOfWeek.monday,
-            StartOfWeek.saturday => StartingDayOfWeek.saturday,
-            StartOfWeek.sunday => StartingDayOfWeek.sunday,
-          },
-          headerVisible: false,
-          headerStyle: const HeaderStyle(
-            leftChevronVisible: false,
-            rightChevronVisible: false,
-            headerPadding: EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 8,
-            ),
-          ),
-          rangeSelectionMode: RangeSelectionMode.disabled,
-          selectedDayPredicate: (day) {
-            return date.isSame(
-              Jiffy.parseFromDateTime(day),
-              unit: Unit.day,
-            );
-          },
-          calendarStyle: CalendarStyle(
-            // isTodayHighlighted: false,
-            rangeHighlightColor: Colors.red,
-            withinRangeTextStyle: TextStyle(
-              color: Theme.of(context).primaryColor,
-            ),
-            selectedTextStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            selectedDecoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              shape: BoxShape.circle,
-            ),
-            todayTextStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-            todayDecoration: BoxDecoration(
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outlineVariant,
-              ),
-              shape: BoxShape.circle,
-            ),
-          ),
-          eventLoader: eventLoader,
-          onDaySelected: (selectedDay, focusedDay) {
-            onDateSelected(Jiffy.parseFromDateTime(selectedDay));
-          },
-          calendarFormat: calendarFormat,
+    return TableCalendar<T>(
+      firstDay: firstDay,
+      lastDay: lastDay,
+      focusedDay: date.dateTime,
+      startingDayOfWeek: switch (date.startOfWeek) {
+        StartOfWeek.monday => StartingDayOfWeek.monday,
+        StartOfWeek.saturday => StartingDayOfWeek.saturday,
+        StartOfWeek.sunday => StartingDayOfWeek.sunday,
+      },
+      headerVisible: false,
+      headerStyle: const HeaderStyle(
+        leftChevronVisible: false,
+        rightChevronVisible: false,
+        headerPadding: EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
         ),
-        Expanded(
-          child: child,
+      ),
+      rangeSelectionMode: RangeSelectionMode.disabled,
+      selectedDayPredicate: (day) {
+        return date.isSame(
+          Jiffy.parseFromDateTime(day),
+          unit: Unit.day,
+        );
+      },
+      calendarStyle: CalendarStyle(
+        // isTodayHighlighted: false,
+        rangeHighlightColor: Colors.red,
+        withinRangeTextStyle: TextStyle(
+          color: Theme.of(context).primaryColor,
         ),
-      ],
+        selectedTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primaryContainer,
+          shape: BoxShape.circle,
+        ),
+        todayTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+        todayDecoration: BoxDecoration(
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
+          shape: BoxShape.circle,
+        ),
+      ),
+      eventLoader: eventLoader,
+      onDaySelected: (selectedDay, focusedDay) {
+        onDateSelected(Jiffy.parseFromDateTime(selectedDay));
+      },
+      calendarFormat: calendarFormat,
     );
   }
 }
