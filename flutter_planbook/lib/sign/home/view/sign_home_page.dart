@@ -51,10 +51,9 @@ class _SignHomePage extends StatelessWidget {
             body: Stack(
               children: [
                 Positioned(
-                  top: query.padding.top,
+                  top: (query.size.height - 420 - 320) / 2,
                   left: 0,
                   right: 0,
-                  bottom: 400 + query.padding.bottom,
                   child: const SignHomeSloganView(),
                 ),
 

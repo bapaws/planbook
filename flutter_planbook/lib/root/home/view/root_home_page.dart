@@ -7,6 +7,8 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
+import 'package:jiffy/jiffy.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight;
 
@@ -40,6 +42,12 @@ class RootHomePage extends StatelessWidget {
                 )
                 ..add(const RootTaskCountRequested())
                 ..add(const RootTaskPriorityStyleRequested()),
+        ),
+        // Add task
+        BlocProvider(
+          create: (context) => TaskTodayBloc(
+            tasksRepository: context.read(),
+          )..add(TaskTodayDateSelected(date: Jiffy.now())),
         ),
       ],
       child: const _RootHomePage(),

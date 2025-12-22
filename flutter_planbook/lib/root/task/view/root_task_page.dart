@@ -30,11 +30,6 @@ class RootTaskPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => TaskTodayBloc(
-            tasksRepository: context.read(),
-          )..add(TaskTodayDateSelected(date: Jiffy.now())),
-        ),
-        BlocProvider(
           create: (context) => TaskWeekBloc(
             notesRepository: context.read(),
           )..add(TaskWeekDateSelected(date: Jiffy.now())),

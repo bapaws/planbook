@@ -29,7 +29,7 @@ enum RootHomeTab {
 
   IconData get actionIcon => switch (this) {
     RootHomeTab.task => FontAwesomeIcons.plus,
-    RootHomeTab.journal => FontAwesomeIcons.shareNodes,
+    RootHomeTab.journal => FontAwesomeIcons.download,
     RootHomeTab.note => FontAwesomeIcons.featherPointed,
   };
 }
