@@ -450,7 +450,7 @@ class TasksRepository {
   Future<void> createDefaultTasks({required String languageCode}) async {
     const uuid = Uuid();
     final taskJsonString = await rootBundle.loadString(
-      'assets/files/${kDebugMode ? 'demo_' : ''}tasks_$languageCode.json',
+      'assets/${kDebugMode ? 'demo' : 'files'}/tasks_$languageCode.json',
     );
     final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
     for (final json in taskJson) {

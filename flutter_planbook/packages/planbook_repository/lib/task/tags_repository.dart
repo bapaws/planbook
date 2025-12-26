@@ -126,7 +126,7 @@ class TagsRepository {
 
   Future<void> createDefaultTags({required String languageCode}) async {
     final tagJsonString = await rootBundle.loadString(
-      'assets/files/${kDebugMode ? 'demo_' : ''}tags_$languageCode.json',
+      'assets/${kDebugMode ? 'demo' : 'files'}/tags_$languageCode.json',
     );
     final tagJson = jsonDecode(tagJsonString) as List<dynamic>;
 
