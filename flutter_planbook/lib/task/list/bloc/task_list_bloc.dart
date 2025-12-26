@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
@@ -29,6 +28,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
     on<TaskListTaskDelayed>(_onTaskDelayed);
+    on<TaskListTaskExpanded>(_onTaskExpanded);
   }
 
   final TasksRepository _tasksRepository;
@@ -50,13 +50,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       tagId: event.tagId,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(
-      stream,
-      onData: (tasks) => state.copyWith(
-        status: PageStatus.success,
-        tasks: tasks,
-      ),
-    );
+    await emit.forEach(stream, onData: _onTasksDataChanged);
   }
 
   Future<void> _onDayAllRequested(
@@ -72,12 +66,23 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       priority: priority,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(
-      stream,
-      onData: (tasks) => state.copyWith(
-        status: PageStatus.success,
-        tasks: tasks,
-      ),
+    await emit.forEach(stream, onData: _onTasksDataChanged);
+  }
+
+  TaskListState _onTasksDataChanged(List<TaskEntity> tasks) {
+    final displayedTasks = <TaskEntity>[];
+    for (final task in tasks) {
+      if (state.expandedTaskIds.contains(task.id)) {
+        displayedTasks
+          ..add(task)
+          ..addAll(task.children);
+      } else {
+        displayedTasks.add(task);
+      }
+    }
+    return state.copyWith(
+      status: PageStatus.success,
+      tasks: displayedTasks,
     );
   }
 
@@ -86,17 +91,24 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     Emitter<TaskListState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    final activities = await _tasksRepository.completeTask(event.task);
+    final task = event.task;
+    var occurrenceAt = task.occurrence?.occurrenceAt;
+    if (task.parentId != null) {
+      final parentTask = state.tasks.firstWhereOrNull(
+        (t) => t.id == task.parentId,
+      );
+      if (parentTask != null && parentTask.occurrence?.occurrenceAt != null) {
+        occurrenceAt = parentTask.occurrence!.occurrenceAt;
+      }
+    }
+    final activities = await _tasksRepository.completeTask(
+      task,
+      occurrenceAt: occurrenceAt,
+    );
     for (final activity in activities) {
-      add(TaskListNoteCreated(task: event.task, activity: activity));
+      add(TaskListNoteCreated(activity: activity));
     }
     emit(state.copyWith(status: PageStatus.success));
-
-    final sound = await _settingsRepository.getTaskCompletedSound();
-    if (sound != null && sound.isNotEmpty) {
-      final player = AudioPlayer();
-      await player.play(AssetSource(sound));
-    }
   }
 
   Future<void> _onDeleted(
@@ -111,35 +123,50 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListNoteCreated event,
     Emitter<TaskListState> emit,
   ) async {
+    final taskId = event.activity.taskId;
+    if (taskId == null) return;
+    final task = await _tasksRepository.getTaskEntityById(taskId);
+    if (task == null) return;
+
+    var type = TaskAutoNoteType.createAndEdit;
     final rules = await _settingsRepository.getTaskAutoNoteRules();
-    final rule = rules.firstWhereOrNull(
-      (rule) => rule.priority == event.task.priority,
-    );
-    if (rule == null || rule.type == TaskAutoNoteType.none) return;
+    if (task.parentId != null) {
+      final subtaskRule = rules.firstWhereOrNull((rule) => rule.isSubtask);
+      if (subtaskRule == null || subtaskRule.type == TaskAutoNoteType.none) {
+        return;
+      }
+      type = subtaskRule.type;
+    } else {
+      final rule = rules.firstWhereOrNull(
+        (rule) => rule.priority == task.priority,
+      );
+      if (rule == null || rule.type == TaskAutoNoteType.none) return;
+      type = rule.type;
+    }
 
     NoteEntity? noteEntity;
-    if (rule.type.isCreate) {
+    if (type.isCreate) {
       final note = await _notesRepository.create(
         title:
             '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${event.task.title}',
-        tags: event.task.tags,
-        taskId: event.task.id,
+            '${task.title}',
+        tags: task.tags,
+        taskId: task.id,
       );
-      if (rule.type == TaskAutoNoteType.createAndEdit) {
+      if (type == TaskAutoNoteType.createAndEdit) {
         noteEntity = await _notesRepository.getNoteEntityById(note.id);
       }
-    } else if (rule.type == TaskAutoNoteType.edit) {
+    } else if (type == TaskAutoNoteType.edit) {
       final note = Note(
         id: const Uuid().v4(),
         title:
             '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${event.task.title}',
-        taskId: event.task.id,
+            '${task.title}',
+        taskId: task.id,
         createdAt: Jiffy.now(),
         images: [],
       );
-      noteEntity = NoteEntity(note: note, tags: event.task.tags);
+      noteEntity = NoteEntity(note: note, tags: task.tags);
     }
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
@@ -160,5 +187,42 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       delayTo: event.delayTo ?? Jiffy.now(),
     );
     emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onTaskExpanded(
+    TaskListTaskExpanded event,
+    Emitter<TaskListState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    final expandedTaskIds = {...state.expandedTaskIds};
+    if (expandedTaskIds.contains(event.task.id)) {
+      expandedTaskIds.remove(event.task.id);
+      final displayedTasks = state.tasks
+          .where((task) => task.parentId != event.task.id)
+          .toList();
+      emit(
+        state.copyWith(
+          status: PageStatus.success,
+          tasks: displayedTasks,
+          expandedTaskIds: expandedTaskIds,
+        ),
+      );
+    } else {
+      final index = state.tasks.indexWhere(
+        (task) => task.id == event.task.id,
+      );
+      if (index == -1) return;
+
+      expandedTaskIds.add(event.task.id);
+      final displayedTasks = [...state.tasks]
+        ..insertAll(index + 1, event.task.children);
+      emit(
+        state.copyWith(
+          status: PageStatus.success,
+          tasks: displayedTasks,
+          expandedTaskIds: expandedTaskIds,
+        ),
+      );
+    }
   }
 }

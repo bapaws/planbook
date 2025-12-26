@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_color_header.dart';
@@ -58,10 +58,15 @@ class TaskPriorityListView extends StatelessWidget {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
+                  final nextTask = index < tasks.length - 1
+                      ? tasks[index + 1]
+                      : null;
                   return TaskListTile.priority(
                     key: ValueKey(task.occurrence?.id ?? task.id),
                     task: task,
-                    onPressed: () {
+                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                    isExpanded: nextTask?.parentId == task.id,
+                    onPressed: (task) {
                       if (onTaskPressed != null) {
                         onTaskPressed!(task);
                       } else {
@@ -70,7 +75,7 @@ class TaskPriorityListView extends StatelessWidget {
                         );
                       }
                     },
-                    onCompleted: () {
+                    onCompleted: (task) {
                       if (onTaskCompleted != null) {
                         onTaskCompleted!(task);
                       } else {
@@ -79,7 +84,7 @@ class TaskPriorityListView extends StatelessWidget {
                         );
                       }
                     },
-                    onDeleted: () {
+                    onDeleted: (task) {
                       if (onTaskDeleted != null) {
                         onTaskDeleted!(task);
                       } else {
@@ -88,14 +93,23 @@ class TaskPriorityListView extends StatelessWidget {
                         );
                       }
                     },
-                    onEdited: () {
+                    onEdited: (task) {
                       context.router.push(TaskNewRoute(initialTask: task));
                     },
-                    onDelayed: onTaskDelayed != null
-                        ? () {
-                            onTaskDelayed!(task);
-                          }
-                        : null,
+                    onDelayed: (task) {
+                      if (onTaskDelayed != null) {
+                        onTaskDelayed!(task);
+                      } else {
+                        context.read<TaskListBloc>().add(
+                          TaskListTaskDelayed(task: task),
+                        );
+                      }
+                    },
+                    onExpanded: (task) {
+                      context.read<TaskListBloc>().add(
+                        TaskListTaskExpanded(task: task),
+                      );
+                    },
                   );
                 },
               );

@@ -93,8 +93,10 @@ class AppRouter extends RootStackRouter {
     ),
 
     // AutoRoute(page: TaskNewRoute.page),
+    _buildModalBottomSheetRoute(TaskNewChildRoute.page),
     _buildModalBottomSheetRoute(TaskNewRoute.page),
     _buildModalBottomSheetRoute(TaskNewRecurrenceEndAtRoute.page),
+    _buildModalBottomSheetRoute(TaskDoneRoute.page),
 
     _buildModalBottomSheetRoute(TaskPickerRoute.page),
     _buildModalBottomSheetRoute(TaskPriorityPickerRoute.page),

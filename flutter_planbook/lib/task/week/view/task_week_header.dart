@@ -25,21 +25,19 @@ class TaskWeekHeader extends StatelessWidget {
         // textBaseline: TextBaseline.alphabetic,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 6,
+              vertical: 2,
+            ),
             decoration: BoxDecoration(
               color: isToday
                   ? colorScheme.primary
                   : colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: isToday
-                    ? colorScheme.primary
-                    : colorScheme.primaryContainer,
-              ),
             ),
             child: Text(
               title,
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: isToday
                     ? colorScheme.onPrimary
@@ -52,9 +50,7 @@ class TaskWeekHeader extends StatelessWidget {
             Text(
               subtitle!,
               style: theme.textTheme.labelSmall?.copyWith(
-                color: isToday
-                    ? colorScheme.onPrimary
-                    : colorScheme.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -63,9 +59,7 @@ class TaskWeekHeader extends StatelessWidget {
             Text(
               '$taskCount',
               style: theme.textTheme.labelSmall?.copyWith(
-                color: isToday
-                    ? colorScheme.onPrimary
-                    : colorScheme.onSurfaceVariant,
+                color: colorScheme.outline,
                 fontWeight: FontWeight.w600,
               ),
             ),

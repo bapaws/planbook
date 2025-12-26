@@ -18,6 +18,7 @@ class TaskAutoNoteRule extends Equatable {
     this.type = TaskAutoNoteType.createAndEdit,
     this.tag,
     this.priority,
+    this.isSubtask = false,
   });
 
   factory TaskAutoNoteRule.fromJson(Map<String, dynamic> json) {
@@ -29,6 +30,7 @@ class TaskAutoNoteRule extends Equatable {
       priority: json['priority'] != null
           ? TaskPriority.fromValue(json['priority'] as int)
           : null,
+      isSubtask: (json['is_subtask'] as bool?) ?? false,
     );
   }
 
@@ -37,25 +39,29 @@ class TaskAutoNoteRule extends Equatable {
       'type': type.name,
       'tag': tag?.toJson(),
       'priority': priority?.value,
+      'is_subtask': isSubtask,
     };
   }
 
   final TaskAutoNoteType type;
   final TagEntity? tag;
   final TaskPriority? priority;
+  final bool isSubtask;
 
   TaskAutoNoteRule copyWith({
     TaskAutoNoteType? type,
     TagEntity? tag,
     TaskPriority? priority,
+    bool? isSubtask,
   }) {
     return TaskAutoNoteRule(
       type: type ?? this.type,
       tag: tag ?? this.tag,
       priority: priority ?? this.priority,
+      isSubtask: isSubtask ?? this.isSubtask,
     );
   }
 
   @override
-  List<Object?> get props => [type, tag, priority];
+  List<Object?> get props => [type, tag, priority, isSubtask];
 }

@@ -42,6 +42,11 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
                 .map((e) => TagEntity.fromJson(e as Map<String, dynamic>))
                 .toList()
           : null,
+      children: json['children'] != null
+          ? (json['children'] as List<dynamic>)
+                .map((e) => TaskEntity.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
     );
   }
 
@@ -66,6 +71,8 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         'alarms': state.alarms!.map((e) => e.toJson()).toList(),
       if (state.tags.isNotEmpty)
         'tags': state.tags.map((e) => e.toJson()).toList(),
+      if (state.children.isNotEmpty)
+        'children': state.children.map((e) => e.toJson()).toList(),
     };
   }
 
@@ -142,6 +149,10 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
     emit(state.copyWith(recurrenceRule: () => recurrenceRule));
   }
 
+  void onChildrenChanged(List<TaskEntity> children) {
+    emit(state.copyWith(children: children));
+  }
+
   Future<void> onSave() async {
     emit(state.copyWith(status: PageStatus.loading));
 
@@ -165,33 +176,57 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       await _tasksRepository.create(
         task: task,
         tags: state.tags,
+        children: state.children,
       );
       await clear();
       // clear() 只清除持久化存储，需要手动重置状态
       emit(const TaskNewState(status: PageStatus.success));
-    } else {
-      final task = Task(
-        id: initialTask.id,
-        title: state.title,
-        priority: state.priority,
-        dueAt: state.dueAt?.toUtc(),
-        startAt: state.startAt?.toUtc(),
-        endAt: state.endAt?.toUtc(),
-        order: initialTask.order,
-        isAllDay: initialTask.isAllDay,
-        alarms: state.alarms ?? [],
-        parentId: initialTask.parentId,
-        recurrenceRule: state.recurrenceRule,
-        createdAt: initialTask.createdAt.toUtc(),
-        updatedAt: Jiffy.now().toUtc(),
-        layer: 0,
-        childCount: 0,
-      );
-      await _tasksRepository.update(
-        task: task,
-        tags: state.tags,
-      );
-      emit(state.copyWith(status: PageStatus.success));
+      return;
     }
+
+    final need = await _tasksRepository.needsEditModeSelection(initialTask);
+    if (need) {
+      emit(state.copyWith(showEditModeSelection: true));
+    } else {
+      await onEditModeSelected(RecurringTaskEditMode.allEvents);
+    }
+  }
+
+  Future<void> onEditModeSelected(RecurringTaskEditMode? editMode) async {
+    if (editMode == null) {
+      emit(state.copyWith(showEditModeSelection: false));
+      return;
+    }
+
+    final initialTask = state.initialTask;
+    if (initialTask == null) return;
+
+    final task = Task(
+      id: initialTask.id,
+      title: state.title,
+      priority: state.priority,
+      dueAt: state.dueAt?.toUtc(),
+      startAt: state.startAt?.toUtc(),
+      endAt: state.endAt?.toUtc(),
+      order: initialTask.order,
+      isAllDay: initialTask.isAllDay,
+      alarms: state.alarms ?? [],
+      parentId: initialTask.parentId,
+      recurrenceRule: state.recurrenceRule,
+      createdAt: initialTask.createdAt.toUtc(),
+      updatedAt: Jiffy.now().toUtc(),
+      layer: 0,
+      childCount: 0,
+    );
+    emit(state.copyWith(status: PageStatus.loading));
+    await _tasksRepository.updateWithEditMode(
+      entity: initialTask,
+      task: task,
+      editMode: editMode,
+      tags: state.tags,
+      children: state.children,
+      occurrenceAt: initialTask.occurrence?.occurrenceAt,
+    );
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

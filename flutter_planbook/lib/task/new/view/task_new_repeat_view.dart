@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/core/model/recurrence_frequency.dart';
+import 'package:flutter_planbook/core/model/recurrence_frequency_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:jiffy/jiffy.dart';

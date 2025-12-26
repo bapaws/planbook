@@ -8,6 +8,7 @@ final class TaskListState extends Equatable {
     this.tag,
     this.currentTaskNote,
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
+    this.expandedTaskIds = const {},
   });
 
   final PageStatus status;
@@ -15,6 +16,8 @@ final class TaskListState extends Equatable {
   final Jiffy? date;
   final TagEntity? tag;
   final List<TaskEntity> tasks;
+
+  final Set<String> expandedTaskIds;
 
   final TaskPriorityStyle priorityStyle;
   final NoteEntity? currentTaskNote;
@@ -27,6 +30,7 @@ final class TaskListState extends Equatable {
     tasks,
     currentTaskNote,
     priorityStyle,
+    expandedTaskIds,
   ];
 
   TaskListState copyWith({
@@ -36,6 +40,7 @@ final class TaskListState extends Equatable {
     List<TaskEntity>? tasks,
     NoteEntity? currentTaskNote,
     TaskPriorityStyle? priorityStyle,
+    Set<String>? expandedTaskIds,
   }) {
     return TaskListState(
       status: status ?? this.status,
@@ -44,6 +49,7 @@ final class TaskListState extends Equatable {
       tasks: tasks ?? this.tasks,
       currentTaskNote: currentTaskNote ?? this.currentTaskNote,
       priorityStyle: priorityStyle ?? this.priorityStyle,
+      expandedTaskIds: expandedTaskIds ?? this.expandedTaskIds,
     );
   }
 }

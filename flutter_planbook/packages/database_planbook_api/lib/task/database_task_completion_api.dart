@@ -20,34 +20,37 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     });
   }
 
-  Future<List<TaskActivity>> completeTask(TaskEntity entity) async {
-    final task = entity.task;
-    final occurrenceAt = entity.occurrence?.occurrenceAt;
-
+  Future<List<TaskActivity>> completeTask(
+    TaskEntity entity, {
+    Jiffy? completedAt,
+    Jiffy? occurrenceAt,
+  }) async {
+    occurrenceAt ??= entity.occurrence?.occurrenceAt;
     final existingActivity = await getTaskActivityForTask(
-      task,
+      entity,
       occurrenceAt: occurrenceAt,
     );
 
     if (existingActivity != null) {
       return _deleteCompletionActivity(
-        task: task,
+        task: entity,
         activity: existingActivity,
         occurrenceAt: occurrenceAt,
       );
     } else {
       return _insertCompletionActivity(
-        task: task,
+        task: entity,
         occurrenceAt: occurrenceAt,
+        completedAt: completedAt,
       );
     }
   }
 
-  bool _isRecurringTask(Task task) =>
+  bool _isRecurringTask(TaskEntity task) =>
       task.recurrenceRule != null && task.detachedFromTaskId == null;
 
   Future<TaskActivity?> getTaskActivityForTask(
-    Task task, {
+    TaskEntity task, {
     required Jiffy? occurrenceAt,
   }) async {
     final query = db.select(db.taskActivities)
@@ -60,38 +63,28 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
 
     if (_isRecurringTask(task)) {
       if (occurrenceAt == null) return null;
-      final occurrenceAtDateTime = occurrenceAt.toUtc().dateTime;
-      query.where((ta) => ta.occurrenceAt.equals(occurrenceAtDateTime));
+      query.where(
+        (ta) => ta.occurrenceAt.equals(occurrenceAt.toUtc().dateTime),
+      );
     } else {
       query.where((ta) => ta.occurrenceAt.isNull());
     }
 
-    return query.getSingleOrNull();
+    return (await query.get()).firstOrNull;
   }
 
   Future<List<TaskActivity>> _insertCompletionActivity({
-    required Task task,
+    required TaskEntity task,
     required Jiffy? occurrenceAt,
+    Jiffy? completedAt,
     bool cascade = true,
   }) async {
-    final activityOccurrence = _isRecurringTask(task) ? occurrenceAt : null;
-
-    // final activity = await db
-    //     .into(db.taskActivities)
-    //     .insertReturning(
-    //       TaskActivitiesCompanion.insert(
-    //         taskId: Value(task.id),
-    //         occurrenceAt: Value(activityOccurrence),
-    //         completedAt: Value(Jiffy.now()),
-    //         activityType: const Value('completed'),
-    //       ),
-    //     );
     final activity = TaskActivity(
       id: const Uuid().v4(),
       createdAt: Jiffy.now(),
       taskId: task.id,
-      occurrenceAt: activityOccurrence,
-      completedAt: Jiffy.now(),
+      occurrenceAt: occurrenceAt ?? task.occurrence?.occurrenceAt,
+      completedAt: completedAt ?? Jiffy.now(),
       activityType: 'completed',
     );
 
@@ -100,7 +93,8 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     if (cascade) {
       final parentActivities = await _maybeCompleteParentTask(
         task,
-        occurrenceAt,
+        occurrenceAt: occurrenceAt,
+        completedAt: completedAt,
       );
       activities.addAll(parentActivities);
     }
@@ -109,26 +103,17 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   }
 
   Future<List<TaskActivity>> _deleteCompletionActivity({
-    required Task task,
+    required TaskEntity task,
     required TaskActivity activity,
     required Jiffy? occurrenceAt,
     bool cascade = true,
   }) async {
-    // final activities =
-    //     await (db.update(db.taskActivities)..where(
-    //           (ta) => ta.id.equals(activity.id),
-    //         ))
-    //         .writeReturning(
-    //           TaskActivitiesCompanion(
-    //             deletedAt: Value(Jiffy.now()),
-    //           ),
-    //         );
     final activities = [activity.copyWith(deletedAt: Value(Jiffy.now()))];
 
     if (cascade) {
       final parentActivities = await _maybeUncompleteParentTask(
         task,
-        occurrenceAt,
+        occurrenceAt: occurrenceAt,
       );
       activities.addAll(parentActivities);
     }
@@ -137,60 +122,51 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   }
 
   Future<List<TaskActivity>> _maybeCompleteParentTask(
-    Task childTask,
+    TaskEntity childTask, {
     Jiffy? occurrenceAt,
-  ) async {
+    Jiffy? completedAt,
+  }) async {
     final parentId = childTask.parentId;
     if (parentId == null) return [];
 
-    final parentTask = await getTaskById(parentId);
-    if (parentTask == null) return [];
-
-    final allChildrenCompleted = await _areAllChildrenCompleted(
+    final parentTask = await getTaskEntityById(
       parentId,
-      occurrenceAt,
-    );
-    if (!allChildrenCompleted) return [];
-
-    // 子任务与父任务的重复规则一致，直接使用传入的 occurrenceAt
-    final parentActivity = await getTaskActivityForTask(
-      parentTask,
       occurrenceAt: occurrenceAt,
     );
+    if (parentTask == null) return [];
 
-    if (parentActivity != null) {
-      // 父任务已完成，继续向上递归
-      return _maybeCompleteParentTask(parentTask, occurrenceAt);
+    var allChildrenCompleted = true;
+    for (final child in parentTask.children) {
+      if (!child.isCompleted && child.id != childTask.id) {
+        allChildrenCompleted = false;
+        break;
+      }
     }
+    if (!allChildrenCompleted) return [];
 
     return _insertCompletionActivity(
       task: parentTask,
       occurrenceAt: occurrenceAt,
+      completedAt: completedAt,
     );
   }
 
   Future<List<TaskActivity>> _maybeUncompleteParentTask(
-    Task childTask,
+    TaskEntity childTask, {
     Jiffy? occurrenceAt,
-  ) async {
+  }) async {
     final parentId = childTask.parentId;
     if (parentId == null) return [];
 
-    final parentTask = await getTaskById(parentId);
-    if (parentTask == null) return [];
-
-    // 子任务刚被取消完成，如果父任务已完成，则取消完成
-    // 子任务与父任务的重复规则一致，直接使用传入的 occurrenceAt
-    final parentActivity = await getTaskActivityForTask(
-      parentTask,
+    final parentTask = await getTaskEntityById(
+      parentId,
       occurrenceAt: occurrenceAt,
     );
-
-    if (parentActivity == null) return [];
+    if (parentTask == null || !parentTask.isCompleted) return [];
 
     return _deleteCompletionActivity(
       task: parentTask,
-      activity: parentActivity,
+      activity: parentTask.activity!,
       occurrenceAt: occurrenceAt,
     );
   }
@@ -279,6 +255,20 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
               db.taskTags.taskId.equalsExp(db.tasks.id) &
                   db.taskTags.deletedAt.isNull(),
             ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.equalsExp(
+                    db.taskOccurrences.occurrenceAt,
+                  ) &
+                  childrenTaskActivities.completedAt.isNotNull() &
+                  childrenTaskActivities.deletedAt.isNull(),
+            ),
           ])
           ..where(recurringExp)
           ..orderBy([
@@ -318,6 +308,18 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
               db.taskTags,
               db.taskTags.taskId.equalsExp(db.tasks.id) &
                   db.taskTags.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.isNull() &
+                  childrenTaskActivities.completedAt.isNotNull() &
+                  childrenTaskActivities.deletedAt.isNull(),
             ),
           ])
           ..where(nonRecurringExp)

@@ -1,9 +1,17 @@
+import 'dart:async';
+
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
+import 'package:planbook_repository/settings/settings_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
 /// 统一的任务列表项组件
@@ -16,51 +24,60 @@ class TaskListTile extends StatefulWidget {
   /// 默认样式构造函数（标准列表视图）
   const TaskListTile({
     required this.task,
-    required this.onPressed,
-    required this.onCompleted,
-    required this.onDeleted,
-    required this.onEdited,
+    this.onPressed,
+    this.onCompleted,
+    this.onDeleted,
+    this.onEdited,
     this.onDelayed,
+    this.isExpanded = false,
     this.titleTextStyle,
+    this.onExpanded,
     super.key,
-  }) : checkboxPadding = const EdgeInsets.all(16),
+  }) : checkboxPadding = const EdgeInsets.all(12),
        checkboxMinimumSize = kMinInteractiveDimension,
-       checkboxSize = 18;
+       checkboxSize = 21;
 
   /// 优先级视图样式构造函数
   const TaskListTile.priority({
     required this.task,
-    required this.onPressed,
-    required this.onCompleted,
-    required this.onDeleted,
-    required this.onEdited,
+    this.onPressed,
+    this.onCompleted,
+    this.onDeleted,
+    this.onEdited,
     this.onDelayed,
+    this.isExpanded = false,
     this.titleTextStyle,
+    this.onExpanded,
     super.key,
   }) : checkboxPadding = const EdgeInsets.all(8),
        checkboxMinimumSize = 36,
-       checkboxSize = 16;
+       checkboxSize = 18;
 
   /// 周视图样式构造函数
   const TaskListTile.week({
     required this.task,
-    required this.onPressed,
-    required this.onCompleted,
-    required this.onDeleted,
-    required this.onEdited,
+    this.onPressed,
+    this.onCompleted,
+    this.onDeleted,
+    this.onEdited,
+    this.isExpanded = false,
     this.titleTextStyle,
+    this.onExpanded,
     super.key,
   }) : onDelayed = null,
        checkboxPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-       checkboxMinimumSize = 25,
-       checkboxSize = 14;
+       checkboxMinimumSize = 28,
+       checkboxSize = 16;
 
   final TaskEntity task;
-  final VoidCallback onPressed;
-  final VoidCallback onCompleted;
-  final VoidCallback onDeleted;
-  final VoidCallback onEdited;
-  final VoidCallback? onDelayed;
+  final ValueChanged<TaskEntity>? onPressed;
+  final ValueChanged<TaskEntity>? onCompleted;
+  final ValueChanged<TaskEntity>? onDeleted;
+  final ValueChanged<TaskEntity>? onEdited;
+  final ValueChanged<TaskEntity>? onDelayed;
+  final ValueChanged<TaskEntity>? onExpanded;
+
+  final bool isExpanded;
 
   /// 复选框的内边距
   final EdgeInsetsGeometry checkboxPadding;
@@ -81,98 +98,195 @@ class TaskListTile extends StatefulWidget {
 class _TaskListTileState extends State<TaskListTile> {
   late TaskEntity _task;
   bool _isCompleted = false;
+  bool _isExpanded = false;
+  final GlobalKey _tileKey = GlobalKey();
+
+  Size get minimumSize => Size.square(
+    _task.parentId == null
+        ? widget.checkboxMinimumSize
+        : (widget.checkboxMinimumSize / 4 * 3).floorToDouble(),
+  );
+
+  EdgeInsetsGeometry get buttonPadding => _task.parentId == null
+      ? widget.checkboxPadding
+      : widget.checkboxPadding * 3 ~/ 4;
 
   @override
   void initState() {
     super.initState();
     _task = widget.task;
     _isCompleted = _task.isCompleted;
+    _isExpanded = widget.isExpanded;
+  }
+
+  @override
+  void didUpdateWidget(TaskListTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 更新任务
+    _task = widget.task;
+    if (widget.isExpanded != _isExpanded) {
+      setState(() {
+        _isExpanded = widget.isExpanded;
+      });
+    }
+    if (widget.task.isCompleted != _isCompleted) {
+      setState(() {
+        _isCompleted = widget.task.isCompleted;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final colorScheme = _task.priority.getColorScheme(context);
-
+    if (widget.onDeleted == null &&
+        widget.onEdited == null &&
+        widget.onDelayed == null) {
+      return _buildButton(context, null);
+    }
     return PullDownButton(
       itemBuilder: (context) => _buildMenuItems(l10n),
-      buttonBuilder: (context, showMenu) => CupertinoButton(
-        padding: EdgeInsets.zero,
-        minimumSize: Size.square(widget.checkboxMinimumSize),
-        onLongPress: showMenu,
-        onPressed: widget.onPressed,
-        child: Row(
-          children: [
-            IntrinsicHeight(
-              child: CupertinoButton(
-                padding: widget.checkboxPadding,
-                minimumSize: Size.square(widget.checkboxMinimumSize),
-                onPressed: _toggleCompleted,
-                child: Icon(
-                  _isCompleted
-                      ? FontAwesomeIcons.solidSquareCheck
-                      : FontAwesomeIcons.square,
-                  size: widget.checkboxSize,
-                  color: _isCompleted
-                      ? colorScheme.outline
-                      : colorScheme.onSurface,
-                ),
+      buttonBuilder: _buildButton,
+    );
+  }
+
+  Widget _buildButton(BuildContext context, VoidCallback? showMenu) {
+    final colorScheme = _task.priority.getColorScheme(context);
+
+    final isEmptyChildren = _task.children.isEmpty;
+    return CupertinoButton(
+      key: _tileKey,
+      padding: EdgeInsets.zero,
+      minimumSize: minimumSize,
+      onLongPress: showMenu,
+      onPressed: widget.onPressed == null
+          ? null
+          : () => widget.onPressed!.call(_task),
+      child: Row(
+        children: [
+          if (_task.parentId != null) ...[
+            SizedBox(width: widget.checkboxMinimumSize / 2 - 1),
+            SizedBox(
+              height: minimumSize.height + 2,
+              child: VerticalDivider(
+                width: 1,
+                color: colorScheme.surfaceContainerHighest,
+                thickness: 1,
               ),
             ),
-            Expanded(
-              child: AnimatedDefaultTextStyle(
-                duration: Durations.short2,
-                style:
-                    widget.titleTextStyle?.copyWith(
-                      color: _isCompleted
-                          ? colorScheme.outline
-                          : colorScheme.onSurface,
-                    ) ??
-                    TextStyle(
+            const SizedBox(width: 8),
+          ],
+          CupertinoButton(
+            padding: buttonPadding,
+            minimumSize: minimumSize,
+            onPressed: isEmptyChildren ? _toggleCompleted : _onExpanded,
+            child: isEmptyChildren
+                ? Icon(
+                    _isCompleted
+                        ? CupertinoIcons.checkmark_circle_fill
+                        : CupertinoIcons.circle,
+                    size: widget.checkboxSize,
+                    color: _isCompleted
+                        ? colorScheme.outline
+                        : colorScheme.onSurface,
+                  )
+                : AnimatedRotation(
+                    turns: _isExpanded ? 0 : -0.25,
+                    duration: Durations.medium1,
+                    child: Icon(
+                      _isCompleted
+                          ? CupertinoIcons.chevron_down_circle_fill
+                          : CupertinoIcons.chevron_down_circle,
+                      size: widget.checkboxSize,
                       color: _isCompleted
                           ? colorScheme.outline
                           : colorScheme.onSurface,
                     ),
-                child: Text(
-                  _task.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  ),
+          ),
+          Expanded(
+            child: AnimatedDefaultTextStyle(
+              duration: Durations.short2,
+              style:
+                  widget.titleTextStyle?.copyWith(
+                    color: _isCompleted
+                        ? colorScheme.outline
+                        : colorScheme.onSurface,
+                  ) ??
+                  TextStyle(
+                    color: _isCompleted
+                        ? colorScheme.outline
+                        : colorScheme.onSurface,
+                  ),
+              child: Text(
+                _task.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   List<PullDownMenuEntry> _buildMenuItems(AppLocalizations l10n) {
+    final today = Jiffy.now().startOf(Unit.day);
+    final occurrenceAt = _task.occurrence?.occurrenceAt ?? _task.dueAt;
+    final isOverdue = occurrenceAt != null && occurrenceAt.isBefore(today);
     return [
-      if (widget.onDelayed != null)
+      PullDownMenuItem(
+        icon: FontAwesomeIcons.solidCircleCheck,
+        title: _isCompleted ? l10n.uncompleteTask : l10n.completeTask,
+        onTap: () => context.router.push(TaskDoneRoute(task: _task)),
+      ),
+      const PullDownMenuDivider.large(),
+      if (isOverdue && !_task.isCompleted)
         PullDownMenuItem(
           icon: FontAwesomeIcons.clock,
           title: l10n.delayToToday,
-          onTap: widget.onDelayed,
+          onTap: () => widget.onDelayed?.call(_task),
         ),
       PullDownMenuItem(
         icon: FontAwesomeIcons.penToSquare,
         title: l10n.edit,
-        onTap: widget.onEdited,
+        onTap: () => widget.onEdited?.call(_task),
       ),
       const PullDownMenuDivider.large(),
       PullDownMenuItem(
         icon: FontAwesomeIcons.trash,
         title: l10n.delete,
         isDestructive: true,
-        onTap: widget.onDeleted,
+        onTap: () => widget.onDeleted?.call(_task),
       ),
     ];
   }
 
   void _toggleCompleted() {
+    if (widget.onCompleted == null) return;
+
     setState(() {
       _isCompleted = !_isCompleted;
     });
-    widget.onCompleted();
+    widget.onCompleted?.call(_task);
+
+    /// 播放完成音效
+    _playCompletedSound();
+  }
+
+  void _onExpanded() {
+    widget.onExpanded?.call(_task);
+  }
+
+  Future<void> _playCompletedSound() async {
+    unawaited(HapticFeedback.lightImpact());
+
+    final sound = await context
+        .read<SettingsRepository>()
+        .getTaskCompletedSound();
+    if (sound != null && sound.isNotEmpty) {
+      final player = AudioPlayer();
+      await player.play(AssetSource(sound));
+    }
   }
 }

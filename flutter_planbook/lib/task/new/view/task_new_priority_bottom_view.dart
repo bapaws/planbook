@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

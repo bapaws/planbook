@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -17,6 +18,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 @RoutePage()
 class RootJournalPage extends StatelessWidget {
@@ -83,6 +85,47 @@ class _RootJournalPageState extends State<_RootJournalPage> {
             child: Text(state.year.toString()),
           ),
         ),
+        actions: [
+          PullDownButton(
+            itemBuilder: (context) => [
+              PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendarMinus,
+                title: context.l10n.thisWeek,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.week);
+                  final to = now.endOf(Unit.week);
+                  _play(from: from, to: to);
+                },
+              ),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendarDays,
+                title: context.l10n.thisMonth,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.month);
+                  final to = now.endOf(Unit.month);
+                  _play(from: from, to: to);
+                },
+              ),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendar,
+                title: context.l10n.thisYear,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.year);
+                  final to = now.endOf(Unit.year);
+                  _play(from: from, to: to);
+                },
+              ),
+            ],
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              onPressed: showMenu,
+              child: const Icon(FontAwesomeIcons.ellipsis),
+            ),
+          ),
+        ],
       ),
       body: BlocListener<RootHomeBloc, RootHomeState>(
         listenWhen: (previous, current) =>
@@ -184,6 +227,22 @@ class _RootJournalPageState extends State<_RootJournalPage> {
 
       if (!context.mounted) return;
       await EasyLoading.showError(context.l10n.saveFailed);
+    }
+  }
+
+  Future<void> _play({
+    required Jiffy from,
+    required Jiffy to,
+  }) async {
+    final startOfYear = from.startOf(Unit.year);
+    final fromPage = from.diff(startOfYear, unit: Unit.day).toInt();
+    final toPage = to.diff(startOfYear, unit: Unit.day).toInt();
+    await _controller.animateToPage(fromPage);
+
+    for (var i = fromPage; i <= toPage; i++) {
+      if (!context.mounted) return;
+      await _controller.animateToPage(i);
+      await Future<void>.delayed(const Duration(milliseconds: 750));
     }
   }
 }

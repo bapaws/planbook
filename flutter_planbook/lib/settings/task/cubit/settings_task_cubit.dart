@@ -25,6 +25,18 @@ class SettingsTaskCubit extends Cubit<SettingsTaskState> {
     );
   }
 
+  Future<void> onSubtaskRuleTypeChanged(TaskAutoNoteType type) async {
+    final rules = [...state.taskAutoNoteRules];
+    final index = rules.indexWhere((r) => r.isSubtask);
+    if (index == -1) {
+      rules.add(TaskAutoNoteRule(isSubtask: true, type: type));
+    } else {
+      rules[index] = rules[index].copyWith(type: type);
+    }
+    await _settingsRepository.saveTaskAutoNoteRules(rules);
+    emit(state.copyWith(taskAutoNoteRules: rules));
+  }
+
   void onRuleChanged(List<TaskAutoNoteRule> rules) {
     emit(state.copyWith(taskAutoNoteRules: rules));
   }

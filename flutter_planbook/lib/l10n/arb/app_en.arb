@@ -141,6 +141,10 @@
       }
     }
   },
+  "done": "Done",
+  "uncompleteTask": "Undo",
+  "completeTask": "Complete",
+  "alreadyDone": "Already Done",
   "unselectAll": "Unselect All",
   "selectAll": "Select All",
   "work": "Work",
@@ -299,7 +303,10 @@
   "pro": "Pro",
   "unlimited": "Unlimited",
   "image": "Image",
-  "subTask": "Sub Task",
+  "subtask": "Subtask",
+  "subtasks": "Subtasks",
+  "taskNote": "Task Note",
+  "subtaskNote": "Subtask Note",
   "statistics": "Statistics",
   "desktopWidget": "Desktop Widget",
   "theme": "Theme",
@@ -314,6 +321,7 @@
   "editDescription": "Pop up the note editor.",
   "createAndEdit": "Create & Edit",
   "createAndEditDescription": "Create a note and pop up the note editor.",
+  "completedAt": "Completed At",
   "priorityHeaderStyle": "Priority Header Style",
   "solidColorBackground": "Solid Color Background",
   "numberIcon": "Number Icon",
@@ -349,5 +357,54 @@
   "thinkAboutWeeklyFocus": "What do you want to focus on this week?",
   "thinkAboutDailyFocus": "What do you want to focus on today?",
   "thisWeek": "This Week",
-  "lastWeek": "Last Week"
+  "lastWeek": "Last Week",
+  "thisMonth": "This Month",
+  "thisYear": "This Year",
+  "autoPlay": "Auto Play",
+  "everyInterval": "Every {interval} {unit}",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
+  "recurrenceWithEndDate": "{frequency}, ends on {date}",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
+  "recurrenceWithEndCount": "{frequency}, ends after {count} times",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "editModeSelection": "Edit Mode Selection",
+  "allEvents": "All Events",
+  "thisAndFutureEvents": "This and Future Events",
+  "thisEventOnly": "This Event Only"
 }

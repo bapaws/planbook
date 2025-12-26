@@ -17,6 +17,12 @@ class DatabaseTaskApi {
   final AppDatabase db;
   final DatabaseTagApi tagApi;
 
+  late final $TasksTable childrenTasks = db.alias(db.tasks, 'children_tasks');
+  late final $TaskActivitiesTable childrenTaskActivities = db.alias(
+    db.taskActivities,
+    'children_task_activities',
+  );
+
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -77,11 +83,17 @@ class DatabaseTaskApi {
   Future<void> create({
     required Task task,
     required List<TaskTag> taskTags,
+    List<Task>? children,
   }) async {
     await db.transaction(() async {
       await db.into(db.tasks).insert(task);
       for (final taskTag in taskTags) {
         await db.into(db.taskTags).insert(taskTag);
+      }
+      if (children != null && children.isNotEmpty) {
+        for (final child in children) {
+          await db.into(db.tasks).insert(child);
+        }
       }
     });
 
@@ -94,64 +106,54 @@ class DatabaseTaskApi {
     }
   }
 
-  Future<void> update({
-    required Task task,
-    required List<TaskTag> taskTags,
-  }) async {
-    final existingTask = await getTaskById(task.id);
-
-    await db.transaction(() async {
-      await (db.update(
-        db.tasks,
-      )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
-      await (db.delete(
-        db.taskTags,
-      )..where((tt) => tt.taskId.equals(task.id))).go();
-      for (final taskTag in taskTags) {
-        await db.into(db.taskTags).insert(taskTag);
-      }
-    });
-
-    if (existingTask == null) return;
-    final recurrenceChanged =
-        existingTask.recurrenceRule != task.recurrenceRule ||
-        existingTask.startAt != task.startAt ||
-        existingTask.endAt != task.endAt ||
-        existingTask.dueAt != task.dueAt;
-
-    if (!recurrenceChanged) return;
-    await (db.delete(db.taskOccurrences)..where(
-          (to) => to.taskId.equals(task.id),
-        ))
-        .go();
-    unawaited(
-      preGenerateTaskOccurrences(
-        fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
-      ),
-    );
-  }
-
   Future<Task?> getTaskById(String taskId) async {
     return (db.select(db.tasks)
           ..where((t) => t.id.equals(taskId) & t.deletedAt.isNull()))
         .getSingleOrNull();
   }
 
-  Future<TaskEntity?> getTaskEntityById(String taskId) async {
+  Future<TaskEntity?> getTaskEntityById(
+    String taskId, {
+    Jiffy? occurrenceAt,
+  }) async {
+    var taskActivitiesExp =
+        db.taskActivities.taskId.equals(taskId) &
+        db.taskActivities.deletedAt.isNull() &
+        db.taskActivities.completedAt.isNotNull();
+    var taskOccurrencesExp = db.taskOccurrences.taskId.equalsExp(
+      db.tasks.id,
+    );
+    var childrenTaskActivitiesExp =
+        childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+        childrenTaskActivities.deletedAt.isNull() &
+        childrenTaskActivities.completedAt.isNotNull();
+    if (occurrenceAt != null) {
+      final dateTime = occurrenceAt.toUtc().dateTime;
+      taskActivitiesExp &= db.taskActivities.occurrenceAt.equals(dateTime);
+
+      taskOccurrencesExp &= db.taskOccurrences.occurrenceAt.equals(dateTime);
+
+      childrenTaskActivitiesExp &= childrenTaskActivities.occurrenceAt.equals(
+        dateTime,
+      );
+    }
     final query =
         db.select(db.tasks).join([
             // 获取所有活动（completedAt 不为 null 的）
-            leftOuterJoin(
-              db.taskActivities,
-              db.taskActivities.taskId.equalsExp(db.tasks.id) &
-                  db.taskActivities.deletedAt.isNull() &
-                  db.taskActivities.completedAt.isNotNull(),
-            ),
+            leftOuterJoin(db.taskActivities, taskActivitiesExp),
             leftOuterJoin(
               db.taskTags,
               db.taskTags.taskId.equalsExp(db.tasks.id) &
                   db.taskTags.deletedAt.isNull(),
             ),
+            leftOuterJoin(db.taskOccurrences, taskOccurrencesExp),
+
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(childrenTaskActivities, childrenTaskActivitiesExp),
           ])
           ..where(
             db.tasks.id.equals(taskId) & db.tasks.deletedAt.isNull(),
@@ -163,28 +165,32 @@ class DatabaseTaskApi {
 
     final rows = await query.get();
 
-    if (rows.isEmpty) return null;
-
-    // 取第一行（最新的活动）
-    final row = rows.first;
-    final task = row.readTable(db.tasks);
-    final activity = row.readTableOrNull(db.taskActivities);
-
-    // 查询标签（需要递归获取 parent，所以单独查询）
-    final tags = await tagApi.getTagEntitiesByTaskId(task.id, task.userId);
-
-    // 查询子任务（需要递归，所以单独查询）
-    final children = await getChildTaskEntitiesById(task.id);
-
-    return TaskEntity(
-      task: task,
-      tags: tags,
-      activity: activity,
-      children: children,
-    );
+    final tasks = await buildTaskEntities(rows, occurrenceAt: occurrenceAt);
+    return tasks.firstOrNull;
   }
 
-  Future<List<TaskEntity>> getChildTaskEntitiesById(String parentId) async {
+  Future<TaskOccurrence?> getTaskOccurrenceById(
+    String taskId, {
+    Jiffy? occurrenceAt,
+  }) async {
+    return (db.select(db.taskOccurrences)..where((t) {
+          var exp = t.taskId.equals(taskId) & t.deletedAt.isNull();
+          if (occurrenceAt != null) {
+            final startOfDay = occurrenceAt.startOf(Unit.day).toUtc().dateTime;
+            final endOfDay = occurrenceAt.endOf(Unit.day).toUtc().dateTime;
+            exp &=
+                t.occurrenceAt.isBiggerOrEqualValue(startOfDay) &
+                t.occurrenceAt.isSmallerOrEqualValue(endOfDay);
+          }
+          return exp;
+        }))
+        .getSingleOrNull();
+  }
+
+  Future<List<TaskEntity>> getChildTaskEntitiesById(
+    String parentId, {
+    Jiffy? occurrenceAt,
+  }) async {
     final children =
         await (db.select(db.tasks)
               ..where(
@@ -198,7 +204,10 @@ class DatabaseTaskApi {
 
     final childEntities = <TaskEntity>[];
     for (final child in children) {
-      final childEntity = await getTaskEntityById(child.id);
+      final childEntity = await getTaskEntityById(
+        child.id,
+        occurrenceAt: occurrenceAt,
+      );
       if (childEntity != null) {
         childEntities.add(childEntity);
       }
@@ -318,7 +327,10 @@ class DatabaseTaskApi {
     }
   }
 
-  Future<List<TaskEntity>> buildTaskEntities(List<TypedResult> rows) async {
+  Future<List<TaskEntity>> buildTaskEntities(
+    List<TypedResult> rows, {
+    Jiffy? occurrenceAt,
+  }) async {
     if (rows.isEmpty) return [];
 
     final tasks = <String, TaskEntity>{};
@@ -327,10 +339,39 @@ class DatabaseTaskApi {
       if (!tasks.containsKey(task.id)) {
         tasks[task.id] = TaskEntity(
           task: task,
-          occurrence: row.readTableOrNull(db.taskOccurrences),
-          activity: row.readTableOrNull(db.taskActivities),
           tags: await tagApi.getTagEntitiesByTaskId(task.id, task.userId),
         );
+      }
+
+      final occurrence = row.readTableOrNull(db.taskOccurrences);
+      if (occurrence != null) {
+        tasks[task.id] = tasks[task.id]!.copyWith(
+          occurrence: occurrence,
+        );
+      }
+      final activity = row.readTableOrNull(db.taskActivities);
+      if (activity != null) {
+        tasks[task.id] = tasks[task.id]!.copyWith(
+          activity: activity,
+        );
+      }
+
+      final children = row.readTableOrNull(childrenTasks);
+      if (children != null) {
+        final index = tasks[task.id]!.children.indexWhere(
+          (e) => e.id == children.id,
+        );
+        if (index == -1) {
+          final childrenActivities = row.readTableOrNull(
+            childrenTaskActivities,
+          );
+          tasks[task.id] = tasks[task.id]!.copyWith(
+            children: [
+              ...tasks[task.id]!.children,
+              TaskEntity(task: children, activity: childrenActivities),
+            ],
+          );
+        }
       }
     }
     return tasks.values.toList();

@@ -38,13 +38,12 @@ final class TaskListDayAllRequested extends TaskListEvent {
 }
 
 final class TaskListCompleted extends TaskListEvent {
-  const TaskListCompleted({required this.task, this.occurrenceAt});
+  const TaskListCompleted({required this.task});
 
   final TaskEntity task;
-  final Jiffy? occurrenceAt;
 
   @override
-  List<Object?> get props => [task, occurrenceAt];
+  List<Object?> get props => [task];
 }
 
 final class TaskListDeleted extends TaskListEvent {
@@ -57,13 +56,12 @@ final class TaskListDeleted extends TaskListEvent {
 }
 
 final class TaskListNoteCreated extends TaskListEvent {
-  const TaskListNoteCreated({required this.task, required this.activity});
+  const TaskListNoteCreated({required this.activity});
 
-  final TaskEntity task;
   final TaskActivity activity;
 
   @override
-  List<Object?> get props => [task, activity];
+  List<Object?> get props => [activity];
 }
 
 final class TaskListTaskDelayed extends TaskListEvent {
@@ -83,4 +81,13 @@ final class TaskListTaskDelayed extends TaskListEvent {
 
   @override
   List<Object?> get props => [task, delayTo, occurrenceAt];
+}
+
+final class TaskListTaskExpanded extends TaskListEvent {
+  const TaskListTaskExpanded({required this.task});
+
+  final TaskEntity task;
+
+  @override
+  List<Object?> get props => [task];
 }

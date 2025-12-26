@@ -35,16 +35,13 @@ class _TaskWeekPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        final isLandscape = orientation == Orientation.landscape;
-        return AnimatedSwitcher(
-          duration: Durations.medium1,
-          child: isLandscape
-              ? _buildLandscapeLayout(context)
-              : _buildPortraitLayout(context),
-        );
-      },
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    return AnimatedSwitcher(
+      duration: Durations.medium1,
+      child: isLandscape
+          ? _buildLandscapeLayout(context)
+          : _buildPortraitLayout(context),
     );
   }
 

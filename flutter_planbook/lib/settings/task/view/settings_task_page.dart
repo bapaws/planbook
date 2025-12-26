@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter_planbook/app/view/app_icon.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:flutter_planbook/settings/home/view/settings_section_header.dart';
 import 'package:flutter_planbook/settings/task/cubit/settings_task_cubit.dart';
-import 'package:flutter_planbook/settings/task/model/task_auto_note_rule.dart';
 import 'package:flutter_planbook/settings/task/model/task_priority_style.dart';
+import 'package:flutter_planbook/settings/task/view/settings_task_note_rule_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -131,6 +132,34 @@ class _SettingsTaskPage extends StatelessWidget {
           ),
           for (final priority in TaskPriority.values.reversed)
             _buildPriorityItem(context, priority),
+          BlocSelector<SettingsTaskCubit, SettingsTaskState, TaskAutoNoteRule?>(
+            selector: (state) => state.taskAutoNoteRules.firstWhereOrNull(
+              (rule) => rule.isSubtask,
+            ),
+            builder: (context, taskAutoNoteRule) => SettingsTaskNoteRuleTile(
+              leading: RotatedBox(
+                quarterTurns: 1,
+                child: AppIcon(
+                  FontAwesomeIcons.shareNodes,
+                  size: 20,
+                  foregroundColor: theme.colorScheme.primary,
+                  backgroundColor: theme.colorScheme.primaryContainer,
+                ),
+              ),
+              title: Text(
+                context.l10n.subtasks,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              type: taskAutoNoteRule?.type ?? TaskAutoNoteType.none,
+              onChanged: (type) {
+                context.read<SettingsTaskCubit>().onSubtaskRuleTypeChanged(
+                  type,
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -148,72 +177,42 @@ class _SettingsTaskPage extends StatelessWidget {
         (rule) => rule.priority == priority,
       ),
       builder: (context, taskAutoNoteRule) {
-        return PullDownButton(
-          buttonAnchor: PullDownMenuAnchor.end,
-          itemBuilder: (context) {
-            final rules = context
-                .read<SettingsTaskCubit>()
-                .state
-                .taskAutoNoteRules;
-            return [
-              PullDownMenuTitle(title: Text(context.l10n.noteRuleDescription)),
-              for (final type in TaskAutoNoteType.values)
-                PullDownMenuItem.selectable(
-                  title: type.getTitle(context),
-                  subtitle: type.getDescription(context),
-                  selected: rules.any(
-                    (rule) => rule.priority == priority && rule.type == type,
-                  ),
-                  onTap: () {
-                    if (!context.read<AppPurchasesBloc>().isPremium) {
-                      context.router.push(const AppPurchasesRoute());
-                      return;
-                    }
-                    context.read<SettingsTaskCubit>().onPriorityRuleTypeChanged(
-                      priority,
-                      type,
-                    );
-                  },
-                ),
-            ];
-          },
-          buttonBuilder: (context, showMenu) => SettingsRow(
-            onPressed: showMenu,
-            leading: Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                '${priority.value}',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onPrimaryContainer,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+        return SettingsTaskNoteRuleTile(
+          leading: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(8),
             ),
-            title: Text(
-              switch (priority) {
-                TaskPriority.high => context.l10n.importantUrgent,
-                TaskPriority.medium => context.l10n.importantNotUrgent,
-                TaskPriority.low => context.l10n.urgentUnimportant,
-                TaskPriority.none => context.l10n.notUrgentUnimportant,
-              },
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: colorScheme.primary,
-              ),
-            ),
-            additionalInfo: Text(
-              taskAutoNoteRule?.type.getTitle(context) ?? '',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurfaceVariant,
+            alignment: Alignment.center,
+            child: Text(
+              '${priority.value}',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onPrimaryContainer,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
+          title: Text(
+            switch (priority) {
+              TaskPriority.high => context.l10n.importantUrgent,
+              TaskPriority.medium => context.l10n.importantNotUrgent,
+              TaskPriority.low => context.l10n.urgentUnimportant,
+              TaskPriority.none => context.l10n.notUrgentUnimportant,
+            },
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: colorScheme.primary,
+            ),
+          ),
+          type: taskAutoNoteRule?.type ?? TaskAutoNoteType.none,
+          onChanged: (type) {
+            context.read<SettingsTaskCubit>().onPriorityRuleTypeChanged(
+              priority,
+              type,
+            );
+          },
         );
       },
     );

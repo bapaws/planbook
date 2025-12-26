@@ -48,7 +48,7 @@ import 'package:planbook_repository/planbook_repository.dart';
 // }
 
 enum AppFutureFeatures {
-  subTask,
+  subtask,
   statistics,
   desktopWidget,
 
@@ -57,7 +57,7 @@ enum AppFutureFeatures {
   String getTitle(BuildContext context) => switch (this) {
     desktopWidget => '💻 ${context.l10n.desktopWidget}',
 
-    subTask => '🔖 ${context.l10n.subTask}',
+    subtask => '🔖 ${context.l10n.subtask}',
     statistics => '📊 ${context.l10n.statistics}',
     more => '🔥 ${context.l10n.more}',
   };
@@ -71,7 +71,7 @@ enum AppFutureFeatures {
   };
 
   String get releaseDate => switch (this) {
-    subTask => Jiffy.parseFromList([2026, 1]).yMMM,
+    subtask => Jiffy.parseFromList([2026, 1]).yMMM,
     statistics => Jiffy.parseFromList([2026, 2]).yMMM,
     desktopWidget => Jiffy.parseFromList([2026, 3]).yMMM,
     more => '...',
@@ -85,7 +85,7 @@ enum AppFutureFeatures {
   String getProTotalText(BuildContext context) => switch (this) {
     desktopWidget => context.l10n.unlimited,
     statistics => '✅',
-    subTask => '✅',
+    subtask => '✅',
     more => '✅',
   };
 }

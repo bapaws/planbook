@@ -39,8 +39,20 @@ class TaskWeekCell extends StatelessWidget {
               taskCount: count,
             ),
           ),
-          Expanded(
-            child: _buildTaskList(context),
+          BlocListener<TaskListBloc, TaskListState>(
+            listenWhen: (previous, current) =>
+                previous.currentTaskNote != current.currentTaskNote &&
+                current.currentTaskNote != null,
+            listener: (context, state) {
+              context.router.push(
+                NoteNewRoute(
+                  initialNote: state.currentTaskNote,
+                ),
+              );
+            },
+            child: Expanded(
+              child: _buildTaskList(context),
+            ),
           ),
         ],
       ),
@@ -56,19 +68,25 @@ class TaskWeekCell extends StatelessWidget {
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
+            final nextTask = index < tasks.length - 1 ? tasks[index + 1] : null;
             return TaskListTile.week(
               key: ValueKey(task),
               task: task,
-              onPressed: () =>
+              titleTextStyle: Theme.of(context).textTheme.bodySmall,
+              isExpanded: nextTask?.parentId == task.id,
+              onPressed: (task) =>
                   context.router.push(TaskDetailRoute(taskId: task.id)),
-              onCompleted: () => context.read<TaskListBloc>().add(
+              onCompleted: (task) => context.read<TaskListBloc>().add(
                 TaskListCompleted(task: task),
               ),
-              onDeleted: () => context.read<TaskListBloc>().add(
+              onDeleted: (task) => context.read<TaskListBloc>().add(
                 TaskListDeleted(taskId: task.id),
               ),
-              onEdited: () =>
+              onEdited: (task) =>
                   context.router.push(TaskDetailRoute(taskId: task.id)),
+              onExpanded: (task) => context.read<TaskListBloc>().add(
+                TaskListTaskExpanded(task: task),
+              ),
             );
           },
         );

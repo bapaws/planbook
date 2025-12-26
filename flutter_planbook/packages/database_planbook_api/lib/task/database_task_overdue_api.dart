@@ -92,6 +92,18 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
           db.taskTags.taskId.equalsExp(db.tasks.id) &
               db.taskTags.deletedAt.isNull(),
         ),
+      leftOuterJoin(
+        childrenTasks,
+        childrenTasks.parentId.equalsExp(db.tasks.id) &
+            childrenTasks.deletedAt.isNull(),
+      ),
+      leftOuterJoin(
+        childrenTaskActivities,
+        childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+            childrenTaskActivities.occurrenceAt.isNull() &
+            childrenTaskActivities.completedAt.isNotNull() &
+            childrenTaskActivities.deletedAt.isNull(),
+      ),
     ])..where(exp);
     return query.watch().asyncMap(buildTaskEntities);
   }

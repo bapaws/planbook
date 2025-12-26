@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -86,6 +87,60 @@ class TaskNewPage extends StatelessWidget {
               }
             },
           ),
+          BlocListener<TaskNewCubit, TaskNewState>(
+            listenWhen: (previous, current) =>
+                previous.showEditModeSelection !=
+                    current.showEditModeSelection &&
+                current.showEditModeSelection,
+            listener: (context, state) async {
+              final editMode = await showCupertinoDialog<RecurringTaskEditMode>(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                  title: Text(context.l10n.editModeSelection),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(
+                          context,
+                          RecurringTaskEditMode.allEvents,
+                        );
+                      },
+                      child: Text(context.l10n.allEvents),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(
+                          context,
+                          RecurringTaskEditMode.thisAndFutureEvents,
+                        );
+                      },
+                      child: Text(context.l10n.thisAndFutureEvents),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(
+                          context,
+                          RecurringTaskEditMode.thisEventOnly,
+                        );
+                      },
+                      child: Text(context.l10n.thisEventOnly),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(context.l10n.cancel),
+                    ),
+                  ],
+                ),
+              );
+              if (context.mounted && editMode != null) {
+                await context.read<TaskNewCubit>().onEditModeSelected(
+                  editMode,
+                );
+              }
+            },
+          ),
         ],
         child: const _TaskNewPage(),
       ),
@@ -133,81 +188,75 @@ class _TaskNewPageState extends State<_TaskNewPage> {
     final l10n = context.l10n;
     final query = MediaQuery.of(context);
     final maxHeight = query.size.height - query.padding.vertical;
-    return BlocListener<TaskNewCubit, TaskNewState>(
-      listenWhen: (previous, current) =>
-          previous.initialTask != current.initialTask,
-      listener: (context, state) {
-        if (state.initialTask != null) {
-          context.read<TaskNewCubit>().onTitleChanged(state.initialTask!.title);
-        }
-      },
-      child: AppPageScaffold(
-        constraints: BoxConstraints(
-          maxHeight: maxHeight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        clipBehavior: Clip.hardEdge,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            BlocSelector<TaskNewCubit, TaskNewState, Jiffy?>(
-              selector: (state) => state.date,
-              builder: (context, date) {
-                return TaskNewDateView(
-                  date: date,
-                  onDateChanged: (date) {
-                    _onDateChanged(context, date);
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _titleController,
-              focusNode: _titleFocusNode,
-              decoration: InputDecoration(
-                hintText: l10n.taskTitleHint,
-                hintStyle: textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[400],
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                ),
-                isDense: true,
+    return AppPageScaffold(
+      constraints: BoxConstraints(
+        maxHeight: maxHeight,
+      ),
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.hardEdge,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BlocSelector<TaskNewCubit, TaskNewState, Jiffy?>(
+            selector: (state) => state.date,
+            builder: (context, date) {
+              return TaskNewDateView(
+                date: date,
+                onDateChanged: (date) {
+                  _onDateChanged(context, date);
+                },
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _titleController,
+            focusNode: _titleFocusNode,
+            decoration: InputDecoration(
+              hintText: l10n.taskTitleHint,
+              hintStyle: textTheme.bodyLarge?.copyWith(
+                color: Colors.grey[400],
               ),
-              minLines: 3,
-              maxLines: 20,
-              style: textTheme.bodyLarge?.copyWith(
-                color: colorScheme.onSurface,
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
               ),
-              onChanged: (value) {
-                context.read<TaskNewCubit>().onTitleChanged(value);
-              },
+              isDense: true,
             ),
-            const SizedBox(height: 12),
-            TaskNewBottomBar(focusNode: _titleFocusNode),
-            BlocSelector<TaskNewCubit, TaskNewState, TaskNewFocus>(
-              selector: (state) => state.focus,
-              builder: (context, focus) {
-                return AnimatedSwitcher(
-                  duration: Durations.medium1,
-                  switchInCurve: Curves.easeInOut,
-                  switchOutCurve: Curves.easeInOut,
-                  transitionBuilder: (child, animation) => SizeTransition(
-                    sizeFactor: animation,
-                    child: FadeTransition(
-                      opacity: animation,
-                      child: child,
-                    ),
-                  ),
-                  child: _buildBottomView(focus),
-                );
-              },
+            minLines: 3,
+            maxLines: 20,
+            style: textTheme.bodyLarge?.copyWith(
+              color: colorScheme.onSurface,
             ),
-          ],
-        ),
+            onChanged: (value) {
+              context.read<TaskNewCubit>().onTitleChanged(value);
+            },
+          ),
+          const SizedBox(height: 12),
+          TaskNewBottomBar(focusNode: _titleFocusNode),
+          SizedBox(
+            height: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          // BlocSelector<TaskNewCubit, TaskNewState, TaskNewFocus>(
+          //   selector: (state) => state.focus,
+          //   builder: (context, focus) {
+          //     return AnimatedSwitcher(
+          //       duration: Durations.medium1,
+          //       switchInCurve: Curves.easeInOut,
+          //       switchOutCurve: Curves.easeInOut,
+          //       transitionBuilder: (child, animation) => SizeTransition(
+          //         sizeFactor: animation,
+          //         child: FadeTransition(
+          //           opacity: animation,
+          //           child: child,
+          //         ),
+          //       ),
+          //       child: _buildBottomView(focus),
+          //     );
+          //   },
+          // ),
+        ],
       ),
     );
   }

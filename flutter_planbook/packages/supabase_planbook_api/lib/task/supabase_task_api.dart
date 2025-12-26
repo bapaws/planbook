@@ -21,9 +21,13 @@ class SupabaseTaskApi {
   Future<void> create({
     required Task task,
     List<TaskTag>? taskTags,
+    List<Task>? children,
   }) async {
     if (supabase == null) return;
-    await supabase!.from('tasks').insert(task.toJson());
+    await supabase!.from('tasks').insert([
+      task.toJson(),
+      ...?children?.map((e) => e.toJson()),
+    ]);
 
     if (taskTags != null && taskTags.isNotEmpty) {
       await supabase!
@@ -35,11 +39,15 @@ class SupabaseTaskApi {
   Future<void> update({
     required Task task,
     List<TaskTag>? taskTags,
+    List<Task>? children,
   }) async {
     if (supabase == null) return;
 
     // 更新任务
-    await supabase!.from('tasks').update(task.toJson()).eq('id', task.id);
+    await supabase!.from('tasks').upsert([
+      task.toJson(),
+      ...?children?.map((e) => e.toJson()),
+    ], onConflict: 'id').select();
 
     await supabase!.from('task_tags').delete().eq('task_id', task.id);
     if (taskTags != null && taskTags.isNotEmpty) {

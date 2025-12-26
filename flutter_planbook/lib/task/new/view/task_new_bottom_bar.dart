@@ -5,7 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -71,6 +71,42 @@ class TaskNewBottomBar extends StatelessWidget {
                   child: Icon(
                     FontAwesomeIcons.tags,
                     color: colorScheme?.primary ?? Colors.grey.shade400,
+                  ),
+                );
+              },
+            ),
+            BlocSelector<TaskNewCubit, TaskNewState, List<TaskEntity>>(
+              selector: (state) => state.children,
+              builder: (context, children) {
+                return Badge.count(
+                  isLabelVisible: children.isNotEmpty,
+                  count: children.length,
+                  backgroundColor: colorScheme.errorContainer,
+                  offset: const Offset(-3, 3),
+                  textColor: colorScheme.error,
+                  child: CupertinoButton(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    minimumSize: const Size.square(kMinInteractiveDimension),
+                    onPressed: () async {
+                      final cubit = context.read<TaskNewCubit>();
+                      final children = await context.router
+                          .push<List<TaskEntity>>(
+                            TaskNewChildRoute(subTasks: cubit.state.children),
+                          );
+                      if (children is! List<TaskEntity> || !context.mounted) {
+                        return;
+                      }
+                      context.read<TaskNewCubit>().onChildrenChanged(children);
+                    },
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: Icon(
+                        FontAwesomeIcons.shareNodes,
+                        color: children.isNotEmpty
+                            ? colorScheme.tertiary
+                            : Colors.grey.shade400,
+                      ),
+                    ),
                   ),
                 );
               },

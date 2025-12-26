@@ -6,13 +6,13 @@ class JiffyConverter extends TypeConverter<Jiffy, DateTime>
   const JiffyConverter();
 
   @override
-  Jiffy fromSql(DateTime value) => Jiffy.parseFromDateTime(value);
+  Jiffy fromSql(DateTime value) => Jiffy.parseFromDateTime(value).toLocal();
 
   @override
   DateTime toSql(Jiffy value) => value.toUtc().dateTime;
 
   @override
-  Jiffy fromJson(String json) => Jiffy.parse(json, isUtc: true);
+  Jiffy fromJson(String json) => Jiffy.parse(json, isUtc: true).toLocal();
 
   @override
   String toJson(Jiffy value) => value.toUtc().format();

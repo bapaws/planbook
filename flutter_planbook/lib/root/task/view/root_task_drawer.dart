@@ -22,11 +22,6 @@ class RootTaskDrawer extends StatelessWidget {
     return Drawer(
       width: (MediaQuery.of(context).size.width * 0.85).clamp(280, 400),
       backgroundColor: theme.colorScheme.surfaceContainerLowest,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.horizontal(
-          left: Radius.circular(32),
-        ),
-      ),
       child: Column(
         children: [
           const RootUserHeader(),

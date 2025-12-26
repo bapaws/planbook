@@ -24,10 +24,8 @@ class TasksRepository {
        _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi),
        _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi),
        _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi),
-       _dbTaskDelayApi = DatabaseTaskDelayApi(
-         db: db,
-         tagApi: tagApi,
-       );
+       _dbTaskDelayApi = DatabaseTaskDelayApi(db: db, tagApi: tagApi),
+       _dbTaskUpdateApi = DatabaseTaskUpdateApi(db: db, tagApi: tagApi);
 
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
@@ -38,6 +36,7 @@ class TasksRepository {
   final DatabaseTaskTodayApi _dbTaskTodayApi;
   final DatabaseTaskCompletionApi _dbTaskCompletionApi;
   final DatabaseTaskDelayApi _dbTaskDelayApi;
+  final DatabaseTaskUpdateApi _dbTaskUpdateApi;
 
   final SupabaseTaskApi _supabaseTaskApi;
 
@@ -48,20 +47,47 @@ class TasksRepository {
   Future<void> create({
     required Task task,
     List<TagEntity>? tags,
+    List<TaskEntity>? children,
   }) async {
-    final newTask = task.copyWith(userId: Value(userId));
+    final newTask = task.copyWith(
+      userId: Value(userId),
+      childCount: children?.length ?? 0,
+    );
     final taskTags = _dbTaskApi.generateTaskTags(
       task: newTask,
       tags: tags,
       userId: userId,
     );
-    await _supabaseTaskApi.create(task: newTask, taskTags: taskTags);
-    await _dbTaskApi.create(task: newTask, taskTags: taskTags);
+    final newChildren = children
+        ?.map(
+          (e) => e.task.copyWith(
+            userId: Value(userId),
+            parentId: Value(newTask.id),
+            layer: newTask.layer + 1,
+            priority: Value(newTask.priority),
+            startAt: Value(newTask.startAt),
+            endAt: Value(newTask.endAt),
+            isAllDay: newTask.isAllDay,
+            recurrenceRule: Value(newTask.recurrenceRule),
+          ),
+        )
+        .toList();
+    await _supabaseTaskApi.create(
+      task: newTask,
+      taskTags: taskTags,
+      children: newChildren,
+    );
+    await _dbTaskApi.create(
+      task: newTask,
+      taskTags: taskTags,
+      children: newChildren,
+    );
   }
 
   Future<void> update({
     required Task task,
     List<TagEntity>? tags,
+    List<TaskEntity>? children,
   }) async {
     final taskTags = _dbTaskApi.generateTaskTags(
       task: task,
@@ -71,9 +97,112 @@ class TasksRepository {
     final newTask = task.copyWith(
       userId: Value(userId),
       updatedAt: Value(Jiffy.now()),
+      childCount: children?.length ?? 0,
     );
-    await _supabaseTaskApi.update(task: newTask, taskTags: taskTags);
-    await _dbTaskApi.update(task: newTask, taskTags: taskTags);
+    final newChildren = children
+        ?.map(
+          (e) => e.task.copyWith(
+            userId: Value(userId),
+            parentId: Value(newTask.id),
+            layer: newTask.layer + 1,
+            priority: Value(newTask.priority),
+            startAt: Value(newTask.startAt),
+            endAt: Value(newTask.endAt),
+            isAllDay: newTask.isAllDay,
+            recurrenceRule: Value(newTask.recurrenceRule),
+          ),
+        )
+        .toList();
+    await _supabaseTaskApi.update(
+      task: newTask,
+      taskTags: taskTags,
+      children: newChildren,
+    );
+    await _dbTaskUpdateApi.update(
+      task: newTask,
+      taskTags: taskTags,
+      children: newChildren,
+    );
+  }
+
+  /// 使用编辑模式更新重复任务
+  ///
+  /// 根据 editMode 处理：
+  /// - thisEventOnly: 创建分离实例
+  /// - thisAndFutureEvents: 分裂重复序列
+  /// - allEvents: 修改整个重复序列
+  ///
+  /// 业务层应先调用 [needsEditModeSelection] 判断是否需要让用户选择编辑模式
+  Future<void> updateWithEditMode({
+    required TaskEntity entity,
+    required Task task,
+    required RecurringTaskEditMode editMode,
+    List<TagEntity>? tags,
+    List<TaskEntity>? children,
+    Jiffy? occurrenceAt,
+  }) async {
+    // allEvents 模式直接更新
+    if (editMode == RecurringTaskEditMode.allEvents) {
+      await update(task: task, tags: tags, children: children);
+      return;
+    }
+
+    // 使用编辑模式处理重复任务
+    final result = _dbTaskUpdateApi.prepareUpdate(
+      entity: entity,
+      updatedTask: task,
+      tags: tags,
+      children: children,
+      occurrenceAt: occurrenceAt,
+      userId: userId,
+      editMode: editMode,
+    );
+
+    // 同步到 Supabase
+    if (result.originalTaskUpdated != null) {
+      await _supabaseTaskApi.update(
+        task: result.originalTaskUpdated!,
+        taskTags: result.originalTaskTags ?? [],
+      );
+    }
+
+    if (result.isNewTask) {
+      await _supabaseTaskApi.create(
+        task: result.updatedTask,
+        taskTags: result.taskTags,
+        children: result.children,
+      );
+    } else {
+      await _supabaseTaskApi.update(
+        task: result.updatedTask,
+        taskTags: result.taskTags,
+        children: result.children,
+      );
+    }
+
+    // 保存到本地数据库
+    await _dbTaskUpdateApi.saveUpdateResult(result);
+  }
+
+  /// 判断是否需要让用户选择编辑模式
+  ///
+  /// 返回 true 时，业务层应显示编辑模式选择对话框：
+  /// - 仅此事件
+  /// - 此事件及将来事件
+  /// - 所有事件
+  ///
+  /// 返回 false 的情况：
+  /// - 不是重复任务
+  /// - 重复任务没有任何分离实例（从未被修改、完成或跳过）
+  Future<bool> needsEditModeSelection(TaskEntity entity) async {
+    final isRecurring = entity.task.recurrenceRule != null;
+    if (!isRecurring) return false;
+
+    // 检查是否有分离实例
+    final hasDetached = await _dbTaskUpdateApi.hasDetachedInstances(
+      entity.task.id,
+    );
+    return hasDetached;
   }
 
   Future<void> _syncTasks({
@@ -81,6 +210,11 @@ class TasksRepository {
   }) async {
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
     if (list.isEmpty) return;
+    for (final item in list) {
+      print(item);
+      final task = Task.fromJson(item);
+      print(task);
+    }
 
     await _db.transaction(() async {
       for (final item in list) {
@@ -105,8 +239,11 @@ class TasksRepository {
     });
   }
 
-  Future<TaskEntity?> getTaskEntityById(String taskId) async {
-    return _dbTaskApi.getTaskEntityById(taskId);
+  Future<TaskEntity?> getTaskEntityById(
+    String taskId, {
+    Jiffy? occurrenceAt,
+  }) async {
+    return _dbTaskApi.getTaskEntityById(taskId, occurrenceAt: occurrenceAt);
   }
 
   Stream<int> getTaskCount({
@@ -211,9 +348,15 @@ class TasksRepository {
   ///
   /// 返回所有创建或标记删除的 taskActivities 对象
   Future<List<TaskActivity>> completeTask(
-    TaskEntity entity,
-  ) async {
-    final activities = await _dbTaskCompletionApi.completeTask(entity);
+    TaskEntity entity, {
+    Jiffy? completedAt,
+    Jiffy? occurrenceAt,
+  }) async {
+    final activities = await _dbTaskCompletionApi.completeTask(
+      entity,
+      completedAt: completedAt,
+      occurrenceAt: occurrenceAt,
+    );
     if (userId != null) {
       for (var i = 0; i < activities.length; i++) {
         activities[i] = activities[i].copyWith(userId: Value(userId));
@@ -222,16 +365,6 @@ class TasksRepository {
     await _supabaseTaskApi.complete(activities: activities);
     await _dbTaskCompletionApi.completeTaskByActivities(activities);
     return activities;
-  }
-
-  Future<TaskActivity?> getTaskActivityForTask(
-    Task task, {
-    required Jiffy? occurrenceAt,
-  }) async {
-    return _dbTaskCompletionApi.getTaskActivityForTask(
-      task,
-      occurrenceAt: occurrenceAt,
-    );
   }
 
   Future<void> deleteTaskById(String taskId) async {
@@ -310,7 +443,7 @@ class TasksRepository {
         task: newTask,
         taskTags: taskTags,
       );
-      await _dbTaskApi.update(task: newTask, taskTags: taskTags);
+      await _dbTaskUpdateApi.update(task: newTask, taskTags: taskTags);
     }
   }
 
@@ -327,9 +460,40 @@ class TasksRepository {
         id: kDebugMode ? null : uuid.v4(),
       );
 
-      /// If dueAt is not null, set it to today
+      /// Parse relative date from dueAt field
+      /// Supports: "today", "tomorrow", "day+N", "day-N",
+      /// and weekdays: "mon", "tue", "wed", "thu", "fri", "sat", "sun"
       if (taskMap['dueAt'] != null) {
-        task = task.copyWith(dueAt: Value(Jiffy.now()));
+        final dueAtStr = taskMap['dueAt'] as String;
+        var date = Jiffy.now().toUtc();
+
+        if (dueAtStr == 'tomorrow') {
+          date = date.add(days: 1);
+        } else if (dueAtStr.startsWith('day+')) {
+          final days = int.tryParse(dueAtStr.substring(4)) ?? 0;
+          date = date.add(days: days);
+        } else if (dueAtStr.startsWith('day-')) {
+          final days = int.tryParse(dueAtStr.substring(4)) ?? 0;
+          date = date.subtract(days: days);
+        } else {
+          // Parse weekday: "mon", "tue", "wed", "thu", "fri", "sat", "sun"
+          final weekdayMap = {
+            'mon': 1,
+            'tue': 2,
+            'wed': 3,
+            'thu': 4,
+            'fri': 5,
+            'sat': 6,
+            'sun': 7,
+          };
+          final targetWeekday = weekdayMap[dueAtStr.toLowerCase()];
+          if (targetWeekday != null) {
+            // Get start of this week (Monday) and add days
+            date = date.startOf(Unit.week).add(days: targetWeekday - 1);
+          }
+        }
+
+        task = task.copyWith(dueAt: Value(date));
       }
       final tagNames = List<String>.from(map['tags'] as List<dynamic>);
       final tags = await Future.wait(

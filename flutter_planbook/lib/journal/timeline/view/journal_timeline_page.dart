@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/core/model/task_priority.dart';
+import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/journal/timeline/bloc/journal_timeline_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_api/entity/task_entity.dart';

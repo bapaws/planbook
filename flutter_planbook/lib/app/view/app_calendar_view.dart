@@ -96,7 +96,7 @@ class AppCalendarView<T> extends StatelessWidget {
     this.calendarFormat = CalendarFormat.week,
     super.key,
     this.eventLoader,
-  }) : date = date ?? Jiffy.now();
+  }) : date = date ?? Jiffy.now().toUtc();
 
   final Jiffy date;
   final CalendarFormat calendarFormat;
@@ -106,6 +106,7 @@ class AppCalendarView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TableCalendar<T>(
       firstDay: firstDay,
       lastDay: lastDay,
@@ -131,25 +132,35 @@ class AppCalendarView<T> extends StatelessWidget {
           unit: Unit.day,
         );
       },
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(
+          color: theme.colorScheme.onSurfaceVariant,
+          fontSize: 10,
+        ),
+        weekendStyle: TextStyle(
+          color: theme.colorScheme.outline,
+          fontSize: 10,
+        ),
+      ),
       calendarStyle: CalendarStyle(
         // isTodayHighlighted: false,
         rangeHighlightColor: Colors.red,
         withinRangeTextStyle: TextStyle(
-          color: Theme.of(context).primaryColor,
+          color: theme.primaryColor,
         ),
         selectedTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: theme.colorScheme.onPrimaryContainer,
         ),
         selectedDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primaryContainer,
+          color: theme.colorScheme.primaryContainer,
           shape: BoxShape.circle,
         ),
         todayTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          color: theme.colorScheme.onPrimaryContainer,
         ),
         todayDecoration: BoxDecoration(
           border: Border.all(
-            color: Theme.of(context).colorScheme.outlineVariant,
+            color: theme.colorScheme.outlineVariant,
           ),
           shape: BoxShape.circle,
         ),

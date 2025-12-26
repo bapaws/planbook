@@ -497,7 +497,7 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       const JiffyConverter();
   static JsonTypeConverter2<Jiffy?, DateTime?, String?> $converterdueAtn =
       JsonTypeConverter2.asNullable($converterdueAt);
-  static JsonTypeConverter2<RecurrenceRule?, String?, Map<String, dynamic>?>
+  static JsonTypeConverter2<RecurrenceRule?, String?, String?>
   $converterrecurrenceRule = const RecurrenceRuleConverter();
   static JsonTypeConverter2<Jiffy, DateTime, String>
   $converterdetachedRecurrenceAt = const JiffyConverter();
@@ -747,7 +747,7 @@ class Task extends DataClass implements Insertable<Task> {
         serializer.fromJson<String?>(json['due_at']),
       ),
       recurrenceRule: $TasksTable.$converterrecurrenceRule.fromJson(
-        serializer.fromJson<Map<String, dynamic>?>(json['recurrence_rule']),
+        serializer.fromJson<String?>(json['recurrence_rule']),
       ),
       detachedFromTaskId: serializer.fromJson<String?>(
         json['detached_from_task_id'],
@@ -800,7 +800,7 @@ class Task extends DataClass implements Insertable<Task> {
       'due_at': serializer.toJson<String?>(
         $TasksTable.$converterdueAtn.toJson(dueAt),
       ),
-      'recurrence_rule': serializer.toJson<Map<String, dynamic>?>(
+      'recurrence_rule': serializer.toJson<String?>(
         $TasksTable.$converterrecurrenceRule.toJson(recurrenceRule),
       ),
       'detached_from_task_id': serializer.toJson<String?>(detachedFromTaskId),

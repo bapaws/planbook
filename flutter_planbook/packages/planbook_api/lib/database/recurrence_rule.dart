@@ -409,7 +409,7 @@ class RecurrenceRule extends Equatable {
 
 /// RecurrenceRule 的 Drift 类型转换器
 class RecurrenceRuleConverter extends TypeConverter<RecurrenceRule?, String?>
-    with JsonTypeConverter2<RecurrenceRule?, String?, Map<String, dynamic>?> {
+    with JsonTypeConverter2<RecurrenceRule?, String?, String?> {
   const RecurrenceRuleConverter();
 
   @override
@@ -427,13 +427,14 @@ class RecurrenceRuleConverter extends TypeConverter<RecurrenceRule?, String?>
   }
 
   @override
-  RecurrenceRule? fromJson(Map<String, dynamic>? json) {
+  RecurrenceRule? fromJson(String? json) {
     if (json == null) return null;
-    return RecurrenceRule.fromJson(json);
+    return RecurrenceRule.fromJson(jsonDecode(json) as Map<String, dynamic>);
   }
 
   @override
-  Map<String, dynamic>? toJson(RecurrenceRule? value) {
-    return value?.toJson();
+  String? toJson(RecurrenceRule? value) {
+    if (value == null) return null;
+    return jsonEncode(value.toJson());
   }
 }

@@ -132,6 +132,10 @@
       }
     }
   },
+  "done": "完成",
+  "uncompleteTask": "撤销完成",
+  "completeTask": "完成",
+  "alreadyDone": "已完成",
   "unselectAll": "取消全选",
   "selectAll": "全选",
   "work": "工作",
@@ -245,7 +249,10 @@
   "pro": "高级",
   "unlimited": "无限制",
   "image": "图片",
-  "subTask": "子任务",
+  "subtask": "子任务",
+  "subtasks": "子任务",
+  "taskNote": "任务笔记",
+  "subtaskNote": "子任务笔记",
   "statistics": "统计",
   "desktopWidget": "小组件",
   "theme": "主题",
@@ -260,6 +267,7 @@
   "editDescription": "弹出笔记编辑器",
   "createAndEdit": "创建 & 编辑",
   "createAndEditDescription": "创建笔记并弹出笔记编辑器",
+  "completedAt": "完成时间",
   "priorityHeaderStyle": "四象限样式",
   "solidColorBackground": "纯色背景",
   "numberIcon": "数字图标",
@@ -277,6 +285,16 @@
   "thinkAboutWeeklyFocus": "本周最想完成什么？",
   "thinkAboutDailyFocus": "今天最想完成什么？",
   "thisWeek": "本周",
-  "lastWeek": "上周"
+  "lastWeek": "上周",
+  "thisMonth": "本月",
+  "thisYear": "今年",
+  "autoPlay": "自动播放",
+  "everyInterval": "每 {interval} {unit}",
+  "recurrenceWithEndDate": "{frequency}，{date} 结束",
+  "recurrenceWithEndCount": "{frequency}，{count} 次后结束",
+  "editModeSelection": "编辑模式选择",
+  "allEvents": "所有事件",
+  "thisAndFutureEvents": "此事件及未来事件",
+  "thisEventOnly": "此事件"
 }
 
