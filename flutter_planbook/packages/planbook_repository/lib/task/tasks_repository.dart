@@ -97,7 +97,7 @@ class TasksRepository {
     final newTask = task.copyWith(
       userId: Value(userId),
       updatedAt: Value(Jiffy.now()),
-      childCount: children?.length ?? 0,
+      childCount: children?.length,
     );
     final newChildren = children
         ?.map(

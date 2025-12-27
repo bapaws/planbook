@@ -128,21 +128,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     final task = await _tasksRepository.getTaskEntityById(taskId);
     if (task == null) return;
 
-    var type = TaskAutoNoteType.createAndEdit;
-    final rules = await _settingsRepository.getTaskAutoNoteRules();
-    if (task.parentId != null) {
-      final subtaskRule = rules.firstWhereOrNull((rule) => rule.isSubtask);
-      if (subtaskRule == null || subtaskRule.type == TaskAutoNoteType.none) {
-        return;
-      }
-      type = subtaskRule.type;
-    } else {
-      final rule = rules.firstWhereOrNull(
-        (rule) => rule.priority == task.priority,
-      );
-      if (rule == null || rule.type == TaskAutoNoteType.none) return;
-      type = rule.type;
-    }
+    final type = await _settingsRepository.getTaskAutoNoteTypeByTask(task);
+    if (type == TaskAutoNoteType.none) return;
 
     NoteEntity? noteEntity;
     if (type.isCreate) {

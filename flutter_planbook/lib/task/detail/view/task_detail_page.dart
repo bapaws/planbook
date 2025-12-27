@@ -16,6 +16,8 @@ import 'package:flutter_planbook/task/detail/view/task_detail_bottom_bar.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_duration_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
+import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -25,8 +27,9 @@ import 'package:sliver_tools/sliver_tools.dart';
 
 @RoutePage()
 class TaskDetailPage extends StatelessWidget {
-  const TaskDetailPage({required this.taskId, super.key});
+  const TaskDetailPage({required this.taskId, this.occurrenceAt, super.key});
   final String taskId;
+  final Jiffy? occurrenceAt;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +40,7 @@ class TaskDetailPage extends StatelessWidget {
               settingsRepository: context.read(),
               notesRepository: context.read(),
               taskId: taskId,
+              occurrenceAt: occurrenceAt,
             )
             ..add(const TaskDetailRequested())
             ..add(const TaskDetailNotesRequested()),
@@ -119,6 +123,8 @@ class _TaskDetailPage extends StatelessWidget {
                   : task.tags.firstOrNull?.light);
               return CustomScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 slivers: [
                   SliverToBoxAdapter(
                     child: TextField(
@@ -140,8 +146,46 @@ class _TaskDetailPage extends StatelessWidget {
                       },
                     ),
                   ),
+                  for (final child in task.children)
+                    SliverToBoxAdapter(
+                      child: TaskListTile(
+                        task: child,
+                        onPressed: (value) async {
+                          final subTasks = await context.router
+                              .push<List<TaskEntity>>(
+                                TaskNewChildRoute(
+                                  subTasks: task.children,
+                                ),
+                              );
+                          if (subTasks is! List<TaskEntity> ||
+                              !context.mounted) {
+                            return;
+                          }
+                          context.read<TaskDetailBloc>().add(
+                            TaskDetailChildrenChanged(children: subTasks),
+                          );
+                        },
+                        onCompleted: (task) {
+                          context.read<TaskDetailBloc>().add(
+                            TaskDetailCompleted(task: task),
+                          );
+                        },
+                      ),
+                    ),
+                  if (task.children.isNotEmpty)
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 32),
+                    ),
+
                   TaskDetailSliverTile(
                     onPressed: () {
+                      if (task.occurrence?.occurrenceAt != null) {
+                        Fluttertoast.showToast(
+                          msg: context.l10n.recurringTaskCannotChangeDate,
+                          gravity: ToastGravity.CENTER,
+                        );
+                        return;
+                      }
                       context.router.push(
                         TaskDatePickerRoute(
                           date: task.dueAt ?? Jiffy.now(),
@@ -162,7 +206,8 @@ class _TaskDetailPage extends StatelessWidget {
                     ),
                     title: context.l10n.date,
                     trailing: Text(
-                      task.dueAt?.yMMMEd ??
+                      task.occurrence?.occurrenceAt.yMMMEd ??
+                          task.dueAt?.yMMMEd ??
                           task.startAt?.yMMMEd ??
                           context.l10n.inbox,
                     ),

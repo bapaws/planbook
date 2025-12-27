@@ -242,17 +242,17 @@ class _TaskWeekPage extends StatelessWidget {
       case DateTime.monday:
         return context.greyColorScheme;
       case DateTime.tuesday:
-        return context.blueColorScheme;
+        return context.indigoColorScheme;
       case DateTime.wednesday:
-        return context.amberColorScheme;
+        return context.pinkColorScheme;
       case DateTime.thursday:
         return context.purpleColorScheme;
       case DateTime.friday:
         return context.blueColorScheme;
       case DateTime.saturday:
-        return context.pinkColorScheme;
-      case DateTime.sunday:
         return context.redColorScheme;
+      case DateTime.sunday:
+        return context.amberColorScheme;
       default:
         return context.brownColorScheme;
     }

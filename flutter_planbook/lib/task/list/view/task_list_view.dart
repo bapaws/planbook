@@ -119,7 +119,12 @@ class TaskSliverList extends StatelessWidget {
                   if (onTaskPressed != null) {
                     onTaskPressed!(task);
                   } else {
-                    context.router.push(TaskDetailRoute(taskId: task.id));
+                    context.router.push(
+                      TaskDetailRoute(
+                        taskId: task.id,
+                        occurrenceAt: task.occurrence?.occurrenceAt,
+                      ),
+                    );
                   }
                 },
                 onCompleted: (task) {

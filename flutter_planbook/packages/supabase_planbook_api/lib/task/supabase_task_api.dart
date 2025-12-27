@@ -46,14 +46,21 @@ class SupabaseTaskApi {
     // 更新任务
     await supabase!.from('tasks').upsert([
       task.toJson(),
-      ...?children?.map((e) => e.toJson()),
     ], onConflict: 'id').select();
 
-    await supabase!.from('task_tags').delete().eq('task_id', task.id);
-    if (taskTags != null && taskTags.isNotEmpty) {
+    if (children != null && children.isNotEmpty) {
       await supabase!
-          .from('task_tags')
-          .insert(taskTags.map((e) => e.toJson()).toList());
+          .from('tasks')
+          .upsert(children.map((e) => e.toJson()).toList());
+    }
+
+    if (taskTags != null) {
+      await supabase!.from('task_tags').delete().eq('task_id', task.id);
+      if (taskTags.isNotEmpty) {
+        await supabase!
+            .from('task_tags')
+            .insert(taskTags.map((e) => e.toJson()).toList());
+      }
     }
   }
 

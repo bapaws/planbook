@@ -17,10 +17,12 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     required NotesRepository notesRepository,
     required String taskId,
     required SettingsRepository settingsRepository,
+    Jiffy? occurrenceAt,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _taskId = taskId,
        _settingsRepository = settingsRepository,
+       _occurrenceAt = occurrenceAt,
        super(const TaskDetailState()) {
     on<TaskDetailRequested>(_onRequested);
     on<TaskDetailNotesRequested>(_onNotesRequested);
@@ -35,20 +37,32 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailCompleted>(_onCompleted);
     on<TaskDetailNoteCreated>(_onNoteCreated);
     on<TaskDetailNoteDeleted>(_onNoteDeleted);
+
+    on<TaskDetailChildrenChanged>(_onChildrenChanged);
+    on<TaskDetailEditModeSelected>(_onEditModeSelected);
+    on<TaskDetailUpdated>(_onUpdated);
   }
 
   final String _taskId;
+  final Jiffy? _occurrenceAt;
 
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
   final SettingsRepository _settingsRepository;
+
+  Task? _updatedTask;
+  List<TagEntity>? _updatedTags;
+  List<TaskEntity>? _updatedChildren;
 
   Future<void> _onRequested(
     TaskDetailRequested event,
     Emitter<TaskDetailState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    final task = await _tasksRepository.getTaskEntityById(_taskId);
+    final task = await _tasksRepository.getTaskEntityById(
+      _taskId,
+      occurrenceAt: _occurrenceAt,
+    );
     emit(state.copyWith(status: PageStatus.success, task: task));
   }
 
@@ -78,15 +92,48 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     TaskDetailTitleChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    if (task.title == event.title || event.title.isEmpty) return;
-    final updatedTask = task.copyWith(title: event.title);
-    await _tasksRepository.update(task: updatedTask);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(task: updatedTask),
+    if (state.task?.title == event.title || event.title.isEmpty) return;
+    final updatedTask = state.task!.task.copyWith(title: event.title);
+    add(TaskDetailUpdated(task: updatedTask));
+  }
+
+  Future<void> _onChildrenChanged(
+    TaskDetailChildrenChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final entity = state.task;
+    if (entity == null) return;
+    final updatedTask = entity.task.copyWith(childCount: event.children.length);
+
+    final newChildren = <TaskEntity>[...event.children];
+    for (final child in entity.children) {
+      if (!event.children.any((c) => c.id == child.id)) {
+        newChildren.add(
+          child.copyWith(
+            task: child.task.copyWith(deletedAt: Value(Jiffy.now())),
+          ),
+        );
+      }
+    }
+    add(
+      TaskDetailUpdated(
+        task: updatedTask,
+        children: newChildren
+            .map(
+              (e) => e.copyWith(
+                task: e.task.copyWith(
+                  userId: Value(entity.task.userId),
+                  parentId: Value(entity.id),
+                  layer: entity.layer + 1,
+                  priority: Value(entity.priority),
+                  startAt: Value(entity.startAt),
+                  endAt: Value(entity.endAt),
+                  isAllDay: entity.isAllDay,
+                  recurrenceRule: Value(entity.recurrenceRule),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -95,103 +142,80 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     TaskDetailDueAtChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-
-    final updatedTask = task.copyWith(dueAt: Value(event.dueAt));
-    await _tasksRepository.update(task: updatedTask);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(task: updatedTask),
-      ),
-    );
+    final updatedTask = state.task?.task.copyWith(dueAt: Value(event.dueAt));
+    add(TaskDetailUpdated(task: updatedTask));
   }
 
   Future<void> _onPriorityChanged(
     TaskDetailPriorityChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    final updatedTask = task.copyWith(priority: Value(event.priority));
-    await _tasksRepository.update(task: updatedTask);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(task: updatedTask),
-      ),
+    final updatedTask = state.task?.task.copyWith(
+      priority: Value(event.priority),
     );
+    add(TaskDetailUpdated(task: updatedTask));
   }
 
   Future<void> _onTagsChanged(
     TaskDetailTagsChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-
-    await _tasksRepository.update(task: task, tags: event.tags);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(tags: event.tags),
-      ),
-    );
+    add(TaskDetailUpdated(tags: event.tags));
   }
 
   Future<void> _onRecurrenceRuleChanged(
     TaskDetailRecurrenceRuleChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    final updatedTask = task.copyWith(
+    final updatedTask = state.task?.task.copyWith(
       recurrenceRule: Value(event.recurrenceRule),
     );
-    await _tasksRepository.update(task: updatedTask);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(task: updatedTask),
-      ),
-    );
+    add(TaskDetailUpdated(task: updatedTask));
   }
 
   Future<void> _onDurationChanged(
     TaskDetailDurationChanged event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final task = state.task?.task;
-    if (task == null) return;
-    final updatedTask = task.copyWith(
+    final updatedTask = state.task?.task.copyWith(
       isAllDay: event.entity?.isAllDay ?? true,
       startAt: Value(event.entity?.startAt),
       endAt: Value(event.entity?.endAt),
     );
-    await _tasksRepository.update(task: updatedTask);
-    emit(
-      state.copyWith(
-        status: PageStatus.success,
-        task: state.task?.copyWith(task: updatedTask),
-      ),
-    );
+    add(TaskDetailUpdated(task: updatedTask));
   }
 
   Future<void> _onCompleted(
     TaskDetailCompleted event,
     Emitter<TaskDetailState> emit,
   ) async {
-    if (state.task == null) return;
-    emit(state.copyWith(status: PageStatus.loading));
-    final activities = await _tasksRepository.completeTask(state.task!);
+    final task = event.task;
+    if (task == null) return;
+
+    final activities = await _tasksRepository.completeTask(
+      task,
+      occurrenceAt: state.task?.occurrence?.occurrenceAt,
+    );
     for (final activity in activities) {
-      add(TaskDetailNoteCreated(task: state.task!, activity: activity));
+      add(TaskDetailNoteCreated(activity: activity));
+
+      final index = state.task?.children.indexWhere(
+        (child) => child.id == activity.taskId,
+      );
+      if (index != null && index != -1) {
+        final newChildren = [...state.task!.children];
+        newChildren[index] = newChildren[index].copyWith(activity: activity);
+        emit(state.copyWith(task: state.task!.copyWith(children: newChildren)));
+      }
     }
     emit(
       state.copyWith(
         status: PageStatus.success,
-        task: state.task?.copyWith(activity: activities.firstOrNull),
+        task: state.task?.copyWith(
+          activity: activities.firstWhereOrNull(
+            (e) => e.taskId == state.task?.id,
+          ),
+        ),
       ),
     );
 
@@ -206,35 +230,37 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     TaskDetailNoteCreated event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final rules = await _settingsRepository.getTaskAutoNoteRules();
-    final rule = rules.firstWhereOrNull(
-      (rule) => rule.priority == event.task.priority,
-    );
-    if (rule == null || rule.type == TaskAutoNoteType.none) return;
+    final taskId = event.activity.taskId;
+    if (taskId == null) return;
+    final task = await _tasksRepository.getTaskEntityById(taskId);
+    if (task == null) return;
+
+    final type = await _settingsRepository.getTaskAutoNoteTypeByTask(task);
+    if (type == TaskAutoNoteType.none) return;
 
     NoteEntity? noteEntity;
-    if (rule.type.isCreate) {
+    if (type.isCreate) {
       final note = await _notesRepository.create(
         title:
             '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${event.task.title}',
-        tags: event.task.tags,
-        taskId: event.task.id,
+            '${task.title}',
+        tags: task.tags,
+        taskId: task.id,
       );
-      if (rule.type == TaskAutoNoteType.createAndEdit) {
+      if (type == TaskAutoNoteType.createAndEdit) {
         noteEntity = await _notesRepository.getNoteEntityById(note.id);
       }
-    } else if (rule.type == TaskAutoNoteType.edit) {
+    } else if (type == TaskAutoNoteType.edit) {
       final note = Note(
         id: const Uuid().v4(),
         title:
             '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${event.task.title}',
-        taskId: event.task.id,
+            '${task.title}',
+        taskId: task.id,
         createdAt: Jiffy.now(),
         images: [],
       );
-      noteEntity = NoteEntity(note: note, tags: event.task.tags);
+      noteEntity = NoteEntity(note: note, tags: task.tags);
     }
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
@@ -248,5 +274,66 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     emit(state.copyWith(status: PageStatus.loading));
     await _notesRepository.deleteNoteById(event.noteId);
     emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onEditModeSelected(
+    TaskDetailEditModeSelected event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    if (event.mode == null ||
+        (_updatedTask == null &&
+            _updatedTags == null &&
+            _updatedChildren == null)) {
+      _updatedTask = null;
+      _updatedTags = null;
+      _updatedChildren = null;
+      emit(state.copyWith(showEditModeSelection: false));
+      return;
+    }
+
+    final entity = state.task;
+    if (entity == null) return;
+
+    await _tasksRepository.updateWithEditMode(
+      entity: entity,
+      task: _updatedTask ?? entity.task,
+      editMode: event.mode!,
+      tags: _updatedTags,
+      children: _updatedChildren,
+    );
+    emit(
+      state.copyWith(
+        status: PageStatus.success,
+        task: state.task?.copyWith(
+          task: _updatedTask,
+          tags: _updatedTags,
+          children: _updatedChildren,
+        ),
+      ),
+    );
+    _updatedTask = null;
+    _updatedTags = null;
+    _updatedChildren = null;
+  }
+
+  Future<void> _onUpdated(
+    TaskDetailUpdated event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    if (state.task == null) return;
+    _updatedTask = event.task;
+    _updatedTags = event.tags;
+    _updatedChildren = event.children;
+
+    final need = await _tasksRepository.needsEditModeSelection(state.task!);
+    if (need) {
+      emit(state.copyWith(showEditModeSelection: true));
+    } else {
+      add(
+        const TaskDetailEditModeSelected(
+          mode: RecurringTaskEditMode.allEvents,
+        ),
+      );
+    }
   }
 }

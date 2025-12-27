@@ -406,5 +406,16 @@
   "editModeSelection": "Edit Mode Selection",
   "allEvents": "All Events",
   "thisAndFutureEvents": "This and Future Events",
-  "thisEventOnly": "This Event Only"
+  "thisEventOnly": "This Event Only",
+  "recurringTaskCannotChangeDate": "Recurring Task Cannot Change Date",
+  "incompleteSubtasksCount": "{count, plural, =1 {1 subtask} other {{count} subtasks}}",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  }
 }

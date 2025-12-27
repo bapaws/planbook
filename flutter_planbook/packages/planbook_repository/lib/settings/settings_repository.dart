@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
@@ -205,6 +206,24 @@ class SettingsRepository {
       jsonEncode(rules.map((e) => e.toJson()).toList()),
     );
     taskAutoNoteRules = rules;
+  }
+
+  Future<TaskAutoNoteType> getTaskAutoNoteTypeByTask(TaskEntity task) async {
+    final rules = await getTaskAutoNoteRules();
+    if (task.parentId != null) {
+      final subtaskRule = rules.firstWhereOrNull((rule) => rule.isSubtask);
+      if (subtaskRule == null || subtaskRule.type == TaskAutoNoteType.none) {
+        return TaskAutoNoteType.none;
+      }
+      return subtaskRule.type;
+    } else {
+      final rule = rules.firstWhereOrNull(
+        (rule) => rule.priority == task.priority,
+      );
+      return (rule == null || rule.type == TaskAutoNoteType.none)
+          ? TaskAutoNoteType.none
+          : rule.type;
+    }
   }
 
   Future<TaskPriorityStyle> getTaskPriorityStyle() async {

@@ -273,8 +273,9 @@ class _TaskDonePage extends StatelessWidget {
                         if (!state.task.isCompleted &&
                             state.task.children.isNotEmpty)
                           Text(
-                            '$incompleteChildrenCount '
-                            '${incompleteChildrenCount == 1 ? context.l10n.subtask : context.l10n.subtasks}',
+                            context.l10n.incompleteSubtasksCount(
+                              incompleteChildrenCount,
+                            ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.primary,
                             ),

@@ -74,16 +74,24 @@ class TaskWeekCell extends StatelessWidget {
               task: task,
               titleTextStyle: Theme.of(context).textTheme.bodySmall,
               isExpanded: nextTask?.parentId == task.id,
-              onPressed: (task) =>
-                  context.router.push(TaskDetailRoute(taskId: task.id)),
+              onPressed: (task) => context.router.push(
+                TaskDetailRoute(
+                  taskId: task.id,
+                  occurrenceAt: task.occurrence?.occurrenceAt,
+                ),
+              ),
               onCompleted: (task) => context.read<TaskListBloc>().add(
                 TaskListCompleted(task: task),
               ),
               onDeleted: (task) => context.read<TaskListBloc>().add(
                 TaskListDeleted(taskId: task.id),
               ),
-              onEdited: (task) =>
-                  context.router.push(TaskDetailRoute(taskId: task.id)),
+              onEdited: (task) => context.router.push(
+                TaskDetailRoute(
+                  taskId: task.id,
+                  occurrenceAt: task.occurrence?.occurrenceAt,
+                ),
+              ),
               onExpanded: (task) => context.read<TaskListBloc>().add(
                 TaskListTaskExpanded(task: task),
               ),

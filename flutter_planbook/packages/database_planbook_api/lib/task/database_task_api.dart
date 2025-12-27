@@ -42,12 +42,12 @@ class DatabaseTaskApi {
     await db.into(db.tasks).insertOnConflictUpdate(task);
   }
 
-  List<TaskTag> generateTaskTags({
+  List<TaskTag>? generateTaskTags({
     required Task task,
     required List<TagEntity>? tags,
     required String? userId,
   }) {
-    if (tags == null || tags.isEmpty) return [];
+    if (tags == null) return null;
 
     final taskTags = <TaskTag>[];
     const uuid = Uuid();
@@ -82,13 +82,15 @@ class DatabaseTaskApi {
 
   Future<void> create({
     required Task task,
-    required List<TaskTag> taskTags,
+    List<TaskTag>? taskTags,
     List<Task>? children,
   }) async {
     await db.transaction(() async {
       await db.into(db.tasks).insert(task);
-      for (final taskTag in taskTags) {
-        await db.into(db.taskTags).insert(taskTag);
+      if (taskTags != null && taskTags.isNotEmpty) {
+        for (final taskTag in taskTags) {
+          await db.into(db.taskTags).insert(taskTag);
+        }
       }
       if (children != null && children.isNotEmpty) {
         for (final child in children) {

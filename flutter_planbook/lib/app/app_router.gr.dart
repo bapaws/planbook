@@ -1083,11 +1083,16 @@ class TaskDatePickerRouteArgs {
 class TaskDetailRoute extends _i49.PageRouteInfo<TaskDetailRouteArgs> {
   TaskDetailRoute({
     required String taskId,
+    _i52.Jiffy? occurrenceAt,
     _i53.Key? key,
     List<_i49.PageRouteInfo>? children,
   }) : super(
          TaskDetailRoute.name,
-         args: TaskDetailRouteArgs(taskId: taskId, key: key),
+         args: TaskDetailRouteArgs(
+           taskId: taskId,
+           occurrenceAt: occurrenceAt,
+           key: key,
+         ),
          initialChildren: children,
        );
 
@@ -1097,32 +1102,44 @@ class TaskDetailRoute extends _i49.PageRouteInfo<TaskDetailRouteArgs> {
     name,
     builder: (data) {
       final args = data.argsAs<TaskDetailRouteArgs>();
-      return _i34.TaskDetailPage(taskId: args.taskId, key: args.key);
+      return _i34.TaskDetailPage(
+        taskId: args.taskId,
+        occurrenceAt: args.occurrenceAt,
+        key: args.key,
+      );
     },
   );
 }
 
 class TaskDetailRouteArgs {
-  const TaskDetailRouteArgs({required this.taskId, this.key});
+  const TaskDetailRouteArgs({
+    required this.taskId,
+    this.occurrenceAt,
+    this.key,
+  });
 
   final String taskId;
+
+  final _i52.Jiffy? occurrenceAt;
 
   final _i53.Key? key;
 
   @override
   String toString() {
-    return 'TaskDetailRouteArgs{taskId: $taskId, key: $key}';
+    return 'TaskDetailRouteArgs{taskId: $taskId, occurrenceAt: $occurrenceAt, key: $key}';
   }
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! TaskDetailRouteArgs) return false;
-    return taskId == other.taskId && key == other.key;
+    return taskId == other.taskId &&
+        occurrenceAt == other.occurrenceAt &&
+        key == other.key;
   }
 
   @override
-  int get hashCode => taskId.hashCode ^ key.hashCode;
+  int get hashCode => taskId.hashCode ^ occurrenceAt.hashCode ^ key.hashCode;
 }
 
 /// generated route for
@@ -1130,7 +1147,7 @@ class TaskDetailRouteArgs {
 class TaskDoneRoute extends _i49.PageRouteInfo<TaskDoneRouteArgs> {
   TaskDoneRoute({
     required _i58.TaskEntity task,
-    _i51.Key? key,
+    _i53.Key? key,
     List<_i49.PageRouteInfo>? children,
   }) : super(
          TaskDoneRoute.name,
@@ -1154,7 +1171,7 @@ class TaskDoneRouteArgs {
 
   final _i58.TaskEntity task;
 
-  final _i51.Key? key;
+  final _i53.Key? key;
 
   @override
   String toString() {
@@ -1334,7 +1351,7 @@ class TaskNewRoute extends _i49.PageRouteInfo<TaskNewRouteArgs> {
   TaskNewRoute({
     _i52.TaskEntity? initialTask,
     _i52.Jiffy? dueAt,
-    _i51.Key? key,
+    _i53.Key? key,
     List<_i49.PageRouteInfo>? children,
   }) : super(
          TaskNewRoute.name,
@@ -1370,7 +1387,7 @@ class TaskNewRouteArgs {
 
   final _i52.Jiffy? dueAt;
 
-  final _i51.Key? key;
+  final _i53.Key? key;
 
   @override
   String toString() {

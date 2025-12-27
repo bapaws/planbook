@@ -11,7 +11,7 @@ import 'package:uuid/uuid.dart';
 class UpdateTaskResult {
   const UpdateTaskResult({
     required this.updatedTask,
-    required this.taskTags,
+    this.taskTags,
     this.originalTaskUpdated,
     this.originalTaskTags,
     this.children,
@@ -22,7 +22,7 @@ class UpdateTaskResult {
   final Task updatedTask;
 
   /// 更新后任务的标签
-  final List<TaskTag> taskTags;
+  final List<TaskTag>? taskTags;
 
   /// 原始任务是否被更新（仅用于 thisAndFutureEvents 模式）
   final Task? originalTaskUpdated;
@@ -338,7 +338,7 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
     if (result.originalTaskUpdated != null) {
       await update(
         task: result.originalTaskUpdated!,
-        taskTags: result.originalTaskTags ?? [],
+        taskTags: result.originalTaskTags,
       );
     }
 
@@ -364,7 +364,7 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
   /// 如果任务的重复规则或时间发生变化，会重新生成 TaskOccurrences
   Future<void> update({
     required Task task,
-    required List<TaskTag> taskTags,
+    List<TaskTag>? taskTags,
     List<Task>? children,
   }) async {
     final existingTask = await getTaskById(task.id);
@@ -373,11 +373,14 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
       await (db.update(
         db.tasks,
       )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
-      await (db.delete(
-        db.taskTags,
-      )..where((tt) => tt.taskId.equals(task.id))).go();
-      for (final taskTag in taskTags) {
-        await db.into(db.taskTags).insert(taskTag);
+
+      if (taskTags != null) {
+        await (db.delete(
+          db.taskTags,
+        )..where((tt) => tt.taskId.equals(task.id))).go();
+        for (final taskTag in taskTags) {
+          await db.into(db.taskTags).insert(taskTag);
+        }
       }
       // 处理子任务
       if (children != null && children.isNotEmpty) {

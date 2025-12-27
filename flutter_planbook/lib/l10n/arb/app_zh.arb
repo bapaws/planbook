@@ -295,6 +295,8 @@
   "editModeSelection": "编辑模式选择",
   "allEvents": "所有事件",
   "thisAndFutureEvents": "此事件及未来事件",
-  "thisEventOnly": "此事件"
+  "thisEventOnly": "此事件",
+  "recurringTaskCannotChangeDate": "重复任务不可改变日期",
+  "incompleteSubtasksCount": "{count} 个子任务"
 }
 

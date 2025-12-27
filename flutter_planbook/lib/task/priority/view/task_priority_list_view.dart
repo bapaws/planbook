@@ -71,7 +71,10 @@ class TaskPriorityListView extends StatelessWidget {
                         onTaskPressed!(task);
                       } else {
                         context.router.push(
-                          TaskDetailRoute(taskId: task.id),
+                          TaskDetailRoute(
+                            taskId: task.id,
+                            occurrenceAt: task.occurrence?.occurrenceAt,
+                          ),
                         );
                       }
                     },

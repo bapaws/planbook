@@ -74,17 +74,21 @@ final class TaskDetailDurationChanged extends TaskDetailEvent {
 }
 
 final class TaskDetailCompleted extends TaskDetailEvent {
-  const TaskDetailCompleted();
+  const TaskDetailCompleted({this.task});
+
+  final TaskEntity? task;
+
+  @override
+  List<Object?> get props => [task];
 }
 
 final class TaskDetailNoteCreated extends TaskDetailEvent {
-  const TaskDetailNoteCreated({required this.task, required this.activity});
+  const TaskDetailNoteCreated({required this.activity});
 
-  final TaskEntity task;
   final TaskActivity activity;
 
   @override
-  List<Object?> get props => [task, activity];
+  List<Object?> get props => [activity];
 }
 
 final class TaskDetailNoteDeleted extends TaskDetailEvent {
@@ -94,4 +98,33 @@ final class TaskDetailNoteDeleted extends TaskDetailEvent {
 
   @override
   List<Object?> get props => [noteId];
+}
+
+final class TaskDetailChildrenChanged extends TaskDetailEvent {
+  const TaskDetailChildrenChanged({required this.children});
+
+  final List<TaskEntity> children;
+
+  @override
+  List<Object?> get props => [children];
+}
+
+final class TaskDetailEditModeSelected extends TaskDetailEvent {
+  const TaskDetailEditModeSelected({this.mode});
+
+  final RecurringTaskEditMode? mode;
+
+  @override
+  List<Object?> get props => [mode];
+}
+
+final class TaskDetailUpdated extends TaskDetailEvent {
+  const TaskDetailUpdated({this.task, this.tags, this.children});
+
+  final Task? task;
+  final List<TagEntity>? tags;
+  final List<TaskEntity>? children;
+
+  @override
+  List<Object?> get props => [task, tags, children];
 }
