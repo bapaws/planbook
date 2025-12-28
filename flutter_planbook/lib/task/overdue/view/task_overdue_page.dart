@@ -66,9 +66,6 @@ class _TaskOverdueListPage extends StatelessWidget {
   }
 
   Widget _buildTaskList(BuildContext context, {TagEntity? tag}) {
-    final date = Jiffy.now();
-    final yesterday = Jiffy.parseFromList([2025, 12, 20, 12]);
-    print(date.diff(yesterday, unit: Unit.day).toInt());
     return BlocProvider(
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
       create: (context) =>
