@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/recurrence_frequency_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/recurrence_rule.dart';
 
@@ -41,9 +43,19 @@ class _TaskRecurrenceViewState extends State<TaskRecurrenceView> {
   @override
   void initState() {
     super.initState();
+    final now = Jiffy.now();
     _recurrenceRule =
         widget.initialRecurrenceRule ??
-        const RecurrenceRule(frequency: RecurrenceFrequency.daily);
+        RecurrenceRule(
+          frequency: RecurrenceFrequency.daily,
+          daysOfWeek: [
+            RecurrenceDayOfWeek.day(
+              Weekday.fromDateTimeWeekday(now.dateTime.weekday),
+            ),
+          ],
+          daysOfMonth: [now.date],
+          daysOfYear: [now.month * 100 + now.date],
+        );
     _everyScrollController = FixedExtentScrollController(
       initialItem: widget.initialRecurrenceRule?.interval ?? 1,
     );
@@ -156,10 +168,22 @@ class _TaskRecurrenceViewState extends State<TaskRecurrenceView> {
                 );
               },
             ),
-            RecurrenceFrequency.monthly =>
-              const TaskNewRecurrenceRuleMonthlyView(),
-            RecurrenceFrequency.yearly =>
-              const TaskNewRecurrenceRuleYearlyView(),
+            RecurrenceFrequency.monthly => TaskNewRecurrenceRuleMonthlyView(
+              recurrenceRule: _recurrenceRule,
+              onDaysOfMonthChanged: (daysOfMonth) {
+                recurrenceRule = recurrenceRule.copyWith(
+                  daysOfMonth: daysOfMonth,
+                );
+              },
+            ),
+            RecurrenceFrequency.yearly => TaskNewRecurrenceRuleYearlyView(
+              recurrenceRule: _recurrenceRule,
+              onChanged: (daysOfYear) {
+                recurrenceRule = recurrenceRule.copyWith(
+                  daysOfYear: daysOfYear,
+                );
+              },
+            ),
           },
         ),
         Divider(
@@ -338,19 +362,228 @@ class TaskNewRecurrenceRuleWeeklyView extends StatelessWidget {
 }
 
 class TaskNewRecurrenceRuleMonthlyView extends StatelessWidget {
-  const TaskNewRecurrenceRuleMonthlyView({super.key});
+  const TaskNewRecurrenceRuleMonthlyView({
+    required this.recurrenceRule,
+    required this.onDaysOfMonthChanged,
+    super.key,
+  });
+
+  final RecurrenceRule recurrenceRule;
+  final ValueChanged<List<int>> onDaysOfMonthChanged;
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final theme = Theme.of(context);
+    return SizedBox(
+      height: 288,
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 7,
+        ),
+        itemCount: 31,
+        itemBuilder: (context, index) {
+          final isSelected =
+              recurrenceRule.daysOfMonth?.any(
+                (day) => day == index + 1,
+              ) ??
+              false;
+          return CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: Size.zero,
+            onPressed: () {
+              _onDayOfMonthButtonPressed(context, index + 1);
+            },
+            child: Center(
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                alignment: AlignmentDirectional.center,
+                child: Text(
+                  '${index + 1}',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: isSelected
+                        ? theme.colorScheme.onPrimary
+                        : theme.colorScheme.outline,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _onDayOfMonthButtonPressed(BuildContext context, int day) {
+    final daysOfMonth = [...?recurrenceRule.daysOfMonth];
+    final index = daysOfMonth.indexWhere((d) => d == day);
+    if (index != -1) {
+      daysOfMonth.removeAt(index);
+      onDaysOfMonthChanged(daysOfMonth);
+    } else {
+      daysOfMonth.add(day);
+      onDaysOfMonthChanged(daysOfMonth);
+    }
   }
 }
 
-class TaskNewRecurrenceRuleYearlyView extends StatelessWidget {
-  const TaskNewRecurrenceRuleYearlyView({super.key});
+class TaskNewRecurrenceRuleYearlyView extends StatefulWidget {
+  const TaskNewRecurrenceRuleYearlyView({
+    required this.recurrenceRule,
+    required this.onChanged,
+    super.key,
+  });
+
+  final RecurrenceRule recurrenceRule;
+  final void Function(List<int> daysOfYear) onChanged;
+
+  @override
+  State<TaskNewRecurrenceRuleYearlyView> createState() =>
+      _TaskNewRecurrenceRuleYearlyViewState();
+}
+
+class _TaskNewRecurrenceRuleYearlyViewState
+    extends State<TaskNewRecurrenceRuleYearlyView> {
+  int _currentMonth = 1;
+
+  final List<String> shortMonths = DateFormat().dateSymbols.SHORTMONTHS;
+
+  List<int> _daysOfYear = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    final now = Jiffy.now();
+    _currentMonth = now.month;
+
+    _daysOfYear = [...?widget.recurrenceRule.daysOfYear];
+  }
+
+  @override
+  void didUpdateWidget(covariant TaskNewRecurrenceRuleYearlyView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final theme = Theme.of(context);
+    return SizedBox(
+      height: 288 + 44,
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const SizedBox(width: 16),
+              Text(
+                shortMonths[_currentMonth - 1],
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              const Spacer(),
+              CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Icon(
+                  FontAwesomeIcons.chevronLeft,
+                  size: 16,
+                  color: theme.colorScheme.onSurface,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _currentMonth = _currentMonth == 1 ? 12 : _currentMonth - 1;
+                  });
+                },
+              ),
+              CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Icon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 16,
+                  color: theme.colorScheme.onSurface,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _currentMonth = _currentMonth == 12 ? 1 : _currentMonth + 1;
+                  });
+                },
+              ),
+            ],
+          ),
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.zero,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 7,
+              ),
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 31,
+              itemBuilder: (context, index) {
+                return _buildDayButton(_currentMonth, index + 1);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDayButton(int month, int day) {
+    final theme = Theme.of(context);
+    final isSelected = _isSelected(month, day);
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      onPressed: () {
+        _onDaySelected(month, day);
+      },
+      child: Center(
+        child: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          alignment: AlignmentDirectional.center,
+          child: Text(
+            '$day',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: isSelected
+                  ? theme.colorScheme.onPrimary
+                  : theme.colorScheme.outline,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool _isSelected(int month, int day) {
+    final isSelected = widget.recurrenceRule.daysOfYear?.any(
+      (d) => d == month * 100 + day,
+    );
+    return isSelected != null && isSelected;
+  }
+
+  void _onDaySelected(int month, int day) {
+    final index = _daysOfYear.indexWhere((d) => d == month * 100 + day);
+    if (index != -1) {
+      _daysOfYear.removeAt(index);
+    } else {
+      _daysOfYear.add(month * 100 + day);
+    }
+
+    setState(() {});
+    widget.onChanged(_daysOfYear);
   }
 }

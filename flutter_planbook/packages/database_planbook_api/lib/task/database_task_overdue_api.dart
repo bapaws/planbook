@@ -13,6 +13,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
   Stream<int> getOverdueTaskCount({required Jiffy date, String? userId}) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
     final exp =
+        db.tasks.parentId.isNull() &
         ((db.tasks.dueAt.isNotNull() &
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
             (db.tasks.endAt.isNotNull() &
@@ -50,6 +51,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
   }) {
     final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
     var exp =
+        db.tasks.parentId.isNull() &
         ((db.tasks.dueAt.isNotNull() &
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
             (db.tasks.endAt.isNotNull() &

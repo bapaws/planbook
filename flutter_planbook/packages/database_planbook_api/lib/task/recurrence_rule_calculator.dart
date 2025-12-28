@@ -207,16 +207,11 @@ class RecurrenceRuleCalculator {
       }
     }
 
-    // 如果指定了月份，检查目标日期的月份是否匹配
-    if (rule.monthsOfYear != null && rule.monthsOfYear!.isNotEmpty) {
-      if (!rule.monthsOfYear!.contains(targetDate.month)) {
-        return false;
-      }
-    }
-
-    // 如果指定了每月的第几天
-    if (rule.daysOfMonth != null && rule.daysOfMonth!.isNotEmpty) {
-      if (!rule.daysOfMonth!.contains(targetDate.date)) {
+    // 如果指定了每年的第几天，检查目标日期的月份和日期是否匹配
+    if (rule.daysOfYear != null && rule.daysOfYear!.isNotEmpty) {
+      if (!rule.daysOfYear!.contains(
+        targetDate.month * 100 + targetDate.date,
+      )) {
         return false;
       }
     }

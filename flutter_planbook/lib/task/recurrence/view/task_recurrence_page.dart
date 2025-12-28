@@ -29,6 +29,24 @@ class _TaskRecurrencePageState extends State<TaskRecurrencePage> {
       const RecurrenceRule(frequency: RecurrenceFrequency.daily);
 
   @override
+  void initState() {
+    super.initState();
+    final now = Jiffy.now();
+    _recurrenceRule =
+        widget.initialRecurrenceRule ??
+        RecurrenceRule(
+          frequency: RecurrenceFrequency.daily,
+          daysOfWeek: [
+            RecurrenceDayOfWeek.day(
+              Weekday.fromDateTimeWeekday(now.dateTime.weekday),
+            ),
+          ],
+          daysOfMonth: [now.date],
+          daysOfYear: [now.month * 100 + now.date],
+        );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AppPageScaffold(
       borderRadius: BorderRadius.circular(16),

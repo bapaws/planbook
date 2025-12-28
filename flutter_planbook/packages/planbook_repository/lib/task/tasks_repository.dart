@@ -210,11 +210,6 @@ class TasksRepository {
   }) async {
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
     if (list.isEmpty) return;
-    for (final item in list) {
-      print(item);
-      final task = Task.fromJson(item);
-      print(task);
-    }
 
     await _db.transaction(() async {
       for (final item in list) {

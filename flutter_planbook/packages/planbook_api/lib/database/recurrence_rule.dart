@@ -229,6 +229,7 @@ class RecurrenceRule extends Equatable {
     this.daysOfMonth,
     this.weeksOfMonth,
     this.monthsOfYear,
+    this.daysOfYear,
   });
 
   /// 创建带结束日期的重复规则
@@ -240,6 +241,7 @@ class RecurrenceRule extends Equatable {
     List<int>? daysOfMonth,
     List<int>? weeksOfMonth,
     List<int>? monthsOfYear,
+    List<int>? daysOfYear,
   }) {
     return RecurrenceRule(
       frequency: frequency,
@@ -249,6 +251,7 @@ class RecurrenceRule extends Equatable {
       daysOfMonth: daysOfMonth,
       weeksOfMonth: weeksOfMonth,
       monthsOfYear: monthsOfYear,
+      daysOfYear: daysOfYear,
     );
   }
 
@@ -261,6 +264,7 @@ class RecurrenceRule extends Equatable {
     List<int>? daysOfMonth,
     List<int>? weeksOfMonth,
     List<int>? monthsOfYear,
+    List<int>? daysOfYear,
   }) {
     return RecurrenceRule(
       frequency: frequency,
@@ -270,6 +274,7 @@ class RecurrenceRule extends Equatable {
       daysOfMonth: daysOfMonth,
       weeksOfMonth: weeksOfMonth,
       monthsOfYear: monthsOfYear,
+      daysOfYear: daysOfYear,
     );
   }
 
@@ -335,6 +340,9 @@ class RecurrenceRule extends Equatable {
       monthsOfYear: json['monthsOfYear'] != null
           ? List<int>.from(json['monthsOfYear'] as List)
           : null,
+      daysOfYear: json['daysOfYear'] != null
+          ? List<int>.from(json['daysOfYear'] as List)
+          : null,
     );
   }
 
@@ -357,7 +365,11 @@ class RecurrenceRule extends Equatable {
   final List<int>? weeksOfMonth; // -1 = last week, 1-4 = first to fourth week
 
   /// 每年的月份（仅用于 yearly）
+  @Deprecated('Use daysOfYear instead')
   final List<int>? monthsOfYear;
+
+  /// 每年的第几天（仅用于 yearly）
+  final List<int>? daysOfYear; // month * 100 + day
 
   /// 转换为 JSON
   Map<String, dynamic> toJson() {
@@ -370,6 +382,7 @@ class RecurrenceRule extends Equatable {
       if (daysOfMonth != null) 'daysOfMonth': daysOfMonth,
       if (weeksOfMonth != null) 'weeksOfMonth': weeksOfMonth,
       if (monthsOfYear != null) 'monthsOfYear': monthsOfYear,
+      if (daysOfYear != null) 'daysOfYear': daysOfYear,
     };
   }
 
@@ -382,6 +395,7 @@ class RecurrenceRule extends Equatable {
     daysOfMonth,
     weeksOfMonth,
     monthsOfYear,
+    daysOfYear,
   ];
 
   RecurrenceRule copyWith({
@@ -392,6 +406,7 @@ class RecurrenceRule extends Equatable {
     List<int>? daysOfMonth,
     List<int>? weeksOfMonth,
     List<int>? monthsOfYear,
+    List<int>? daysOfYear,
   }) {
     return RecurrenceRule(
       frequency: frequency ?? this.frequency,
@@ -403,6 +418,7 @@ class RecurrenceRule extends Equatable {
       daysOfMonth: daysOfMonth ?? this.daysOfMonth,
       weeksOfMonth: weeksOfMonth ?? this.weeksOfMonth,
       monthsOfYear: monthsOfYear ?? this.monthsOfYear,
+      daysOfYear: daysOfYear ?? this.daysOfYear,
     );
   }
 }

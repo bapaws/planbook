@@ -96,7 +96,7 @@ class AppCalendarView<T> extends StatelessWidget {
     this.calendarFormat = CalendarFormat.week,
     super.key,
     this.eventLoader,
-  }) : date = date ?? Jiffy.now().toUtc();
+  }) : date = date ?? Jiffy.now();
 
   final Jiffy date;
   final CalendarFormat calendarFormat;

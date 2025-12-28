@@ -10,6 +10,7 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
 
   Stream<int> getInboxTaskCount({bool? isCompleted, String? userId}) {
     var exp =
+        db.tasks.parentId.isNull() &
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
@@ -48,6 +49,7 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
     String? userId,
   }) {
     var exp =
+        db.tasks.parentId.isNull() &
         db.tasks.dueAt.isNull() &
         db.tasks.startAt.isNull() &
         db.tasks.endAt.isNull() &
