@@ -39,16 +39,15 @@ class NoteFocusCubit extends Cubit<NoteFocusState> {
         // weekday: 1=周一, 7=周日 (ISO 8601)
         normalizedFocusAt = focusAt
             .subtract(days: focusAt.dateTime.weekday - 1)
-            .toUtc()
             .startOf(Unit.day);
         title = _l10n.weeklyFocusTitle(normalizedFocusAt.weekOfYear);
       case NoteType.dailyFocus:
         // 日目标：使用当天开始作为 focusAt
-        normalizedFocusAt = focusAt.toUtc().startOf(Unit.day);
+        normalizedFocusAt = focusAt.startOf(Unit.day);
         title = _l10n.dailyFocusTitle(focusAt.dateTime);
       case NoteType.journal:
         // 日记类型不应该在这里处理
-        normalizedFocusAt = focusAt.toUtc().startOf(Unit.day);
+        normalizedFocusAt = focusAt.startOf(Unit.day);
         title = '';
     }
 

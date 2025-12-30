@@ -117,4 +117,68 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
 
     return query.watch().asyncMap(buildTaskEntities);
   }
+
+  /// 获取所有 inbox 中，今天的任务，包括今天未完成和已完成任务
+  Stream<List<TaskEntity>> getAllInboxTodayTaskEntities({
+    String? tagId,
+    TaskPriority? priority,
+    bool? isCompleted,
+    String? userId,
+  }) {
+    var exp =
+        db.tasks.parentId.isNull() &
+        db.tasks.dueAt.isNull() &
+        db.tasks.startAt.isNull() &
+        db.tasks.endAt.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
+    if (priority != null) {
+      exp &= db.tasks.priority.equals(priority.name);
+    }
+    if (tagId != null) {
+      exp &= db.taskTags.tagId.equals(tagId);
+    }
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
+    final query =
+        db.select(db.tasks).join([
+            leftOuterJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.isNull() &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.isNull() &
+                  childrenTaskActivities.completedAt.isNotNull() &
+                  childrenTaskActivities.deletedAt.isNull(),
+            ),
+          ])
+          ..where(exp)
+          ..orderBy([
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
+          ]);
+
+    return query.watch().asyncMap(buildTaskEntities);
+  }
 }

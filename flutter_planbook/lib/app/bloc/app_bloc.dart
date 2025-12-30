@@ -97,9 +97,8 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       await _notesRepository.createDefaultNotes(languageCode: languageCode);
     }
 
-    final now = DateTime.now().toUtc();
     await _usersRepository.updateUserProfile(
-      lastLaunchAppAt: now,
+      lastLaunchAppAt: DateTime.now(),
     );
   }
 

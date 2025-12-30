@@ -15,7 +15,7 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
     required NotesRepository notesRepository,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
-       super(TaskTodayState(date: Jiffy.now())) {
+       super(TaskTodayState(date: Jiffy.now().startOf(Unit.day))) {
     on<TaskTodayDateSelected>(_onDateSelected, transformer: restartable());
     on<TaskTodayCalendarFormatChanged>(_onCalendarFormatChanged);
     on<TaskTodayFocusNoteRequested>(

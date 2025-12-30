@@ -28,15 +28,6 @@ final class TaskDetailTitleChanged extends TaskDetailEvent {
   List<Object?> get props => [title];
 }
 
-final class TaskDetailDueAtChanged extends TaskDetailEvent {
-  const TaskDetailDueAtChanged({required this.dueAt});
-
-  final Jiffy? dueAt;
-
-  @override
-  List<Object?> get props => [dueAt];
-}
-
 final class TaskDetailPriorityChanged extends TaskDetailEvent {
   const TaskDetailPriorityChanged({required this.priority});
 

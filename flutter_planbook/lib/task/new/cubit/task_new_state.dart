@@ -16,10 +16,9 @@ final class TaskNewState extends Equatable {
     this.status = PageStatus.initial,
     this.focus = TaskNewFocus.title,
     this.title = '',
-    this.dueAt,
     this.startAt,
     this.endAt,
-    this.isAllDay = false,
+    this.isAllDay = true,
     this.recurrenceRule,
     this.priority = TaskPriority.none,
     this.alarms,
@@ -32,10 +31,9 @@ final class TaskNewState extends Equatable {
     return TaskNewState(
       initialTask: task,
       title: task?.title ?? '',
-      dueAt: task?.dueAt ?? dueAt,
-      startAt: task?.startAt,
+      startAt: task?.startAt ?? dueAt,
       endAt: task?.endAt,
-      isAllDay: task?.isAllDay ?? false,
+      isAllDay: task?.isAllDay ?? true,
       recurrenceRule: task?.recurrenceRule,
       priority: task?.priority ?? TaskPriority.none,
       alarms: task?.alarms,
@@ -49,7 +47,7 @@ final class TaskNewState extends Equatable {
   final TaskNewFocus focus;
 
   final String title;
-  final Jiffy? dueAt;
+
   final Jiffy? startAt;
   final Jiffy? endAt;
   final bool isAllDay;
@@ -63,8 +61,8 @@ final class TaskNewState extends Equatable {
 
   final bool showEditModeSelection;
 
-  Jiffy? get date => dueAt ?? startAt ?? endAt;
-  bool get isInbox => dueAt == null && startAt == null && endAt == null;
+  Jiffy? get date => startAt ?? endAt;
+  bool get isInbox => startAt == null && endAt == null;
 
   @override
   List<Object?> get props => [
@@ -72,7 +70,6 @@ final class TaskNewState extends Equatable {
     status,
     focus,
     title,
-    dueAt,
     startAt,
     endAt,
     isAllDay,
@@ -89,7 +86,6 @@ final class TaskNewState extends Equatable {
     PageStatus? status,
     TaskNewFocus? focus,
     String? title,
-    ValueGetter<Jiffy?>? dueAt,
     ValueGetter<Jiffy?>? startAt,
     ValueGetter<Jiffy?>? endAt,
     bool? isAllDay,
@@ -105,7 +101,6 @@ final class TaskNewState extends Equatable {
       status: status ?? this.status,
       focus: focus ?? this.focus,
       title: title ?? this.title,
-      dueAt: dueAt == null ? this.dueAt : dueAt(),
       startAt: startAt == null ? this.startAt : startAt(),
       endAt: endAt == null ? this.endAt : endAt(),
       isAllDay: isAllDay ?? this.isAllDay,

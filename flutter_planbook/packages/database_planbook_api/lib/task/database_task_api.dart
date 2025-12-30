@@ -59,7 +59,7 @@ class DatabaseTaskApi {
           taskId: task.id,
           tagId: tag.id,
           userId: userId,
-          createdAt: now.toUtc(),
+          createdAt: now,
         ),
       );
       var parent = tag.parent;
@@ -71,7 +71,7 @@ class DatabaseTaskApi {
             tagId: parent.id,
             linkedTagId: tag.id,
             userId: userId,
-            createdAt: now.toUtc(),
+            createdAt: now,
           ),
         );
         parent = parent.parent;
@@ -130,7 +130,7 @@ class DatabaseTaskApi {
         childrenTaskActivities.deletedAt.isNull() &
         childrenTaskActivities.completedAt.isNotNull();
     if (occurrenceAt != null) {
-      final dateTime = occurrenceAt.toUtc().dateTime;
+      final dateTime = occurrenceAt.dateTime;
       taskActivitiesExp &= db.taskActivities.occurrenceAt.equals(dateTime);
 
       taskOccurrencesExp &= db.taskOccurrences.occurrenceAt.equals(dateTime);
@@ -178,8 +178,8 @@ class DatabaseTaskApi {
     return (db.select(db.taskOccurrences)..where((t) {
           var exp = t.taskId.equals(taskId) & t.deletedAt.isNull();
           if (occurrenceAt != null) {
-            final startOfDay = occurrenceAt.startOf(Unit.day).toUtc().dateTime;
-            final endOfDay = occurrenceAt.endOf(Unit.day).toUtc().dateTime;
+            final startOfDay = occurrenceAt.startOf(Unit.day).dateTime;
+            final endOfDay = occurrenceAt.endOf(Unit.day).dateTime;
             exp &=
                 t.occurrenceAt.isBiggerOrEqualValue(startOfDay) &
                 t.occurrenceAt.isSmallerOrEqualValue(endOfDay);
@@ -233,8 +233,8 @@ class DatabaseTaskApi {
   }) async {
     final startOfDay = fromDate.startOf(Unit.day);
     final endOfDay = fromDate.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+    final startOfDayDateTime = startOfDay.dateTime;
+    final endOfDayDateTime = endOfDay.dateTime;
 
     // 计算预生成范围
     final rangeEnd = fromDate.add(months: monthsAhead);

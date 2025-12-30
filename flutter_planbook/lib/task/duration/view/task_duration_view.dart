@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/app/view/app_date_picker.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
-import 'package:flutter_planbook/task/new/view/duration_text.dart';
 import 'package:jiffy/jiffy.dart';
 
 enum TaskDurationSelectionMode {
@@ -32,8 +32,24 @@ class _TaskDurationViewState extends State<TaskDurationView> {
     if (value == _isAllDay) return;
     setState(() {
       _isAllDay = value;
+      if (value) {
+        _startAt = _startAt.startOf(Unit.day);
+        _endAt = _endAt.endOf(Unit.day);
+      } else {
+        final now = Jiffy.now().startOf(Unit.hour).add(hours: 1);
+        _startAt = Jiffy.parseFromList([
+          _startAt.year,
+          _startAt.month,
+          _startAt.date,
+          now.hour,
+          now.minute,
+        ]);
+        _endAt = _startAt.add(hours: 1);
+      }
     });
-    widget.onValueChanged(widget.entity.copyWith(isAllDay: value));
+    widget.onValueChanged(
+      TaskDurationEntity(startAt: startAt, endAt: endAt, isAllDay: value),
+    );
   }
 
   late Jiffy _startAt;
@@ -41,9 +57,22 @@ class _TaskDurationViewState extends State<TaskDurationView> {
   set startAt(Jiffy value) {
     if (value == _startAt) return;
     setState(() {
-      _startAt = value;
+      if (_isAllDay) {
+        _startAt = value.startOf(Unit.day);
+      } else {
+        _startAt = value;
+      }
+      if (_endAt.isBefore(value)) {
+        if (isAllDay) {
+          _endAt = value.endOf(Unit.day);
+        } else {
+          _endAt = value.add(hours: 1);
+        }
+      }
     });
-    widget.onValueChanged(widget.entity.copyWith(startAt: value));
+    widget.onValueChanged(
+      TaskDurationEntity(startAt: value, endAt: endAt, isAllDay: isAllDay),
+    );
   }
 
   late Jiffy _endAt;
@@ -51,9 +80,22 @@ class _TaskDurationViewState extends State<TaskDurationView> {
   set endAt(Jiffy value) {
     if (value == _endAt) return;
     setState(() {
-      _endAt = value;
+      if (_isAllDay) {
+        _endAt = value.endOf(Unit.day);
+      } else {
+        _endAt = value;
+      }
+      if (_startAt.isAfter(value)) {
+        if (isAllDay) {
+          _startAt = value.startOf(Unit.day);
+        } else {
+          _startAt = value.subtract(hours: 1);
+        }
+      }
     });
-    widget.onValueChanged(widget.entity.copyWith(endAt: value));
+    widget.onValueChanged(
+      TaskDurationEntity(startAt: startAt, endAt: value, isAllDay: isAllDay),
+    );
   }
 
   TaskDurationSelectionMode _previousSelectionMode =
@@ -82,170 +124,89 @@ class _TaskDurationViewState extends State<TaskDurationView> {
 
     return Column(
       children: [
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          minimumSize: const Size.square(kToolbarHeight),
+          onPressed: () {
+            isAllDay = !isAllDay;
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                context.l10n.allDay,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              CupertinoSwitch(
+                value: isAllDay,
+                onChanged: (value) {
+                  isAllDay = value;
+                },
+              ),
+            ],
+          ),
+        ),
         Row(
           children: [
-            const SizedBox(width: 12),
-            Expanded(
-              child: Builder(
-                builder: (context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size.square(kToolbarHeight),
-                    child: Row(
-                      children: [
-                        AnimatedSwitcher(
-                          duration: Durations.medium1,
-                          transitionBuilder: (child, animation) =>
-                              SizeTransition(
-                                axis: Axis.horizontal,
-                                sizeFactor: animation,
-                                child: child,
-                              ),
-                          child:
-                              selectionMode == TaskDurationSelectionMode.startAt
-                              ? Container(
-                                  width: 4,
-                                  height: kMinInteractiveDimension,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                context.l10n.startTime,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.outline,
-                                ),
-                              ),
-                              Text(
-                                startAt.toLocal().jm,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      // _onStartTimeTapped(context);
-                      selectionMode = TaskDurationSelectionMode.startAt;
-                    },
-                  );
-                },
+            const SizedBox(
+              width: 16,
+              height: kToolbarHeight,
+            ),
+            Text(
+              context.l10n.startTime,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
               ),
             ),
-            Row(
-              children: [
-                SizedBox(
-                  width: 16,
-                  child: Divider(
-                    color: selectionMode == TaskDurationSelectionMode.duration
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.surfaceContainerHighest,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                DurationText(
-                  duration: endAt.dateTime.difference(
-                    startAt.dateTime,
-                  ),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: selectionMode == TaskDurationSelectionMode.duration
-                        ? theme.colorScheme.onSurface
-                        : theme.colorScheme.outline,
-                    fontWeight:
-                        selectionMode == TaskDurationSelectionMode.duration
-                        ? FontWeight.bold
-                        : null,
-                  ),
-                ),
-                const SizedBox(width: 6),
-                SizedBox(
-                  width: 16,
-                  child: Divider(
-                    color: selectionMode == TaskDurationSelectionMode.duration
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.surfaceContainerHighest,
-                  ),
-                ),
-              ],
+            const Spacer(),
+            AppDatePicker(
+              maximumDateTime: endAt.subtract(minutes: 1),
+              mode: isAllDay
+                  ? AppDatePickerMode.date
+                  : AppDatePickerMode.dateTime,
+              date: startAt,
+              onDateChanged: (date) {
+                startAt = date;
+              },
             ),
-            Expanded(
-              child: Builder(
-                builder: (context) {
-                  return CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    minimumSize: const Size.square(kMinInteractiveDimension),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                context.l10n.endTime,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.outline,
-                                ),
-                              ),
-                              Text(
-                                endAt.toLocal().jm,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        AnimatedSwitcher(
-                          duration: Durations.medium1,
-                          transitionBuilder: (child, animation) =>
-                              SizeTransition(
-                                axis: Axis.horizontal,
-                                sizeFactor: animation,
-                                child: child,
-                              ),
-                          child:
-                              selectionMode == TaskDurationSelectionMode.endAt
-                              ? Container(
-                                  width: 4,
-                                  height: kMinInteractiveDimension,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(18),
-                                  ),
-                                )
-                              : null,
-                        ),
-                      ],
-                    ),
-                    onPressed: () {
-                      // _onEndTimeTapped(context);
-                      selectionMode = TaskDurationSelectionMode.endAt;
-                    },
-                  );
-                },
-              ),
+            const SizedBox(
+              width: 16,
+              height: kToolbarHeight,
             ),
-            const SizedBox(width: 12),
           ],
         ),
-        AnimatedSwitcher(
-          duration: Durations.medium1,
-          child: buildDatePicker(),
+        Row(
+          children: [
+            const SizedBox(
+              width: 16,
+              height: kToolbarHeight,
+            ),
+            Text(
+              context.l10n.endTime,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const Spacer(),
+            AppDatePicker(
+              mode: isAllDay
+                  ? AppDatePickerMode.date
+                  : AppDatePickerMode.dateTime,
+              minimumDateTime: startAt.add(minutes: 1),
+              date: endAt,
+              onDateChanged: (date) {
+                endAt = date;
+              },
+            ),
+            const SizedBox(
+              width: 16,
+              height: kToolbarHeight,
+            ),
+          ],
         ),
+        SizedBox(height: 16 + MediaQuery.of(context).padding.bottom),
       ],
     );
   }

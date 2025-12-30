@@ -17,8 +17,8 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+    final startOfDayDateTime = startOfDay.dateTime;
+    final endOfDayDateTime = endOfDay.dateTime;
 
     // 异步预生成实例（不阻塞 Stream）
     preGenerateTaskOccurrences(fromDate: date).ignore();
@@ -29,13 +29,6 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
         db.tasks.detachedFromTaskId.isNull() &
-        db.taskOccurrences.deletedAt.isNull() &
-        db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
-          startOfDayDateTime,
-        ) &
-        db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
-          endOfDayDateTime,
-        ) &
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
@@ -51,7 +44,14 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
       ..join([
         innerJoin(
           db.taskOccurrences,
-          db.taskOccurrences.taskId.equalsExp(db.tasks.id),
+          db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
+              db.taskOccurrences.deletedAt.isNull() &
+              db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
+                startOfDayDateTime,
+              ) &
+              db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
+                endOfDayDateTime,
+              ),
         ),
         leftOuterJoin(
           db.taskActivities,
@@ -145,8 +145,8 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     TaskPriority? priority,
     String? userId,
   }) {
-    final startOfDay = date.startOf(Unit.day).toUtc().dateTime;
-    final endOfDay = date.endOf(Unit.day).toUtc().dateTime;
+    final startOfDay = date.startOf(Unit.day).dateTime;
+    final endOfDay = date.endOf(Unit.day).dateTime;
 
     // 异步预生成实例（不阻塞 Stream）
     preGenerateTaskOccurrences(fromDate: date).ignore();
@@ -157,6 +157,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
         db.tasks.detachedFromTaskId.isNull() &
+        db.taskOccurrences.deletedAt.isNull() &
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
@@ -346,16 +347,8 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
     String? userId,
   }) {
     final date = day ?? Jiffy.now();
-    final startOfDay = date.startOf(Unit.day);
-    final endOfDay = date.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
-
-    final childrenTasks = db.alias(db.tasks, 'children_tasks');
-    final childrenTaskActivities = db.alias(
-      db.taskActivities,
-      'children_task_activities',
-    );
+    final startOfDay = date.startOf(Unit.day).dateTime;
+    final endOfDay = startOfDay.add(const Duration(days: 1));
 
     // 异步预生成实例（不阻塞 Stream）
     preGenerateTaskOccurrences(fromDate: date).ignore();
@@ -366,7 +359,6 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
         db.tasks.detachedFromTaskId.isNull() &
-        db.taskOccurrences.deletedAt.isNull() &
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
@@ -385,12 +377,14 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
       innerJoin(
         db.taskOccurrences,
         db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
-            db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
-              startOfDayDateTime,
-            ) &
-            db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
-              endOfDayDateTime,
-            ),
+            db.taskOccurrences.deletedAt.isNull() &
+            ((db.taskOccurrences.dueAt.isNotNull() &
+                    db.taskOccurrences.dueAt.isBiggerOrEqualValue(startOfDay) &
+                    db.taskOccurrences.dueAt.isSmallerThanValue(endOfDay)) |
+                (db.taskOccurrences.startAt.isNotNull() &
+                    db.taskOccurrences.startAt.isSmallerThanValue(endOfDay) &
+                    db.taskOccurrences.endAt.isNotNull() &
+                    db.taskOccurrences.endAt.isBiggerOrEqualValue(startOfDay))),
       ),
       // LEFT JOIN TaskActivities 来检查完成状态
       // 对于重复任务，需要匹配 occurrenceAt
@@ -443,29 +437,35 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.tasks.recurrenceRule.isNull() &
         db.tasks.detachedFromTaskId.isNull() &
         ((db.tasks.startAt.isNotNull() &
-                db.tasks.startAt.isSmallerOrEqualValue(endOfDayDateTime) &
+                db.tasks.startAt.isSmallerThanValue(endOfDay) &
                 ((db.tasks.endAt.isNotNull() &
                         db.tasks.endAt.isBiggerOrEqualValue(
-                          startOfDayDateTime,
+                          startOfDay,
                         )) |
                     (db.tasks.endAt.isNull() &
                         db.tasks.startAt.isBiggerOrEqualValue(
-                          startOfDayDateTime,
+                          startOfDay,
                         )))) |
             (db.tasks.dueAt.isNotNull() &
-                db.tasks.dueAt.isBiggerOrEqualValue(startOfDayDateTime) &
-                db.tasks.dueAt.isSmallerOrEqualValue(endOfDayDateTime)));
+                db.tasks.dueAt.isBiggerOrEqualValue(startOfDay) &
+                db.tasks.dueAt.isSmallerThanValue(endOfDay)));
 
     // 分离实例：detachedRecurrenceAt 匹配指定日期
-    final detachedInstanceCondition =
+    var detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
         db.tasks.detachedRecurrenceAt.isNotNull() &
         db.tasks.detachedRecurrenceAt.isBiggerOrEqualValue(
-          startOfDayDateTime,
+          startOfDay,
         ) &
         db.tasks.detachedRecurrenceAt.isSmallerOrEqualValue(
-          endOfDayDateTime,
+          endOfDay,
         );
+    // 根据 isCompleted 参数决定是否排除已完成分离的实例
+    if (isCompleted != null && !isCompleted) {
+      detachedInstanceCondition &=
+          db.tasks.detachedReason.isNull() |
+          db.tasks.detachedReason.isNotValue(DetachedReason.completed.name);
+    }
 
     // 组合非重复任务和分离实例的条件
     nonRecurringExp &= nonRecurringTaskCondition | detachedInstanceCondition;
@@ -513,122 +513,5 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
       final rows = [...results[0], ...results[1]];
       return buildTaskEntities(rows);
     });
-  }
-
-  /// 获取所有 inbox 中，今天的任务，包括今天未完成和已完成任务
-  Stream<List<TaskEntity>> getAllInboxTodayTaskEntities({
-    String? tagId,
-    TaskPriority? priority,
-    bool? isCompleted,
-    String? userId,
-  }) {
-    var exp =
-        db.tasks.dueAt.isNull() &
-        db.tasks.startAt.isNull() &
-        db.tasks.endAt.isNull() &
-        db.tasks.deletedAt.isNull() &
-        (userId == null
-            ? db.tasks.userId.isNull()
-            : db.tasks.userId.equals(userId));
-    if (priority != null) {
-      exp &= db.tasks.priority.equals(priority.name);
-    }
-    if (tagId != null) {
-      exp &= db.taskTags.tagId.equals(tagId);
-    }
-    if (isCompleted != null) {
-      exp &= isCompleted
-          ? db.taskActivities.id.isNotNull()
-          : db.taskActivities.id.isNull();
-    }
-    final query =
-        db.select(db.tasks).join([
-            leftOuterJoin(
-              db.taskActivities,
-              db.taskActivities.taskId.equalsExp(db.tasks.id) &
-                  db.taskActivities.occurrenceAt.isNull() &
-                  db.taskActivities.completedAt.isNotNull() &
-                  db.taskActivities.deletedAt.isNull(),
-            ),
-            leftOuterJoin(
-              db.taskTags,
-              db.taskTags.taskId.equalsExp(db.tasks.id) &
-                  db.taskTags.deletedAt.isNull(),
-            ),
-            leftOuterJoin(
-              childrenTasks,
-              childrenTasks.parentId.equalsExp(db.tasks.id) &
-                  childrenTasks.deletedAt.isNull(),
-            ),
-            leftOuterJoin(
-              childrenTaskActivities,
-              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
-                  childrenTaskActivities.occurrenceAt.isNull() &
-                  childrenTaskActivities.completedAt.isNotNull() &
-                  childrenTaskActivities.deletedAt.isNull(),
-            ),
-          ])
-          ..where(exp)
-          ..orderBy([
-            OrderingTerm.asc(db.tasks.order),
-            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
-            OrderingTerm.asc(db.tasks.createdAt.datetime),
-          ]);
-
-    return query.watch().asyncMap(buildTaskEntities);
-  }
-
-  Stream<List<TaskEntity>> getAllTodayOverdueTaskEntities({
-    TaskPriority? priority,
-    Jiffy? day,
-    String? tagId,
-    String? userId,
-  }) {
-    final date = day ?? Jiffy.now();
-    final startOfDay = date.startOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    var exp =
-        (db.tasks.dueAt.isNotNull() &
-            db.tasks.dueAt.isSmallerThanValue(startOfDayDateTime)) |
-        (db.tasks.endAt.isNotNull() &
-            db.tasks.endAt.isSmallerThanValue(startOfDayDateTime) &
-            (userId == null
-                ? db.tasks.userId.isNull()
-                : db.tasks.userId.equals(userId)));
-    if (priority != null) {
-      exp &= db.tasks.priority.equals(priority.name);
-    }
-    if (tagId != null) {
-      exp &= db.taskTags.tagId.equals(tagId);
-    }
-    exp &= db.taskActivities.id.isNull();
-
-    final query = db.select(db.tasks).join([
-      leftOuterJoin(
-        db.taskActivities,
-        db.taskActivities.taskId.equalsExp(db.tasks.id) &
-            db.taskActivities.occurrenceAt.isNull() &
-            db.taskActivities.completedAt.isNotNull() &
-            db.taskActivities.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        db.taskTags,
-        db.taskTags.taskId.equalsExp(db.tasks.id) &
-            db.taskTags.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTasks,
-        childrenTasks.parentId.equalsExp(db.tasks.id) &
-            childrenTasks.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTaskActivities,
-        childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
-            childrenTaskActivities.occurrenceAt.isNull() &
-            childrenTaskActivities.completedAt.isNotNull() &
-            childrenTaskActivities.deletedAt.isNull(),
-      ),
-    ])..where(exp);
-    return query.watch().asyncMap(buildTaskEntities);
   }
 }

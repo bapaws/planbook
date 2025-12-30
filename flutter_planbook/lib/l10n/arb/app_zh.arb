@@ -19,6 +19,8 @@
   "cancel": "取消",
   "refresh": "刷新",
   "noData": "暂无数据",
+  "yes": "是",
+  "no": "否",
   "today": "今天",
   "settings": "设置",
   "unlockPro": "解锁所有高级功能。",
@@ -104,12 +106,16 @@
   "taskTitleHint": "需要做什么？",
   "startTime": "开始时间",
   "endTime": "结束时间",
+  "startDate": "开始日期",
+  "endDate": "结束日期",
   "duration": "时间段",
   "allDay": "全天",
+  "thatDay": "当天",
   "otherDate": "其他日期",
   "inbox": "收集箱",
   "overdue": "逾期",
   "delayToToday": "延至今天",
+  "delayToTomorrow": "延至明天",
   "addTag": "添加标签",
   "tags": "标签",
   "tag": "标签",
@@ -297,6 +303,7 @@
   "thisAndFutureEvents": "此事件及未来事件",
   "thisEventOnly": "此事件",
   "recurringTaskCannotChangeDate": "重复任务不可改变日期",
-  "incompleteSubtasksCount": "{count} 个子任务"
+  "incompleteSubtasksCount": "{count} 个子任务",
+  "overdueDays": "已逾期 {count} 天"
 }
 

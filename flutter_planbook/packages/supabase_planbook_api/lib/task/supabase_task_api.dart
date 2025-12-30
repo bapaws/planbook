@@ -77,7 +77,9 @@ class SupabaseTaskApi {
 
     var builder = supabase!
         .from('tasks')
-        .select('*,task_tags(*,tag:tags!task_tags_tag_id_fkey(*))');
+        .select(
+          '*,task_tags(*,tag:tags!task_tags_tag_id_fkey(*)),task_activities(*)',
+        );
     if (!force) {
       if (lastTimestamp != null) {
         final date = DateTime.fromMillisecondsSinceEpoch(

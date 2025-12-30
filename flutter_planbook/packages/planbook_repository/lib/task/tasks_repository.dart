@@ -230,6 +230,16 @@ class TasksRepository {
                 );
           }
         }
+
+        if (item['task_activities'] is List<dynamic>) {
+          for (final taskActivity in item['task_activities'] as List<dynamic>) {
+            final map = taskActivity as Map<String, dynamic>;
+            final taskActivityMap = TaskActivity.fromJson(map);
+            await _db
+                .into(_db.taskActivities)
+                .insertOnConflictUpdate(taskActivityMap);
+          }
+        }
       }
     });
   }
@@ -316,13 +326,13 @@ class TasksRepository {
         isCompleted: isCompleted,
         userId: userId,
       ),
-      TaskListMode.inbox => _dbTaskTodayApi.getAllInboxTodayTaskEntities(
+      TaskListMode.inbox => _dbTaskInboxApi.getAllInboxTodayTaskEntities(
         tagId: tagId,
         priority: priority,
         isCompleted: isCompleted,
         userId: userId,
       ),
-      TaskListMode.overdue => _dbTaskTodayApi.getAllTodayOverdueTaskEntities(
+      TaskListMode.overdue => _dbTaskOverdueApi.getAllTodayOverdueTaskEntities(
         day: day,
         tagId: tagId,
         priority: priority,
@@ -403,7 +413,6 @@ class TasksRepository {
   ///
   /// [entity] 要延迟的任务实体
   /// [delayTo] 延迟到的目标时间
-
   Future<void> delayTask({
     required TaskEntity entity,
     required Jiffy delayTo,
@@ -414,31 +423,50 @@ class TasksRepository {
       return;
     }
 
-    final newTask = _dbTaskDelayApi.prepareDelayTask(
+    final result = _dbTaskDelayApi.prepareDelayTask(
       entity: entity,
       delayTo: delayTo,
       userId: userId,
     );
     final taskTags = _dbTaskApi.generateTaskTags(
-      task: newTask,
+      task: result.task,
       tags: entity.tags,
       userId: userId,
     );
 
-    if (entity.recurrenceRule != null) {
+    if (result.isNewTask) {
       // 重复任务创建了新的分离实例
       await _supabaseTaskApi.create(
-        task: newTask,
+        task: result.task,
         taskTags: taskTags,
+        children: result.children,
       );
-      await _dbTaskApi.create(task: newTask, taskTags: taskTags);
+      await _dbTaskApi.create(
+        task: result.task,
+        taskTags: taskTags,
+        children: result.children,
+      );
+
+      // 将原始任务在该日期的 occurrence 标记为 deleted，避免重复显示
+      if (result.originalTaskId != null &&
+          result.originalOccurrenceAt != null) {
+        await _dbTaskDelayApi.softDeleteOccurrence(
+          taskId: result.originalTaskId!,
+          occurrenceAt: result.originalOccurrenceAt!,
+        );
+      }
     } else {
       // 非重复任务更新了时间
       await _supabaseTaskApi.update(
-        task: newTask,
+        task: result.task,
         taskTags: taskTags,
+        children: result.children,
       );
-      await _dbTaskUpdateApi.update(task: newTask, taskTags: taskTags);
+      await _dbTaskUpdateApi.update(
+        task: result.task,
+        taskTags: taskTags,
+        children: result.children,
+      );
     }
   }
 
@@ -460,7 +488,7 @@ class TasksRepository {
       /// and weekdays: "mon", "tue", "wed", "thu", "fri", "sat", "sun"
       if (taskMap['dueAt'] != null) {
         final dueAtStr = taskMap['dueAt'] as String;
-        var date = Jiffy.now().toUtc();
+        var date = Jiffy.now();
 
         if (dueAtStr == 'tomorrow') {
           date = date.add(days: 1);

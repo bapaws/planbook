@@ -48,6 +48,8 @@ class _RootJournalPageState extends State<_RootJournalPage> {
   late final FlipPageController _controller;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
@@ -239,10 +241,15 @@ class _RootJournalPageState extends State<_RootJournalPage> {
     final toPage = to.diff(startOfYear, unit: Unit.day).toInt();
     await _controller.animateToPage(fromPage);
 
-    for (var i = fromPage; i <= toPage; i++) {
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!context.mounted) return;
-      await _controller.animateToPage(i);
-      await Future<void>.delayed(const Duration(milliseconds: 750));
-    }
+      final page = fromPage + timer.tick;
+      if (page > toPage) {
+        timer.cancel();
+        return;
+      }
+      _controller.animateToPage(page);
+    });
   }
 }

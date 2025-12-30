@@ -9,12 +9,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/tag/list/bloc/tag_list_bloc.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:flutter_planbook/task/new/view/task_new_bottom_bar.dart';
-import 'package:flutter_planbook/task/new/view/task_new_date_picker.dart';
 import 'package:flutter_planbook/task/new/view/task_new_date_view.dart';
-import 'package:flutter_planbook/task/new/view/task_new_duration_bottom_view.dart';
-import 'package:flutter_planbook/task/new/view/task_new_priority_bottom_view.dart';
-import 'package:flutter_planbook/task/new/view/task_new_repeat_view.dart';
-import 'package:flutter_planbook/task/new/view/task_new_tag_bottom_view.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -261,39 +256,8 @@ class _TaskNewPageState extends State<_TaskNewPage> {
     );
   }
 
-  Widget _buildBottomView(TaskNewFocus focus) {
-    return switch (focus) {
-      TaskNewFocus.none => SizedBox(
-        height: MediaQuery.of(context).padding.bottom,
-      ),
-      TaskNewFocus.title => SizedBox(
-        height: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      TaskNewFocus.priority => TaskNewPriorityBottomView(
-        selectedPriority: context.read<TaskNewCubit>().state.priority,
-        onPriorityChanged: (priority) {
-          context.read<TaskNewCubit>().onPriorityChanged(priority);
-        },
-      ),
-      TaskNewFocus.date => TaskNewDatePicker(
-        date: context.read<TaskNewCubit>().state.date,
-        onDateChanged: (date) {
-          _onDateChanged(context, date);
-        },
-      ),
-      TaskNewFocus.time => const TaskNewDurationBottomView(),
-      TaskNewFocus.tags => const TaskNewTagBottomView(),
-      TaskNewFocus.recurrence => TaskNewRecurrenceRuleView(
-        initialRecurrenceRule: context
-            .read<TaskNewCubit>()
-            .state
-            .recurrenceRule,
-      ),
-    };
-  }
-
   void _onDateChanged(BuildContext context, Jiffy? date) {
-    context.read<TaskNewCubit>().onDueAtChanged(date);
+    context.read<TaskNewCubit>().onStartAtChanged(date);
 
     context.read<TaskNewCubit>().onFocusChanged(
       TaskNewFocus.title,

@@ -149,6 +149,7 @@ class NotesRepository {
     Jiffy date, {
     List<String>? tagIds,
   }) {
+    _syncNotes();
     return _dbNoteApi.getWrittenNoteEntities(
       date,
       tagIds: tagIds,

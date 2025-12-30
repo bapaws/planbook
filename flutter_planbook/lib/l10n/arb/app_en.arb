@@ -19,6 +19,8 @@
   "cancel": "Cancel",
   "refresh": "Refresh",
   "noData": "No Data",
+  "yes": "Yes",
+  "no": "No",
   "today": "Today",
   "settings": "Settings",
   "unlockPro": "Unlock all premium features.",
@@ -113,12 +115,16 @@
   "taskTitleHint": "What needs to be done?",
   "startTime": "Start Time",
   "endTime": "End Time",
+  "startDate": "Start Date",
+  "endDate": "End Date",
   "duration": "Duration",
   "allDay": "All Day",
+  "thatDay": "That Day",
   "otherDate": "Other Date",
   "inbox": "Inbox",
   "overdue": "Overdue",
   "delayToToday": "Delay to Today",
+  "delayToTomorrow": "Delay to Tomorrow",
   "addTag": "Add Tag",
   "tags": "Tags",
   "tag": "Tag",
@@ -411,6 +417,16 @@
   "incompleteSubtasksCount": "{count, plural, =1 {1 subtask} other {{count} subtasks}}",
   "@incompleteSubtasksCount": {
     "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "overdueDays": "Overdue {count} Days",
+  "@overdueDays": {
+    "description": "Overdue Days",
     "placeholders": {
       "count": {
         "type": "int",

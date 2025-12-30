@@ -101,70 +101,65 @@ class TaskSliverList extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
             sliver: SliverToBoxAdapter(child: header),
           ),
-        SliverAnimatedPaintExtent(
-          duration: Durations.medium1,
-          child: SliverList.builder(
-            itemCount: tasks.length,
-            itemBuilder: (context, index) {
-              final task = tasks[index];
-              final nextTask = index < tasks.length - 1
-                  ? tasks[index + 1]
-                  : null;
-              return TaskListTile(
-                key: ValueKey(task),
-                task: task,
-                titleTextStyle: Theme.of(context).textTheme.titleMedium,
-                isExpanded: nextTask?.parentId == task.id,
-                onPressed: (task) {
-                  if (onTaskPressed != null) {
-                    onTaskPressed!(task);
-                  } else {
-                    context.router.push(
-                      TaskDetailRoute(
-                        taskId: task.id,
-                        occurrenceAt: task.occurrence?.occurrenceAt,
-                      ),
-                    );
-                  }
-                },
-                onCompleted: (task) {
-                  if (onTaskCompleted != null) {
-                    onTaskCompleted!(task);
-                  } else {
-                    context.read<TaskListBloc>().add(
-                      TaskListCompleted(task: task),
-                    );
-                  }
-                },
-                onDeleted: (task) {
-                  if (onTaskDeleted != null) {
-                    onTaskDeleted!(task);
-                  } else {
-                    context.read<TaskListBloc>().add(
-                      TaskListDeleted(taskId: task.id),
-                    );
-                  }
-                },
-                onEdited: (task) {
-                  context.router.push(TaskNewRoute(initialTask: task));
-                },
-                onDelayed: (task) {
-                  if (onTaskDelayed != null) {
-                    onTaskDelayed!(task);
-                  } else {
-                    context.read<TaskListBloc>().add(
-                      TaskListTaskDelayed(task: task),
-                    );
-                  }
-                },
-                onExpanded: (task) {
-                  context.read<TaskListBloc>().add(
-                    TaskListTaskExpanded(task: task),
+        SliverList.builder(
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            final nextTask = index < tasks.length - 1 ? tasks[index + 1] : null;
+            return TaskListTile(
+              key: ValueKey(task),
+              task: task,
+              titleTextStyle: Theme.of(context).textTheme.titleMedium,
+              isExpanded: nextTask?.parentId == task.id,
+              onPressed: (task) {
+                if (onTaskPressed != null) {
+                  onTaskPressed!(task);
+                } else {
+                  context.router.push(
+                    TaskDetailRoute(
+                      taskId: task.id,
+                      occurrenceAt: task.occurrence?.occurrenceAt,
+                    ),
                   );
-                },
-              );
-            },
-          ),
+                }
+              },
+              onCompleted: (task) {
+                if (onTaskCompleted != null) {
+                  onTaskCompleted!(task);
+                } else {
+                  context.read<TaskListBloc>().add(
+                    TaskListCompleted(task: task),
+                  );
+                }
+              },
+              onDeleted: (task) {
+                if (onTaskDeleted != null) {
+                  onTaskDeleted!(task);
+                } else {
+                  context.read<TaskListBloc>().add(
+                    TaskListDeleted(taskId: task.id),
+                  );
+                }
+              },
+              onEdited: (task) {
+                context.router.push(TaskNewRoute(initialTask: task));
+              },
+              onDelayed: (task) {
+                if (onTaskDelayed != null) {
+                  onTaskDelayed!(task);
+                } else {
+                  context.read<TaskListBloc>().add(
+                    TaskListTaskDelayed(task: task),
+                  );
+                }
+              },
+              onExpanded: (task) {
+                context.read<TaskListBloc>().add(
+                  TaskListTaskExpanded(task: task),
+                );
+              },
+            );
+          },
         ),
       ],
     );

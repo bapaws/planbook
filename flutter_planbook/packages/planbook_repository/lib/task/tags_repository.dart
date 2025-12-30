@@ -86,7 +86,7 @@ class TagsRepository {
       userId: userId,
       order: 0,
       level: (parentTag?.level ?? -1) + 1,
-      createdAt: Jiffy.now().toUtc(),
+      createdAt: Jiffy.now(),
     );
     await _supabaseTagApi.create(tag: tag);
     await _tagApi.create(tag: tag);
@@ -108,7 +108,7 @@ class TagsRepository {
       darkColorScheme: Value(darkColorScheme),
       parentId: Value(parentTag?.id),
       level: (parentTag?.level ?? -1) + 1,
-      updatedAt: Value(Jiffy.now().toUtc()),
+      updatedAt: Value(Jiffy.now()),
     );
     await _supabaseTagApi.update(tag: newTag);
     await _tagApi.update(tag: newTag);

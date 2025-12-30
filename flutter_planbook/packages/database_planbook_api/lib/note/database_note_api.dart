@@ -45,7 +45,7 @@ class DatabaseNoteApi {
           noteId: noteId,
           tagId: tag.id,
           userId: userId,
-          createdAt: now.toUtc(),
+          createdAt: now,
         ),
       );
       var parent = tag.parent;
@@ -57,7 +57,7 @@ class DatabaseNoteApi {
             noteId: noteId,
             tagId: parent.id,
             userId: userId,
-            createdAt: now.toUtc(),
+            createdAt: now,
           ),
         );
         parent = parent.parent;
@@ -294,8 +294,8 @@ class DatabaseNoteApi {
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+    final startOfDayDateTime = startOfDay.dateTime;
+    final endOfDayDateTime = endOfDay.dateTime;
 
     var exp =
         db.notes.deletedAt.isNull() &
@@ -348,8 +348,8 @@ class DatabaseNoteApi {
     return (db.select(db.notes)
           ..where(
             (n) =>
-                n.focusAt.isBiggerOrEqualValue(start.toUtc().dateTime) &
-                n.focusAt.isSmallerOrEqualValue(end.toUtc().dateTime) &
+                n.focusAt.isBiggerOrEqualValue(start.dateTime) &
+                n.focusAt.isSmallerOrEqualValue(end.dateTime) &
                 n.type.equals(type.name) &
                 (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
           )

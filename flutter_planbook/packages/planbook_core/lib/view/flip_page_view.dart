@@ -374,7 +374,9 @@ class _FlipPageViewState extends State<FlipPageView>
       final progress = direction == FlipPageDirection.left
           ? animationValue
           : -animationValue;
-      print('progress: $progress');
+      if (kDebugMode) {
+        print('progress: $progress');
+      }
       _updateAngles(progress);
 
       if (progress > 0.5) {

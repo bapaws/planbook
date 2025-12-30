@@ -122,27 +122,27 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
   void onDurationChanged(TaskDurationEntity? entity) {
     emit(
       state.copyWith(
-        startAt: () => entity?.startAt?.toUtc(),
-        endAt: () => entity?.endAt?.toUtc(),
-        isAllDay: entity?.isAllDay ?? false,
+        startAt: () => entity?.startAt,
+        endAt: () => entity?.endAt,
+        isAllDay: entity?.isAllDay,
       ),
     );
   }
 
-  void onDueAtChanged(Jiffy? dueAt) {
-    emit(state.copyWith(dueAt: () => dueAt?.toUtc().startOf(Unit.day)));
-  }
-
   void onStartAtChanged(Jiffy? startAt) {
-    emit(state.copyWith(startAt: () => startAt?.toUtc()));
+    Jiffy? endAt;
+    if (startAt == null) {
+      endAt = null;
+    } else if (state.endAt != null && state.endAt!.isBefore(startAt)) {
+      endAt = state.isAllDay ? null : startAt.add(hours: 1);
+    } else {
+      endAt = state.endAt;
+    }
+    emit(state.copyWith(startAt: () => startAt, endAt: () => endAt));
   }
 
   void onEndAtChanged(Jiffy? endAt) {
-    emit(state.copyWith(endAt: () => endAt?.toUtc()));
-  }
-
-  void onIsAllDayChanged({required bool isAllDay}) {
-    emit(state.copyWith(isAllDay: isAllDay));
+    emit(state.copyWith(endAt: () => endAt?.endOf(Unit.day)));
   }
 
   void onRecurrenceRuleChanged(RecurrenceRule? recurrenceRule) {
@@ -162,14 +162,14 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         id: const Uuid().v4(),
         title: state.title,
         priority: state.priority,
-        dueAt: state.dueAt?.toUtc(),
-        startAt: state.startAt?.toUtc(),
-        endAt: state.endAt?.toUtc(),
+        dueAt: state.startAt?.startOf(Unit.day),
+        startAt: state.startAt,
+        endAt: state.endAt ?? state.startAt?.endOf(Unit.day),
         recurrenceRule: state.recurrenceRule,
         order: 0,
-        isAllDay: false,
+        isAllDay: state.isAllDay,
         alarms: [],
-        createdAt: Jiffy.now().toUtc(),
+        createdAt: Jiffy.now(),
         layer: 0,
         childCount: 0,
       );
@@ -205,16 +205,16 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       id: initialTask.id,
       title: state.title,
       priority: state.priority,
-      dueAt: state.dueAt?.toUtc(),
-      startAt: state.startAt?.toUtc(),
-      endAt: state.endAt?.toUtc(),
+      dueAt: state.startAt?.startOf(Unit.day),
+      startAt: state.startAt,
+      endAt: state.endAt ?? state.startAt?.endOf(Unit.day),
       order: initialTask.order,
-      isAllDay: initialTask.isAllDay,
+      isAllDay: state.isAllDay,
       alarms: state.alarms ?? [],
       parentId: initialTask.parentId,
       recurrenceRule: state.recurrenceRule,
-      createdAt: initialTask.createdAt.toUtc(),
-      updatedAt: Jiffy.now().toUtc(),
+      createdAt: initialTask.createdAt,
+      updatedAt: Jiffy.now(),
       layer: 0,
       childCount: 0,
     );

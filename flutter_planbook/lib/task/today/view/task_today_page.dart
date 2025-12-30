@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
-import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/today/view/task_today_focus_view.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
-import 'package:planbook_core/planbook_core.dart';
 
 @RoutePage()
 class TaskTodayPage extends StatelessWidget {
@@ -87,32 +85,22 @@ class _TaskTodayListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<TaskTodayBloc, TaskTodayState, bool>(
-      selector: (state) => (state.taskCounts[day.dateKey] ?? 0) == 0,
-      builder: (context, isEmpty) {
-        return AnimatedSwitcher(
-          duration: Durations.medium1,
-          child: isEmpty
-              ? const AppEmptyTaskView()
-              : BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
-                  selector: (state) => state.topLevelTags,
-                  builder: (context, tags) => CustomScrollView(
-                    slivers: [
-                      _buildTaskList(context),
-                      for (final tag in tags) _buildTaskList(context, tag: tag),
-                      SliverToBoxAdapter(
-                        child: SizedBox(
-                          height:
-                              16 +
-                              kRootBottomBarHeight +
-                              MediaQuery.of(context).padding.bottom,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-        );
-      },
+    return BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
+      selector: (state) => state.topLevelTags,
+      builder: (context, tags) => CustomScrollView(
+        slivers: [
+          _buildTaskList(context),
+          // for (final tag in tags) _buildTaskList(context, tag: tag),
+          SliverToBoxAdapter(
+            child: SizedBox(
+              height:
+                  16 +
+                  kRootBottomBarHeight +
+                  MediaQuery.of(context).padding.bottom,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

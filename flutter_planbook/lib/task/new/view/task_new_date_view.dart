@@ -20,11 +20,12 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
   int _index = 0;
   int get index => _index;
   set index(int value) {
+    final startOfToday = Jiffy.now().startOf(Unit.day);
     if (value == 0) {
-      _selectedDate = Jiffy.now();
-      widget.onDateChanged?.call(Jiffy.now());
+      _selectedDate = startOfToday;
+      widget.onDateChanged?.call(startOfToday);
     } else if (value == 1) {
-      final tomorrow = Jiffy.now().add(days: 1);
+      final tomorrow = startOfToday.add(days: 1);
       _selectedDate = tomorrow;
       widget.onDateChanged?.call(tomorrow);
     } else if (value == 2) {
@@ -109,9 +110,9 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocListener<TaskNewCubit, TaskNewState>(
-      listenWhen: (previous, current) => previous.dueAt != current.dueAt,
+      listenWhen: (previous, current) => previous.startAt != current.startAt,
       listener: (context, state) {
-        _onDateChanged(state.dueAt);
+        _onDateChanged(state.startAt);
       },
       child: LayoutBuilder(
         builder: (context, constraints) {

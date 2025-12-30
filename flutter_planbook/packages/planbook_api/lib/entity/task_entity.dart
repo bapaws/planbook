@@ -36,10 +36,13 @@ class TaskEntity extends Equatable {
   String get title => task.title;
   String? get parentId => task.parentId;
   Jiffy? get dueAt => task.dueAt;
-  Jiffy? get startAt => task.startAt;
-  Jiffy? get endAt => task.endAt;
+  Jiffy? get startAt =>
+      occurrence?.startAt ?? occurrence?.dueAt ?? task.startAt ?? task.dueAt;
+  Jiffy? get endAt => occurrence?.endAt ?? task.endAt;
   int get order => task.order;
-  bool get isAllDay => task.isAllDay;
+  // 兼容老数据，如果 dueAt 不为空且 startAt 为空，则认为是全天任务
+  bool get isAllDay =>
+      task.isAllDay || (task.dueAt != null && task.startAt == null);
   RecurrenceRule? get recurrenceRule => task.recurrenceRule;
   String? get detachedFromTaskId => task.detachedFromTaskId;
   TaskPriority get priority => task.priority ?? TaskPriority.none;
@@ -51,6 +54,13 @@ class TaskEntity extends Equatable {
 
   bool get isCompleted =>
       activity?.deletedAt == null && activity?.completedAt != null;
+
+  Jiffy? get occurrenceAt => occurrence != null
+      ? occurrence?.occurrenceAt ??
+            occurrence?.startAt ??
+            occurrence?.endAt ??
+            occurrence?.dueAt
+      : startAt ?? endAt ?? dueAt;
 
   @override
   List<Object?> get props => [

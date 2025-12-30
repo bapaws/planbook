@@ -96,10 +96,55 @@ class TaskListTile extends StatefulWidget {
 }
 
 class _TaskListTileState extends State<TaskListTile> {
+  final GlobalKey _tileKey = GlobalKey();
+
   late TaskEntity _task;
+  set task(TaskEntity value) {
+    _task = value;
+
+    if (_isCompleted != _task.isCompleted) {
+      setState(() {
+        _isCompleted = _task.isCompleted;
+      });
+    }
+
+    if (!_task.isCompleted) {
+      final now = Jiffy.now();
+      final today = now.startOf(Unit.day);
+      if (_task.occurrence != null) {
+        final endAt = _task.occurrence!.endAt;
+        if (endAt != null && endAt.isBefore(now)) {
+          _isOverdue = true;
+          _isOverdueNow = true;
+        } else {
+          final occurrenceAt =
+              _task.occurrence!.dueAt ?? _task.occurrence!.occurrenceAt;
+          _isOverdue = occurrenceAt.isBefore(today);
+          _isOverdueNow = false;
+        }
+      } else {
+        final endAt = _task.endAt;
+        if (endAt != null && endAt.isBefore(now)) {
+          _isOverdue = true;
+          _isOverdueNow = true;
+        } else {
+          final occurrenceAt = _task.dueAt ?? _task.occurrenceAt;
+          _isOverdue = occurrenceAt != null && occurrenceAt.isBefore(today);
+          _isOverdueNow = false;
+        }
+      }
+    } else {
+      _isOverdue = false;
+    }
+  }
+
+  TaskEntity get task => _task;
+
   bool _isCompleted = false;
   bool _isExpanded = false;
-  final GlobalKey _tileKey = GlobalKey();
+
+  bool _isOverdue = false;
+  bool _isOverdueNow = false;
 
   Size get minimumSize => Size.square(
     _task.parentId == null
@@ -114,8 +159,8 @@ class _TaskListTileState extends State<TaskListTile> {
   @override
   void initState() {
     super.initState();
-    _task = widget.task;
-    _isCompleted = _task.isCompleted;
+    task = widget.task;
+
     _isExpanded = widget.isExpanded;
   }
 
@@ -123,7 +168,7 @@ class _TaskListTileState extends State<TaskListTile> {
   void didUpdateWidget(TaskListTile oldWidget) {
     super.didUpdateWidget(oldWidget);
     // 更新任务
-    _task = widget.task;
+    task = widget.task;
     if (widget.isExpanded != _isExpanded) {
       setState(() {
         _isExpanded = widget.isExpanded;
@@ -225,15 +270,13 @@ class _TaskListTileState extends State<TaskListTile> {
               ),
             ),
           ),
+          SizedBox(width: buttonPadding.horizontal / 2),
         ],
       ),
     );
   }
 
   List<PullDownMenuEntry> _buildMenuItems(AppLocalizations l10n) {
-    final today = Jiffy.now().startOf(Unit.day);
-    final occurrenceAt = _task.occurrence?.occurrenceAt ?? _task.dueAt;
-    final isOverdue = occurrenceAt != null && occurrenceAt.isBefore(today);
     return [
       PullDownMenuItem(
         icon: FontAwesomeIcons.solidCircleCheck,
@@ -241,10 +284,10 @@ class _TaskListTileState extends State<TaskListTile> {
         onTap: () => context.router.push(TaskDoneRoute(task: _task)),
       ),
       const PullDownMenuDivider.large(),
-      if (isOverdue && !_task.isCompleted)
+      if (_isOverdue)
         PullDownMenuItem(
           icon: FontAwesomeIcons.clock,
-          title: l10n.delayToToday,
+          title: _isOverdueNow ? l10n.delayToTomorrow : l10n.delayToToday,
           onTap: () => widget.onDelayed?.call(_task),
         ),
       PullDownMenuItem(

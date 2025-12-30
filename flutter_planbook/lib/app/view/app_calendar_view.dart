@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -111,6 +112,7 @@ class AppCalendarView<T> extends StatelessWidget {
       firstDay: firstDay,
       lastDay: lastDay,
       focusedDay: date.dateTime,
+      locale: Intl.defaultLocale,
       startingDayOfWeek: switch (date.startOfWeek) {
         StartOfWeek.monday => StartingDayOfWeek.monday,
         StartOfWeek.saturday => StartingDayOfWeek.saturday,
@@ -167,7 +169,12 @@ class AppCalendarView<T> extends StatelessWidget {
       ),
       eventLoader: eventLoader,
       onDaySelected: (selectedDay, focusedDay) {
-        onDateSelected(Jiffy.parseFromDateTime(selectedDay));
+        // 将 UTC 时间转换为本地时间
+        // final day = selectedDay.toLocal();
+        final day = Jiffy.parseFromDateTime(selectedDay);
+        onDateSelected(
+          day.toLocal().startOf(Unit.day),
+        );
       },
       calendarFormat: calendarFormat,
     );

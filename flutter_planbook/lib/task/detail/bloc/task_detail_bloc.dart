@@ -28,7 +28,6 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailNotesRequested>(_onNotesRequested);
     on<TaskDetailDeleted>(_onDeleted);
     on<TaskDetailTitleChanged>(_onTitleChanged);
-    on<TaskDetailDueAtChanged>(_onDueAtChanged);
     on<TaskDetailPriorityChanged>(_onPriorityChanged);
     on<TaskDetailTagsChanged>(_onTagsChanged);
     on<TaskDetailRecurrenceRuleChanged>(_onRecurrenceRuleChanged);
@@ -136,14 +135,6 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
             .toList(),
       ),
     );
-  }
-
-  Future<void> _onDueAtChanged(
-    TaskDetailDueAtChanged event,
-    Emitter<TaskDetailState> emit,
-  ) async {
-    final updatedTask = state.task?.task.copyWith(dueAt: Value(event.dueAt));
-    add(TaskDetailUpdated(task: updatedTask));
   }
 
   Future<void> _onPriorityChanged(

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
+import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/week/view/task_week_header.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -26,35 +29,55 @@ class TaskWeekCell extends StatelessWidget {
     final isToday = day?.isSame(Jiffy.now(), unit: Unit.day) ?? false;
 
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          BlocSelector<TaskListBloc, TaskListState, int>(
-            selector: (state) => state.tasks.length,
-            builder: (context, count) => TaskWeekHeader(
-              title: title,
-              subtitle: subtitle,
-              colorScheme: colorScheme,
-              isToday: isToday,
-              taskCount: count,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          if (day == null) return;
+          context.read<RootTaskBloc>().add(
+            const RootTaskTabSelected(tab: RootTaskTab.day),
+          );
+          final isCompleted = context.read<RootTaskBloc>().isCompleted;
+          context.read<TaskTodayBloc>().add(
+            TaskTodayDateSelected(date: day!, isCompleted: isCompleted),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            BlocSelector<TaskListBloc, TaskListState, int>(
+              selector: (state) => state.tasks.length,
+              builder: (context, count) => TaskWeekHeader(
+                title: title,
+                subtitle: subtitle,
+                colorScheme: colorScheme,
+                isToday: isToday,
+                taskCount: count,
+                onAddTask: () {
+                  context.router.push(
+                    TaskNewRoute(
+                      dueAt: day,
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          BlocListener<TaskListBloc, TaskListState>(
-            listenWhen: (previous, current) =>
-                previous.currentTaskNote != current.currentTaskNote &&
-                current.currentTaskNote != null,
-            listener: (context, state) {
-              context.router.push(
-                NoteNewRoute(
-                  initialNote: state.currentTaskNote,
-                ),
-              );
-            },
-            child: Expanded(
-              child: _buildTaskList(context),
+            BlocListener<TaskListBloc, TaskListState>(
+              listenWhen: (previous, current) =>
+                  previous.currentTaskNote != current.currentTaskNote &&
+                  current.currentTaskNote != null,
+              listener: (context, state) {
+                context.router.push(
+                  NoteNewRoute(
+                    initialNote: state.currentTaskNote,
+                  ),
+                );
+              },
+              child: Expanded(
+                child: _buildTaskList(context),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

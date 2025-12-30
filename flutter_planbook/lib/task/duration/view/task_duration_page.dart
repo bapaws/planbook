@@ -11,9 +11,9 @@ import 'package:jiffy/jiffy.dart';
 @RoutePage()
 class TaskDurationPage extends StatefulWidget {
   const TaskDurationPage({
-    required this.startAt,
-    required this.endAt,
-    required this.isAllDay,
+    this.startAt,
+    this.endAt,
+    this.isAllDay = true,
     super.key,
   });
 
@@ -30,11 +30,20 @@ class _TaskDurationPageState extends State<TaskDurationPage> {
 
   @override
   void initState() {
-    final now = Jiffy.now().startOf(Unit.minute);
+    final now = Jiffy.now();
+    Jiffy startAt;
+    Jiffy endAt;
+    if (widget.isAllDay) {
+      startAt = widget.startAt ?? now.startOf(Unit.day);
+      endAt = widget.endAt ?? startAt.endOf(Unit.day);
+    } else {
+      startAt = widget.startAt ?? now.startOf(Unit.hour).add(hours: 1);
+      endAt = widget.endAt ?? startAt.add(hours: 1);
+    }
     _entity = TaskDurationEntity(
       isAllDay: widget.isAllDay,
-      startAt: widget.startAt ?? now,
-      endAt: widget.endAt ?? now.add(hours: 1),
+      startAt: startAt,
+      endAt: endAt,
     );
     super.initState();
   }
@@ -54,14 +63,19 @@ class _TaskDurationPageState extends State<TaskDurationPage> {
             AppBar(
               // leadingWidth: 120,
               automaticallyImplyLeading: false,
-              titleSpacing: 0,
-              title: CupertinoButton(
+              // titleSpacing: 0,
+              leadingWidth: 150,
+              leading: CupertinoButton(
+                alignment: Alignment.centerLeft,
                 onPressed: () {
                   context.router.maybePop(
-                    const TaskDurationEntity(isAllDay: true),
+                    TaskDurationEntity(
+                      startAt: _entity.startAt,
+                      isAllDay: true,
+                    ),
                   );
                 },
-                child: Text(context.l10n.allDay),
+                child: Text(context.l10n.thatDay),
               ),
               actions: [
                 CupertinoButton(

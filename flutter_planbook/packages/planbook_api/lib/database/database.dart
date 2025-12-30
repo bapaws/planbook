@@ -378,7 +378,17 @@ class AppDatabase extends _$AppDatabase {
       // Explicitly tell it about the correct temporary directory.
       sqlite3.tempDirectory = cachebase;
 
-      return NativeDatabase.createInBackground(file);
+      // 使用后台 isolate 执行数据库操作，避免阻塞 UI
+      return NativeDatabase.createInBackground(
+        file,
+        setup: (database) {
+          database
+            // 启用 WAL 模式，允许并发读写，避免 "database is locked" 错误
+            ..execute('PRAGMA journal_mode=WAL;')
+            // 设置忙等待超时，在并发写入时等待而不是立即失败
+            ..execute('PRAGMA busy_timeout=10000;');
+        },
+      );
     });
   }
 

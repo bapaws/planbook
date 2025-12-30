@@ -13,9 +13,10 @@ import 'package:flutter_planbook/note/list/view/note_list_tile.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/task/detail/bloc/task_detail_bloc.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_bottom_bar.dart';
-import 'package:flutter_planbook/task/detail/view/task_detail_duration_view.dart';
+import 'package:flutter_planbook/task/detail/view/task_detail_date_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
+import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -179,40 +180,60 @@ class _TaskDetailPage extends StatelessWidget {
 
                   TaskDetailSliverTile(
                     onPressed: () {
-                      if (task.occurrence?.occurrenceAt != null) {
-                        Fluttertoast.showToast(
-                          msg: context.l10n.recurringTaskCannotChangeDate,
-                          gravity: ToastGravity.CENTER,
-                        );
-                        return;
-                      }
-                      context.router.push(
-                        TaskDatePickerRoute(
-                          date: task.dueAt ?? Jiffy.now(),
-                          onDateChanged: (date) {
-                            context.read<TaskDetailBloc>().add(
-                              TaskDetailDueAtChanged(
-                                dueAt: date,
-                              ),
-                            );
-                          },
-                        ),
-                      );
+                      _onDateTap(context, task);
                     },
                     leading: AppIcon(
-                      FontAwesomeIcons.solidCalendarDays,
-                      backgroundColor: theme.colorScheme.secondaryContainer,
-                      foregroundColor: theme.colorScheme.secondary,
+                      FontAwesomeIcons.calendarDay,
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      foregroundColor: theme.colorScheme.primary,
                     ),
-                    title: context.l10n.date,
+                    title: context.l10n.allDay,
                     trailing: Text(
-                      task.occurrence?.occurrenceAt.yMMMEd ??
-                          task.dueAt?.yMMMEd ??
-                          task.startAt?.yMMMEd ??
-                          context.l10n.inbox,
+                      task.isAllDay ? context.l10n.yes : context.l10n.no,
                     ),
                   ),
-
+                  if (task.startAt != null &&
+                      task.endAt != null &&
+                      (!task.isAllDay ||
+                          !task.startAt!.isSame(
+                            task.endAt!,
+                            unit: Unit.day,
+                          ))) ...[
+                    if (task.startAt != null)
+                      TaskDetailDateView(
+                        title: task.isAllDay
+                            ? context.l10n.startDate
+                            : context.l10n.startTime,
+                        formattedDate: task.isAllDay
+                            ? task.startAt?.yMMMEd
+                            : task.startAt?.yMMMEdjm,
+                        onPressed: () {
+                          _onDateTap(context, task);
+                        },
+                      ),
+                    if (task.endAt != null)
+                      TaskDetailDateView(
+                        title: task.isAllDay
+                            ? context.l10n.endDate
+                            : context.l10n.endTime,
+                        formattedDate: task.isAllDay
+                            ? task.endAt?.yMMMEd
+                            : task.endAt?.yMMMEdjm,
+                        onPressed: () {
+                          _onDateTap(context, task);
+                        },
+                      ),
+                  ] else ...[
+                    TaskDetailDateView(
+                      title: context.l10n.date,
+                      formattedDate:
+                          task.occurrenceAt?.yMMMEd ?? context.l10n.inbox,
+                      onPressed: () {
+                        _onDateTap(context, task);
+                      },
+                    ),
+                  ],
+                  TaskDetailRepeatView(recurrenceRule: task.recurrenceRule),
                   TaskDetailSliverTile(
                     onPressed: () async {
                       final priority = await context.router.push(
@@ -263,9 +284,9 @@ class _TaskDetailPage extends StatelessWidget {
                       FontAwesomeIcons.hashtag,
                       backgroundColor:
                           tagColorScheme?.primaryContainer ??
-                          colorScheme.tertiaryContainer,
+                          colorScheme.secondaryContainer,
                       foregroundColor:
-                          tagColorScheme?.primary ?? colorScheme.tertiary,
+                          tagColorScheme?.primary ?? colorScheme.secondary,
                     ),
                     title: context.l10n.tags,
                     trailing: Wrap(
@@ -278,8 +299,6 @@ class _TaskDetailPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  TaskDetailDurationView(task: task, colorScheme: colorScheme),
-                  TaskDetailRepeatView(recurrenceRule: task.recurrenceRule),
                   // SliverToBoxAdapter(
                   //   child: Divider(
                   //     indent: 16,
@@ -367,6 +386,29 @@ class _TaskDetailPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _onDateTap(BuildContext context, TaskEntity task) async {
+    if (task.occurrence?.occurrenceAt != null) {
+      await Fluttertoast.showToast(
+        msg: context.l10n.recurringTaskCannotChangeDate,
+        gravity: ToastGravity.CENTER,
+      );
+      return;
+    }
+    final entity = await context.router.push(
+      TaskDurationRoute(
+        startAt: task.startAt,
+        endAt: task.endAt,
+        isAllDay: task.isAllDay,
+      ),
+    );
+    if (entity == null || entity is! TaskDurationEntity || !context.mounted) {
+      return;
+    }
+    context.read<TaskDetailBloc>().add(
+      TaskDetailDurationChanged(entity: entity),
     );
   }
 }

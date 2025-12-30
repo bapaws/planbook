@@ -113,14 +113,14 @@ class TaskNewBottomBar extends StatelessWidget {
             ),
             if (!isInbox) ...[
               BlocSelector<TaskNewCubit, TaskNewState, Jiffy?>(
-                selector: (state) => state.startAt,
-                builder: (context, startAt) {
+                selector: (state) => state.endAt,
+                builder: (context, endAt) {
                   return CupertinoButton(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     minimumSize: const Size.square(kMinInteractiveDimension),
                     child: Icon(
                       FontAwesomeIcons.solidClock,
-                      color: startAt != null
+                      color: endAt != null
                           ? colorScheme.tertiary
                           : Colors.grey.shade400,
                     ),
@@ -134,7 +134,7 @@ class TaskNewBottomBar extends StatelessWidget {
                         TaskDurationRoute(
                           startAt: cubit.state.startAt,
                           endAt: cubit.state.endAt,
-                          isAllDay: false,
+                          isAllDay: cubit.state.isAllDay,
                         ),
                       );
                       if (entity is! TaskDurationEntity || !context.mounted) {

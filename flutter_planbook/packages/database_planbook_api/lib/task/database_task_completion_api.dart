@@ -64,7 +64,7 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     if (_isRecurringTask(task)) {
       if (occurrenceAt == null) return null;
       query.where(
-        (ta) => ta.occurrenceAt.equals(occurrenceAt.toUtc().dateTime),
+        (ta) => ta.occurrenceAt.equals(occurrenceAt.dateTime),
       );
     } else {
       query.where((ta) => ta.occurrenceAt.isNull());
@@ -178,7 +178,7 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     Expression<bool> activityCondition;
     if (occurrenceAt != null) {
       activityCondition = db.taskActivities.occurrenceAt.equals(
-        occurrenceAt.toUtc().dateTime,
+        occurrenceAt.dateTime,
       );
     } else {
       activityCondition = db.taskActivities.occurrenceAt.isNull();
@@ -211,8 +211,8 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+    final startOfDayDateTime = startOfDay.dateTime;
+    final endOfDayDateTime = endOfDay.dateTime;
 
     // 查询 1: 通过 TaskOccurrences 表查询重复任务实例（在指定日期完成）
     var recurringExp =
@@ -345,8 +345,8 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
-    final startOfDayDateTime = startOfDay.toUtc().dateTime;
-    final endOfDayDateTime = endOfDay.toUtc().dateTime;
+    final startOfDayDateTime = startOfDay.dateTime;
+    final endOfDayDateTime = endOfDay.dateTime;
 
     final query = db.selectOnly(db.taskActivities)
       ..addColumns([db.taskActivities.taskId.count(distinct: true)])

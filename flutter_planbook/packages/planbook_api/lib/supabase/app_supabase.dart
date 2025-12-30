@@ -10,7 +10,7 @@ class AppSupabase {
   static final AppSupabase instance = AppSupabase._();
 
   static Supabase? _supabase;
-  static SupabaseClient? get client => kDebugMode ? null : _supabase?.client;
+  static SupabaseClient? get client => _supabase?.client;
 
   static User? get user => _supabase?.client.auth.currentUser;
 

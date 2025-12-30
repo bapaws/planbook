@@ -83,6 +83,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     return state.copyWith(
       status: PageStatus.success,
       tasks: displayedTasks,
+      uncompletedTaskCount: tasks.where((task) => !task.isCompleted).length,
     );
   }
 
@@ -169,9 +170,17 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     Emitter<TaskListState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
+
+    final endAt = event.task.occurrence?.endAt ?? event.task.endAt;
+    Jiffy delayTo;
+    if (endAt != null && endAt.isBefore(Jiffy.now())) {
+      delayTo = Jiffy.now().add(days: 1);
+    } else {
+      delayTo = Jiffy.now();
+    }
     await _tasksRepository.delayTask(
       entity: event.task,
-      delayTo: event.delayTo ?? Jiffy.now(),
+      delayTo: delayTo,
     );
     emit(state.copyWith(status: PageStatus.success));
   }

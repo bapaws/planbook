@@ -36,8 +36,8 @@ class TaskDetailRepeatView extends StatelessWidget {
       },
       leading: AppIcon(
         FontAwesomeIcons.arrowsRotate,
-        backgroundColor: colorScheme.tertiaryContainer,
-        foregroundColor: colorScheme.tertiary,
+        backgroundColor: colorScheme.secondaryContainer,
+        foregroundColor: colorScheme.secondary,
       ),
       title: context.l10n.repeat,
       trailing: recurrenceRule == null

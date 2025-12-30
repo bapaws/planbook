@@ -6,6 +6,7 @@ final class TaskListState extends Equatable {
     this.status = PageStatus.initial,
     this.tasks = const [],
     this.tag,
+    this.uncompletedTaskCount = 0,
     this.currentTaskNote,
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
     this.expandedTaskIds = const {},
@@ -16,6 +17,8 @@ final class TaskListState extends Equatable {
   final Jiffy? date;
   final TagEntity? tag;
   final List<TaskEntity> tasks;
+
+  final int uncompletedTaskCount;
 
   final Set<String> expandedTaskIds;
 
@@ -28,6 +31,7 @@ final class TaskListState extends Equatable {
     date,
     tag,
     tasks,
+    uncompletedTaskCount,
     currentTaskNote,
     priorityStyle,
     expandedTaskIds,
@@ -38,6 +42,7 @@ final class TaskListState extends Equatable {
     Jiffy? date,
     TagEntity? tag,
     List<TaskEntity>? tasks,
+    int? uncompletedTaskCount,
     NoteEntity? currentTaskNote,
     TaskPriorityStyle? priorityStyle,
     Set<String>? expandedTaskIds,
@@ -47,6 +52,7 @@ final class TaskListState extends Equatable {
       date: date ?? this.date,
       tag: tag ?? this.tag,
       tasks: tasks ?? this.tasks,
+      uncompletedTaskCount: uncompletedTaskCount ?? this.uncompletedTaskCount,
       currentTaskNote: currentTaskNote ?? this.currentTaskNote,
       priorityStyle: priorityStyle ?? this.priorityStyle,
       expandedTaskIds: expandedTaskIds ?? this.expandedTaskIds,

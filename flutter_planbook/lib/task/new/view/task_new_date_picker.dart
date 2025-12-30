@@ -53,7 +53,7 @@ class TaskNewDatePicker extends StatelessWidget {
         ),
         value: [date?.dateTime ?? DateTime.now()],
         onValueChanged: (dates) {
-          context.read<TaskNewCubit>().onDueAtChanged(
+          context.read<TaskNewCubit>().onStartAtChanged(
             Jiffy.parseFromDateTime(dates.first),
           );
           context.read<TaskNewCubit>().onFocusChanged(TaskNewFocus.title);
