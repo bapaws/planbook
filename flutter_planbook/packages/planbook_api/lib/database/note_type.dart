@@ -9,7 +9,10 @@ enum NoteType {
   dailyFocus,
 
   /// 每周目标 - 用于记录每周的目标
-  weeklyFocus;
+  weeklyFocus,
+
+  /// 每月目标 - 用于记录每月的目标
+  monthlyFocus;
 
   /// 从字符串创建（用于数据库反序列化）
   static NoteType? fromString(String? value) {
@@ -21,7 +24,7 @@ enum NoteType {
   }
 
   /// 是否为目标类型
-  bool get isGoal => this == dailyFocus || this == weeklyFocus;
+  bool get isGoal => this == dailyFocus || this == weeklyFocus || this == monthlyFocus;
 
   /// 是否为日记类型
   bool get isJournal => this == journal;

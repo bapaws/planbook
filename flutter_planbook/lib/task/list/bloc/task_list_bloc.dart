@@ -16,12 +16,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     required SettingsRepository settingsRepository,
     TaskListMode mode = TaskListMode.inbox,
     this.priority,
-    TagEntity? tag,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _mode = mode,
        _settingsRepository = settingsRepository,
-       super(TaskListState(tag: tag)) {
+       super(const TaskListState()) {
     on<TaskListRequested>(_onRequested, transformer: restartable());
     on<TaskListDayAllRequested>(_onDayAllRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);

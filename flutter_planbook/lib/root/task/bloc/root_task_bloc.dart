@@ -27,6 +27,11 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     on<RootTaskViewTypeChanged>(_onViewTypeChanged);
     on<RootTaskShowCompletedChanged>(_onShowCompletedChanged);
     on<RootTaskPriorityStyleRequested>(_onPriorityStyleRequested);
+
+    on<RootTaskDailyTaskCountRequested>(
+      _onDailyTaskCountRequested,
+      transformer: concurrent(),
+    );
   }
 
   final TasksRepository _tasksRepository;
@@ -131,6 +136,24 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     await emit.forEach(
       _settingsRepository.onTaskPriorityStyleChange,
       onData: (priorityStyle) => state.copyWith(priorityStyle: priorityStyle),
+    );
+  }
+
+  Future<void> _onDailyTaskCountRequested(
+    RootTaskDailyTaskCountRequested event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    final stream = _tasksRepository.getTaskCount(
+      date: event.date,
+      mode: TaskListMode.today,
+    );
+    await emit.forEach(
+      stream,
+      onData: (count) => state.copyWith(
+        status: PageStatus.success,
+        dailyTaskCounts: {...state.dailyTaskCounts, event.date.dateKey: count},
+      ),
     );
   }
 }

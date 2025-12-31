@@ -59,3 +59,12 @@ final class RootTaskShowCompletedChanged extends RootTaskEvent {
 final class RootTaskPriorityStyleRequested extends RootTaskEvent {
   const RootTaskPriorityStyleRequested();
 }
+
+final class RootTaskDailyTaskCountRequested extends RootTaskEvent {
+  const RootTaskDailyTaskCountRequested({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object?> get props => [date];
+}

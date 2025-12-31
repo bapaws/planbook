@@ -13,6 +13,7 @@ final class RootTaskState extends Equatable {
     this.showCompleted = false,
     this.tag,
     this.taskCounts = const {},
+    this.dailyTaskCounts = const {},
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
   });
 
@@ -28,6 +29,8 @@ final class RootTaskState extends Equatable {
 
   final Map<TaskListMode, int> taskCounts;
 
+  final Map<int, int> dailyTaskCounts;
+
   bool? get isCompleted => showCompleted ? null : false;
 
   @override
@@ -38,6 +41,7 @@ final class RootTaskState extends Equatable {
     showCompleted,
     tag,
     taskCounts,
+    dailyTaskCounts,
     priorityStyle,
   ];
 
@@ -48,6 +52,7 @@ final class RootTaskState extends Equatable {
     bool? showCompleted,
     TagEntity? tag,
     Map<TaskListMode, int>? taskCounts,
+    Map<int, int>? dailyTaskCounts,
     TaskPriorityStyle? priorityStyle,
   }) {
     return RootTaskState(
@@ -57,6 +62,7 @@ final class RootTaskState extends Equatable {
       showCompleted: showCompleted ?? this.showCompleted,
       tag: tag ?? this.tag,
       taskCounts: taskCounts ?? this.taskCounts,
+      dailyTaskCounts: dailyTaskCounts ?? this.dailyTaskCounts,
       priorityStyle: priorityStyle ?? this.priorityStyle,
     );
   }

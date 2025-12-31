@@ -6,6 +6,7 @@ extension NoteTypeX on NoteType {
     return switch (this) {
       NoteType.dailyFocus => l10n.dailyFocus,
       NoteType.weeklyFocus => l10n.weeklyFocus,
+      NoteType.monthlyFocus => l10n.monthlyFocus,
       NoteType.journal => l10n.note,
     };
   }
@@ -14,6 +15,7 @@ extension NoteTypeX on NoteType {
     return switch (this) {
       NoteType.dailyFocus => l10n.thinkAboutDailyFocus,
       NoteType.weeklyFocus => l10n.thinkAboutWeeklyFocus,
+      NoteType.monthlyFocus => l10n.thinkAboutMonthlyFocus,
       NoteType.journal => l10n.noteTitleHint,
     };
   }

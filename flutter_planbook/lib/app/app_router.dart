@@ -78,7 +78,11 @@ class AppRouter extends RootStackRouter {
           page: RootTaskRoute.page,
           children: [
             AutoRoute(page: TaskInboxRoute.page),
-            AutoRoute(page: TaskTodayRoute.page),
+            AutoRoute(page: TaskTodayRoute.page, initial: true),
+            AutoRoute(page: TaskOverdueRoute.page),
+            AutoRoute(page: TaskWeekRoute.page),
+            AutoRoute(page: TaskMonthRoute.page),
+            AutoRoute(page: TaskTagRoute.page),
           ],
         ),
         AutoRoute(page: RootJournalRoute.page),

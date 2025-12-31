@@ -5,7 +5,6 @@ final class TaskListState extends Equatable {
     this.date,
     this.status = PageStatus.initial,
     this.tasks = const [],
-    this.tag,
     this.uncompletedTaskCount = 0,
     this.currentTaskNote,
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
@@ -15,7 +14,6 @@ final class TaskListState extends Equatable {
   final PageStatus status;
 
   final Jiffy? date;
-  final TagEntity? tag;
   final List<TaskEntity> tasks;
 
   final int uncompletedTaskCount;
@@ -29,7 +27,6 @@ final class TaskListState extends Equatable {
   List<Object?> get props => [
     status,
     date,
-    tag,
     tasks,
     uncompletedTaskCount,
     currentTaskNote,
@@ -40,7 +37,6 @@ final class TaskListState extends Equatable {
   TaskListState copyWith({
     PageStatus? status,
     Jiffy? date,
-    TagEntity? tag,
     List<TaskEntity>? tasks,
     int? uncompletedTaskCount,
     NoteEntity? currentTaskNote,
@@ -50,7 +46,6 @@ final class TaskListState extends Equatable {
     return TaskListState(
       status: status ?? this.status,
       date: date ?? this.date,
-      tag: tag ?? this.tag,
       tasks: tasks ?? this.tasks,
       uncompletedTaskCount: uncompletedTaskCount ?? this.uncompletedTaskCount,
       currentTaskNote: currentTaskNote ?? this.currentTaskNote,

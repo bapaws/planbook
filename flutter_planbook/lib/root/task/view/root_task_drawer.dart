@@ -38,6 +38,7 @@ class RootTaskDrawer extends StatelessWidget {
                   RootTaskTab.overdue,
                   RootTaskTab.day,
                   RootTaskTab.week,
+                  RootTaskTab.month,
                 ])
                   BlocSelector<RootTaskBloc, RootTaskState, int?>(
                     selector: (state) => state.taskCounts[tab.mode],
@@ -48,6 +49,7 @@ class RootTaskDrawer extends StatelessWidget {
                         title: tab.getName(context),
                         count: count,
                         onPressed: () {
+                          // context.tabsRouter.setActiveIndex(tab.index);
                           context.read<RootTaskBloc>().add(
                             RootTaskTabSelected(tab: tab),
                           );
@@ -103,6 +105,9 @@ class RootTaskDrawer extends StatelessWidget {
                           context.read<RootTaskBloc>().add(
                             RootTaskTagSelected(tag: tag),
                           );
+                          // context.tabsRouter.setActiveIndex(
+                          //   RootTaskTab.tag.index,
+                          // );
                           Scaffold.of(context).closeDrawer();
                         },
                         onDeleted: () {

@@ -9,14 +9,11 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_task_drawer.dart';
+import 'package:flutter_planbook/root/task/view/root_task_month_title_view.dart';
 import 'package:flutter_planbook/root/task/view/root_task_week_title_view.dart';
-import 'package:flutter_planbook/task/inbox/view/task_inbox_page.dart';
-import 'package:flutter_planbook/task/overdue/view/task_overdue_page.dart';
-import 'package:flutter_planbook/task/tag/view/task_tag_page.dart';
+import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
-import 'package:flutter_planbook/task/today/view/task_today_page.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
-import 'package:flutter_planbook/task/week/view/task_week_page.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -34,19 +31,47 @@ class RootTaskPage extends StatelessWidget {
             notesRepository: context.read(),
           )..add(TaskWeekDateSelected(date: Jiffy.now())),
         ),
+        BlocProvider(
+          create: (context) => TaskMonthBloc(
+            notesRepository: context.read(),
+          )..add(TaskMonthDateSelected(date: Jiffy.now())),
+        ),
       ],
-      child: _RootTaskPage(),
+      child: AutoTabsRouter(
+        routes: const [
+          TaskInboxRoute(),
+          TaskOverdueRoute(),
+          TaskTodayRoute(),
+          TaskWeekRoute(),
+          TaskMonthRoute(),
+          TaskTagRoute(),
+        ],
+        builder: (context, child) {
+          final activeTab = RootTaskTab.values[context.tabsRouter.activeIndex];
+          return BlocListener<RootTaskBloc, RootTaskState>(
+            listenWhen: (previous, current) =>
+                previous.tab != current.tab || activeTab != current.tab,
+            listener: (context, state) {
+              context.tabsRouter.setActiveIndex(state.tab.index);
+            },
+            child: _RootTaskPage(child: child),
+          );
+        },
+      ),
     );
   }
 }
 
 class _RootTaskPage extends StatelessWidget {
-  _RootTaskPage();
+  _RootTaskPage({required this.child});
 
+  final Widget child;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final activeIndex = context.tabsRouter.activeIndex;
+    final tab = RootTaskTab.values[activeIndex];
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootTaskDrawer(),
@@ -60,67 +85,54 @@ class _RootTaskPage extends StatelessWidget {
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
-        title: BlocBuilder<RootTaskBloc, RootTaskState>(
-          buildWhen: (previous, current) =>
-              previous.tab != current.tab || previous.tag != current.tag,
-          builder: (context, state) => AnimatedSwitcher(
-            duration: Durations.medium1,
-            child: switch (state.tab) {
-              RootTaskTab.day => BlocBuilder<TaskTodayBloc, TaskTodayState>(
-                builder: (context, state) {
-                  return AppCalendarDateView(
-                    date: state.date,
-                    calendarFormat: state.calendarFormat,
-                    onDateSelected: (date) {
-                      final isCompleted =
-                          context.read<RootTaskBloc>().state.showCompleted
-                          ? null
-                          : false;
-                      context.read<TaskTodayBloc>().add(
-                        TaskTodayDateSelected(
-                          date: date,
-                          isCompleted: isCompleted,
-                        ),
-                      );
-                    },
-                    onCalendarFormatChanged: (calendarFormat) {
-                      context.read<TaskTodayBloc>().add(
-                        TaskTodayCalendarFormatChanged(
-                          calendarFormat: calendarFormat,
-                        ),
-                      );
-                    },
-                  );
-                },
+        title: AnimatedSwitcher(
+          duration: Durations.medium1,
+          child: switch (tab) {
+            RootTaskTab.day => BlocBuilder<TaskTodayBloc, TaskTodayState>(
+              builder: (context, state) {
+                return AppCalendarDateView(
+                  date: state.date,
+                  calendarFormat: state.calendarFormat,
+                  onDateSelected: (date) {
+                    final isCompleted =
+                        context.read<RootTaskBloc>().state.showCompleted
+                        ? null
+                        : false;
+                    context.read<TaskTodayBloc>().add(
+                      TaskTodayDateSelected(
+                        date: date,
+                        isCompleted: isCompleted,
+                      ),
+                    );
+                  },
+                  onCalendarFormatChanged: (calendarFormat) {
+                    context.read<TaskTodayBloc>().add(
+                      TaskTodayCalendarFormatChanged(
+                        calendarFormat: calendarFormat,
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            RootTaskTab.inbox => Text(context.l10n.inbox),
+            RootTaskTab.overdue => Text(context.l10n.overdue),
+            RootTaskTab.week => const RootTaskWeekTitleView(),
+            RootTaskTab.month => const RootTaskMonthTitleView(),
+            RootTaskTab.tag =>
+              BlocSelector<RootTaskBloc, RootTaskState, TagEntity?>(
+                selector: (state) => state.tag,
+                builder: (context, tag) => Row(
+                  children: [
+                    AppTagIcon.fromTagEntity(tag!),
+                    const SizedBox(width: 4),
+                    Text(tag.fullName),
+                  ],
+                ),
               ),
-              RootTaskTab.inbox => Text(context.l10n.inbox),
-              RootTaskTab.overdue => Text(context.l10n.overdue),
-              RootTaskTab.week => const RootTaskWeekTitleView(),
-              RootTaskTab.tag => Row(
-                children: [
-                  AppTagIcon.fromTagEntity(state.tag!),
-                  const SizedBox(width: 4),
-                  Text(state.tag!.fullName),
-                ],
-              ),
-            },
-          ),
+          },
         ),
         actions: [
-          // CupertinoButton(
-          //   onPressed: () => context.read<RootTaskBloc>().add(
-          //     const RootTaskViewTypeChanged(),
-          //   ),
-          //   child: BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
-          //     selector: (state) => state.viewType,
-          //     builder: (context, viewType) => Icon(
-          //       switch (viewType) {
-          //         RootTaskViewType.list => FontAwesomeIcons.list,
-          //         RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
-          //       },
-          //     ),
-          //   ),
-          // ),
           PullDownButton(
             itemBuilder: (context) {
               final bloc = context.read<RootTaskBloc>();
@@ -173,27 +185,28 @@ class _RootTaskPage extends StatelessWidget {
           ),
         ],
       ),
-      body: _buildBody(context),
+      body: child,
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return BlocBuilder<RootTaskBloc, RootTaskState>(
-      buildWhen: (previous, current) =>
-          previous.tab != current.tab || previous.tag != current.tag,
-      builder: (context, state) => AnimatedSwitcher(
-        duration: Durations.medium1,
-        child: switch (state.tab) {
-          RootTaskTab.day => const TaskTodayPage(),
-          RootTaskTab.inbox => const TaskInboxPage(),
-          RootTaskTab.overdue => const TaskOverduePage(),
-          RootTaskTab.week => const TaskWeekPage(),
-          RootTaskTab.tag => TaskTagPage(
-            key: ValueKey(state.tag!.id),
-            tag: state.tag!,
-          ),
-        },
-      ),
-    );
-  }
+  // Widget _buildBody(BuildContext context) {
+  //   return BlocBuilder<RootTaskBloc, RootTaskState>(
+  //     buildWhen: (previous, current) =>
+  //         previous.tab != current.tab || previous.tag != current.tag,
+  //     builder: (context, state) => AnimatedSwitcher(
+  //       duration: Durations.medium1,
+  //       child: switch (state.tab) {
+  //         RootTaskTab.day => const TaskTodayPage(),
+  //         RootTaskTab.inbox => const TaskInboxPage(),
+  //         RootTaskTab.overdue => const TaskOverduePage(),
+  //         RootTaskTab.week => const TaskWeekPage(),
+  //         RootTaskTab.month => const TaskMonthPage(),
+  //         RootTaskTab.tag => TaskTagPage(
+  //           key: ValueKey(state.tag!.id),
+  //           tag: state.tag!,
+  //         ),
+  //       },
+  //     ),
+  //   );
+  // }
 }

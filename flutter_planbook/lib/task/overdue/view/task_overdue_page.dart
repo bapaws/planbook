@@ -105,7 +105,7 @@ class _TaskOverdueListPage extends StatelessWidget {
                     onPressed: (task) {
                       context.router.push(
                         TaskDetailRoute(
-                          taskId: task.id,
+                          taskId: task.parentId ?? task.id,
                           occurrenceAt: task.occurrence?.occurrenceAt,
                         ),
                       );

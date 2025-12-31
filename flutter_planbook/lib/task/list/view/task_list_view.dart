@@ -117,7 +117,7 @@ class TaskSliverList extends StatelessWidget {
                 } else {
                   context.router.push(
                     TaskDetailRoute(
-                      taskId: task.id,
+                      taskId: task.parentId ?? task.id,
                       occurrenceAt: task.occurrence?.occurrenceAt,
                     ),
                   );

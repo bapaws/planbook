@@ -112,7 +112,6 @@ class _TaskTodayListPage extends StatelessWidget {
             settingsRepository: context.read(),
             tasksRepository: context.read(),
             notesRepository: context.read(),
-            tag: tag,
             mode: TaskListMode.today,
           )..add(
             TaskListRequested(

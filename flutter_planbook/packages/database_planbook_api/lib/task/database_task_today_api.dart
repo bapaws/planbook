@@ -178,12 +178,21 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         db.taskOccurrences,
         db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
             db.taskOccurrences.deletedAt.isNull() &
-            db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
-              startOfDay,
-            ) &
-            db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
-              endOfDay,
-            ),
+            ((db.taskOccurrences.dueAt.isNotNull() &
+                    db.taskOccurrences.dueAt.isBiggerOrEqualValue(
+                      startOfDay,
+                    ) &
+                    db.taskOccurrences.dueAt.isSmallerThanValue(
+                      endOfDay,
+                    )) |
+                (db.taskOccurrences.startAt.isNotNull() &
+                    db.taskOccurrences.startAt.isSmallerThanValue(
+                      endOfDay,
+                    ) &
+                    db.taskOccurrences.endAt.isNotNull() &
+                    db.taskOccurrences.endAt.isBiggerOrEqualValue(
+                      startOfDay,
+                    ))),
       ),
       // LEFT JOIN TaskActivities 来检查完成状态
       // 对于重复任务，需要匹配 occurrenceAt
@@ -373,49 +382,64 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
           ? db.taskActivities.id.isNotNull()
           : db.taskActivities.id.isNull();
     }
-    final recurringTasksQuery = db.select(db.tasks).join([
-      innerJoin(
-        db.taskOccurrences,
-        db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
-            db.taskOccurrences.deletedAt.isNull() &
-            ((db.taskOccurrences.dueAt.isNotNull() &
-                    db.taskOccurrences.dueAt.isBiggerOrEqualValue(startOfDay) &
-                    db.taskOccurrences.dueAt.isSmallerThanValue(endOfDay)) |
-                (db.taskOccurrences.startAt.isNotNull() &
-                    db.taskOccurrences.startAt.isSmallerThanValue(endOfDay) &
-                    db.taskOccurrences.endAt.isNotNull() &
-                    db.taskOccurrences.endAt.isBiggerOrEqualValue(startOfDay))),
-      ),
-      // LEFT JOIN TaskActivities 来检查完成状态
-      // 对于重复任务，需要匹配 occurrenceAt
-      leftOuterJoin(
-        db.taskActivities,
-        db.taskActivities.taskId.equalsExp(db.tasks.id) &
-            db.taskActivities.occurrenceAt.equalsExp(
-              db.taskOccurrences.occurrenceAt,
-            ) &
-            db.taskActivities.completedAt.isNotNull() &
-            db.taskActivities.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        db.taskTags,
-        db.taskTags.taskId.equalsExp(db.tasks.id) &
-            db.taskTags.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTasks,
-        childrenTasks.parentId.equalsExp(db.tasks.id) &
-            childrenTasks.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTaskActivities,
-        childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
-            childrenTaskActivities.occurrenceAt.equalsExp(
-              db.taskOccurrences.occurrenceAt,
-            ) &
-            childrenTaskActivities.deletedAt.isNull(),
-      ),
-    ])..where(recurringExp);
+    final recurringTasksQuery =
+        db.select(db.tasks).join([
+            innerJoin(
+              db.taskOccurrences,
+              db.taskOccurrences.taskId.equalsExp(db.tasks.id) &
+                  db.taskOccurrences.deletedAt.isNull() &
+                  ((db.taskOccurrences.dueAt.isNotNull() &
+                          db.taskOccurrences.dueAt.isBiggerOrEqualValue(
+                            startOfDay,
+                          ) &
+                          db.taskOccurrences.dueAt.isSmallerThanValue(
+                            endOfDay,
+                          )) |
+                      (db.taskOccurrences.startAt.isNotNull() &
+                          db.taskOccurrences.startAt.isSmallerThanValue(
+                            endOfDay,
+                          ) &
+                          db.taskOccurrences.endAt.isNotNull() &
+                          db.taskOccurrences.endAt.isBiggerOrEqualValue(
+                            startOfDay,
+                          ))),
+            ),
+            // LEFT JOIN TaskActivities 来检查完成状态
+            // 对于重复任务，需要匹配 occurrenceAt
+            leftOuterJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.equalsExp(
+                    db.taskOccurrences.occurrenceAt,
+                  ) &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.equalsExp(
+                    db.taskOccurrences.occurrenceAt,
+                  ) &
+                  childrenTaskActivities.deletedAt.isNull(),
+            ),
+          ])
+          ..where(recurringExp)
+          ..orderBy([
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.desc(db.tasks.endAt.datetime, nulls: NullsOrder.last),
+            OrderingTerm.asc(db.tasks.priority),
+          ]);
 
     // 查询 2: 非重复任务和分离实例
     // 构建基础条件
@@ -476,34 +500,41 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
           : db.taskActivities.id.isNull();
     }
 
-    final nonRecurringTasksQuery = db.select(db.tasks).join([
-      // LEFT JOIN TaskActivities 来检查完成状态
-      // 对于非重复任务，不需要匹配 occurrenceAt
-      leftOuterJoin(
-        db.taskActivities,
-        db.taskActivities.taskId.equalsExp(db.tasks.id) &
-            db.taskActivities.occurrenceAt.isNull() &
-            db.taskActivities.completedAt.isNotNull() &
-            db.taskActivities.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        db.taskTags,
-        db.taskTags.taskId.equalsExp(db.tasks.id) &
-            db.taskTags.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTasks,
-        childrenTasks.parentId.equalsExp(db.tasks.id) &
-            childrenTasks.deletedAt.isNull(),
-      ),
-      leftOuterJoin(
-        childrenTaskActivities,
-        childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
-            childrenTaskActivities.occurrenceAt.isNull() &
-            childrenTaskActivities.completedAt.isNotNull() &
-            childrenTaskActivities.deletedAt.isNull(),
-      ),
-    ])..where(nonRecurringExp);
+    final nonRecurringTasksQuery =
+        db.select(db.tasks).join([
+            // LEFT JOIN TaskActivities 来检查完成状态
+            // 对于非重复任务，不需要匹配 occurrenceAt
+            leftOuterJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.isNull() &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.isNull() &
+                  childrenTaskActivities.completedAt.isNotNull() &
+                  childrenTaskActivities.deletedAt.isNull(),
+            ),
+          ])
+          ..where(nonRecurringExp)
+          ..orderBy([
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.desc(db.tasks.endAt.datetime, nulls: NullsOrder.last),
+            OrderingTerm.asc(db.tasks.priority),
+          ]);
 
     // 合并两个查询的 Stream
     return CombineLatestStream.list<List<TypedResult>>([

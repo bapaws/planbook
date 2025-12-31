@@ -41,6 +41,10 @@ class NoteFocusCubit extends Cubit<NoteFocusState> {
             .subtract(days: focusAt.dateTime.weekday - 1)
             .startOf(Unit.day);
         title = _l10n.weeklyFocusTitle(normalizedFocusAt.weekOfYear);
+      case NoteType.monthlyFocus:
+        // 月目标：使用该月的第一天作为 focusAt
+        normalizedFocusAt = focusAt.startOf(Unit.month);
+        title = _l10n.monthlyFocusTitle(normalizedFocusAt.yMMM);
       case NoteType.dailyFocus:
         // 日目标：使用当天开始作为 focusAt
         normalizedFocusAt = focusAt.startOf(Unit.day);
@@ -54,14 +58,14 @@ class NoteFocusCubit extends Cubit<NoteFocusState> {
     if (state.initialNote == null) {
       await _notesRepository.create(
         title: title,
-        content: state.content,
+        content: state.content.trim(),
         focusAt: normalizedFocusAt,
         type: type,
       );
     } else {
       final note = state.initialNote!.copyWith(
         title: title,
-        content: Value(state.content),
+        content: Value(state.content.trim()),
         updatedAt: Value(Jiffy.now()),
       );
       await _notesRepository.update(note: note);

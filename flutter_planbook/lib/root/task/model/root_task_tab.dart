@@ -8,6 +8,7 @@ enum RootTaskTab {
   overdue,
   day,
   week,
+  month,
   tag;
 
   TaskListMode? get mode => switch (this) {
@@ -23,6 +24,7 @@ enum RootTaskTab {
       RootTaskTab.day => FontAwesomeIcons.calendar,
       RootTaskTab.overdue => FontAwesomeIcons.clock,
       RootTaskTab.week => FontAwesomeIcons.calendarWeek,
+      RootTaskTab.month => FontAwesomeIcons.calendarDays,
       RootTaskTab.tag => FontAwesomeIcons.hashtag,
     };
   }
@@ -33,6 +35,7 @@ enum RootTaskTab {
       RootTaskTab.day => Colors.green,
       RootTaskTab.overdue => Colors.red,
       RootTaskTab.week => Colors.orange,
+      RootTaskTab.month => Colors.teal,
       RootTaskTab.tag => Colors.purple,
     };
   }
@@ -43,6 +46,7 @@ enum RootTaskTab {
       RootTaskTab.day => context.l10n.today,
       RootTaskTab.overdue => context.l10n.overdue,
       RootTaskTab.week => context.l10n.thisWeek,
+      RootTaskTab.month => context.l10n.thisMonth,
       _ => throw UnimplementedError(),
     };
   }

@@ -102,7 +102,6 @@ class _TaskInboxListPage extends StatelessWidget {
             tasksRepository: context.read(),
             settingsRepository: context.read(),
             notesRepository: context.read(),
-            tag: tag,
           )..add(
             TaskListRequested(
               tagId: tag?.id,

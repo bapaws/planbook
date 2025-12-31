@@ -6,6 +6,7 @@ extension AppColorSchemesExtension on BuildContext {
     blueColorScheme,
     amberColorScheme,
     greenColorScheme,
+    lightGreenColorScheme,
     yellowColorScheme,
     pinkColorScheme,
     orangeColorScheme,
@@ -34,6 +35,10 @@ extension AppColorSchemesExtension on BuildContext {
       Theme.of(this).brightness == Brightness.dark
       ? AppColorSchemes.greenDark
       : AppColorSchemes.greenLight;
+  ColorScheme get lightGreenColorScheme =>
+      Theme.of(this).brightness == Brightness.dark
+      ? AppColorSchemes.lightGreenDark
+      : AppColorSchemes.lightGreenLight;
   ColorScheme get yellowColorScheme =>
       Theme.of(this).brightness == Brightness.dark
       ? AppColorSchemes.yellowDark

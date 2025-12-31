@@ -203,7 +203,7 @@ class _TaskListTileState extends State<TaskListTile> {
       key: _tileKey,
       padding: EdgeInsets.zero,
       minimumSize: minimumSize,
-      onLongPress: showMenu,
+      onLongPress: _task.parentId == null ? showMenu : null,
       onPressed: widget.onPressed == null
           ? null
           : () => widget.onPressed!.call(_task),

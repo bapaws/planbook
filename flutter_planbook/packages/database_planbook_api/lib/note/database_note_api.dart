@@ -339,12 +339,14 @@ class DatabaseNoteApi {
     NoteType type = NoteType.dailyFocus,
     String? userId,
   }) {
-    final start = focusAt.startOf(
-      type == NoteType.dailyFocus ? Unit.day : Unit.week,
-    );
-    final end = focusAt.endOf(
-      type == NoteType.dailyFocus ? Unit.day : Unit.week,
-    );
+    final unit = switch (type) {
+      NoteType.dailyFocus => Unit.day,
+      NoteType.weeklyFocus => Unit.week,
+      NoteType.monthlyFocus => Unit.month,
+      NoteType.journal => Unit.day,
+    };
+    final start = focusAt.startOf(unit);
+    final end = focusAt.endOf(unit);
     return (db.select(db.notes)
           ..where(
             (n) =>

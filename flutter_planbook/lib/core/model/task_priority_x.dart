@@ -8,7 +8,7 @@ extension TaskPriorityX on TaskPriority {
     TaskPriority.high => context.redColorScheme,
     TaskPriority.medium => context.blueColorScheme,
     TaskPriority.low => context.amberColorScheme,
-    TaskPriority.none => context.greenColorScheme,
+    TaskPriority.none => context.lightGreenColorScheme,
   };
 
   String getTitle(AppLocalizations l10n) => switch (this) {
