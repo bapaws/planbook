@@ -171,39 +171,6 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     );
   }
 
-  Future<bool> _areAllChildrenCompleted(
-    String parentId,
-    Jiffy? occurrenceAt,
-  ) async {
-    Expression<bool> activityCondition;
-    if (occurrenceAt != null) {
-      activityCondition = db.taskActivities.occurrenceAt.equals(
-        occurrenceAt.dateTime,
-      );
-    } else {
-      activityCondition = db.taskActivities.occurrenceAt.isNull();
-    }
-
-    final query =
-        db.select(db.tasks).join([
-          leftOuterJoin(
-            db.taskActivities,
-            db.taskActivities.taskId.equalsExp(db.tasks.id) &
-                activityCondition &
-                db.taskActivities.completedAt.isNotNull() &
-                db.taskActivities.deletedAt.isNull(),
-          ),
-        ])..where(
-          db.tasks.parentId.equals(parentId) & db.tasks.deletedAt.isNull(),
-        );
-
-    final results = await query.get();
-    if (results.isEmpty) return false;
-    return !results.any(
-      (row) => row.readTableOrNull(db.taskActivities) == null,
-    );
-  }
-
   Stream<List<TaskEntity>> getCompletedTaskEntities({
     required Jiffy date,
     TaskPriority? priority,

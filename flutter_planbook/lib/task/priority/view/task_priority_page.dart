@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_list_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -98,37 +97,18 @@ class TaskPriorityPage extends StatelessWidget {
   }
 
   Widget _buildTaskPriorityPage(BuildContext context, TaskPriority priority) {
-    return BlocProvider(
+    return TaskListBlocProvider(
+      mode: mode,
+      priority: priority,
       key: ValueKey(date.toString() + priority.name + isCompleted.toString()),
-      create: (context) =>
-          TaskListBloc(
-            settingsRepository: context.read(),
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            mode: mode,
-            priority: priority,
-          )..add(
-            TaskListDayAllRequested(
-              date: date,
-              tagId: tag?.id,
-              isCompleted: isCompleted,
-            ),
-          ),
-      child: BlocListener<TaskListBloc, TaskListState>(
-        listenWhen: (previous, current) =>
-            previous.currentTaskNote != current.currentTaskNote &&
-            current.currentTaskNote != null,
-        listener: (context, state) {
-          context.router.push(
-            NoteNewRoute(
-              initialNote: state.currentTaskNote,
-            ),
-          );
-        },
-        child: Expanded(
-          child: TaskPriorityListView(
-            style: style,
-          ),
+      requestEvent: () => TaskListDayAllRequested(
+        date: date,
+        tagId: tag?.id,
+        isCompleted: isCompleted,
+      ),
+      child: Expanded(
+        child: TaskPriorityListView(
+          style: style,
         ),
       ),
     );

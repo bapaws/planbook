@@ -7,6 +7,7 @@ import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/inbox/bloc/task_inbox_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
@@ -95,35 +96,17 @@ class _TaskInboxListPage extends StatelessWidget {
   }
 
   Widget _buildTaskList(BuildContext context, {TagEntity? tag}) {
-    return BlocProvider(
+    return TaskListBlocProvider(
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
-      create: (context) =>
-          TaskListBloc(
-            tasksRepository: context.read(),
-            settingsRepository: context.read(),
-            notesRepository: context.read(),
-          )..add(
-            TaskListRequested(
-              tagId: tag?.id,
-              isCompleted: context.read<RootTaskBloc>().isCompleted,
-            ),
-          ),
-      child: BlocListener<RootTaskBloc, RootTaskState>(
-        listenWhen: (previous, current) =>
-            previous.showCompleted != current.showCompleted,
-        listener: (context, state) {
-          context.read<TaskListBloc>().add(
-            TaskListRequested(
-              tagId: tag?.id,
-              isCompleted: state.showCompleted ? null : false,
-            ),
-          );
-        },
-        child: BlocBuilder<TaskListBloc, TaskListState>(
-          builder: (context, state) => TaskListView(
-            tasks: state.tasks,
-            header: tag != null ? TaskListHeader(tag: tag) : null,
-          ),
+      mode: TaskListMode.inbox,
+      requestEvent: () => TaskListRequested(
+        tagId: tag?.id,
+        isCompleted: context.read<RootTaskBloc>().isCompleted,
+      ),
+      child: BlocBuilder<TaskListBloc, TaskListState>(
+        builder: (context, state) => TaskListView(
+          tasks: state.tasks,
+          header: tag != null ? TaskListHeader(tag: tag) : null,
         ),
       ),
     );

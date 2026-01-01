@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
 import 'package:flutter_planbook/task/week/view/task_week_cell.dart';
@@ -202,37 +203,17 @@ class _TaskWeekPage extends StatelessWidget {
 
   Widget _buildDayCell(BuildContext context, int index) {
     final day = weekDays[index];
-    return BlocProvider(
+    return TaskListBlocProvider(
       key: ValueKey(day.dateKey),
-      create: (context) =>
-          TaskListBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            settingsRepository: context.read(),
-            mode: TaskListMode.today,
-          )..add(
-            TaskListDayAllRequested(
-              date: day,
-              isCompleted: context.read<RootTaskBloc>().isCompleted,
-            ),
-          ),
-      child: BlocListener<RootTaskBloc, RootTaskState>(
-        listenWhen: (previous, current) =>
-            previous.showCompleted != current.showCompleted,
-        listener: (context, state) {
-          context.read<TaskListBloc>().add(
-            TaskListDayAllRequested(
-              date: day,
-              isCompleted: state.isCompleted,
-            ),
-          );
-        },
-        child: TaskWeekCell(
-          title: day.E,
-          subtitle: day.date.toString(),
-          day: day,
-          colorScheme: _getColorScheme(context, day),
-        ),
+      requestEvent: () => TaskListDayAllRequested(
+        date: day,
+        isCompleted: context.read<RootTaskBloc>().isCompleted,
+      ),
+      child: TaskWeekCell(
+        title: day.E,
+        subtitle: day.date.toString(),
+        day: day,
+        colorScheme: _getColorScheme(context, day),
       ),
     );
   }

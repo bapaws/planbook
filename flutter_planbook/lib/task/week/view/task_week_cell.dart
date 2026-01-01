@@ -61,20 +61,8 @@ class TaskWeekCell extends StatelessWidget {
                 },
               ),
             ),
-            BlocListener<TaskListBloc, TaskListState>(
-              listenWhen: (previous, current) =>
-                  previous.currentTaskNote != current.currentTaskNote &&
-                  current.currentTaskNote != null,
-              listener: (context, state) {
-                context.router.push(
-                  NoteNewRoute(
-                    initialNote: state.currentTaskNote,
-                  ),
-                );
-              },
-              child: Expanded(
-                child: _buildTaskList(context),
-              ),
+            Expanded(
+              child: _buildTaskList(context),
             ),
           ],
         ),

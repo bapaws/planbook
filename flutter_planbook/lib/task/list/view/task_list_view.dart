@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:planbook_api/entity/task_entity.dart';
-import 'package:planbook_core/data/page_status.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 class TaskListView extends StatelessWidget {
@@ -32,40 +30,14 @@ class TaskListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<TaskListBloc, TaskListState>(
-          listenWhen: (previous, current) =>
-              previous.currentTaskNote != current.currentTaskNote &&
-              current.currentTaskNote != null,
-          listener: (context, state) {
-            context.router.push(
-              NoteNewRoute(
-                initialNote: state.currentTaskNote,
-              ),
-            );
-          },
-        ),
-        BlocListener<TaskListBloc, TaskListState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            if (state.status == PageStatus.loading) {
-              EasyLoading.show();
-            } else if (EasyLoading.isShow) {
-              EasyLoading.dismiss();
-            }
-          },
-        ),
-      ],
-      child: TaskSliverList(
-        tasks: tasks,
-        header: header,
-        onTaskPressed: onTaskPressed,
-        onTaskCompleted: onTaskCompleted,
-        onTaskDeleted: onTaskDeleted,
-        onTaskEdited: onTaskEdited,
-        onTaskDelayed: onTaskDelayed,
-      ),
+    return TaskSliverList(
+      tasks: tasks,
+      header: header,
+      onTaskPressed: onTaskPressed,
+      onTaskCompleted: onTaskCompleted,
+      onTaskDeleted: onTaskDeleted,
+      onTaskEdited: onTaskEdited,
+      onTaskDelayed: onTaskDelayed,
     );
   }
 }

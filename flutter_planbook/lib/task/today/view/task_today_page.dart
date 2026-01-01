@@ -6,12 +6,12 @@ import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
-import 'package:flutter_planbook/task/today/view/task_today_focus_view.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:flutter_planbook/task/today/view/task_focus_view.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
@@ -47,7 +47,21 @@ class TaskTodayPage extends StatelessWidget {
                 );
               },
             ),
-            TaskTodayFocusView(note: todayState.focusNote),
+            TaskFocusView(
+              note: todayState.focusNote,
+              type: NoteType.dailyFocus,
+              onTap: () {
+                final note = todayState.focusNote;
+                final focusAt = context.read<TaskTodayBloc>().state.date;
+                context.router.push(
+                  NoteFocusRoute(
+                    initialNote: note,
+                    type: NoteType.dailyFocus,
+                    focusAt: focusAt,
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 8),
             Expanded(
               child: BlocBuilder<RootTaskBloc, RootTaskState>(
@@ -58,9 +72,7 @@ class TaskTodayPage extends StatelessWidget {
                 builder: (context, rootTaskState) => AnimatedSwitcher(
                   duration: Durations.medium1,
                   child: switch (rootTaskState.viewType) {
-                    RootTaskViewType.list => _TaskTodayListPage(
-                      day: todayState.date,
-                    ),
+                    RootTaskViewType.list => const _TaskTodayListPage(),
                     RootTaskViewType.priority => TaskPriorityPage(
                       style: rootTaskState.priorityStyle,
                       mode: TaskListMode.today,
@@ -79,9 +91,7 @@ class TaskTodayPage extends StatelessWidget {
 }
 
 class _TaskTodayListPage extends StatelessWidget {
-  const _TaskTodayListPage({required this.day});
-
-  final Jiffy day;
+  const _TaskTodayListPage();
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +100,7 @@ class _TaskTodayListPage extends StatelessWidget {
       builder: (context, tags) => CustomScrollView(
         slivers: [
           _buildTaskList(context),
-          // for (final tag in tags) _buildTaskList(context, tag: tag),
+          for (final tag in tags) _buildTaskList(context, tag: tag),
           SliverToBoxAdapter(
             child: SizedBox(
               height:
@@ -105,50 +115,24 @@ class _TaskTodayListPage extends StatelessWidget {
   }
 
   Widget _buildTaskList(BuildContext context, {TagEntity? tag}) {
-    return BlocProvider(
+    return TaskListBlocProvider(
       key: tag != null ? ValueKey(tag.id) : const ValueKey('no-tag'),
-      create: (context) =>
-          TaskListBloc(
-            settingsRepository: context.read(),
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            mode: TaskListMode.today,
-          )..add(
+      requestEvent: () => TaskListRequested(
+        date: context.read<TaskTodayBloc>().state.date,
+        tagId: tag?.id,
+        isCompleted: context.read<RootTaskBloc>().isCompleted,
+      ),
+      child: BlocListener<TaskTodayBloc, TaskTodayState>(
+        listenWhen: (previous, current) => previous.date != current.date,
+        listener: (context, state) {
+          context.read<TaskListBloc>().add(
             TaskListRequested(
-              date: day,
+              date: state.date,
               tagId: tag?.id,
               isCompleted: context.read<RootTaskBloc>().isCompleted,
             ),
-          ),
-      child: MultiBlocListener(
-        listeners: [
-          BlocListener<RootTaskBloc, RootTaskState>(
-            listenWhen: (previous, current) =>
-                previous.showCompleted != current.showCompleted,
-            listener: (context, state) {
-              final date = context.read<TaskTodayBloc>().state.date;
-              context.read<TaskListBloc>().add(
-                TaskListRequested(
-                  date: date,
-                  tagId: tag?.id,
-                  isCompleted: context.read<RootTaskBloc>().isCompleted,
-                ),
-              );
-            },
-          ),
-          BlocListener<TaskTodayBloc, TaskTodayState>(
-            listenWhen: (previous, current) => previous.date != current.date,
-            listener: (context, state) {
-              context.read<TaskListBloc>().add(
-                TaskListRequested(
-                  date: state.date,
-                  tagId: tag?.id,
-                  isCompleted: context.read<RootTaskBloc>().isCompleted,
-                ),
-              );
-            },
-          ),
-        ],
+          );
+        },
         child: BlocBuilder<TaskListBloc, TaskListState>(
           builder: (context, state) => TaskListView(
             tasks: state.tasks,

@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
+import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class TaskListPage extends StatelessWidget {
@@ -11,11 +14,10 @@ class TaskListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => TaskListBloc(
-        settingsRepository: context.read(),
-        tasksRepository: context.read(),
-        notesRepository: context.read(),
+    return TaskListBlocProvider(
+      requestEvent: () => TaskListDayAllRequested(
+        date: Jiffy.now(),
+        isCompleted: context.read<RootTaskBloc>().isCompleted,
       ),
       child: const _TaskListPage(),
     );
@@ -36,8 +38,12 @@ class _TaskListPage extends StatelessWidget {
         ),
         child: state.tasks.isEmpty
             ? const AppEmptyTaskView()
-            : TaskListView(
-                tasks: state.tasks,
+            : CustomScrollView(
+                slivers: [
+                  TaskListView(
+                    tasks: state.tasks,
+                  ),
+                ],
               ),
       ),
     );

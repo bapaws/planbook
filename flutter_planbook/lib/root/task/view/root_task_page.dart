@@ -6,6 +6,7 @@ import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_task_drawer.dart';
@@ -37,7 +38,7 @@ class RootTaskPage extends StatelessWidget {
           )..add(TaskMonthDateSelected(date: Jiffy.now())),
         ),
       ],
-      child: AutoTabsRouter(
+      child: AutoTabsRouter.tabBar(
         routes: const [
           TaskInboxRoute(),
           TaskOverdueRoute(),
@@ -46,7 +47,7 @@ class RootTaskPage extends StatelessWidget {
           TaskMonthRoute(),
           TaskTagRoute(),
         ],
-        builder: (context, child) {
+        builder: (context, child, controller) {
           final activeTab = RootTaskTab.values[context.tabsRouter.activeIndex];
           return BlocListener<RootTaskBloc, RootTaskState>(
             listenWhen: (previous, current) =>
@@ -121,14 +122,18 @@ class _RootTaskPage extends StatelessWidget {
             RootTaskTab.month => const RootTaskMonthTitleView(),
             RootTaskTab.tag =>
               BlocSelector<RootTaskBloc, RootTaskState, TagEntity?>(
-                selector: (state) => state.tag,
-                builder: (context, tag) => Row(
-                  children: [
-                    AppTagIcon.fromTagEntity(tag!),
-                    const SizedBox(width: 4),
-                    Text(tag.fullName),
-                  ],
-                ),
+                selector: (state) =>
+                    state.tag ??
+                    context.read<RootHomeBloc>().state.topLevelTags.firstOrNull,
+                builder: (context, tag) => tag == null
+                    ? const SizedBox.shrink()
+                    : Row(
+                        children: [
+                          AppTagIcon.fromTagEntity(tag),
+                          const SizedBox(width: 4),
+                          Text(tag.fullName),
+                        ],
+                      ),
               ),
           },
         ),
@@ -138,31 +143,41 @@ class _RootTaskPage extends StatelessWidget {
               final bloc = context.read<RootTaskBloc>();
               final theme = Theme.of(context);
               return [
-                PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
-                PullDownMenuItem.selectable(
-                  icon: FontAwesomeIcons.list,
-                  iconColor: theme.colorScheme.primary,
-                  title: context.l10n.list,
-                  selected: bloc.state.viewType == RootTaskViewType.list,
-                  onTap: () => context.read<RootTaskBloc>().add(
-                    const RootTaskViewTypeChanged(
-                      viewType: RootTaskViewType.list,
+                if (bloc.state.tab != RootTaskTab.week &&
+                    bloc.state.tab != RootTaskTab.month) ...[
+                  PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
+                  PullDownMenuItem.selectable(
+                    icon: FontAwesomeIcons.list,
+                    iconColor: theme.colorScheme.primary,
+                    title: context.l10n.list,
+                    selected: bloc.state.viewType == RootTaskViewType.list,
+                    onTap: () => context.read<RootTaskBloc>().add(
+                      const RootTaskViewTypeChanged(
+                        viewType: RootTaskViewType.list,
+                      ),
                     ),
                   ),
-                ),
-                PullDownMenuItem.selectable(
-                  icon: FontAwesomeIcons.solidFlag,
-                  iconColor: theme.colorScheme.primary,
-                  title: context.l10n.quadrant,
-                  selected: bloc.state.viewType == RootTaskViewType.priority,
-                  onTap: () => context.read<RootTaskBloc>().add(
-                    const RootTaskViewTypeChanged(
-                      viewType: RootTaskViewType.priority,
+                  PullDownMenuItem.selectable(
+                    icon: FontAwesomeIcons.solidFlag,
+                    iconColor: theme.colorScheme.primary,
+                    title: context.l10n.quadrant,
+                    selected: bloc.state.viewType == RootTaskViewType.priority,
+                    onTap: () => context.read<RootTaskBloc>().add(
+                      const RootTaskViewTypeChanged(
+                        viewType: RootTaskViewType.priority,
+                      ),
                     ),
                   ),
-                ),
-                if (bloc.state.tab != RootTaskTab.overdue) ...[
-                  const PullDownMenuDivider.large(),
+                ],
+                if (bloc.state.tab != RootTaskTab.overdue ||
+                    bloc.state.tab == RootTaskTab.day ||
+                    bloc.state.tab == RootTaskTab.month) ...[
+                  if (bloc.state.tab != RootTaskTab.week &&
+                      bloc.state.tab != RootTaskTab.month)
+                    const PullDownMenuDivider.large(),
+                  PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
+                ],
+                if (bloc.state.tab != RootTaskTab.overdue)
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.solidCircleCheck,
                     iconColor: theme.colorScheme.primary,
@@ -172,6 +187,32 @@ class _RootTaskPage extends StatelessWidget {
                     onTap: () => context.read<RootTaskBloc>().add(
                       const RootTaskShowCompletedChanged(),
                     ),
+                  ),
+                if (bloc.state.tab == RootTaskTab.day ||
+                    bloc.state.tab == RootTaskTab.month) ...[
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.arrowsToDot,
+                    iconColor: theme.colorScheme.primary,
+                    title: bloc.state.tabFocusNoteTypes[bloc.state.tab] == null
+                        ? context.l10n.showFocusNote
+                        : context.l10n.hideFocusNote,
+                    onTap: () {
+                      final noteType =
+                          bloc.state.tabFocusNoteTypes[bloc.state.tab];
+                      context.read<RootTaskBloc>().add(
+                        RootTaskTabFocusNoteTypeChanged(
+                          tab: bloc.state.tab,
+                          noteType: noteType == null
+                              ? switch (bloc.state.tab) {
+                                  RootTaskTab.day => NoteType.dailyFocus,
+                                  RootTaskTab.week => NoteType.weeklyFocus,
+                                  RootTaskTab.month => NoteType.monthlyFocus,
+                                  _ => throw UnimplementedError(),
+                                }
+                              : null,
+                        ),
+                      );
+                    },
                   ),
                 ],
               ];

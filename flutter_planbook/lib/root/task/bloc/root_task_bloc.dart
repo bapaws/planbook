@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
@@ -32,6 +34,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       _onDailyTaskCountRequested,
       transformer: concurrent(),
     );
+    on<RootTaskTabFocusNoteTypeChanged>(_onTabFocusNoteTypeChanged);
   }
 
   final TasksRepository _tasksRepository;
@@ -49,6 +52,20 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
           ? TagEntity.fromJson(json['tag'] as Map<String, dynamic>)
           : null,
       showCompleted: json['showCompleted'] as bool,
+      tabFocusNoteTypes: json['tabFocusNoteTypes'] == null
+          ? const {
+              RootTaskTab.day: NoteType.dailyFocus,
+              RootTaskTab.week: NoteType.weeklyFocus,
+              RootTaskTab.month: NoteType.monthlyFocus,
+            }
+          : Map<String, dynamic>.from(
+              jsonDecode(json['tabFocusNoteTypes'] as String) as Map,
+            ).map(
+              (key, value) => MapEntry(
+                RootTaskTab.values.byName(key),
+                value == null ? null : NoteType.values.byName(value as String),
+              ),
+            ),
     );
   }
 
@@ -60,6 +77,11 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       'viewType': state.viewType.name,
       'showCompleted': state.showCompleted,
       'tag': state.tag?.toJson(),
+      'tabFocusNoteTypes': jsonEncode(
+        state.tabFocusNoteTypes.map(
+          (key, value) => MapEntry(key.name, value?.name),
+        ),
+      ),
     };
   }
 
@@ -153,6 +175,20 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       onData: (count) => state.copyWith(
         status: PageStatus.success,
         dailyTaskCounts: {...state.dailyTaskCounts, event.date.dateKey: count},
+      ),
+    );
+  }
+
+  Future<void> _onTabFocusNoteTypeChanged(
+    RootTaskTabFocusNoteTypeChanged event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        tabFocusNoteTypes: {
+          ...state.tabFocusNoteTypes,
+          event.tab: event.noteType,
+        },
       ),
     );
   }

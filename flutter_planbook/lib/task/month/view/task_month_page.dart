@@ -4,10 +4,11 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
 import 'package:flutter_planbook/task/month/view/task_month_calendar_view.dart';
 import 'package:flutter_planbook/task/month/view/task_month_cell.dart';
-import 'package:flutter_planbook/task/month/view/task_month_focus_view.dart';
+import 'package:flutter_planbook/task/today/view/task_focus_view.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -134,38 +135,31 @@ class _TaskMonthPage extends StatelessWidget {
   Widget _buildFocusCell(BuildContext context) {
     return BlocSelector<TaskMonthBloc, TaskMonthState, Note?>(
       selector: (state) => state.note,
-      builder: (context, note) => TaskMonthFocusView(note: note),
+      builder: (context, note) => TaskFocusView(
+        note: note,
+        type: NoteType.monthlyFocus,
+        onTap: () {
+          final focusAt = context.read<TaskMonthBloc>().state.date;
+          context.router.push(
+            NoteFocusRoute(
+              initialNote: note,
+              type: NoteType.monthlyFocus,
+              focusAt: focusAt,
+            ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildDayCell(BuildContext context, Jiffy day) {
-    return BlocProvider(
+    return TaskListBlocProvider(
       key: ValueKey(day.dateKey),
-      create: (context) =>
-          TaskListBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
-            settingsRepository: context.read(),
-            mode: TaskListMode.today,
-          )..add(
-            TaskListDayAllRequested(
-              date: day,
-              isCompleted: context.read<RootTaskBloc>().isCompleted,
-            ),
-          ),
-      child: BlocListener<RootTaskBloc, RootTaskState>(
-        listenWhen: (previous, current) =>
-            previous.showCompleted != current.showCompleted,
-        listener: (context, state) {
-          context.read<TaskListBloc>().add(
-            TaskListDayAllRequested(
-              date: day,
-              isCompleted: state.isCompleted,
-            ),
-          );
-        },
-        child: TaskMonthCell(day: day),
+      requestEvent: () => TaskListDayAllRequested(
+        date: day,
+        isCompleted: context.read<RootTaskBloc>().isCompleted,
       ),
+      child: TaskMonthCell(day: day),
     );
   }
 

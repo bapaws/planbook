@@ -68,3 +68,13 @@ final class RootTaskDailyTaskCountRequested extends RootTaskEvent {
   @override
   List<Object?> get props => [date];
 }
+
+final class RootTaskTabFocusNoteTypeChanged extends RootTaskEvent {
+  const RootTaskTabFocusNoteTypeChanged({required this.tab, this.noteType});
+
+  final RootTaskTab tab;
+  final NoteType? noteType;
+
+  @override
+  List<Object?> get props => [tab, noteType];
+}
