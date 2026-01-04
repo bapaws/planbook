@@ -178,7 +178,7 @@ class NotesRepository {
 
     const uuid = Uuid();
     final taskJsonString = await rootBundle.loadString(
-      'assets/${kDebugMode ? 'demo_' : 'files'}/notes_$languageCode.json',
+      'assets/${kDebugMode ? 'demo' : 'files'}/notes_$languageCode.json',
     );
     final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
     for (final json in taskJson) {

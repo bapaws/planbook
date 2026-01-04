@@ -341,9 +341,12 @@ class DatabaseNoteApi {
   }) {
     final unit = switch (type) {
       NoteType.dailyFocus => Unit.day,
+      NoteType.dailySummary => Unit.day,
       NoteType.weeklyFocus => Unit.week,
+      NoteType.weeklySummary => Unit.week,
       NoteType.monthlyFocus => Unit.month,
-      NoteType.journal => Unit.day,
+      NoteType.monthlySummary => Unit.month,
+      _ => throw UnimplementedError(),
     };
     final start = focusAt.startOf(unit);
     final end = focusAt.endOf(unit);

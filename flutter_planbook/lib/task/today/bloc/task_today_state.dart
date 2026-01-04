@@ -6,6 +6,7 @@ final class TaskTodayState extends Equatable {
     this.calendarFormat = CalendarFormat.week,
     this.taskCounts = const {},
     this.focusNote,
+    this.summaryNote,
   });
 
   final Jiffy date;
@@ -14,21 +15,30 @@ final class TaskTodayState extends Equatable {
   final Map<int, int> taskCounts;
 
   final Note? focusNote;
+  final Note? summaryNote;
 
   @override
-  List<Object?> get props => [date, calendarFormat, taskCounts, focusNote];
+  List<Object?> get props => [
+    date,
+    calendarFormat,
+    taskCounts,
+    focusNote,
+    summaryNote,
+  ];
 
   TaskTodayState copyWith({
     Jiffy? date,
     CalendarFormat? calendarFormat,
     Map<int, int>? taskCounts,
     ValueGetter<Note?>? focusNote,
+    ValueGetter<Note?>? summaryNote,
   }) {
     return TaskTodayState(
       date: date ?? this.date,
       calendarFormat: calendarFormat ?? this.calendarFormat,
       taskCounts: taskCounts ?? this.taskCounts,
       focusNote: focusNote != null ? focusNote() : this.focusNote,
+      summaryNote: summaryNote != null ? summaryNote() : this.summaryNote,
     );
   }
 }

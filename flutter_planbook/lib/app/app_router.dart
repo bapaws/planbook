@@ -51,10 +51,12 @@ class AppRouter extends RootStackRouter {
   ];
 
   AutoRoute _buildModalBottomSheetRoute(
-    PageInfo page,
-  ) {
+    PageInfo page, {
+    List<AutoRoute>? children,
+  }) {
     return CustomRoute<void>(
       page: page,
+      children: children,
       customRouteBuilder: <T>(context, child, page) {
         return ModalBottomSheetRoute<T>(
           settings: page,
@@ -108,7 +110,13 @@ class AppRouter extends RootStackRouter {
     _buildModalBottomSheetRoute(TaskDurationRoute.page),
     _buildModalBottomSheetRoute(TaskRecurrenceRoute.page),
 
-    _buildModalBottomSheetRoute(NoteFocusRoute.page),
+    _buildModalBottomSheetRoute(
+      NoteNewTypeRoute.page,
+      // children: [
+      //   AutoRoute(page: NoteFocusRoute.page),
+      //   AutoRoute(page: NoteSummaryRoute.page),
+      // ],
+    ),
 
     AutoRoute(page: TaskDetailRoute.page),
 

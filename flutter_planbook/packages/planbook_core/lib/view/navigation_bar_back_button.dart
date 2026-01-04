@@ -35,7 +35,7 @@ class NavigationBarCloseButton extends StatelessWidget {
       child: Icon(
         CupertinoIcons.xmark,
         color: color ?? actionTextStyle.color,
-        size: 24,
+        size: 18,
       ),
     );
   }

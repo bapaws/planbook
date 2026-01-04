@@ -38,7 +38,7 @@ class RootTaskPage extends StatelessWidget {
           )..add(TaskMonthDateSelected(date: Jiffy.now())),
         ),
       ],
-      child: AutoTabsRouter.tabBar(
+      child: AutoTabsRouter(
         routes: const [
           TaskInboxRoute(),
           TaskOverdueRoute(),
@@ -47,7 +47,7 @@ class RootTaskPage extends StatelessWidget {
           TaskMonthRoute(),
           TaskTagRoute(),
         ],
-        builder: (context, child, controller) {
+        builder: (context, child) {
           final activeTab = RootTaskTab.values[context.tabsRouter.activeIndex];
           return BlocListener<RootTaskBloc, RootTaskState>(
             listenWhen: (previous, current) =>

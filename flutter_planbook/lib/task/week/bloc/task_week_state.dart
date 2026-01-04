@@ -4,14 +4,16 @@ final class TaskWeekState extends Equatable {
   const TaskWeekState({
     required this.date,
     this.status = PageStatus.initial,
-    this.note,
+    this.focusNote,
+    this.summaryNote,
     this.isCalendarExpanded = false,
   });
 
   final PageStatus status;
   final Jiffy date;
 
-  final Note? note;
+  final Note? focusNote;
+  final Note? summaryNote;
   final bool isCalendarExpanded;
 
   /// 获取一周的日期列表（从周一到周日）
@@ -21,18 +23,26 @@ final class TaskWeekState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, date, note, isCalendarExpanded];
+  List<Object?> get props => [
+    status,
+    date,
+    focusNote,
+    summaryNote,
+    isCalendarExpanded,
+  ];
 
   TaskWeekState copyWith({
     PageStatus? status,
     Jiffy? date,
-    ValueGetter<Note?>? note,
+    ValueGetter<Note?>? focusNote,
+    ValueGetter<Note?>? summaryNote,
     bool? isCalendarExpanded,
   }) {
     return TaskWeekState(
       status: status ?? this.status,
       date: date ?? this.date,
-      note: note != null ? note() : this.note,
+      focusNote: focusNote != null ? focusNote() : this.focusNote,
+      summaryNote: summaryNote != null ? summaryNote() : this.summaryNote,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
     );
   }

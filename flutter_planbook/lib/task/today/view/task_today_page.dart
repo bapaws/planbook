@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
@@ -47,18 +48,28 @@ class TaskTodayPage extends StatelessWidget {
                 );
               },
             ),
-            TaskFocusView(
-              note: todayState.focusNote,
-              type: NoteType.dailyFocus,
-              onTap: () {
-                final note = todayState.focusNote;
-                final focusAt = context.read<TaskTodayBloc>().state.date;
-                context.router.push(
-                  NoteFocusRoute(
-                    initialNote: note,
-                    type: NoteType.dailyFocus,
-                    focusAt: focusAt,
-                  ),
+            BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
+              selector: (state) =>
+                  state.tabFocusNoteTypes[RootTaskTab.day] ??
+                  NoteType.dailyFocus,
+              builder: (context, noteType) {
+                final bloc = context.read<TaskTodayBloc>();
+                final note = noteType.isFocus
+                    ? bloc.state.focusNote
+                    : bloc.state.summaryNote;
+                return TaskFocusView(
+                  note: note,
+                  noteType: noteType,
+                  onTap: () {
+                    final focusAt = context.read<TaskTodayBloc>().state.date;
+                    context.router.push(
+                      NoteNewTypeRoute(
+                        initialNote: note,
+                        type: noteType,
+                        focusAt: focusAt,
+                      ),
+                    );
+                  },
                 );
               },
             ),

@@ -22,6 +22,10 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
       _onFocusNoteRequested,
       transformer: restartable(),
     );
+    on<TaskTodaySummaryNoteRequested>(
+      _onSummaryNoteRequested,
+      transformer: restartable(),
+    );
   }
 
   final TasksRepository _tasksRepository;
@@ -63,6 +67,16 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
     await emit.forEach(
       _notesRepository.getNoteByFocusAt(event.date),
       onData: (note) => state.copyWith(focusNote: () => note),
+    );
+  }
+
+  Future<void> _onSummaryNoteRequested(
+    TaskTodaySummaryNoteRequested event,
+    Emitter<TaskTodayState> emit,
+  ) async {
+    await emit.forEach(
+      _notesRepository.getNoteByFocusAt(event.date),
+      onData: (note) => state.copyWith(summaryNote: () => note),
     );
   }
 }

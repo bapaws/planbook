@@ -14,7 +14,14 @@ class TaskWeekBloc extends Bloc<TaskWeekEvent, TaskWeekState> {
   }) : _notesRepository = notesRepository,
        super(TaskWeekState(date: Jiffy.now())) {
     on<TaskWeekDateSelected>(_onDateSelected);
-    on<TaskWeekNoteRequested>(_onNoteRequested, transformer: restartable());
+    on<TaskWeekFocusNoteRequested>(
+      _onFocusNoteRequested,
+      transformer: restartable(),
+    );
+    on<TaskWeekSummaryNoteRequested>(
+      _onSummaryNoteRequested,
+      transformer: restartable(),
+    );
     on<TaskWeekCalendarToggled>(_onCalendarToggled);
   }
 
@@ -25,11 +32,12 @@ class TaskWeekBloc extends Bloc<TaskWeekEvent, TaskWeekState> {
     Emitter<TaskWeekState> emit,
   ) async {
     emit(state.copyWith(date: event.date));
-    add(TaskWeekNoteRequested(date: event.date));
+    add(TaskWeekFocusNoteRequested(date: event.date));
+    add(TaskWeekSummaryNoteRequested(date: event.date));
   }
 
-  Future<void> _onNoteRequested(
-    TaskWeekNoteRequested event,
+  Future<void> _onFocusNoteRequested(
+    TaskWeekFocusNoteRequested event,
     Emitter<TaskWeekState> emit,
   ) async {
     await emit.forEach(
@@ -38,9 +46,22 @@ class TaskWeekBloc extends Bloc<TaskWeekEvent, TaskWeekState> {
         type: NoteType.weeklyFocus,
       ),
       onData: (note) => state.copyWith(
-        note: () => note,
+        focusNote: () => note,
         status: PageStatus.success,
       ),
+    );
+  }
+
+  Future<void> _onSummaryNoteRequested(
+    TaskWeekSummaryNoteRequested event,
+    Emitter<TaskWeekState> emit,
+  ) async {
+    await emit.forEach(
+      _notesRepository.getNoteByFocusAt(
+        event.date,
+        type: NoteType.weeklySummary,
+      ),
+      onData: (note) => state.copyWith(summaryNote: () => note),
     );
   }
 

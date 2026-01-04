@@ -1,59 +1,67 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:flutter_planbook/task/week/view/task_week_header.dart';
+import 'package:flutter_planbook/note/type/model/note_type_x.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/today/view/task_focus_header_view.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 
 class TaskWeekFocusCell extends StatelessWidget {
-  const TaskWeekFocusCell({required this.note, super.key});
+  const TaskWeekFocusCell({
+    required this.note,
+    required this.noteType,
+    super.key,
+  });
 
   final Note? note;
+  final NoteType noteType;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: CupertinoButton(
-        padding: EdgeInsets.zero,
+      child: ColoredBox(
         color: theme.colorScheme.surface,
-        onPressed: () {
-          context.router.push(
-            NoteFocusRoute(
-              initialNote: note,
-              type: NoteType.weeklyFocus,
-              focusAt: note?.focusAt ?? Jiffy.now(),
-            ),
-          );
-        },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TaskWeekHeader(
-              title: '${context.l10n.weeklyFocus} 🎯',
-              colorScheme: theme.colorScheme,
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: Text(
-                    note?.content ?? context.l10n.thinkAboutWeeklyFocus,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: note == null
-                          ? theme.colorScheme.outlineVariant
-                          : theme.colorScheme.primary,
+        child: GestureDetector(
+          onTap: () {
+            context.router.push(
+              NoteNewTypeRoute(
+                initialNote: note,
+                type: noteType,
+                focusAt: note?.focusAt ?? Jiffy.now(),
+              ),
+            );
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 4),
+              TaskFocusHeaderView(
+                noteType: noteType,
+                tab: RootTaskTab.week,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 8,
+                    ),
+                    child: Text(
+                      note?.content ?? noteType.getHintText(context.l10n),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: note == null
+                            ? theme.colorScheme.outlineVariant
+                            : theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

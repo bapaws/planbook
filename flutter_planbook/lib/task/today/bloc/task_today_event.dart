@@ -34,3 +34,12 @@ final class TaskTodayFocusNoteRequested extends TaskTodayEvent {
   @override
   List<Object?> get props => [date];
 }
+
+final class TaskTodaySummaryNoteRequested extends TaskTodayEvent {
+  const TaskTodaySummaryNoteRequested({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object?> get props => [date];
+}

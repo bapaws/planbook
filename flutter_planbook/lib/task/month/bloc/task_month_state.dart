@@ -3,8 +3,10 @@ part of 'task_month_bloc.dart';
 final class TaskMonthState extends Equatable {
   const TaskMonthState({
     required this.date,
+    this.noteType = NoteType.monthlyFocus,
     this.status = PageStatus.initial,
-    this.note,
+    this.focusNote,
+    this.summaryNote,
     this.isCalendarExpanded = false,
     this.weeks = const [],
   });
@@ -14,7 +16,9 @@ final class TaskMonthState extends Equatable {
 
   final List<List<Jiffy?>> weeks;
 
-  final Note? note;
+  final NoteType noteType;
+  final Note? focusNote;
+  final Note? summaryNote;
   final bool isCalendarExpanded;
 
   /// 获取当月的所有日期列表
@@ -40,21 +44,32 @@ final class TaskMonthState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, date, note, isCalendarExpanded];
+  List<Object?> get props => [
+    status,
+    date,
+    focusNote,
+    summaryNote,
+    isCalendarExpanded,
+    noteType,
+  ];
 
   TaskMonthState copyWith({
     PageStatus? status,
     Jiffy? date,
     List<List<Jiffy?>>? weeks,
-    ValueGetter<Note?>? note,
+    Note? focusNote,
+    Note? summaryNote,
     bool? isCalendarExpanded,
+    NoteType? noteType,
   }) {
     return TaskMonthState(
       status: status ?? this.status,
       date: date ?? this.date,
       weeks: weeks ?? this.weeks,
-      note: note != null ? note() : this.note,
+      focusNote: focusNote ?? this.focusNote,
+      summaryNote: summaryNote ?? this.summaryNote,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
+      noteType: noteType ?? this.noteType,
     );
   }
 }

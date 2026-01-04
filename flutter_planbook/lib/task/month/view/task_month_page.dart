@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
@@ -133,22 +134,29 @@ class _TaskMonthPage extends StatelessWidget {
   }
 
   Widget _buildFocusCell(BuildContext context) {
-    return BlocSelector<TaskMonthBloc, TaskMonthState, Note?>(
-      selector: (state) => state.note,
-      builder: (context, note) => TaskFocusView(
-        note: note,
-        type: NoteType.monthlyFocus,
-        onTap: () {
-          final focusAt = context.read<TaskMonthBloc>().state.date;
-          context.router.push(
-            NoteFocusRoute(
-              initialNote: note,
-              type: NoteType.monthlyFocus,
-              focusAt: focusAt,
-            ),
-          );
-        },
-      ),
+    return BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
+      selector: (state) =>
+          state.tabFocusNoteTypes[RootTaskTab.month] ?? NoteType.monthlyFocus,
+      builder: (context, noteType) {
+        final bloc = context.read<TaskMonthBloc>();
+        final note = noteType.isFocus
+            ? bloc.state.focusNote
+            : bloc.state.summaryNote;
+        return TaskFocusView(
+          note: note,
+          noteType: noteType,
+          onTap: () {
+            final focusAt = context.read<TaskMonthBloc>().state.date;
+            context.router.push(
+              NoteNewTypeRoute(
+                initialNote: note,
+                type: noteType,
+                focusAt: focusAt,
+              ),
+            );
+          },
+        );
+      },
     );
   }
 

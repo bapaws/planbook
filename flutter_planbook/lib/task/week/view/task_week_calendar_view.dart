@@ -37,8 +37,7 @@ class TaskWeekCalendarView extends StatelessWidget {
       // sixWeekMonthsEnforced: true,
       weekNumbersVisible: true,
       onDaySelected: (selectedDay, focusedDay) {
-        final day = selectedDay.toLocal();
-        onDateSelected(Jiffy.parseFromDateTime(day));
+        onDateSelected(Jiffy.parseFromDateTime(selectedDay).toLocal());
       },
       calendarStyle: CalendarStyle(
         cellMargin: EdgeInsets.zero,

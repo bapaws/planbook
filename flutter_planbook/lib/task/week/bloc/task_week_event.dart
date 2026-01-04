@@ -16,8 +16,17 @@ final class TaskWeekDateSelected extends TaskWeekEvent {
   List<Object> get props => [date];
 }
 
-final class TaskWeekNoteRequested extends TaskWeekEvent {
-  const TaskWeekNoteRequested({required this.date});
+final class TaskWeekFocusNoteRequested extends TaskWeekEvent {
+  const TaskWeekFocusNoteRequested({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object> get props => [date];
+}
+
+final class TaskWeekSummaryNoteRequested extends TaskWeekEvent {
+  const TaskWeekSummaryNoteRequested({required this.date});
 
   final Jiffy date;
 

@@ -59,7 +59,7 @@ class _TaskMonthCalendarViewState extends State<TaskMonthCalendarView> {
 
   void _onSelectionChanged() {
     final newDate = Jiffy.parseFromDateTime(
-      DateTime(_selectedYear, _selectedMonth),
+      DateTime(_selectedYear, _selectedMonth).toLocal(),
     );
     widget.onDateSelected(newDate);
   }

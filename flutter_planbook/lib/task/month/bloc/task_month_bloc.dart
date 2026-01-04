@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -14,7 +13,14 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
   }) : _notesRepository = notesRepository,
        super(TaskMonthState(date: Jiffy.now())) {
     on<TaskMonthDateSelected>(_onDateSelected);
-    on<TaskMonthNoteRequested>(_onNoteRequested, transformer: restartable());
+    on<TaskMonthFocusNoteRequested>(
+      _onFocusNoteRequested,
+      transformer: restartable(),
+    );
+    on<TaskMonthSummaryNoteRequested>(
+      _onSummaryNoteRequested,
+      transformer: restartable(),
+    );
     on<TaskMonthCalendarToggled>(_onCalendarToggled);
   }
 
@@ -63,11 +69,12 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
 
     emit(state.copyWith(date: event.date, weeks: weeks));
 
-    add(TaskMonthNoteRequested(date: event.date));
+    add(TaskMonthFocusNoteRequested(date: event.date));
+    add(TaskMonthSummaryNoteRequested(date: event.date));
   }
 
-  Future<void> _onNoteRequested(
-    TaskMonthNoteRequested event,
+  Future<void> _onFocusNoteRequested(
+    TaskMonthFocusNoteRequested event,
     Emitter<TaskMonthState> emit,
   ) async {
     await emit.forEach(
@@ -76,7 +83,23 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
         type: NoteType.monthlyFocus,
       ),
       onData: (note) => state.copyWith(
-        note: () => note,
+        focusNote: note,
+        status: PageStatus.success,
+      ),
+    );
+  }
+
+  Future<void> _onSummaryNoteRequested(
+    TaskMonthSummaryNoteRequested event,
+    Emitter<TaskMonthState> emit,
+  ) async {
+    await emit.forEach(
+      _notesRepository.getNoteByFocusAt(
+        event.date,
+        type: NoteType.monthlySummary,
+      ),
+      onData: (note) => state.copyWith(
+        summaryNote: note,
         status: PageStatus.success,
       ),
     );

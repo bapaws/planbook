@@ -132,7 +132,6 @@
   "tagNameHint": "Enter tag name",
   "parentTag": "Parent Tag",
   "parentTagHint": "Select parent tag",
-  "focus": "Focus",
   "newNote": "New Note",
   "editNote": "Edit Note",
   "noteTitleHint": "Enter note title",
@@ -340,12 +339,49 @@
   "grid": "Grid",
   "saveSuccess": "Save Success",
   "saveFailed": "Save Failed",
+  "noteFocus": "Focus",
+  "noteSummary": "Summary",
   "dailyFocus": "Daily Focus",
+  "dailySummary": "Daily Summary",
   "weeklyFocus": "Weekly Focus",
+  "weeklySummary": "Weekly Summary",
   "monthlyFocus": "Monthly Focus",
+  "monthlySummary": "Monthly Summary",
+  "yearlyFocus": "Yearly Focus",
+  "yearlySummary": "Yearly Summary",
+  "dailyFocusTitle": "Focus for {date}",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "dailySummaryTitle": "Summary for {date}",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
   "weeklyFocusTitle": "Focus for Week {week}",
   "@weeklyFocusTitle": {
     "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "Summary for Week {week}",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
     "placeholders": {
       "week": {
         "type": "int",
@@ -363,20 +399,45 @@
       }
     }
   },
-  "dailyFocusTitle": "Focus for {date}",
-  "@dailyFocusTitle": {
-    "description": "Daily Focus Title",
+  "monthlySummaryTitle": "Summary for {month}",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
     "placeholders": {
-      "date": {
-        "type": "DateTime",
-        "format": "MMMd"
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "Focus for {year}",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "Summary for {year}",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
       }
     }
   },
   "journal": "Journal",
   "thinkAboutWeeklyFocus": "What do you want to focus on this week?",
+  "thinkAboutWeeklySummary": "What did you achieve this week?",
   "thinkAboutDailyFocus": "What do you want to focus on today?",
+  "thinkAboutDailySummary": "What did you learn today?",
   "thinkAboutMonthlyFocus": "What do you want to focus on this month?",
+  "thinkAboutMonthlySummary": "What goals did you achieve this month?",
+  "thinkAboutYearlyFocus": "What do you want to focus on this year?",
+  "thinkAboutYearlySummary": "What goals did you achieve this year?",
   "thisWeek": "This Week",
   "lastWeek": "Last Week",
   "thisMonth": "This Month",
