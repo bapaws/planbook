@@ -38,6 +38,7 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
     emit(state.copyWith(date: event.date));
 
     add(TaskTodayFocusNoteRequested(date: event.date));
+    add(TaskTodaySummaryNoteRequested(date: event.date));
 
     await emit.forEach(
       _tasksRepository.getTaskCount(
@@ -75,7 +76,10 @@ class TaskTodayBloc extends Bloc<TaskTodayEvent, TaskTodayState> {
     Emitter<TaskTodayState> emit,
   ) async {
     await emit.forEach(
-      _notesRepository.getNoteByFocusAt(event.date),
+      _notesRepository.getNoteByFocusAt(
+        event.date,
+        type: NoteType.dailySummary,
+      ),
       onData: (note) => state.copyWith(summaryNote: () => note),
     );
   }
