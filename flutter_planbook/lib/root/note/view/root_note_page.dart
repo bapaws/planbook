@@ -5,13 +5,16 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
+import 'package:flutter_planbook/note/gallery/bloc/note_gallery_bloc.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_page.dart';
 import 'package:flutter_planbook/note/tag/view/note_tag_page.dart';
 import 'package:flutter_planbook/note/timeline/bloc/note_timeline_bloc.dart';
 import 'package:flutter_planbook/note/timeline/view/note_timeline_page.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
 import 'package:flutter_planbook/root/note/view/root_note_drawer.dart';
+import 'package:flutter_planbook/root/note/view/root_note_gallery_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
@@ -27,6 +30,11 @@ class RootNotePage extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => NoteTimelineBloc(),
+        ),
+        BlocProvider(
+          create: (context) => NoteGalleryBloc(
+            notesRepository: context.read(),
+          )..add(NoteGalleryRequested(date: Jiffy.now())),
         ),
       ],
       child: _RootNotePage(),
@@ -58,7 +66,7 @@ class _RootNotePage extends StatelessWidget {
           builder: (context, state) => AnimatedSwitcher(
             duration: Durations.medium1,
             child: switch (state.tab) {
-              RootNoteTab.gallery => Text(state.galleryDate.year.toString()),
+              RootNoteTab.gallery => const RootNoteGalleryTitleView(),
               RootNoteTab.tag => Row(
                 children: [
                   AppTagIcon.fromTagEntity(state.tag!),

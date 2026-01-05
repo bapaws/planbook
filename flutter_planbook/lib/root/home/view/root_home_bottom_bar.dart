@@ -23,8 +23,8 @@ enum RootHomeTab {
 
   IconData get icon => switch (this) {
     RootHomeTab.task => FontAwesomeIcons.solidCalendarCheck,
-    RootHomeTab.journal => FontAwesomeIcons.book,
-    RootHomeTab.note => FontAwesomeIcons.solidCompass,
+    RootHomeTab.journal => FontAwesomeIcons.solidCompass,
+    RootHomeTab.note => FontAwesomeIcons.book,
   };
 
   IconData get actionIcon => switch (this) {

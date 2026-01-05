@@ -13,6 +13,17 @@ class NoteGalleryBloc extends Bloc<NoteGalleryEvent, NoteGalleryState> {
   }) : _notesRepository = notesRepository,
        super(NoteGalleryState(date: Jiffy.now())) {
     on<NoteGalleryRequested>(_onRequested, transformer: restartable());
+
+    on<NoteGalleryDateSelected>(_onDateSelected);
+    on<NoteGalleryCalendarToggled>(_onCalendarToggled);
+  }
+
+  Future<void> _onDateSelected(
+    NoteGalleryDateSelected event,
+    Emitter<NoteGalleryState> emit,
+  ) async {
+    emit(state.copyWith(date: event.date));
+    add(NoteGalleryRequested(date: event.date));
   }
 
   final NotesRepository _notesRepository;
@@ -37,5 +48,12 @@ class NoteGalleryBloc extends Bloc<NoteGalleryEvent, NoteGalleryState> {
         );
       },
     );
+  }
+
+  Future<void> _onCalendarToggled(
+    NoteGalleryCalendarToggled event,
+    Emitter<NoteGalleryState> emit,
+  ) async {
+    emit(state.copyWith(isCalendarExpanded: !state.isCalendarExpanded));
   }
 }

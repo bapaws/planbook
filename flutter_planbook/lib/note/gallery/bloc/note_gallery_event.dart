@@ -15,3 +15,19 @@ final class NoteGalleryRequested extends NoteGalleryEvent {
   @override
   List<Object?> get props => [date];
 }
+
+final class NoteGalleryDateSelected extends NoteGalleryEvent {
+  const NoteGalleryDateSelected({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object?> get props => [date];
+}
+
+final class NoteGalleryCalendarToggled extends NoteGalleryEvent {
+  const NoteGalleryCalendarToggled();
+
+  @override
+  List<Object?> get props => [];
+}
