@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/view/app_activity_item_view.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -25,6 +27,13 @@ class RootTaskDrawer extends StatelessWidget {
       child: Column(
         children: [
           const RootUserHeader(),
+          BlocBuilder<AppActivityBloc, AppActivityState>(
+            builder: (context, state) {
+              return state.activities.isNotEmpty
+                  ? AppActivityItemView(activity: state.activities[0])
+                  : const SizedBox.shrink();
+            },
+          ),
           Expanded(
             child: CustomScrollView(
               slivers: [

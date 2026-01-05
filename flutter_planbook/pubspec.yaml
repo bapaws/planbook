@@ -36,6 +36,7 @@ dependencies:
   flutter_local_notifications: ^19.3.1
   flutter_localizations:
     sdk: flutter
+  flutter_markdown: ^0.7.7+1
   flutter_native_splash: ^2.4.6
   flutter_slidable: ^4.0.3
   flutter_spinkit: ^5.2.2
@@ -44,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.11
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.0
+  http: ^1.6.0
   hydrated_bloc: ^10.1.1
   image_cropper: ^11.0.0
   image_gallery_saver: ^2.0.3

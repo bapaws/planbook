@@ -327,6 +327,8 @@
   "thisEventOnly": "此事件",
   "recurringTaskCannotChangeDate": "重复任务不可改变日期",
   "incompleteSubtasksCount": "{count} 个子任务",
-  "overdueDays": "已逾期 {count} 天"
+  "overdueDays": "已逾期 {count} 天",
+  "receiveWay": "领取方式",
+  "notShowAgain": "不再显示"
 }
 

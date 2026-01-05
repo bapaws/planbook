@@ -52,7 +52,7 @@ class AppPurchases {
 
   Future<bool> get isPremium async {
     if (kDebugMode) {
-      return true;
+      return false;
     }
     final info = await Purchases.getCustomerInfo();
     return info.activeProductIdentifier != null;

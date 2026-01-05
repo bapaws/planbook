@@ -6,6 +6,9 @@ import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
+import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app.dart';
@@ -95,6 +98,12 @@ Future<Widget> _initApp() async {
       RepositoryProvider.value(value: notesRepository),
       RepositoryProvider.value(value: assetsRepository),
       RepositoryProvider.value(value: UsersRepository.instance),
+      RepositoryProvider(
+        create: (context) => AppActivityRepository(
+          appStoreRepository: AppStoreRepository(sp: sp),
+          sp: sp,
+        ),
+      ),
     ],
     child: MultiBlocProvider(
       providers: [
@@ -122,6 +131,11 @@ Future<Widget> _initApp() async {
                 )
                 ..add(const AppInitialized())
                 ..add(const AppUserRequested()),
+        ),
+        BlocProvider(
+          create: (context) => AppActivityBloc(
+            appActivityRepository: context.read(),
+          )..add(const AppActivityFetchRequested()),
         ),
       ],
       child: const App(),
