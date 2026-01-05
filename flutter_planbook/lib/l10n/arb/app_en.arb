@@ -510,6 +510,7 @@
       }
     }
   },
+  "rewardActivities": "Reward Activities",
   "receiveWay": "Receive Way",
   "notShowAgain": "Not Show Again"
 }

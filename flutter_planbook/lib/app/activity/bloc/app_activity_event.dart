@@ -7,8 +7,12 @@ sealed class AppActivityEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class AppActivityFetchRequested extends AppActivityEvent {
-  const AppActivityFetchRequested();
+final class AppActivityRequested extends AppActivityEvent {
+  const AppActivityRequested();
+}
+
+final class AppActivityFetched extends AppActivityEvent {
+  const AppActivityFetched();
 }
 
 final class AppActivityNotShowAgain extends AppActivityEvent {

@@ -10,7 +10,8 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
     required AppActivityRepository appActivityRepository,
   }) : _appActivityRepository = appActivityRepository,
        super(const AppActivityState()) {
-    on<AppActivityFetchRequested>(_onRequested);
+    on<AppActivityRequested>(_onRequested);
+    on<AppActivityFetched>(_onFetched);
     on<AppActivityNotShowAgain>(_onNotShowAgain);
     on<AppActivityWillShow>(_onWillShow);
   }
@@ -18,20 +19,23 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
   final AppActivityRepository _appActivityRepository;
 
   Future<void> _onRequested(
-    AppActivityFetchRequested event,
+    AppActivityRequested event,
     Emitter<AppActivityState> emit,
   ) async {
-    // if (kDebugMode) {
-    //   await _appActivityRepository.fetchAll();
-    // }
-
-    final activities = await _appActivityRepository.fetch();
-    // emit(state.copyWith(activities: activities));
-
     await emit.forEach(
       _appActivityRepository.onActivityChange,
       onData: (activities) => state.copyWith(activities: activities),
     );
+  }
+
+  Future<void> _onFetched(
+    AppActivityFetched event,
+    Emitter<AppActivityState> emit,
+  ) async {
+    final activities = await _appActivityRepository.fetch();
+    emit(state.copyWith(activities: activities));
+
+    add(const AppActivityRequested());
   }
 
   Future<void> _onNotShowAgain(

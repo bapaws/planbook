@@ -147,5 +147,6 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MineDeleteRoute.page),
 
     AutoRoute(page: AppActivityRoute.page),
+    AutoRoute(page: AppActivityListRoute.page),
   ];
 }

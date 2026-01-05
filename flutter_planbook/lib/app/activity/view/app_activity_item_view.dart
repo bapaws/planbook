@@ -25,7 +25,7 @@ class AppActivityItemView extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       borderRadius: BorderRadius.circular(32),
       child: Container(
-        padding: const EdgeInsetsDirectional.fromSTEB(16, 4, 12, 4),
+        padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 6, 4),
         decoration: BoxDecoration(
           color: theme.colorScheme.errorContainer,
           borderRadius: BorderRadius.circular(32),
@@ -40,7 +40,7 @@ class AppActivityItemView extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.tertiary,
+                  color: theme.colorScheme.onErrorContainer,
                 ),
               ),
             ),

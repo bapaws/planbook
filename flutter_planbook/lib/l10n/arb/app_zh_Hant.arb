@@ -328,6 +328,7 @@
   "recurringTaskCannotChangeDate": "重複任務不可改變日期",
   "incompleteSubtasksCount": "{count} 個子任務",
   "overdueDays": "已逾期 {count} 天",
+  "rewardActivities": "獎勵活動",
   "receiveWay": "領取方式",
   "notShowAgain": "不再顯示"
 }

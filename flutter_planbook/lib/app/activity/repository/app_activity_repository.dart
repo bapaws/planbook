@@ -54,7 +54,7 @@ class AppActivityRepository {
   static const kActivityWillShowAt = 'activity_will_show_at';
 
   final List<ActivityMessageEntity> _items = [
-    const ActivityMessageEntity(
+    ActivityMessageEntity(
       id: 0,
       emoji: '🎁',
       title: '快来领取包月会员',
@@ -79,38 +79,7 @@ class AppActivityRepository {
   3. 将在 24 小时内，发送会员兑换码。
 **👉由于会员码的限制，只能在 App Store 兑换一次。**
 ''',
-    ),
-    ActivityMessageEntity(
-      id: 1,
-      emoji: '🧧',
-      title: '发小红书，免费领取一整年的会员',
-      languageCode: 'zh',
-      content: '''
-在 [小红书](xhsdiscover://user/6481492100000000120342c4) 发布「**计划本**」相关的笔记，可以免费领取一整年的会员。
-您可以发布各种关于「**计划本**」的笔记，包括但不限于以下的内容：
-  • 使用心得
-  • 喜欢或经常使用的功能
-  • 一天的记录
-  • 等等…
-
-快去试试吧🎈，点击「[xhsdiscover://post/](xhsdiscover://post/)」打开小红书。
-''',
-      contentURL: 'https://bapaws.super.site/活动消息/发小红书赢年会员',
-      openURL: 'xhsdiscover://user/6481492100000000120342c4',
-      openTitle: '打开小红书',
-      illustration: 'gift_box.svg',
-      receiveWay: '''
-🔴小红书
-  1. 打开小红书，🔍搜索开发者小红书账户：[6481492100000000120342c4](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。
-  2. 点击私信页面，将您的笔记分享给账户。
-  3. 我们将在 24 小时内，私信会员兑换码。
-🟢微信
-  1. 微信添加「**计划本**」客服账户：[**Bapaws**](weixin://)。
-  2. 将您的笔记分享给客服的微信账户。
-  3. 将在 24 小时内，发送会员兑换码。
-**👉由于会员码的限制，只能在 App Store 兑换一次。**
-''',
-      endAt: DateTime(2024, 4, 7, 20),
+      endAt: DateTime(2025, 12, 31),
     ),
     const ActivityMessageEntity(
       id: 2,
@@ -164,7 +133,6 @@ class AppActivityRepository {
       contentURL: 'https://bapaws.super.site/活动消息/发小红书赢年会员',
       openURL: 'xhsdiscover://user/6481492100000000120342c4',
       openTitle: '打开小红书',
-      // illustration: 'gift_box.svg',
       receiveWay: '''
 ### 🔴小红书
   1. 打开开发者小红书账户：[**MC Studio**](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
@@ -167,6 +168,29 @@ class _SettingsHomePage extends StatelessWidget {
           // ),
           SettingsSectionHeader(
             title: l10n.other,
+          ),
+          BlocSelector<AppActivityBloc, AppActivityState, bool>(
+            selector: (state) => state.activities.isNotEmpty,
+            builder: (context, isNotEmpty) {
+              return isNotEmpty
+                  ? SettingsRow(
+                      leading: const Icon(
+                        FontAwesomeIcons.gift,
+                        color: Colors.red,
+                        size: 20,
+                      ),
+                      title: Text(
+                        l10n.rewardActivities,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      onPressed: () {
+                        context.router.push(const AppActivityListRoute());
+                      },
+                    )
+                  : const SizedBox.shrink();
+            },
           ),
           if (Platform.isIOS || Platform.isMacOS) ...[
             SettingsRow(
