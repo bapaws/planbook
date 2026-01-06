@@ -19,6 +19,9 @@ class JournalDayBloc extends Bloc<JournalDayEvent, JournalDayState> {
     on<JournalTodayNotesRequested>(_onTodayNotesRequested);
     on<JournalDayTasksRequested>(_onTasksRequested);
     on<JournalDayNotesRequested>(_onNotesRequested);
+
+    on<JournalDayFocusNoteRequested>(_onFocusNoteRequested);
+    on<JournalDaySummaryNoteRequested>(_onSummaryNoteRequested);
   }
 
   final TasksRepository _tasksRepository;
@@ -85,6 +88,31 @@ class JournalDayBloc extends Bloc<JournalDayEvent, JournalDayState> {
       onData: (notes) => state.copyWith(
         notes: {...state.notes, event.date.dateKey: notes},
       ),
+    );
+  }
+
+  Future<void> _onFocusNoteRequested(
+    JournalDayFocusNoteRequested event,
+    Emitter<JournalDayState> emit,
+  ) async {
+    await emit.forEach(
+      _notesRepository.getNoteByFocusAt(event.date),
+      onData: (note) => state.copyWith(
+        focusNote: note,
+      ),
+    );
+  }
+
+  Future<void> _onSummaryNoteRequested(
+    JournalDaySummaryNoteRequested event,
+    Emitter<JournalDayState> emit,
+  ) async {
+    await emit.forEach(
+      _notesRepository.getNoteByFocusAt(
+        event.date,
+        type: NoteType.dailySummary,
+      ),
+      onData: (note) => state.copyWith(summaryNote: note),
     );
   }
 }

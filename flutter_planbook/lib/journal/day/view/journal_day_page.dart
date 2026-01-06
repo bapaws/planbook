@@ -111,6 +111,13 @@ class _JournalDayPageState extends State<_JournalDayPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 JournalDayDateView(date: widget.date),
+                BlocSelector<JournalDayBloc, JournalDayState, Note?>(
+                  selector: (state) => state.focusNote,
+                  builder: (context, note) => JournalDayFocusView(
+                    note: note,
+                    noteType: NoteType.dailyFocus,
+                  ),
+                ),
                 BlocBuilder<JournalTimelineBloc, JournalTimelineState>(
                   builder: (context, state) {
                     final totalTasks = state.taskCount;
