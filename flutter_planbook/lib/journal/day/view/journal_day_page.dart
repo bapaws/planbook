@@ -4,7 +4,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/journal/day/bloc/journal_day_bloc.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_date_view.dart';
-import 'package:flutter_planbook/journal/day/view/journal_day_focus_view.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_stat_card.dart';
 import 'package:flutter_planbook/journal/note/bloc/journal_note_bloc.dart';
 import 'package:flutter_planbook/journal/note/view/journal_note_cover_view.dart';
