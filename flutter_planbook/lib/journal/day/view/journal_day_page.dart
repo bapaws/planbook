@@ -4,6 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/journal/day/bloc/journal_day_bloc.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_date_view.dart';
+import 'package:flutter_planbook/journal/day/view/journal_day_focus_view.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_stat_card.dart';
 import 'package:flutter_planbook/journal/note/bloc/journal_note_bloc.dart';
 import 'package:flutter_planbook/journal/note/view/journal_note_cover_view.dart';
@@ -12,9 +13,9 @@ import 'package:flutter_planbook/journal/priority/bloc/journal_priority_bloc.dar
 import 'package:flutter_planbook/journal/timeline/bloc/journal_timeline_bloc.dart';
 import 'package:flutter_planbook/journal/timeline/view/journal_timeline_page.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:screenshot/screenshot.dart';
 
 const double kJournalPageWidth = 296 * 2.5;
@@ -199,20 +200,19 @@ class _JournalDayPageState extends State<_JournalDayPage> {
           '${widget.date.year}-'
           '${widget.date.month.toString().padLeft(2, '0')}-'
           '${widget.date.date.toString().padLeft(2, '0')}';
-      final result = await ImageGallerySaver.saveImage(
+      final result = await AppImageSaver.saveImage(
         imageBytes,
-        quality: 100,
-        name: 'Journal_$dateStr',
+        fileName: 'Journal_$dateStr',
       );
       await EasyLoading.dismiss();
-      if (result['isSuccess'] == true) {
+      if (result.isSuccess) {
         await EasyLoading.showSuccess('已保存到相册');
       } else {
         await EasyLoading.showError('保存失败');
       }
-    } catch (e) {
+    } on Exception catch (_) {
       await EasyLoading.dismiss();
-      await EasyLoading.showError('保存失败: $e');
+      await EasyLoading.showError('保存失败');
     }
   }
 }

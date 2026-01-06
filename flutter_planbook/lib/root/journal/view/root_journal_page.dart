@@ -15,7 +15,6 @@ import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/journal/bloc/root_journal_bloc.dart';
 import 'package:flutter_planbook/root/journal/view/root_journal_drawer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -207,19 +206,19 @@ class _RootJournalPageState extends State<_RootJournalPage> {
       }
 
       final imageBytes = byteData.buffer.asUint8List();
+
       final dateStr =
           '${date.year}-'
           '${date.month.toString().padLeft(2, '0')}-'
           '${date.date.toString().padLeft(2, '0')}';
-      final result = await ImageGallerySaver.saveImage(
+      final result = await AppImageSaver.saveImage(
         imageBytes,
-        quality: 100,
-        name: 'Journal_$dateStr',
+        fileName: 'Journal_$dateStr',
       );
       await EasyLoading.dismiss();
       if (!context.mounted) return;
 
-      if (result is Map && result['isSuccess'] == true) {
+      if (result.isSuccess) {
         await EasyLoading.showSuccess(context.l10n.saveSuccess);
       } else {
         await EasyLoading.showError(context.l10n.saveFailed);
