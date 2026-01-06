@@ -12,16 +12,17 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:flutter_planbook/sign/in/cubit/sign_in_cubit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class SignInPhonePage extends StatefulWidget {
-  const SignInPhonePage({super.key});
+class SignInCodePage extends StatefulWidget {
+  const SignInCodePage({this.status, super.key});
+
+  final SignHomeStatus? status;
 
   @override
-  State<SignInPhonePage> createState() => _SignInPhonePageState();
+  State<SignInCodePage> createState() => _SignInCodePageState();
 }
 
-class _SignInPhonePageState extends State<SignInPhonePage> {
+class _SignInCodePageState extends State<SignInCodePage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
   final _codeController = TextEditingController();
@@ -36,10 +37,11 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
   }
 
   void _handleSendCode() {
+    final l10n = context.l10n;
     final phone = _phoneController.text.trim();
     if (phone.isEmpty) {
       Fluttertoast.showToast(
-        msg: '请输入手机号',
+        msg: l10n.phoneNumberMessage,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: Colors.black,
@@ -50,7 +52,7 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
     if (!RegExp(r'^1[3-9]\d{9}$').hasMatch(phone) &&
         !EmailValidator.validate(phone)) {
       Fluttertoast.showToast(
-        msg: '请输入有效的手机号',
+        msg: l10n.phoneNumberMessageInvalid,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: Colors.black,
@@ -97,6 +99,8 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
+
+    final status = widget.status;
     return BlocListener<SignInCubit, SignInState>(
       listener: (context, state) {
         if (state is SignInSuccess) {
@@ -112,7 +116,7 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
         } else if (state is CodeSentSuccess) {
           // 验证码发送成功
           Fluttertoast.showToast(
-            msg: '验证码已发送',
+            msg: l10n.codeSentSuccess,
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             backgroundColor: Colors.black,
@@ -151,22 +155,13 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
                 // 切换登录方式
                 CupertinoButton(
                   onPressed: () {
-                    context.read<SignHomeCubit>().signInWithPassword();
+                    context.read<SignHomeCubit>().backToWelcome();
                   },
-                  child: Row(
-                    children: [
-                      Text(
-                        l10n.password,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Icon(
-                        FontAwesomeIcons.arrowRightArrowLeft,
-                        size: 12,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ],
+                  child: Text(
+                    l10n.back,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ],
@@ -176,7 +171,11 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
 
             // 手机号输入框
             AppTextField(
-              hintText: l10n.phoneNumber,
+              hintText: switch (status) {
+                SignHomeStatus.signInWithEmail => l10n.email,
+                SignHomeStatus.signInWithPhone => l10n.phoneNumber,
+                _ => l10n.phoneNumberOrEmail,
+              },
               controller: _phoneController,
               textInputAction: TextInputAction.next,
               autofocus: true,
@@ -186,7 +185,12 @@ class _SignInPhonePageState extends State<SignInPhonePage> {
                 }
                 if (!RegExp(r'^1[3-9]\d{9}$').hasMatch(value) &&
                     !EmailValidator.validate(value)) {
-                  return l10n.phoneNumberMessageInvalid;
+                  return switch (status) {
+                    SignHomeStatus.signInWithEmail => l10n.emailMessageInvalid,
+                    SignHomeStatus.signInWithPhone =>
+                      l10n.phoneNumberMessageInvalid,
+                    _ => l10n.phoneNumberOrEmailMessageInvalid,
+                  };
                 }
                 return null;
               },

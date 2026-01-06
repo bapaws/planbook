@@ -72,6 +72,7 @@ class _SignHomePage extends StatelessWidget {
                       ),
                     ),
                     child: Container(
+                      key: ValueKey(state.status),
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: theme.colorScheme.surfaceContainerLowest,
@@ -80,7 +81,6 @@ class _SignHomePage extends StatelessWidget {
                         ),
                       ),
                       child: Padding(
-                        key: ValueKey(state.status),
                         padding: EdgeInsets.fromLTRB(
                           24,
                           36,
@@ -89,10 +89,18 @@ class _SignHomePage extends StatelessWidget {
                         ),
                         child: switch (state.status) {
                           SignHomeStatus.welcome => const SignWelcomePage(),
+                          SignHomeStatus.signInWithCode =>
+                            const SignInCodePage(),
+                          SignHomeStatus.signInWithEmail =>
+                            const SignInCodePage(
+                              status: SignHomeStatus.signInWithEmail,
+                            ),
                           SignHomeStatus.signInWithPassword =>
                             const SignInPasswordPage(),
                           SignHomeStatus.signInWithPhone =>
-                            const SignInPhonePage(),
+                            const SignInCodePage(
+                              status: SignHomeStatus.signInWithPhone,
+                            ),
                           SignHomeStatus.signUp => const SignUpPage(),
                           SignHomeStatus.forgotPassword =>
                             const SignPasswordPage(),

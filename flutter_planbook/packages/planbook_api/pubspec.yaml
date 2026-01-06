@@ -9,11 +9,13 @@ environment:
 
 dependencies:
   collection: ^1.19.1
+  crypto: ^3.0.7
   drift: ^2.26.1
   drift_flutter: ^0.2.4
   equatable: ^2.0.7
   flutter:
     sdk: flutter
+  google_sign_in: ^7.2.0
   hive: ^2.2.3
   jiffy: ^6.4.3
   path: ^1.9.1
@@ -23,6 +25,7 @@ dependencies:
     path: ../planbook_core
   purchases_flutter: 9.9.9
   rxdart: ^0.28.0
+  sign_in_with_apple: ^7.0.1
   sqlite3: ^2.7.6
   sqlite3_flutter_libs: ^0.5.34
   supabase_flutter: ^2.9.1

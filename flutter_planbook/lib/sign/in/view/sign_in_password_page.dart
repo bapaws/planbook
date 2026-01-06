@@ -8,7 +8,6 @@ import 'package:flutter_planbook/core/view/sign_button.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:flutter_planbook/sign/in/cubit/sign_in_cubit.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignInPasswordPage extends StatefulWidget {
   const SignInPasswordPage({super.key});
@@ -89,22 +88,13 @@ class _SignInPasswordPageState extends State<SignInPasswordPage> {
                 // 切换登录方式
                 CupertinoButton(
                   onPressed: () {
-                    context.read<SignHomeCubit>().signInWithCode();
+                    context.read<SignHomeCubit>().backToWelcome();
                   },
-                  child: Row(
-                    children: [
-                      Text(
-                        l10n.phoneNumber,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Icon(
-                        FontAwesomeIcons.arrowRightArrowLeft,
-                        size: 12,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ],
+                  child: Text(
+                    l10n.back,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ],

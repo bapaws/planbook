@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:planbook_api/supabase/app_supabase.dart';
 
 part 'sign_home_state.dart';
 
@@ -11,8 +12,15 @@ class SignHomeCubit extends Cubit<SignHomeState> {
     FlutterNativeSplash.remove();
   }
 
+  void backToWelcome() {
+    emit(state.copyWith(status: SignHomeStatus.welcome));
+  }
+
+  void signInWithCode() {
+    emit(state.copyWith(status: SignHomeStatus.signInWithCode));
+  }
+
   void signInWithPhone() {
-    // 默认使用验证码登录
     emit(state.copyWith(status: SignHomeStatus.signInWithPhone));
   }
 
@@ -20,8 +28,8 @@ class SignHomeCubit extends Cubit<SignHomeState> {
     emit(state.copyWith(status: SignHomeStatus.signInWithPassword));
   }
 
-  void signInWithCode() {
-    emit(state.copyWith(status: SignHomeStatus.signInWithPhone));
+  void signInWithEmail() {
+    emit(state.copyWith(status: SignHomeStatus.signInWithEmail));
   }
 
   void signUp() {
@@ -34,5 +42,13 @@ class SignHomeCubit extends Cubit<SignHomeState> {
 
   void setIsAgreedToTerms({required bool isAgreed}) {
     emit(state.copyWith(isAgreedToTerms: isAgreed));
+  }
+
+  void signInWithApple() {
+    AppSupabase.instance.signInWithApple();
+  }
+
+  void signInWithGoogle() {
+    AppSupabase.instance.signInWithGoogle();
   }
 }

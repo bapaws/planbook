@@ -2,7 +2,9 @@ part of 'sign_home_cubit.dart';
 
 enum SignHomeStatus {
   welcome,
+  signInWithCode,
   signInWithPhone,
+  signInWithEmail,
   signInWithPassword,
   signUp,
   forgotPassword,

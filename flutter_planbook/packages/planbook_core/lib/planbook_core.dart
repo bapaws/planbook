@@ -2,6 +2,7 @@
 library;
 
 export 'app/app_home_widget.dart';
+export 'app/app_image_saver.dart';
 export 'app/app_styles.dart';
 export 'cupertino_dialog/cupertino_dialog.dart';
 export 'data/app_store_results_entity.dart';
