@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:planbook_api/supabase/app_supabase.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'sign_home_state.dart';
 
@@ -44,11 +45,17 @@ class SignHomeCubit extends Cubit<SignHomeState> {
     emit(state.copyWith(isAgreedToTerms: isAgreed));
   }
 
-  void signInWithApple() {
-    AppSupabase.instance.signInWithApple();
+  Future<void> signInWithApple() async {
+    final authResponse = await AppSupabase.instance.signInWithApple();
+    if (authResponse != null) {
+      emit(state.copyWith(authResponse: authResponse));
+    }
   }
 
-  void signInWithGoogle() {
-    AppSupabase.instance.signInWithGoogle();
+  Future<void> signInWithGoogle() async {
+    final authResponse = await AppSupabase.instance.signInWithGoogle();
+    if (authResponse != null) {
+      emit(state.copyWith(authResponse: authResponse));
+    }
   }
 }

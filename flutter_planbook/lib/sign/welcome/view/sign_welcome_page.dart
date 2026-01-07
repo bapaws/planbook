@@ -78,14 +78,14 @@ class SignWelcomePage extends StatelessWidget {
   Future<void> _handleSignInWithApple(BuildContext context) async {
     final isAgreedToTerms = await _isAgreedToTerms(context);
     if (isAgreedToTerms && context.mounted) {
-      context.read<SignHomeCubit>().signInWithApple();
+      await context.read<SignHomeCubit>().signInWithApple();
     }
   }
 
   Future<void> _handleSignInWithGoogle(BuildContext context) async {
     final isAgreedToTerms = await _isAgreedToTerms(context);
     if (isAgreedToTerms && context.mounted) {
-      context.read<SignHomeCubit>().signInWithGoogle();
+      await context.read<SignHomeCubit>().signInWithGoogle();
     }
   }
 
