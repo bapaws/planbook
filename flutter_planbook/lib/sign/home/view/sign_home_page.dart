@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:flutter_planbook/sign/home/view/sign_home_slogan_view.dart';
@@ -32,9 +33,12 @@ class SignHomePage extends StatelessWidget {
         listenWhen: (previous, current) =>
             previous.authResponse != current.authResponse,
         listener: (context, state) {
-          if (state.authResponse != null) {
-            context.router.replaceAll([const RootHomeRoute()]);
-          }
+          if (state.authResponse == null) return;
+          final isPremium = context.read<AppPurchasesBloc>().state.isPremium;
+          context.router.replaceAll([
+            const RootHomeRoute(),
+            if (!isPremium) const AppPurchasesRoute(),
+          ]);
         },
         child: const _SignHomePage(),
       ),
