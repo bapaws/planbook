@@ -28,7 +28,16 @@ class SignHomePage extends StatelessWidget {
           ),
         ),
       ],
-      child: const _SignHomePage(),
+      child: BlocListener<SignHomeCubit, SignHomeState>(
+        listenWhen: (previous, current) =>
+            previous.authResponse != current.authResponse,
+        listener: (context, state) {
+          if (state.authResponse != null) {
+            context.router.replaceAll([const RootHomeRoute()]);
+          }
+        },
+        child: const _SignHomePage(),
+      ),
     );
   }
 }
