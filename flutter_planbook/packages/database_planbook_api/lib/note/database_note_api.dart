@@ -209,7 +209,7 @@ class DatabaseNoteApi {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
-    NoteListMode mode = NoteListMode.all,
+    List<NoteListMode> modes = NoteListMode.values,
     List<String>? tagIds,
     String? userId,
   }) {
@@ -233,11 +233,36 @@ class DatabaseNoteApi {
       exp &= db.noteTags.tagId.isIn(tagIds);
     }
 
-    if (mode == NoteListMode.written) {
-      exp &= db.tasks.id.isNull();
-    } else if (mode == NoteListMode.task) {
-      exp &= db.tasks.id.isNotNull();
+    Expression<bool> modeExp = const Constant(true);
+    for (final mode in modes) {
+      switch (mode) {
+        case NoteListMode.written:
+          modeExp |=
+              db.tasks.id.isNull() &
+              db.notes.type.equals(NoteType.journal.name);
+        case NoteListMode.task:
+          modeExp |=
+              db.tasks.id.isNotNull() &
+              db.notes.type.equals(NoteType.journal.name);
+        case NoteListMode.dailyFocus:
+          modeExp |= db.notes.type.equals(NoteType.dailyFocus.name);
+        case NoteListMode.dailySummary:
+          modeExp |= db.notes.type.equals(NoteType.dailySummary.name);
+        case NoteListMode.weeklyFocus:
+          modeExp |= db.notes.type.equals(NoteType.weeklyFocus.name);
+        case NoteListMode.weeklySummary:
+          modeExp |= db.notes.type.equals(NoteType.weeklySummary.name);
+        case NoteListMode.monthlyFocus:
+          modeExp |= db.notes.type.equals(NoteType.monthlyFocus.name);
+        case NoteListMode.monthlySummary:
+          modeExp |= db.notes.type.equals(NoteType.monthlySummary.name);
+        case NoteListMode.yearlyFocus:
+          modeExp |= db.notes.type.equals(NoteType.yearlyFocus.name);
+        case NoteListMode.yearlySummary:
+          modeExp |= db.notes.type.equals(NoteType.yearlySummary.name);
+      }
     }
+    exp &= modeExp;
 
     return (db.select(db.notes).join(
             [
@@ -346,6 +371,8 @@ class DatabaseNoteApi {
       NoteType.weeklySummary => Unit.week,
       NoteType.monthlyFocus => Unit.month,
       NoteType.monthlySummary => Unit.month,
+      NoteType.yearlyFocus => Unit.year,
+      NoteType.yearlySummary => Unit.year,
       _ => throw UnimplementedError(),
     };
     final start = focusAt.startOf(unit);
@@ -360,6 +387,23 @@ class DatabaseNoteApi {
           )
           ..limit(1))
         .watchSingleOrNull();
+  }
+
+  Stream<List<Note>> getYearlyNotes(
+    int year,
+    List<NoteType> types, {
+    String? userId,
+  }) {
+    return (db.select(db.notes)..where((n) {
+          final startAt = Jiffy.parseFromList([year]);
+          final endAt = Jiffy.parseFromList([year + 1]);
+          return n.type.isIn(NoteType.focusTypes.map((e) => e.name)) &
+              (userId == null ? n.userId.isNull() : n.userId.equals(userId)) &
+              n.focusAt.isBiggerOrEqualValue(startAt.dateTime) &
+              n.focusAt.isSmallerOrEqualValue(endAt.dateTime) &
+              n.deletedAt.isNull();
+        }))
+        .watch();
   }
 
   Future<Jiffy?> getStartDate({String? userId}) async {

@@ -14,15 +14,6 @@ class NoteGalleryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _NoteGalleryPage();
-  }
-}
-
-class _NoteGalleryPage extends StatelessWidget {
-  const _NoteGalleryPage();
-
-  @override
-  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocBuilder<NoteGalleryBloc, NoteGalleryState>(
       builder: (context, state) => Column(

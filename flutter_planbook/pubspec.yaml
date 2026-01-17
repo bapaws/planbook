@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 2.2.3+84
+version: 2.3.0+85
 publish_to: none
 
 environment:
@@ -26,6 +26,7 @@ dependencies:
   drift_flutter: ^0.2.4
   email_validator: ^3.0.0
   equatable: ^2.0.7
+  fl_chart: ^1.1.1
   flex_color_picker: ^3.7.2
   flutter:
     sdk: flutter
@@ -104,6 +105,7 @@ flutter:
   assets:
     - assets/google_fonts/
     - assets/images/
+    - assets/tiles/
     - assets/files/
     - assets/audios/
     # - assets/demo/

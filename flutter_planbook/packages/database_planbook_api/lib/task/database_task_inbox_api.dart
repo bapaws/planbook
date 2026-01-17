@@ -1,5 +1,6 @@
 import 'package:database_planbook_api/task/database_task_api.dart';
 import 'package:drift/drift.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 class DatabaseTaskInboxApi extends DatabaseTaskApi {
@@ -8,7 +9,13 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
     required super.tagApi,
   });
 
-  Stream<int> getInboxTaskCount({bool? isCompleted, String? userId}) {
+  /// 获取指定日期内的 inbox 任务数量
+  Stream<int> getInboxTaskCount({
+    Jiffy? date,
+    bool? isCompleted,
+    String? userId,
+    TaskPriority? priority,
+  }) {
     var exp =
         db.tasks.parentId.isNull() &
         db.tasks.dueAt.isNull() &
@@ -18,10 +25,19 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
+    if (date != null) {
+      exp &= db.tasks.createdAt.isSmallerOrEqualValue(
+        date.endOf(Unit.day).dateTime,
+      );
+    }
     if (isCompleted != null) {
       exp &= isCompleted
           ? db.taskActivities.id.isNotNull()
           : db.taskActivities.id.isNull();
+    }
+
+    if (priority != null) {
+      exp &= db.tasks.priority.equals(priority.name);
     }
 
     final query = db.selectOnly(db.tasks, distinct: true)

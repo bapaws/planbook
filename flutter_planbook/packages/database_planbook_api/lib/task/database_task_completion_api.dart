@@ -309,31 +309,43 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   Stream<int> getCompletedTaskCount({
     required Jiffy date,
     String? userId,
+    TaskPriority? priority,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
     final startOfDayDateTime = startOfDay.dateTime;
     final endOfDayDateTime = endOfDay.dateTime;
 
-    final query = db.selectOnly(db.taskActivities)
-      ..addColumns([db.taskActivities.taskId.count(distinct: true)])
-      ..where(
+    var exp =
         db.taskActivities.completedAt.isNotNull() &
-            db.taskActivities.completedAt.isBiggerOrEqualValue(
-              startOfDayDateTime,
-            ) &
-            db.taskActivities.completedAt.isSmallerOrEqualValue(
-              endOfDayDateTime,
-            ) &
-            db.taskActivities.deletedAt.isNull() &
-            db.taskActivities.taskId.isNotNull() &
-            (userId == null
-                ? db.taskActivities.userId.isNull()
-                : db.taskActivities.userId.equals(userId)),
-      );
+        db.taskActivities.completedAt.isBiggerOrEqualValue(
+          startOfDayDateTime,
+        ) &
+        db.taskActivities.completedAt.isSmallerOrEqualValue(
+          endOfDayDateTime,
+        ) &
+        db.taskActivities.deletedAt.isNull() &
+        db.taskActivities.taskId.isNotNull() &
+        (userId == null
+            ? db.taskActivities.userId.isNull()
+            : db.taskActivities.userId.equals(userId));
+    final column = db.taskActivities.taskId.count(distinct: true);
+    final query = db.selectOnly(db.taskActivities)..addColumns([column]);
+
+    if (priority != null) {
+      query.join([
+        innerJoin(
+          db.tasks,
+          db.tasks.id.equalsExp(db.taskActivities.taskId),
+        ),
+      ]);
+      exp &= db.tasks.priority.equals(priority.name);
+    }
+
+    query.where(exp);
 
     return query.watch().map(
-      (rows) => rows.firstOrNull?.read(db.taskActivities.id.count()) ?? 0,
+      (rows) => rows.firstOrNull?.read(column) ?? 0,
     );
   }
 }

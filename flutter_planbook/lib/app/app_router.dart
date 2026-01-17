@@ -87,7 +87,14 @@ class AppRouter extends RootStackRouter {
             AutoRoute(page: TaskTagRoute.page),
           ],
         ),
-        AutoRoute(page: RootJournalRoute.page),
+        AutoRoute(
+          page: RootDiscoverRoute.page,
+          children: [
+            AutoRoute(page: DiscoverJournalRoute.page),
+            AutoRoute(page: DiscoverFocusRoute.page),
+            AutoRoute(page: DiscoverSummaryRoute.page),
+          ],
+        ),
         AutoRoute(
           page: RootNoteRoute.page,
           children: [

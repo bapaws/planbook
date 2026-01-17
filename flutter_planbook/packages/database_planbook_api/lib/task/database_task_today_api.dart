@@ -12,6 +12,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
 
   Stream<int> getTodayTaskCount({
     required Jiffy date,
+    TaskPriority? priority,
     bool? isCompleted,
     String? userId,
   }) {
@@ -37,6 +38,9 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
       recurringExp &= isCompleted
           ? db.taskActivities.id.isNotNull()
           : db.taskActivities.id.isNull();
+    }
+    if (priority != null) {
+      recurringExp &= db.tasks.priority.equals(priority.name);
     }
 
     final recurringTasksQuery = db.selectOnly(db.tasks, distinct: true)
@@ -72,7 +76,9 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
-
+    if (priority != null) {
+      nonRecurringExp &= db.tasks.priority.equals(priority.name);
+    }
     // 非重复任务：日期在指定日期范围内
     final nonRecurringTaskCondition =
         db.tasks.recurrenceRule.isNull() &

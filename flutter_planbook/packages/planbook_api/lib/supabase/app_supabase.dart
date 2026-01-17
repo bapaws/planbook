@@ -171,21 +171,24 @@ class AppSupabase {
     );
     // Apple only provides the user's full name on the first sign-in
     // Save it to user metadata if available
+    final data = <String, dynamic>{
+      'com.bapaws.planbook': true,
+      'planbook': true,
+    };
     if (credential.givenName != null || credential.familyName != null) {
       final nameParts = <String>[];
       if (credential.givenName != null) nameParts.add(credential.givenName!);
       if (credential.familyName != null) nameParts.add(credential.familyName!);
       final fullName = nameParts.join(' ');
-      await _supabase?.client.auth.updateUser(
-        UserAttributes(
-          data: {
-            'full_name': fullName,
-            'given_name': credential.givenName,
-            'family_name': credential.familyName,
-          },
-        ),
-      );
+      data['full_name'] = fullName;
+      data['given_name'] = credential.givenName;
+      data['family_name'] = credential.familyName;
     }
+    await _supabase?.client.auth.updateUser(
+      UserAttributes(
+        data: data,
+      ),
+    );
     return authResponse;
   }
 
@@ -223,10 +226,27 @@ class AppSupabase {
     if (idToken == null) {
       throw const AuthException('No ID Token found.');
     }
-    return await _supabase?.client.auth.signInWithIdToken(
+    final authResponse = await _supabase?.client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
       accessToken: authorization.accessToken,
     );
+    final data = <String, dynamic>{
+      'com.bapaws.planbook': true,
+      'planbook': true,
+    };
+    if (googleUser.photoUrl != null) {
+      data['avatar'] = googleUser.photoUrl;
+      data['display_name'] = googleUser.displayName;
+      data['email'] = googleUser.email;
+      data['id'] = googleUser.id;
+      data['provider'] = 'google';
+    }
+    await _supabase?.client.auth.updateUser(
+      UserAttributes(
+        data: data,
+      ),
+    );
+    return authResponse;
   }
 }

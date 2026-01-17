@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -50,6 +51,9 @@ class RootHomePage extends StatelessWidget {
             notesRepository: context.read(),
           )..add(TaskTodayDateSelected(date: Jiffy.now())),
         ),
+        BlocProvider(
+          create: (context) => RootDiscoverBloc(),
+        ),
       ],
       child: const _RootHomePage(),
     );
@@ -64,7 +68,7 @@ class _RootHomePage extends StatelessWidget {
     return AutoTabsRouter(
       routes: const [
         RootTaskRoute(),
-        RootJournalRoute(),
+        RootDiscoverRoute(),
         RootNoteRoute(),
       ],
       builder: (context, child) {

@@ -11,12 +11,16 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
   });
 
   /// 获取指定日期内的 overdue 任务数量
-  Stream<int> getOverdueTaskCount({required Jiffy date, String? userId}) {
+  Stream<int> getOverdueTaskCount({
+    required Jiffy date,
+    String? userId,
+    TaskPriority? priority,
+  }) {
     final startOfDay = date.startOf(Unit.day).dateTime;
 
     // 查询 1: 重复任务的逾期实例
     // 通过 TaskOccurrences 表查询 occurrenceAt < 今天 且未完成的实例
-    final recurringExp =
+    var recurringExp =
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNotNull() &
@@ -27,6 +31,9 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
+    if (priority != null) {
+      recurringExp &= db.tasks.priority.equals(priority.name);
+    }
 
     final recurringTasksQuery = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])
@@ -49,7 +56,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
 
     // 查询 2: 非重复任务的逾期
     // dueAt 或 endAt < 今天 且未完成
-    final nonRecurringExp =
+    var nonRecurringExp =
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.recurrenceRule.isNull() &
@@ -62,6 +69,9 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
         (userId == null
             ? db.tasks.userId.isNull()
             : db.tasks.userId.equals(userId));
+    if (priority != null) {
+      nonRecurringExp &= db.tasks.priority.equals(priority.name);
+    }
 
     // 查询 3: 分离实例的逾期
     // detachedRecurrenceAt < 今天 且未完成

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/journal/day/bloc/journal_day_bloc.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_date_view.dart';
+import 'package:flutter_planbook/journal/day/view/journal_day_focus_view.dart';
 import 'package:flutter_planbook/journal/day/view/journal_day_stat_card.dart';
 import 'package:flutter_planbook/journal/note/bloc/journal_note_bloc.dart';
 import 'package:flutter_planbook/journal/note/view/journal_note_cover_view.dart';
@@ -14,8 +14,6 @@ import 'package:flutter_planbook/journal/timeline/view/journal_timeline_page.dar
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
-import 'package:planbook_core/planbook_core.dart';
-import 'package:screenshot/screenshot.dart';
 
 const double kJournalPageWidth = 296 * 2.5;
 const double kJournalPageHeight = 210 * 2.5;
@@ -81,8 +79,6 @@ class _JournalDayPage extends StatefulWidget {
 }
 
 class _JournalDayPageState extends State<_JournalDayPage> {
-  final ScreenshotController _screenshotController = ScreenshotController();
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -195,30 +191,5 @@ class _JournalDayPageState extends State<_JournalDayPage> {
         ],
       ),
     );
-  }
-
-  Future<void> _capture() async {
-    final imageBytes = await _screenshotController.capture();
-    if (imageBytes == null) return;
-    try {
-      await EasyLoading.show(status: '保存中...');
-      final dateStr =
-          '${widget.date.year}-'
-          '${widget.date.month.toString().padLeft(2, '0')}-'
-          '${widget.date.date.toString().padLeft(2, '0')}';
-      final result = await AppImageSaver.saveImage(
-        imageBytes,
-        fileName: 'Journal_$dateStr',
-      );
-      await EasyLoading.dismiss();
-      if (result.isSuccess) {
-        await EasyLoading.showSuccess('已保存到相册');
-      } else {
-        await EasyLoading.showError('保存失败');
-      }
-    } on Exception catch (_) {
-      await EasyLoading.dismiss();
-      await EasyLoading.showError('保存失败');
-    }
   }
 }

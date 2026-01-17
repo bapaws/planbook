@@ -119,36 +119,38 @@ class _TaskDonePage extends StatelessWidget {
                     spacing: 6,
                     runSpacing: 6,
                     children: [
-                      Container(
-                        height: 22,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.solidCalendar,
-                              size: 12,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              state.task.occurrence?.occurrenceAt.yMMMEd ??
-                                  state.task.dueAt?.yMMMEd ??
-                                  '',
-                              style: theme.textTheme.labelMedium?.copyWith(
+                      if (state.task.occurrence?.occurrenceAt != null &&
+                          state.task.dueAt != null)
+                        Container(
+                          height: 22,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                FontAwesomeIcons.solidCalendar,
+                                size: 12,
                                 color: colorScheme.primary,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Text(
+                                state.task.occurrence?.occurrenceAt.yMMMEd ??
+                                    state.task.dueAt?.yMMMEd ??
+                                    '',
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                       Container(
                         height: 22,
                         padding: const EdgeInsets.symmetric(

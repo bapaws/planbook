@@ -66,7 +66,23 @@ class _RootNotePage extends StatelessWidget {
           builder: (context, state) => AnimatedSwitcher(
             duration: Durations.medium1,
             child: switch (state.tab) {
-              RootNoteTab.gallery => const RootNoteGalleryTitleView(),
+              RootNoteTab.gallery =>
+                BlocBuilder<NoteGalleryBloc, NoteGalleryState>(
+                  builder: (context, state) => RootNoteGalleryTitleView(
+                    date: state.date,
+                    isCalendarExpanded: state.isCalendarExpanded,
+                    onDateSelected: (date) {
+                      context.read<NoteGalleryBloc>().add(
+                        NoteGalleryDateSelected(date: date),
+                      );
+                    },
+                    onCalendarToggled: () {
+                      context.read<NoteGalleryBloc>().add(
+                        const NoteGalleryCalendarToggled(),
+                      );
+                    },
+                  ),
+                ),
               RootNoteTab.tag => Row(
                 children: [
                   AppTagIcon.fromTagEntity(state.tag!),
@@ -118,11 +134,21 @@ class _RootNotePage extends StatelessWidget {
           ),
           RootNoteTab.written => const NoteTimelinePage(
             key: ValueKey('written'),
-            mode: NoteListMode.written,
+            modes: [
+              NoteListMode.written,
+              NoteListMode.dailyFocus,
+              NoteListMode.dailySummary,
+              NoteListMode.weeklyFocus,
+              NoteListMode.weeklySummary,
+              NoteListMode.monthlyFocus,
+              NoteListMode.monthlySummary,
+              NoteListMode.yearlyFocus,
+              NoteListMode.yearlySummary,
+            ],
           ),
           RootNoteTab.task => const NoteTimelinePage(
             key: ValueKey('task'),
-            mode: NoteListMode.task,
+            modes: [NoteListMode.task],
           ),
           RootNoteTab.tag => NoteTagPage(
             key: ValueKey(state.tag!.id),

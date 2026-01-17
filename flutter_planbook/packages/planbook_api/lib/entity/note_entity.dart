@@ -3,7 +3,18 @@ import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/entity/tag_entity.dart';
 
-enum NoteListMode { all, written, task }
+enum NoteListMode {
+  written,
+  task,
+  dailyFocus,
+  dailySummary,
+  weeklyFocus,
+  weeklySummary,
+  monthlyFocus,
+  monthlySummary,
+  yearlyFocus,
+  yearlySummary,
+}
 
 class NoteEntity extends Equatable {
   const NoteEntity({

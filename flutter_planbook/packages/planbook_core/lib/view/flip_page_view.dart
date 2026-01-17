@@ -25,9 +25,6 @@ typedef _AnimateToPageCallback =
 /// Callback type for jumping to a page.
 typedef _JumpToPageCallback = void Function(int page);
 
-/// Callback type for getting current page.
-typedef _GetCurrentPageCallback = int Function();
-
 /// Callback type for getting items count.
 typedef _GetItemsCountCallback = int Function();
 
@@ -39,21 +36,22 @@ typedef _GetItemsCountCallback = int Function();
 ///
 /// The controller maintains its own state and directly controls the page view
 /// through callbacks, reducing coupling between the controller and the view.
-class FlipPageController extends ChangeNotifier {
+class FlipPageController extends ValueNotifier<int> {
   /// Creates a controller for a [FlipPageView].
   ///
   /// The [initialPage] argument must not be null.
-  FlipPageController({this.initialPage = 0}) : assert(initialPage >= 0);
-
-  /// The page to show when first creating the [FlipPageView].
-  final int initialPage;
+  FlipPageController({int initialPage = 0})
+    : assert(
+        initialPage >= 0,
+        'initialPage must be greater than or equal to 0',
+      ),
+      super(initialPage);
 
   /// 当前页面的 RenderRepaintBoundary（用于截图）
   RenderRepaintBoundary? _currentBoundary;
 
   _AnimateToPageCallback? _animateToPageCallback;
   _JumpToPageCallback? _jumpToPageCallback;
-  _GetCurrentPageCallback? _getCurrentPageCallback;
   _GetItemsCountCallback? _getItemsCountCallback;
 
   /// 注册当前页面的 RenderRepaintBoundary（由 FlipPageView 内部调用）
@@ -65,11 +63,6 @@ class FlipPageController extends ChangeNotifier {
   /// Whether this controller is attached to a [FlipPageView].
   bool get hasClients =>
       _animateToPageCallback != null && _jumpToPageCallback != null;
-
-  /// The currently selected page index.
-  ///
-  /// Returns null if the controller is not attached to a [FlipPageView].
-  int? get page => _getCurrentPageCallback?.call();
 
   /// Animates the [FlipPageView] from the current page to the given page.
   ///
@@ -105,9 +98,8 @@ class FlipPageController extends ChangeNotifier {
     Curve curve = Curves.easeInOut,
   }) {
     if (!hasClients) return Future.value();
-    final currentPage = _getCurrentPageCallback?.call() ?? 0;
     final itemsCount = _getItemsCountCallback?.call() ?? 1;
-    final nextPageIndex = (currentPage + 1) % itemsCount;
+    final nextPageIndex = (value + 1) % itemsCount;
     return animateToPage(nextPageIndex, duration: duration, curve: curve);
   }
 
@@ -120,9 +112,8 @@ class FlipPageController extends ChangeNotifier {
     Curve curve = Curves.easeInOut,
   }) {
     if (!hasClients) return Future.value();
-    final currentPage = _getCurrentPageCallback?.call() ?? 0;
     final itemsCount = _getItemsCountCallback?.call() ?? 1;
-    final prevPageIndex = currentPage == 0 ? itemsCount - 1 : currentPage - 1;
+    final prevPageIndex = value == 0 ? itemsCount - 1 : value - 1;
     return animateToPage(prevPageIndex, duration: duration, curve: curve);
   }
 
@@ -138,19 +129,16 @@ class FlipPageController extends ChangeNotifier {
   void _attach({
     required _AnimateToPageCallback animateToPage,
     required _JumpToPageCallback jumpToPage,
-    required _GetCurrentPageCallback getCurrentPage,
     required _GetItemsCountCallback getItemsCount,
   }) {
     _animateToPageCallback = animateToPage;
     _jumpToPageCallback = jumpToPage;
-    _getCurrentPageCallback = getCurrentPage;
     _getItemsCountCallback = getItemsCount;
   }
 
   void _detach() {
     _animateToPageCallback = null;
     _jumpToPageCallback = null;
-    _getCurrentPageCallback = null;
     _getItemsCountCallback = null;
     _currentBoundary = null; // 清除对 RenderObject 的引用，避免内存泄漏
   }
@@ -170,8 +158,8 @@ class FlipPageView extends StatefulWidget {
   const FlipPageView({
     required this.itemBuilder,
     required this.itemsCount,
+    required this.controller,
     this.initialPage = 0,
-    this.controller,
     this.spacing,
     super.key,
   });
@@ -179,7 +167,7 @@ class FlipPageView extends StatefulWidget {
   final int itemsCount;
   final IndexedWidgetBuilder? itemBuilder;
   final int initialPage;
-  final FlipPageController? controller;
+  final FlipPageController controller;
   final double? spacing;
 
   @override
@@ -190,7 +178,6 @@ class _FlipPageViewState extends State<FlipPageView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  late int _currentIndex = 0;
   late int? _beforeDragIndex;
 
   double? _dragStartX;
@@ -199,10 +186,15 @@ class _FlipPageViewState extends State<FlipPageView>
   double _rightAngle = math.pi / 8;
   bool _isAnimating = false;
 
-  static const _perspective = 0.0005;
+  static const _perspective = 0.0002;
   static const _zeroAngle = 0.0001;
   static const double _defaultAngle = math.pi / 8;
   static const double _maxAngle = math.pi / 2;
+
+  int get _currentIndex => widget.controller.value;
+  set _currentIndex(int value) {
+    widget.controller.value = value;
+  }
 
   /// 更新角度（根据进度值）
   void _updateAngles(double progress) {
@@ -315,32 +307,29 @@ class _FlipPageViewState extends State<FlipPageView>
     _dragStartX = null;
     _beforeDragIndex = null;
     _isAnimating = false;
-    widget.controller?._notifyPageChanged();
+    widget.controller._notifyPageChanged();
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    _currentIndex = widget.controller?.initialPage ?? widget.initialPage;
-
     _controller = AnimationController(
       duration: const Duration(milliseconds: 250),
       vsync: this,
     );
 
     // Register callbacks with controller for direct control
-    widget.controller?._attach(
+    widget.controller._attach(
       animateToPage: _animateToPage,
       jumpToPage: _jumpToPage,
-      getCurrentPage: () => _currentIndex,
       getItemsCount: () => widget.itemsCount,
     );
   }
 
   @override
   void dispose() {
-    widget.controller?._detach();
+    widget.controller._detach();
     _controller.dispose();
     super.dispose();
   }
@@ -459,7 +448,7 @@ class _FlipPageViewState extends State<FlipPageView>
     _dragStartX = null;
     _beforeDragIndex = null;
     _isAnimating = false;
-    widget.controller?._notifyPageChanged();
+    widget.controller._notifyPageChanged();
     setState(() {});
   }
 
@@ -473,7 +462,7 @@ class _FlipPageViewState extends State<FlipPageView>
     _dragProgress = 0;
     _dragStartX = null;
     _beforeDragIndex = null;
-    widget.controller?._notifyPageChanged();
+    widget.controller._notifyPageChanged();
     setState(() {});
   }
 
@@ -489,7 +478,7 @@ class _FlipPageViewState extends State<FlipPageView>
             WidgetsBinding.instance.addPostFrameCallback((_) {
               final boundary = context
                   .findAncestorRenderObjectOfType<RenderRepaintBoundary>();
-              widget.controller?._registerCurrentBoundary(boundary);
+              widget.controller._registerCurrentBoundary(boundary);
             });
           }
           return widget.itemBuilder!(context, index);

@@ -1,14 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/note/gallery/bloc/note_gallery_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 
 class RootNoteGalleryTitleView extends StatelessWidget {
   const RootNoteGalleryTitleView({
+    required this.date,
+    required this.isCalendarExpanded,
+    required this.onDateSelected,
+    required this.onCalendarToggled,
     super.key,
   });
+
+  final Jiffy date;
+  final bool isCalendarExpanded;
+  final VoidCallback onCalendarToggled;
+  final ValueChanged<Jiffy> onDateSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +26,11 @@ class RootNoteGalleryTitleView extends StatelessWidget {
           padding: EdgeInsets.zero,
           minimumSize: Size.zero,
           onPressed: () {
-            context.read<NoteGalleryBloc>().add(
-              NoteGalleryDateSelected(date: Jiffy.now()),
-            );
+            onDateSelected(Jiffy.now());
           },
-          child: BlocSelector<NoteGalleryBloc, NoteGalleryState, Jiffy>(
-            selector: (state) => state.date,
-            builder: (context, date) => Text(
-              date.format(pattern: 'y'),
-              style: theme.appBarTheme.titleTextStyle,
-            ),
+          child: Text(
+            date.format(pattern: 'y'),
+            style: theme.appBarTheme.titleTextStyle,
           ),
         ),
         CupertinoButton(
@@ -36,11 +38,7 @@ class RootNoteGalleryTitleView extends StatelessWidget {
           minimumSize: const Size.square(
             kMinInteractiveDimensionCupertino,
           ),
-          onPressed: () {
-            context.read<NoteGalleryBloc>().add(
-              const NoteGalleryCalendarToggled(),
-            );
-          },
+          onPressed: onCalendarToggled,
           child: Container(
             width: 20,
             height: 20,
@@ -50,16 +48,13 @@ class RootNoteGalleryTitleView extends StatelessWidget {
                 kMinInteractiveDimension,
               ),
             ),
-            child: BlocSelector<NoteGalleryBloc, NoteGalleryState, bool>(
-              selector: (state) => state.isCalendarExpanded,
-              builder: (context, isCalendarExpanded) => AnimatedRotation(
-                turns: isCalendarExpanded ? 0.25 : 0,
-                duration: Durations.medium1,
-                child: Icon(
-                  FontAwesomeIcons.chevronRight,
-                  size: 12,
-                  color: theme.colorScheme.primary,
-                ),
+            child: AnimatedRotation(
+              turns: isCalendarExpanded ? 0.25 : 0,
+              duration: Durations.medium1,
+              child: Icon(
+                FontAwesomeIcons.chevronRight,
+                size: 12,
+                color: theme.colorScheme.primary,
               ),
             ),
           ),

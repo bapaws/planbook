@@ -28,7 +28,7 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
     super.initState();
     context.read<AppPurchasesBloc>().add(const AppPurchasesPackageRequested());
 
-    _requestReview();
+    // _requestReview();
   }
 
   Future<void> _requestReview() async {

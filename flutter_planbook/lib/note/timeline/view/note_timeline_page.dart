@@ -11,9 +11,9 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class NoteTimelinePage extends StatelessWidget {
-  const NoteTimelinePage({super.key, this.mode = NoteListMode.all});
+  const NoteTimelinePage({super.key, this.modes = NoteListMode.values});
 
-  final NoteListMode mode;
+  final List<NoteListMode> modes;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class NoteTimelinePage extends StatelessWidget {
             final date = context.read<NoteTimelineBloc>().state.date;
             final bloc = NoteListBloc(
               notesRepository: context.read(),
-            )..add(NoteListRequested(date: date, mode: mode));
+            )..add(NoteListRequested(date: date, modes: modes));
             return bloc;
           },
         ),
@@ -33,7 +33,7 @@ class NoteTimelinePage extends StatelessWidget {
         listenWhen: (previous, current) => previous.date != current.date,
         listener: (context, state) {
           context.read<NoteListBloc>().add(
-            NoteListRequested(date: state.date, mode: mode),
+            NoteListRequested(date: state.date, modes: modes),
           );
         },
         child: const _NoteTimelinePage(),

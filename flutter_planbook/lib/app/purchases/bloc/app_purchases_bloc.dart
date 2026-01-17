@@ -63,21 +63,21 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesSubscriptionRequested event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    // if (kDebugMode) {
-    //   emit(
-    //     state.copyWith(
-    //       activeProductIdentifier: 'lifetime',
-    //     ),
-    //   );
-    // }
+    if (kDebugMode) {
+      emit(
+        state.copyWith(
+          activeProductIdentifier: 'lifetime',
+        ),
+      );
+    }
     await emit.forEach(
       AppPurchases.instance.getCustomerInfo(),
       onData: (info) {
-        // if (kDebugMode) {
-        //   return state.copyWith(
-        //     activeProductIdentifier: 'lifetime',
-        //   );
-        // }
+        if (kDebugMode) {
+          return state.copyWith(
+            activeProductIdentifier: 'lifetime',
+          );
+        }
         return state.copyWith(
           activeProductIdentifier: info?.activeProductIdentifier,
         );

@@ -129,7 +129,7 @@ class NotesRepository {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
-    NoteListMode mode = NoteListMode.all,
+    List<NoteListMode> modes = NoteListMode.values,
     List<String>? tagIds,
   }) {
     _syncNotes();
@@ -137,7 +137,7 @@ class NotesRepository {
       date,
       tagIds: tagIds,
       userId: userId,
-      mode: mode,
+      modes: modes,
     );
   }
 
@@ -162,6 +162,13 @@ class NotesRepository {
     NoteType type = NoteType.dailyFocus,
   }) {
     return _dbNoteApi.getNoteByFocusAt(focusAt, type: type, userId: userId);
+  }
+
+  Stream<List<Note>> getYearlyNotes(
+    int year,
+    List<NoteType> types,
+  ) {
+    return _dbNoteApi.getYearlyNotes(year, types, userId: userId);
   }
 
   Future<Jiffy?> getStartDate() async {

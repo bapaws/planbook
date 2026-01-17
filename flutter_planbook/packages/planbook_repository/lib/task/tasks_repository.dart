@@ -254,17 +254,21 @@ class TasksRepository {
   Stream<int> getTaskCount({
     required TaskListMode mode,
     Jiffy? date,
+    TaskPriority? priority,
     bool? isCompleted,
   }) async* {
     unawaited(_syncTasks());
 
     yield* switch (mode) {
       TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
+        date: date,
         isCompleted: isCompleted,
+        priority: priority,
         userId: userId,
       ),
       TaskListMode.today => _dbTaskTodayApi.getTodayTaskCount(
         date: date ?? Jiffy.now(),
+        priority: priority,
         isCompleted: isCompleted,
         userId: userId,
       ),
@@ -273,6 +277,7 @@ class TasksRepository {
             ? throw UnimplementedError()
             : _dbTaskOverdueApi.getOverdueTaskCount(
                 date: date ?? Jiffy.now(),
+                priority: priority,
                 userId: userId,
               ),
       TaskListMode.tag => throw UnimplementedError(),
@@ -392,9 +397,11 @@ class TasksRepository {
 
   Stream<int> getCompletedTaskCount({
     required Jiffy date,
+    TaskPriority? priority,
   }) {
     return _dbTaskCompletionApi.getCompletedTaskCount(
       date: date,
+      priority: priority,
       userId: userId,
     );
   }

@@ -22,6 +22,11 @@ final class AppBackgroundEntity extends Equatable {
   final String darkAsset;
   final String lightAsset;
 
+  String get bookDarkAsset =>
+      darkAsset.replaceAll('tile_', '').replaceAll('images/', 'tiles/');
+  String get bookLightAsset =>
+      lightAsset.replaceAll('tile_', '').replaceAll('images/', 'tiles/');
+
   AppBackgroundEntity copyWith({
     String? id,
     String? name,

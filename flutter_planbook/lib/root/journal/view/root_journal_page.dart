@@ -134,10 +134,8 @@ class _RootJournalPageState extends State<_RootJournalPage> {
         listener: (context, state) {
           final year = context.read<RootJournalBloc>().state.year;
           final startOfYear = Jiffy.parseFromList([year]);
-          final page = _controller.page;
-          if (page == null) return;
 
-          final date = startOfYear.add(days: page);
+          final date = startOfYear.add(days: _controller.value);
           _capture(context, date);
         },
         child: Center(
