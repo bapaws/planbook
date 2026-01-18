@@ -131,17 +131,17 @@ class AppActivityRepository {
 
 ''',
       contentURL: 'https://bapaws.super.site/活动消息/发小红书赢年会员',
-      openURL: 'xhsdiscover://user/6481492100000000120342c4',
-      openTitle: '打开小红书',
+      openURL: 'https://apps.apple.com/app/id6737596725?action=write-review',
+      openTitle: '立即写评论',
       receiveWay: '''
 ### 🔴小红书
   1. 打开开发者小红书账户：[**MC Studio**](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。
-  2. 点击私信页面，将您的笔记分享给账户。
+  2. 点击私信页面，将您的评论截图和笔记链接分享给账户。
   3. 我们将在 24 小时内，私信会员兑换码。
 
 ### 🟢微信
   1. 微信添加「**计划本**」客服账户：[**Bapaws**](weixin://)。
-  2. 将您的笔记分享给客服的微信账户。
+  2. 将您的评论截图和笔记链接分享给客服的微信账户。
   3. 将在 24 小时内，发送会员兑换码。
 **👉由于会员码的限制，只能在 App Store 兑换一次。**
 ''',
