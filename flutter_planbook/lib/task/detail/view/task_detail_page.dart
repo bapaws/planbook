@@ -338,6 +338,7 @@ class _TaskDetailPage extends StatelessWidget {
                                       ),
                                       sliver: SliverToBoxAdapter(
                                         child: AppEmptyNoteView(
+                                          top: 0,
                                           showSlogan: false,
                                         ),
                                       ),

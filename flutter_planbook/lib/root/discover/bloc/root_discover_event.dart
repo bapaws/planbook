@@ -15,3 +15,16 @@ final class RootDiscoverTabSelected extends RootDiscoverEvent {
   @override
   List<Object> get props => [tab];
 }
+
+final class RootDiscoverAutoPlayRangeChanged extends RootDiscoverEvent {
+  const RootDiscoverAutoPlayRangeChanged({
+    required this.from,
+    required this.to,
+  });
+
+  final Jiffy from;
+  final Jiffy to;
+
+  @override
+  List<Object> get props => [from, to];
+}

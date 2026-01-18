@@ -10,6 +10,7 @@ import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.dart';
+import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:jiffy/jiffy.dart';
@@ -54,6 +55,9 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
               previous.downloadJournalDayCount !=
               current.downloadJournalDayCount,
           listener: (context, state) {
+            _timer?.cancel();
+            _timer = null;
+
             final year = context.read<DiscoverJournalBloc>().state.year;
             final startOfYear = Jiffy.parseFromList([year]);
             final date = startOfYear.add(days: _controller.value);
@@ -64,9 +68,21 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
           listenWhen: (previous, current) =>
               previous.date.year != current.date.year,
           listener: (context, state) {
+            _timer?.cancel();
+            _timer = null;
+
             final startOfYear = state.date.startOf(Unit.year);
             final page = state.date.diff(startOfYear, unit: Unit.day).toInt();
             _controller.jumpToPage(page);
+          },
+        ),
+        BlocListener<RootDiscoverBloc, RootDiscoverState>(
+          listenWhen: (previous, current) =>
+              previous.autoPlayFrom != current.autoPlayFrom ||
+              previous.autoPlayTo != current.autoPlayTo,
+          listener: (context, state) {
+            if (state.autoPlayFrom == null || state.autoPlayTo == null) return;
+            _play(from: state.autoPlayFrom!, to: state.autoPlayTo!);
           },
         ),
       ],

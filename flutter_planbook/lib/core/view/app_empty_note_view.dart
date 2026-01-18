@@ -5,9 +5,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppEmptyNoteView extends StatelessWidget {
-  const AppEmptyNoteView({super.key, this.showSlogan = true});
+  const AppEmptyNoteView({super.key, this.showSlogan = true, this.top});
 
   final bool showSlogan;
+  final double? top;
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class AppEmptyNoteView extends StatelessWidget {
       children: [
         SizedBox(
           width: double.infinity,
-          height: showSlogan ? kToolbarHeight : 0,
+          height: top ?? kToolbarHeight,
         ),
         SvgPicture.asset(
           'assets/images/Summer-Collection.svg',

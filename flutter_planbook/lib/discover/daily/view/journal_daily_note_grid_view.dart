@@ -2,8 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/model/app_color_schemes.dart';
+import 'package:flutter_planbook/core/view/app_empty_note_view.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_header.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_note_view.dart';
+import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_pinned_layout.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -26,7 +28,9 @@ class JournalDailyNoteGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (notes.isEmpty) return _buildEmptyState(context);
+    if (notes.isEmpty) {
+      return const AppEmptyNoteView(top: kDiscoverJournalDailyPageHeight / 5);
+    }
 
     // 1~4 篇时使用"贴在页面"定制布局
     if (notes.length <= 4) {
@@ -83,30 +87,6 @@ class JournalDailyNoteGridView extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  /// 构建空状态
-  Widget _buildEmptyState(BuildContext context) {
-    final theme = Theme.of(context);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.note_alt_outlined,
-            size: 48,
-            color: theme.colorScheme.outlineVariant,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            context.l10n.dailyDescriptionNoNotesWritten,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.outline,
-            ),
-          ),
-        ],
-      ),
     );
   }
 

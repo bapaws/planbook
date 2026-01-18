@@ -9,7 +9,7 @@ enum RootDiscoverTab {
 
   IconData get icon {
     return switch (this) {
-      RootDiscoverTab.journal => FontAwesomeIcons.newspaper,
+      RootDiscoverTab.journal => FontAwesomeIcons.bookOpen,
       RootDiscoverTab.focusMindMap => FontAwesomeIcons.folderOpen,
       RootDiscoverTab.summaryMindMap => FontAwesomeIcons.folderClosed,
     };

@@ -11,6 +11,7 @@ import 'package:flutter_planbook/root/discover/view/root_discover_drawer.dart';
 import 'package:flutter_planbook/root/note/view/root_note_gallery_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 @RoutePage()
 class RootDiscoverPage extends StatelessWidget {
@@ -92,6 +93,53 @@ class _RootDiscoverPage extends StatelessWidget {
             RootDiscoverTab.summaryMindMap => Text(context.l10n.summaryMindMap),
           },
         ),
+        actions: [
+          PullDownButton(
+            itemBuilder: (context) => [
+              PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendarMinus,
+                title: context.l10n.thisWeek,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.week);
+                  final to = now.endOf(Unit.week);
+                  context.read<RootDiscoverBloc>().add(
+                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                  );
+                },
+              ),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendarDays,
+                title: context.l10n.thisMonth,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.month);
+                  final to = now.endOf(Unit.month);
+                  context.read<RootDiscoverBloc>().add(
+                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                  );
+                },
+              ),
+              PullDownMenuItem(
+                icon: FontAwesomeIcons.calendar,
+                title: context.l10n.thisYear,
+                onTap: () {
+                  final now = Jiffy.now();
+                  final from = now.startOf(Unit.year);
+                  final to = now.endOf(Unit.year);
+                  context.read<RootDiscoverBloc>().add(
+                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                  );
+                },
+              ),
+            ],
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              onPressed: showMenu,
+              child: const Icon(FontAwesomeIcons.ellipsis),
+            ),
+          ),
+        ],
       ),
       body: child,
     );
