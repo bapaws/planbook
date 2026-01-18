@@ -38,18 +38,20 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           type: NoteType.yearlyFocus,
         )
         .first;
-    final mindMap = NoteMindMapEntity(
+    var mindMap = NoteMindMapEntity(
       date: Jiffy.parseFromList([year]),
       type: note?.type ?? NoteType.yearlyFocus,
       note: note,
-      isSelected: true,
-      children: await _buildMonthlyMindMap(year),
+    );
+    mindMap = mindMap.copyWith(
+      children: await _buildMonthlyMindMap(year, mindMap),
     );
     emit(state.copyWith(mindMap: mindMap, status: PageStatus.success));
   }
 
   Future<List<NoteMindMapEntity>> _buildMonthlyMindMap(
-    int year, {
+    int year,
+    NoteMindMapEntity yearlyNode, {
     NoteMindMapEntity? selectedNode,
   }) async {
     final startAt = Jiffy.parseFromList([year]);
@@ -90,10 +92,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           kMonthlyMindMapRadius * math.cos(angle),
           kMonthlyMindMapRadius * math.sin(angle),
         ),
-        normalOffset: Offset(
-          kMonthlyMindMapRadius * math.cos(angle),
-          kMonthlyMindMapRadius * math.sin(angle),
-        ),
+        normalOffset: yearlyNode.normalOffset,
         expandedAngle: angle,
         angle: angle,
         isSelected: isSelected,
@@ -171,10 +170,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           kWeeklyMindMapRadius * math.cos(angle),
           kWeeklyMindMapRadius * math.sin(angle),
         ),
-        normalOffset: Offset(
-          monthlyNode.normalOffset.dx,
-          monthlyNode.normalOffset.dy,
-        ),
+        normalOffset: monthlyNode.normalOffset,
         expandedAngle: expandedAngle,
         angle: angle,
         isSelected: isSelected,
@@ -306,179 +302,96 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
     DiscoverFocusNodeSelected event,
     Emitter<DiscoverFocusState> emit,
   ) async {
-    final mindMap = state.mindMap;
-    if (mindMap == null) return;
+    final yearlyNode = state.mindMap;
+    if (yearlyNode == null) return;
 
-    switch (event.node.type) {
-      case NoteType.yearlyFocus || NoteType.yearlySummary:
-        final yearlySelected = !mindMap.isSelected;
-        final monthlyNodes = [...mindMap.children];
-        for (var i = 0; i < monthlyNodes.length; i++) {
-          final monthlyNode = monthlyNodes[i];
-          final weeklyNodes = [...monthlyNode.children];
-          for (var j = 0; j < weeklyNodes.length; j++) {
-            final weeklyNode = weeklyNodes[j];
-            final dailyNodes = [...weeklyNode.children];
-            for (var k = 0; k < dailyNodes.length; k++) {
-              final dailyNode = dailyNodes[k];
-              dailyNodes[k] = dailyNode.copyWith(
-                normalOffset: yearlySelected
-                    ? monthlyNode.unselectedOffset
-                    : mindMap.unselectedOffset,
-                isSelected: false,
-              );
-            }
-            weeklyNodes[j] = weeklyNode.copyWith(
-              children: dailyNodes,
-              normalOffset: yearlySelected
-                  ? monthlyNode.unselectedOffset
-                  : mindMap.unselectedOffset,
-              isSelected: false,
-            );
-          }
-          monthlyNodes[i] = monthlyNodes[i].copyWith(
-            children: weeklyNodes,
-            normalOffset: yearlySelected
-                ? monthlyNode.unselectedOffset
-                : mindMap.selectedOffset,
-            isSelected: false,
+    final selectedYearlyNode = event.node.type.isYearly
+        ? event.node
+        : state.selectedYearlyNode;
+    final selectedMonthlyNode = event.node.type.isMonthly
+        ? event.node
+        : state.selectedMonthlyNode;
+    final selectedWeeklyNode = event.node.type.isWeekly
+        ? event.node
+        : state.selectedWeeklyNode;
+    final selectedDailyNode = event.node.type.isDaily
+        ? event.node
+        : state.selectedDailyNode;
+
+    final isYearlySelected = yearlyNode.key == event.node.key
+        ? !yearlyNode.isSelected
+        : yearlyNode.isSelected;
+    final monthlyNodes = [...yearlyNode.children];
+    for (var i = 0; i < monthlyNodes.length; i++) {
+      final monthlyNode = monthlyNodes[i];
+      final isMonthlySelected = monthlyNode.key == event.node.key
+          ? !monthlyNode.isSelected
+          : isYearlySelected &&
+                !event.node.type.isMonthly &&
+                monthlyNode.isSelected;
+      final weeklyNodes = [...monthlyNode.children];
+      for (var j = 0; j < weeklyNodes.length; j++) {
+        final weeklyNode = weeklyNodes[j];
+        final isWeeklySelected = weeklyNode.key == event.node.key
+            ? !weeklyNode.isSelected
+            : isMonthlySelected &&
+                  !event.node.type.isWeekly &&
+                  weeklyNode.isSelected;
+        final dailyNodes = [...weeklyNode.children];
+        for (var k = 0; k < dailyNodes.length; k++) {
+          final dailyNode = dailyNodes[k];
+          final isDailySelected = dailyNode.key == event.node.key
+              ? !dailyNode.isSelected
+              : isWeeklySelected &&
+                    !event.node.type.isDaily &&
+                    dailyNode.isSelected;
+          dailyNodes[k] = dailyNode.copyWith(
+            isSelected: isDailySelected,
+            normalOffset: isDailySelected
+                ? dailyNode.selectedOffset
+                : isWeeklySelected
+                ? dailyNode.unselectedOffset
+                : isMonthlySelected
+                ? weeklyNode.unselectedOffset
+                : isYearlySelected
+                ? (monthlyNode.unselectedOffset)
+                : yearlyNode.unselectedOffset,
           );
         }
-        emit(
-          state.copyWith(
-            selectedMonthlyNode: event.node,
-            mindMap: mindMap.copyWith(
-              children: monthlyNodes,
-              isSelected: yearlySelected,
-            ),
-          ),
+        weeklyNodes[j] = weeklyNode.copyWith(
+          children: dailyNodes,
+          isSelected: isWeeklySelected,
+          normalOffset: isWeeklySelected
+              ? weeklyNode.selectedOffset
+              : isMonthlySelected
+              ? weeklyNode.unselectedOffset
+              : isYearlySelected
+              ? monthlyNode.unselectedOffset
+              : yearlyNode.unselectedOffset,
         );
-      case NoteType.monthlyFocus || NoteType.monthlySummary:
-        final monthlyNodes = [...mindMap.children];
-        for (var i = 0; i < monthlyNodes.length; i++) {
-          final monthlyNode = monthlyNodes[i];
-          final isMonthlySelected =
-              monthlyNode.key == event.node.key && !monthlyNode.isSelected;
-          final weeklyNodes = [...monthlyNode.children];
-          for (var j = 0; j < weeklyNodes.length; j++) {
-            final weeklyNode = weeklyNodes[j];
-            final dailyNodes = [...weeklyNode.children];
-            for (var k = 0; k < dailyNodes.length; k++) {
-              final dailyNode = dailyNodes[k];
-              dailyNodes[k] = dailyNode.copyWith(
-                normalOffset: isMonthlySelected
-                    ? weeklyNode.unselectedOffset
-                    : monthlyNode.unselectedOffset,
-                isSelected: false,
-              );
-            }
-            weeklyNodes[j] = weeklyNode.copyWith(
-              children: dailyNodes,
-              isSelected: false,
-              normalOffset: isMonthlySelected
-                  ? weeklyNode.unselectedOffset
-                  : monthlyNode.unselectedOffset,
-            );
-          }
-          monthlyNodes[i] = monthlyNodes[i].copyWith(
-            children: weeklyNodes,
-            isSelected: isMonthlySelected,
-            normalOffset: isMonthlySelected
-                ? monthlyNode.selectedOffset
-                : monthlyNode.unselectedOffset,
-          );
-        }
-        emit(
-          state.copyWith(
-            selectedMonthlyNode: event.node,
-            mindMap: mindMap.copyWith(children: monthlyNodes),
-          ),
-        );
-      case NoteType.weeklyFocus || NoteType.weeklySummary:
-        final monthlyNodes = [...mindMap.children];
-        for (var i = 0; i < monthlyNodes.length; i++) {
-          final monthlyNode = monthlyNodes[i];
-          final isMonthlySelected =
-              monthlyNode.key == state.selectedMonthlyNode?.key;
-          final weeklyNodes = [...monthlyNode.children];
-          for (var j = 0; j < weeklyNodes.length; j++) {
-            final weeklyNode = weeklyNodes[j];
-            final isWeeklySelected =
-                weeklyNode.key == event.node.key && !weeklyNode.isSelected;
-            final dailyNodes = [...weeklyNode.children];
-            for (var k = 0; k < dailyNodes.length; k++) {
-              final dailyNode = dailyNodes[k];
-              dailyNodes[k] = dailyNode.copyWith(
-                isSelected: false,
-                normalOffset: isWeeklySelected
-                    ? dailyNode.unselectedOffset
-                    : isMonthlySelected
-                    ? weeklyNode.unselectedOffset
-                    : (monthlyNode.unselectedOffset),
-              );
-            }
-            weeklyNodes[j] = weeklyNode.copyWith(
-              children: dailyNodes,
-              isSelected: isWeeklySelected,
-              normalOffset: isMonthlySelected
-                  ? weeklyNode.unselectedOffset
-                  : monthlyNode.unselectedOffset,
-            );
-          }
-          monthlyNodes[i] = monthlyNodes[i].copyWith(
-            children: weeklyNodes,
-          );
-        }
-        emit(
-          state.copyWith(
-            selectedWeeklyNode: event.node,
-            mindMap: mindMap.copyWith(children: monthlyNodes),
-          ),
-        );
-      case NoteType.dailyFocus || NoteType.dailySummary:
-        final monthlyNodes = [...mindMap.children];
-        for (var i = 0; i < monthlyNodes.length; i++) {
-          final monthlyNode = monthlyNodes[i];
-          final isMonthlySelected =
-              monthlyNode.key == state.selectedMonthlyNode?.key;
-          final weeklyNodes = [...monthlyNode.children];
-          for (var j = 0; j < weeklyNodes.length; j++) {
-            final weeklyNode = weeklyNodes[j];
-            final isWeeklySelected =
-                weeklyNode.key == state.selectedWeeklyNode?.key;
-            final dailyNodes = [...weeklyNode.children];
-            for (var k = 0; k < dailyNodes.length; k++) {
-              final dailyNode = dailyNodes[k];
-              final isDailySelected =
-                  dailyNode.key == event.node.key && !dailyNode.isSelected;
-              dailyNodes[k] = dailyNode.copyWith(
-                isSelected: isDailySelected,
-                normalOffset: isDailySelected
-                    ? dailyNode.selectedOffset
-                    : isWeeklySelected
-                    ? dailyNode.unselectedOffset
-                    : isMonthlySelected
-                    ? weeklyNode.unselectedOffset
-                    : (monthlyNode.unselectedOffset),
-              );
-            }
-            weeklyNodes[j] = weeklyNode.copyWith(
-              children: dailyNodes,
-            );
-          }
-          monthlyNodes[i] = monthlyNodes[i].copyWith(
-            children: weeklyNodes,
-          );
-        }
-        emit(
-          state.copyWith(
-            selectedDailyNode: event.node,
-            mindMap: mindMap.copyWith(children: monthlyNodes),
-          ),
-        );
-      case NoteType.journal:
-        break;
+      }
+      monthlyNodes[i] = monthlyNodes[i].copyWith(
+        children: weeklyNodes,
+        isSelected: isMonthlySelected,
+        normalOffset: isMonthlySelected
+            ? monthlyNode.selectedOffset
+            : isYearlySelected
+            ? monthlyNode.unselectedOffset
+            : yearlyNode.unselectedOffset,
+      );
     }
+    emit(
+      state.copyWith(
+        selectedYearlyNode: selectedYearlyNode,
+        selectedMonthlyNode: selectedMonthlyNode,
+        selectedWeeklyNode: selectedWeeklyNode,
+        selectedDailyNode: selectedDailyNode,
+        mindMap: yearlyNode.copyWith(
+          children: monthlyNodes,
+          isSelected: isYearlySelected,
+        ),
+      ),
+    );
   }
 
   Future<void> _onAllNodesExpanded(
@@ -487,8 +400,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
   ) async {
     emit(
       state.copyWith(
-        isExpandedAllNodes: event.isExpanded,
-        status: PageStatus.loading,
+        isExpandedAllNodes: !state.isExpandedAllNodes,
       ),
     );
 

@@ -13,14 +13,14 @@ const double kMonthlyNodeExpandedRadius = 100;
 const double kWeeklyNodeExpandedRadius = 44;
 const double kDailyNodeExpandedRadius = 28;
 
-const double kMonthlyMindMapRadius = 150;
-const double kWeeklyMindMapRadius = 280;
-const double kDailyMindMapRadius = 380;
+const double kMonthlyMindMapRadius = 176;
+const double kWeeklyMindMapRadius = 312;
+const double kDailyMindMapRadius = 432;
 
 const double kYearlyNodeRadius = 128;
-const double kMonthlyNodeRadius = 72;
-const double kWeeklyNodeRadius = 56;
-const double kDailyNodeRadius = 48;
+const double kMonthlyNodeRadius = 75;
+const double kWeeklyNodeRadius = 64;
+const double kDailyNodeRadius = 56;
 
 final class NoteMindMapEntity extends Equatable {
   const NoteMindMapEntity({
@@ -85,14 +85,6 @@ final class NoteMindMapEntity extends Equatable {
     NoteType.weeklyFocus || NoteType.weeklySummary => 'W${date.weekOfYear}',
     NoteType.dailyFocus || NoteType.dailySummary => date.MMMd,
     _ => date.format(pattern: 'yyyy-MM-dd'),
-  };
-
-  double get scale => switch (type) {
-    NoteType.yearlyFocus || NoteType.yearlySummary => 0.8,
-    NoteType.monthlyFocus || NoteType.monthlySummary => 1.0,
-    NoteType.weeklyFocus || NoteType.weeklySummary => 1.2,
-    NoteType.dailyFocus || NoteType.dailySummary => 1.5,
-    _ => 1.0,
   };
 
   @override

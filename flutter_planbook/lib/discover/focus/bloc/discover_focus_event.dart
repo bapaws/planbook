@@ -26,9 +26,8 @@ final class DiscoverFocusNodeSelected extends DiscoverFocusEvent {
 }
 
 final class DiscoverFocusAllNodesExpanded extends DiscoverFocusEvent {
-  const DiscoverFocusAllNodesExpanded({required this.isExpanded});
+  const DiscoverFocusAllNodesExpanded();
 
-  final bool isExpanded;
   @override
-  List<Object> get props => [isExpanded];
+  List<Object> get props => [];
 }

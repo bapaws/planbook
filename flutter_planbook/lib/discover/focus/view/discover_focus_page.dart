@@ -6,7 +6,7 @@ import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 import 'package:flutter_planbook/discover/focus/model/note_mind_map_entity.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_core/data/page_status.dart';
 
 @RoutePage()
@@ -15,29 +15,24 @@ class DiscoverFocusPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          DiscoverFocusBloc(notesRepository: context.read())
-            ..add(DiscoverFocusRequested(date: Jiffy.now())),
-      child: BlocListener<DiscoverFocusBloc, DiscoverFocusState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: (context, state) {
-          if (state.status == PageStatus.loading) {
-            EasyLoading.show(maskType: EasyLoadingMaskType.clear);
-          } else if (EasyLoading.isShow) {
-            EasyLoading.dismiss();
-          }
-        },
-        child: BlocBuilder<DiscoverFocusBloc, DiscoverFocusState>(
-          builder: (context, state) => AnimatedSwitcher(
-            duration: Durations.medium1,
-            child: state.mindMap == null
-                ? const SizedBox.shrink()
-                : _DiscoverFocusPage(
-                    mindMap: state.mindMap!,
-                    isExpanded: state.isExpandedAllNodes,
-                  ),
-          ),
+    return BlocListener<DiscoverFocusBloc, DiscoverFocusState>(
+      listenWhen: (previous, current) => previous.status != current.status,
+      listener: (context, state) {
+        if (state.status == PageStatus.loading) {
+          EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+        } else if (EasyLoading.isShow) {
+          EasyLoading.dismiss();
+        }
+      },
+      child: BlocBuilder<DiscoverFocusBloc, DiscoverFocusState>(
+        builder: (context, state) => AnimatedSwitcher(
+          duration: Durations.medium1,
+          child: state.mindMap == null
+              ? const SizedBox.shrink()
+              : _DiscoverFocusPage(
+                  mindMap: state.mindMap!,
+                  isExpanded: state.isExpandedAllNodes,
+                ),
         ),
       ),
     );
@@ -63,6 +58,7 @@ class _DiscoverFocusPageState extends State<_DiscoverFocusPage>
 
   double get bottomPadding =>
       kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
+  double get scale => widget.isExpanded ? 1.0 : 0.8;
 
   @override
   void initState() {
@@ -95,18 +91,18 @@ class _DiscoverFocusPageState extends State<_DiscoverFocusPage>
       builder: (context, constraints) {
         _maxWidth = constraints.maxWidth;
         _maxHeight = constraints.maxHeight;
-        final scale = widget.isExpanded ? 1.0 : 0.8;
-        _controller ??= TransformationController(
-          Matrix4.identity()
-            ..translateByDouble(
-              _maxWidth / 2,
-              _maxHeight / 2 - bottomPadding,
-              0,
-              1,
-            )
-            ..scaleByDouble(scale, scale, 1, 1)
-            ..translateByDouble(-center.dx, -center.dy, 0, 1),
-        );
+        _initController(center);
+        // _controller ??= TransformationController(
+        //   Matrix4.identity()
+        //     ..translateByDouble(
+        //       _maxWidth / 2,
+        //       _maxHeight / 2 - bottomPadding,
+        //       0,
+        //       1,
+        //     )
+        //     ..scaleByDouble(scale, scale, 1, 1)
+        //     ..translateByDouble(-center.dx, -center.dy, 0, 1),
+        // );
         return InteractiveViewer(
           constrained: false,
           minScale: 0.1,
@@ -122,6 +118,7 @@ class _DiscoverFocusPageState extends State<_DiscoverFocusPage>
                 Positioned.fill(
                   child: CustomPaint(
                     painter: _RadialLinePainter(
+                      colorScheme: Theme.of(context).colorScheme,
                       center: center,
                       node: widget.mindMap,
                       isExpanded: widget.isExpanded,
@@ -164,46 +161,117 @@ class _DiscoverFocusPageState extends State<_DiscoverFocusPage>
           node: node,
           isExpanded: widget.isExpanded,
           onTap: (node) {
-            if (_controller == null || _animationController == null) return;
-            // 计算节点中心点，先触发点击事件，再修改选中状态
-            final nodeCenter =
-                center +
-                (node.isSelected ? node.unselectedOffset : node.selectedOffset);
-            final scale = node.scale;
-            // 正确处理缩放和平移的组合变换
-            // 变换顺序：translate(屏幕中心) * scale * translate(-节点中心)
-            final targetMatrix = Matrix4.identity()
-              ..translateByDouble(
-                _maxWidth / 2,
-                _maxHeight / 2 - bottomPadding,
-                0,
-                1,
-              )
-              ..scaleByDouble(scale, scale, 1, 1)
-              ..translateByDouble(-nodeCenter.dx, -nodeCenter.dy, 0, 1);
-
-            final animation =
-                Matrix4Tween(
-                  begin: _controller!.value,
-                  end: targetMatrix,
-                ).animate(
-                  CurvedAnimation(
-                    parent: _animationController!,
-                    curve: Curves.easeInOut,
-                  ),
-                );
-
-            animation.addListener(() {
-              if (_controller != null) {
-                _controller!.value = animation.value;
-              }
-            });
-
-            _animationController!.forward(from: 0);
+            _animateToNode(node, center);
           },
         ),
       ),
     );
+  }
+
+  void _initController(Offset center) {
+    if (_controller != null) return;
+    _controller = TransformationController(
+      Matrix4.identity()
+        ..translateByDouble(
+          _maxWidth / 2,
+          _maxHeight / 2 - bottomPadding,
+          0,
+          1,
+        )
+        ..scaleByDouble(scale, scale, 1, 1)
+        ..translateByDouble(-center.dx, -center.dy, 0, 1),
+    );
+
+    final bloc = context.read<DiscoverFocusBloc>();
+
+    final now = Jiffy.now();
+    final yearlyNode = widget.mindMap;
+
+    Future.delayed(Durations.extralong4, () {
+      bloc.add(
+        DiscoverFocusNodeSelected(node: yearlyNode),
+      );
+      _animateToNode(yearlyNode, center);
+
+      final monthlyNode = yearlyNode.children.firstWhere(
+        (element) => element.date.isSame(now, unit: Unit.month),
+      );
+      Future.delayed(Durations.extralong4, () {
+        bloc.add(
+          DiscoverFocusNodeSelected(node: monthlyNode),
+        );
+        _animateToNode(monthlyNode, center);
+
+        Future.delayed(Durations.extralong4, () {
+          final weeklyNode = monthlyNode.children.firstWhere(
+            (element) => element.date.isSame(now, unit: Unit.week),
+          );
+          bloc.add(
+            DiscoverFocusNodeSelected(node: weeklyNode),
+          );
+          _animateToNode(weeklyNode, center);
+
+          Future.delayed(Durations.extralong4, () {
+            final dailyNode = weeklyNode.children.firstWhere(
+              (element) => element.date.isSame(now, unit: Unit.day),
+            );
+            bloc.add(
+              DiscoverFocusNodeSelected(node: dailyNode),
+            );
+            _animateToNode(dailyNode, center);
+          });
+        });
+      });
+    });
+  }
+
+  void _animateToNode(NoteMindMapEntity node, Offset center) {
+    if (_controller == null || _animationController == null) return;
+    // 计算节点中心点，先触发点击事件，再修改选中状态
+    final nodeCenter =
+        center +
+        (node.isSelected ? node.unselectedOffset : node.selectedOffset);
+    final scale = switch (node.type) {
+      NoteType.yearlyFocus ||
+      NoteType.yearlySummary => node.isSelected ? 1.2 : 0.9,
+      NoteType.monthlyFocus ||
+      NoteType.monthlySummary => node.isSelected ? 0.9 : 1.0,
+      NoteType.weeklyFocus ||
+      NoteType.weeklySummary => node.isSelected ? 1.0 : 0.8,
+      NoteType.dailyFocus ||
+      NoteType.dailySummary => node.isSelected ? 0.8 : 1.25,
+      _ => 1.0,
+    };
+    // 正确处理缩放和平移的组合变换
+    // 变换顺序：translate(屏幕中心) * scale * translate(-节点中心)
+    final targetMatrix = Matrix4.identity()
+      ..translateByDouble(
+        _maxWidth / 2,
+        _maxHeight / 2 - bottomPadding,
+        0,
+        1,
+      )
+      ..scaleByDouble(scale, scale, 1, 1)
+      ..translateByDouble(-nodeCenter.dx, -nodeCenter.dy, 0, 1);
+
+    final animation =
+        Matrix4Tween(
+          begin: _controller!.value,
+          end: targetMatrix,
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController!,
+            curve: Curves.easeInOut,
+          ),
+        );
+
+    animation.addListener(() {
+      if (_controller != null) {
+        _controller!.value = animation.value;
+      }
+    });
+
+    _animationController!.forward(from: 0);
   }
 }
 
@@ -224,73 +292,70 @@ class _CircleNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = node.type.getColorScheme(context);
-    final textTheme = Theme.of(context).textTheme;
-
+    final colorScheme = node.type.getColorScheme(context);
     final radius = isExpanded ? node.expandedSize : node.size;
-    // 根据层级调整字体大小
-    final fontSize = switch (node.type) {
-      NoteType.yearlyFocus || NoteType.yearlySummary => 14.0,
-      NoteType.monthlyFocus || NoteType.monthlySummary => 11.0,
-      NoteType.weeklyFocus || NoteType.weeklySummary => 9.0,
-      NoteType.dailyFocus || NoteType.dailySummary => 8.0,
-      _ => 8.0,
-    };
 
     return GestureDetector(
       onTap: () {
         onTap(node);
-        if (node.type.isYearly) {
-          context.read<DiscoverFocusBloc>().add(
-            DiscoverFocusRequested(date: node.date),
-          );
-        } else {
-          context.read<DiscoverFocusBloc>().add(
-            DiscoverFocusNodeSelected(node: node),
-          );
-        }
+        // if (node.type.isYearly) {
+        // context.read<DiscoverFocusBloc>().add(
+        //   DiscoverFocusRequested(date: node.date),
+        // );
+        // } else {
+        context.read<DiscoverFocusBloc>().add(
+          DiscoverFocusNodeSelected(node: node),
+        );
+        // }
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: Durations.medium1,
         width: radius,
         height: radius,
         decoration: BoxDecoration(
-          color: color.primaryContainer,
-          shape: BoxShape.circle,
-          // borderRadius: BorderRadius.circular(node.size / 4),
+          color: colorScheme.primaryContainer,
+          borderRadius: BorderRadius.circular((radius / 4).roundToDouble()),
+          boxShadow: node.isSelected
+              ? [
+                  BoxShadow(
+                    color: colorScheme.primaryContainer,
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
         ),
-        child: Center(
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Padding(
-              padding: EdgeInsets.all(radius * 0.1),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 日期标签
-                  Text(
-                    node.dateLabel,
+        child: Padding(
+          padding: EdgeInsets.all((radius * 0.075).roundToDouble()),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                node.dateLabel,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontSize: (radius * 0.15).roundToDouble(),
+                ),
+              ),
+              if (node.note?.content != null &&
+                  node.note!.content!.isNotEmpty) ...[
+                SizedBox(height: (radius * 0.03).roundToDouble()),
+                Expanded(
+                  child: Text(
+                    node.note!.content!,
+                    maxLines: 5,
+                    overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
-                    style: textTheme.labelSmall?.copyWith(
-                      color: color.onSurface,
-                      fontWeight: FontWeight.bold,
-                      fontSize: fontSize,
-                      height: 1.1,
+                    style: TextStyle(
+                      color: colorScheme.onSurface,
+                      fontSize: (radius * 0.1).roundToDouble(),
                     ),
                   ),
-                  if (node.note?.content != null &&
-                      node.note!.content!.isNotEmpty)
-                    Text(
-                      node.note!.content!,
-                      // textAlign: TextAlign.center,
-                      style: textTheme.labelSmall?.copyWith(
-                        color: color.onSurface,
-                        fontSize: fontSize,
-                      ),
-                    ),
-                ],
-              ),
-            ),
+                ),
+              ],
+            ],
           ),
         ),
       ),
@@ -301,21 +366,23 @@ class _CircleNode extends StatelessWidget {
 /// 放射状连接线绘制器 - 同心圆布局
 class _RadialLinePainter extends CustomPainter {
   const _RadialLinePainter({
+    required this.colorScheme,
     required this.center,
     required this.node,
     required this.isExpanded,
   });
 
   final NoteMindMapEntity node;
+  final ColorScheme colorScheme;
   final Offset center;
   final bool isExpanded;
 
   @override
   void paint(Canvas canvas, Size size) {
-    _drawAllConnections(canvas, node, 0);
+    drawAllConnections(canvas, node, 0);
   }
 
-  void _drawAllConnections(
+  void drawAllConnections(
     Canvas canvas,
     NoteMindMapEntity node,
     int level,
@@ -328,36 +395,23 @@ class _RadialLinePainter extends CustomPainter {
       // 子节点位置（基于中心）
       final childOffset = child.getOffset(isExpanded: isExpanded) + center;
 
-      // 绘制直线连接
-      final color = _getNodeColor(child.type);
-      final hasNote = child.note != null;
-
       final paint = Paint()
-        ..color = color.withValues(alpha: hasNote ? 0.6 : 0.2)
-        ..strokeWidth = hasNote ? 1.5 : 0.5
+        ..color = child.isSelected
+            ? colorScheme.primaryContainer
+            : colorScheme.surfaceContainerHighest
+        ..strokeWidth = child.isSelected ? 1.5 : 0.5
         ..style = PaintingStyle.stroke
         ..strokeCap = StrokeCap.round;
 
       canvas.drawLine(parentOffset, childOffset, paint);
 
       // 递归绘制子节点的连接线
-      _drawAllConnections(canvas, child, level + 1);
+      drawAllConnections(canvas, child, level + 1);
     }
   }
 
   @override
-  bool shouldRepaint(covariant _RadialLinePainter oldDelegate) {
+  bool shouldRepaint(_RadialLinePainter oldDelegate) {
     return oldDelegate.node != node;
   }
-}
-
-/// 根据类型获取颜色
-Color _getNodeColor(NoteType type) {
-  return switch (type) {
-    NoteType.yearlyFocus || NoteType.yearlySummary => const Color(0xFFE91E63),
-    NoteType.monthlyFocus || NoteType.monthlySummary => const Color(0xFF9C27B0),
-    NoteType.weeklyFocus || NoteType.weeklySummary => const Color(0xFF2196F3),
-    NoteType.dailyFocus || NoteType.dailySummary => const Color(0xFF4CAF50),
-    _ => const Color(0xFF607D8B),
-  };
 }

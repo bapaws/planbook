@@ -25,31 +25,18 @@ class RootDiscoverDrawer extends StatelessWidget {
                     height: 16,
                   ),
                 ),
-                RootDrawerListTile(
-                  icon: RootDiscoverTab.journal.icon,
-                  iconBackgroundColor: RootDiscoverTab.journal.color,
-                  title: RootDiscoverTab.journal.getName(context),
-                  onPressed: () {
-                    context.read<RootDiscoverBloc>().add(
-                      const RootDiscoverTabSelected(
-                        tab: RootDiscoverTab.journal,
-                      ),
-                    );
-                    Scaffold.of(context).closeDrawer();
-                  },
-                ),
-                // for (final tab in RootDiscoverTab.values)
-                //   RootDrawerListTile(
-                //     icon: tab.icon,
-                //     iconBackgroundColor: tab.color,
-                //     title: tab.getName(context),
-                //     onPressed: () {
-                //       context.read<RootDiscoverBloc>().add(
-                //         RootDiscoverTabSelected(tab: tab),
-                //       );
-                //       Scaffold.of(context).closeDrawer();
-                //     },
-                //   ),
+                for (final tab in RootDiscoverTab.values)
+                  RootDrawerListTile(
+                    icon: tab.icon,
+                    iconBackgroundColor: tab.color,
+                    title: tab.getName(context),
+                    onPressed: () {
+                      context.read<RootDiscoverBloc>().add(
+                        RootDiscoverTabSelected(tab: tab),
+                      );
+                      Scaffold.of(context).closeDrawer();
+                    },
+                  ),
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height:
