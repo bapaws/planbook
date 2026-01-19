@@ -131,9 +131,14 @@ class FlipPageController extends ValueNotifier<int> {
     required _JumpToPageCallback jumpToPage,
     required _GetItemsCountCallback getItemsCount,
   }) {
-    _animateToPageCallback = animateToPage;
-    _jumpToPageCallback = jumpToPage;
-    _getItemsCountCallback = getItemsCount;
+    // 只有在回调为空或发生变化时才更新，避免 state 重建时不必要的覆盖
+    if (_animateToPageCallback != animateToPage ||
+        _jumpToPageCallback != jumpToPage ||
+        _getItemsCountCallback != getItemsCount) {
+      _animateToPageCallback = animateToPage;
+      _jumpToPageCallback = jumpToPage;
+      _getItemsCountCallback = getItemsCount;
+    }
   }
 
   void _detach() {
@@ -269,11 +274,11 @@ class _FlipPageViewState extends State<FlipPageView>
 
     final velocity = details.velocity.pixelsPerSecond.dx;
     final screenWidth = MediaQuery.of(context).size.width;
-    final threshold = screenWidth * 0.3; // 30% of screen width
+    final threshold = screenWidth * 0.15; // 30% of screen width
 
     // Determine if we should complete the flip
     final shouldComplete =
-        _dragProgress.abs() > 0.5 ||
+        _dragProgress.abs() > 0.3 ||
         (details.primaryVelocity?.abs() ?? 0) > threshold ||
         (velocity.abs() > 500 && (velocity > 0) == (_dragProgress > 0));
 
@@ -320,6 +325,20 @@ class _FlipPageViewState extends State<FlipPageView>
     );
 
     // Register callbacks with controller for direct control
+    _attachCallbacks();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlipPageView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 当 widget 更新时（比如 itemsCount 改变），重新注册回调
+    if (oldWidget.controller != widget.controller ||
+        oldWidget.itemsCount != widget.itemsCount) {
+      _attachCallbacks();
+    }
+  }
+
+  void _attachCallbacks() {
     widget.controller._attach(
       animateToPage: _animateToPage,
       jumpToPage: _jumpToPage,

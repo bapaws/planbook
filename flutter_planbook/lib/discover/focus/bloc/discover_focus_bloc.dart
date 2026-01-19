@@ -163,8 +163,8 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           monthlyNode.expandedOffset.dy + expandedDy,
         ),
         selectedOffset: Offset(
-          (kWeeklyMindMapRadius + kWeeklyNodeRadius / 2) * math.cos(angle),
-          (kWeeklyMindMapRadius + kWeeklyNodeRadius / 2) * math.sin(angle),
+          (kWeeklyMindMapRadius + kWeeklyNodeRadius) * math.cos(angle),
+          (kWeeklyMindMapRadius + kWeeklyNodeRadius) * math.sin(angle),
         ),
         unselectedOffset: Offset(
           kWeeklyMindMapRadius * math.cos(angle),
@@ -201,7 +201,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
     final expandedDayStartAngle =
         weeklyNode.expandedAngle - 8 * expandedAnglePerDay / 2;
 
-    const anglePerDay = 2 * math.pi / 40; // 每周约占的角度
+    const anglePerDay = 2 * math.pi / 36; // 每周约占的角度
     final dayStartAngle = weeklyNode.angle - (dayCount - 1) * anglePerDay / 2;
 
     for (var i = 0; i < dayCount; i++) {
@@ -228,8 +228,8 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
             weeklyNode.expandedOffset.dy + expandedDy,
           ),
           selectedOffset: Offset(
-            (kDailyMindMapRadius + kDailyNodeRadius / 2) * math.cos(angle),
-            (kDailyMindMapRadius + kDailyNodeRadius / 2) * math.sin(angle),
+            (kDailyMindMapRadius + kDailyNodeRadius) * math.cos(angle),
+            (kDailyMindMapRadius + kDailyNodeRadius) * math.sin(angle),
           ),
           unselectedOffset: Offset(
             kDailyMindMapRadius * math.cos(angle),

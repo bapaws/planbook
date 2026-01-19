@@ -148,8 +148,11 @@ class _RootDiscoverPage extends StatelessWidget {
                   title: context.l10n.thisWeek,
                   onTap: () {
                     context.read<DiscoverFocusBloc>().add(
-                      const DiscoverFocusAllNodesExpanded(),
+                      DiscoverFocusRequested(date: Jiffy.now()),
                     );
+                    // context.read<DiscoverFocusBloc>().add(
+                    //   const DiscoverFocusAllNodesExpanded(),
+                    // );
                   },
                 ),
               ],

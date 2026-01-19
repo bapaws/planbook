@@ -15,7 +15,7 @@ const double kDailyNodeExpandedRadius = 28;
 
 const double kMonthlyMindMapRadius = 176;
 const double kWeeklyMindMapRadius = 312;
-const double kDailyMindMapRadius = 432;
+const double kDailyMindMapRadius = 460;
 
 const double kYearlyNodeRadius = 128;
 const double kMonthlyNodeRadius = 75;

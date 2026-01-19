@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,6 +13,7 @@ import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.da
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_core/app/app_image_saver.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
@@ -43,11 +44,25 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final query = MediaQuery.of(context);
     final screenSize = MediaQuery.of(context).size;
-    final pageWidth = math.min(screenSize.width, screenSize.height) - 32;
-    final scale = pageWidth / kDiscoverJournalDailyPageWidth;
-    final pageHeight = kDiscoverJournalDailyPageWidth * scale;
+    final isLandscape = screenSize.width > screenSize.height;
+    var scale = 1.0;
+    var pageWidth = screenSize.width - 32;
+    var pageHeight =
+        screenSize.height - query.padding.vertical - kRootBottomBarHeight;
+    if (isLandscape) {
+      pageHeight =
+          (screenSize.height - query.padding.vertical - kRootBottomBarHeight) *
+          0.6;
+      scale = pageHeight / kDiscoverJournalDailyPageHeight;
+      pageWidth = kDiscoverJournalDailyPageWidth * scale;
+    } else {
+      pageWidth = screenSize.width - query.padding.horizontal - 32;
+      scale = pageWidth / kDiscoverJournalDailyPageWidth;
+      pageHeight = kDiscoverJournalDailyPageHeight * scale;
+    }
     return MultiBlocListener(
       listeners: [
         BlocListener<RootHomeBloc, RootHomeState>(
@@ -114,32 +129,6 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
             },
           ),
           const Spacer(),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     CupertinoButton(
-          //       onPressed: () {
-          //         _controller.animateToPage(_controller.value - 1);
-          //       },
-          //       child: const Icon(FontAwesomeIcons.circleChevronLeft),
-          //     ),
-          //     ValueListenableBuilder<int>(
-          //       valueListenable: _controller,
-          //       builder: (context, page, child) {
-          //         final date = context.read<DiscoverJournalBloc>().state.date;
-          //         return Text(
-          //           date.startOf(Unit.year).add(days: page).MMMd,
-          //         );
-          //       },
-          //     ),
-          //     CupertinoButton(
-          //       onPressed: () {
-          //         _controller.animateToPage(_controller.value + 1);
-          //       },
-          //       child: const Icon(FontAwesomeIcons.circleChevronRight),
-          //     ),
-          //   ],
-          // ),
           BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
             buildWhen: (previous, current) => previous.year != current.year,
             builder: (context, state) {
@@ -148,6 +137,7 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
                 width: pageWidth + 32,
                 height: pageHeight + 32,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
+                // clipBehavior: Clip.hardEdge,
                 child: FittedBox(
                   child: FlipPageView(
                     // key: ValueKey(state.year),
@@ -161,6 +151,46 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
                 ),
               );
             },
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CupertinoButton(
+                minimumSize: const Size.square(kMinInteractiveDimension),
+                onPressed: () {
+                  _controller.animateToPage(_controller.value - 1);
+                },
+                child: const Icon(FontAwesomeIcons.chevronLeft, size: 16),
+              ),
+              SizedBox(
+                width: 72,
+                height: kMinInteractiveDimension,
+                child: Center(
+                  child: ValueListenableBuilder<int>(
+                    valueListenable: _controller,
+                    builder: (context, page, child) {
+                      final date = context
+                          .read<DiscoverJournalBloc>()
+                          .state
+                          .date;
+                      return Text(
+                        date.startOf(Unit.year).add(days: page).MMMd,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.outline,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+              CupertinoButton(
+                minimumSize: const Size.square(kMinInteractiveDimension),
+                onPressed: () {
+                  _controller.animateToPage(_controller.value + 1);
+                },
+                child: const Icon(FontAwesomeIcons.chevronRight, size: 16),
+              ),
+            ],
           ),
           const Spacer(),
           SizedBox(height: query.padding.bottom + kRootBottomBarHeight),
