@@ -143,68 +143,69 @@ class _RootDiscoverPage extends StatelessWidget {
           },
         ),
         actions: [
-          PullDownButton(
-            itemBuilder: (context) => switch (tab) {
-              RootDiscoverTab.journal => [
-                PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
-                PullDownMenuItem(
-                  icon: FontAwesomeIcons.calendarMinus,
-                  title: context.l10n.thisWeek,
-                  onTap: () {
-                    final now = Jiffy.now();
-                    final from = now.startOf(Unit.week);
-                    final to = now.endOf(Unit.week);
-                    context.read<RootDiscoverBloc>().add(
-                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                    );
-                  },
-                ),
-                PullDownMenuItem(
-                  icon: FontAwesomeIcons.calendarDays,
-                  title: context.l10n.thisMonth,
-                  onTap: () {
-                    final now = Jiffy.now();
-                    final from = now.startOf(Unit.month);
-                    final to = now.endOf(Unit.month);
-                    context.read<RootDiscoverBloc>().add(
-                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                    );
-                  },
-                ),
-                PullDownMenuItem(
-                  icon: FontAwesomeIcons.calendar,
-                  title: context.l10n.thisYear,
-                  onTap: () {
-                    final now = Jiffy.now();
-                    final from = now.startOf(Unit.year);
-                    final to = now.endOf(Unit.year);
-                    context.read<RootDiscoverBloc>().add(
-                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                    );
-                  },
-                ),
-              ],
-              RootDiscoverTab.focusMindMap ||
-              RootDiscoverTab.summaryMindMap => [
-                PullDownMenuItem(
-                  icon: FontAwesomeIcons.calendarMinus,
-                  title: context.l10n.thisWeek,
-                  onTap: () {
-                    context.read<DiscoverFocusBloc>().add(
-                      DiscoverFocusRequested(date: Jiffy.now()),
-                    );
-                    // context.read<DiscoverFocusBloc>().add(
-                    //   const DiscoverFocusAllNodesExpanded(),
-                    // );
-                  },
-                ),
-              ],
-            },
-            buttonBuilder: (context, showMenu) => CupertinoButton(
-              onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+          if (tab == RootDiscoverTab.journal)
+            PullDownButton(
+              itemBuilder: (context) => switch (tab) {
+                RootDiscoverTab.journal => [
+                  PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.calendarMinus,
+                    title: context.l10n.thisWeek,
+                    onTap: () {
+                      final now = Jiffy.now();
+                      final from = now.startOf(Unit.week);
+                      final to = now.endOf(Unit.week);
+                      context.read<RootDiscoverBloc>().add(
+                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                      );
+                    },
+                  ),
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.calendarDays,
+                    title: context.l10n.thisMonth,
+                    onTap: () {
+                      final now = Jiffy.now();
+                      final from = now.startOf(Unit.month);
+                      final to = now.endOf(Unit.month);
+                      context.read<RootDiscoverBloc>().add(
+                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                      );
+                    },
+                  ),
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.calendar,
+                    title: context.l10n.thisYear,
+                    onTap: () {
+                      final now = Jiffy.now();
+                      final from = now.startOf(Unit.year);
+                      final to = now.endOf(Unit.year);
+                      context.read<RootDiscoverBloc>().add(
+                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                      );
+                    },
+                  ),
+                ],
+                RootDiscoverTab.focusMindMap ||
+                RootDiscoverTab.summaryMindMap => [
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.calendarMinus,
+                    title: context.l10n.thisWeek,
+                    onTap: () {
+                      context.read<DiscoverFocusBloc>().add(
+                        DiscoverFocusRequested(date: Jiffy.now()),
+                      );
+                      // context.read<DiscoverFocusBloc>().add(
+                      //   const DiscoverFocusAllNodesExpanded(),
+                      // );
+                    },
+                  ),
+                ],
+              },
+              buttonBuilder: (context, showMenu) => CupertinoButton(
+                onPressed: showMenu,
+                child: const Icon(FontAwesomeIcons.ellipsis),
+              ),
             ),
-          ),
         ],
       ),
       body: child,
