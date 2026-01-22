@@ -10,6 +10,7 @@ final class DiscoverFocusState extends Equatable {
     this.selectedMonthlyNode,
     this.selectedWeeklyNode,
     this.selectedDailyNode,
+    this.isCalendarExpanded = false,
   });
 
   final PageStatus status;
@@ -25,6 +26,8 @@ final class DiscoverFocusState extends Equatable {
   final NoteMindMapEntity? selectedWeeklyNode;
   final NoteMindMapEntity? selectedDailyNode;
 
+  final bool isCalendarExpanded;
+
   @override
   List<Object?> get props => [
     status,
@@ -35,6 +38,7 @@ final class DiscoverFocusState extends Equatable {
     selectedMonthlyNode,
     selectedWeeklyNode,
     selectedDailyNode,
+    isCalendarExpanded,
   ];
 
   DiscoverFocusState copyWith({
@@ -46,6 +50,7 @@ final class DiscoverFocusState extends Equatable {
     NoteMindMapEntity? selectedMonthlyNode,
     NoteMindMapEntity? selectedWeeklyNode,
     NoteMindMapEntity? selectedDailyNode,
+    bool? isCalendarExpanded,
   }) {
     return DiscoverFocusState(
       status: status ?? this.status,
@@ -56,6 +61,7 @@ final class DiscoverFocusState extends Equatable {
       selectedMonthlyNode: selectedMonthlyNode ?? this.selectedMonthlyNode,
       selectedWeeklyNode: selectedWeeklyNode ?? this.selectedWeeklyNode,
       selectedDailyNode: selectedDailyNode ?? this.selectedDailyNode,
+      isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
     );
   }
 }

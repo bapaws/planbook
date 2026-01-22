@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
+import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
@@ -70,6 +71,10 @@ class TaskTodayPage extends StatelessWidget {
                       ),
                     );
                   },
+                  onMindMapTapped: () {
+                    _addDiscoverEvent(context, noteType);
+                    _navigateToRootDiscover(context, noteType);
+                  },
                 );
               },
             ),
@@ -97,6 +102,32 @@ class TaskTodayPage extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  void _addDiscoverEvent(BuildContext context, NoteType noteType) {
+    final date = context.read<TaskTodayBloc>().state.date;
+    context.read<RootDiscoverBloc>().add(
+      noteType.isFocus
+          ? RootDiscoverFocusDateChanged(date: date, type: noteType)
+          : RootDiscoverSummaryDateChanged(date: date, type: noteType),
+    );
+  }
+
+  void _navigateToRootDiscover(BuildContext context, NoteType noteType) {
+    AutoRouter.of(context).navigate(
+      RootHomeRoute(
+        children: [
+          RootDiscoverRoute(
+            children: [
+              if (noteType.isFocus)
+                const DiscoverFocusRoute()
+              else
+                const DiscoverSummaryRoute(),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

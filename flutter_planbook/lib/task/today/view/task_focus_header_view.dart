@@ -11,11 +11,14 @@ class TaskFocusHeaderView extends StatelessWidget {
   const TaskFocusHeaderView({
     required this.noteType,
     required this.tab,
+    required this.onMindMapTapped,
     super.key,
   });
 
   final NoteType noteType;
   final RootTaskTab tab;
+
+  final VoidCallback onMindMapTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +29,7 @@ class TaskFocusHeaderView extends StatelessWidget {
         const SizedBox(width: 8),
         CupertinoButton(
           onPressed: () {
+            if (noteType.isFocus) return;
             context.read<RootTaskBloc>().add(
               RootTaskTabFocusNoteTypeChanged(
                 tab: tab,
@@ -43,6 +47,7 @@ class TaskFocusHeaderView extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: Text(
             getFocusTitle(context.l10n),
+            key: ValueKey(noteType.isFocus),
             style: noteType.isFocus
                 ? theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
@@ -56,6 +61,7 @@ class TaskFocusHeaderView extends StatelessWidget {
         const SizedBox(width: 8),
         CupertinoButton(
           onPressed: () {
+            if (noteType.isSummary) return;
             context.read<RootTaskBloc>().add(
               RootTaskTabFocusNoteTypeChanged(
                 tab: tab,
@@ -84,10 +90,21 @@ class TaskFocusHeaderView extends StatelessWidget {
                   ),
           ),
         ),
+        const Spacer(),
+        CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          sizeStyle: CupertinoButtonSize.small,
+          minimumSize: const Size.square(21),
+          onPressed: onMindMapTapped,
+          child: Icon(
+            FontAwesomeIcons.snowflake,
+            size: 14,
+            color: theme.colorScheme.primary,
+          ),
+        ),
         if (tab != RootTaskTab.week) ...[
-          const Spacer(),
           CupertinoButton(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             sizeStyle: CupertinoButtonSize.small,
             minimumSize: const Size.square(21),
             onPressed: () {
@@ -110,26 +127,26 @@ class TaskFocusHeaderView extends StatelessWidget {
 
   String getFocusTitle(AppLocalizations l10n) {
     if (tab == RootTaskTab.day) {
-      return '${l10n.dailyFocus} 🎯';
+      return l10n.dailyFocus;
     }
     if (tab == RootTaskTab.week) {
-      return '${l10n.weeklyFocus} 🎯';
+      return l10n.weeklyFocus;
     }
     if (tab == RootTaskTab.month) {
-      return '${l10n.monthlyFocus} 🎯';
+      return l10n.monthlyFocus;
     }
     throw UnimplementedError();
   }
 
   String getSummaryTitle(AppLocalizations l10n) {
     if (tab == RootTaskTab.day) {
-      return '${l10n.dailySummary} 🎯';
+      return l10n.dailySummary;
     }
     if (tab == RootTaskTab.week) {
-      return '${l10n.weeklySummary} 🎯';
+      return l10n.weeklySummary;
     }
     if (tab == RootTaskTab.month) {
-      return '${l10n.monthlySummary} 🎯';
+      return l10n.monthlySummary;
     }
     throw UnimplementedError();
   }

@@ -70,7 +70,6 @@ class JournalDailyPinnedLayout extends StatelessWidget {
       return _buildSingleLayout(notes[0]);
     }
 
-    return _buildTwoLayout(notes);
     // 2 张：错开对角线排列
     if (notes.length == 2) {
       return _buildTwoLayout(notes);
@@ -108,7 +107,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
       children: [
         // 第二张：右下，向右旋转
         Positioned(
-          right: 0,
+          right: 8,
           bottom: 16,
           child: Transform.rotate(
             angle: rotations[notes[1].id.hashCode % rotations.length],
@@ -123,7 +122,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
         ),
         // 第一张：左上，向左旋转
         Positioned(
-          left: 0,
+          left: 8,
           top: 16,
           child: Transform.rotate(
             angle: rotations[notes[0].id.hashCode % rotations.length],
@@ -143,10 +142,11 @@ class JournalDailyPinnedLayout extends StatelessWidget {
   /// 三张笔记布局（三角形）
   Widget _buildThreeLayout(List<NoteEntity> notes) {
     return Stack(
+      alignment: Alignment.center,
       children: [
         // 第三张：底部居中偏左
         Positioned(
-          left: 0,
+          left: 8,
           bottom: 16,
           child: Transform.rotate(
             angle: rotations[notes[2].id.hashCode % rotations.length],
@@ -161,8 +161,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
         ),
         // 第二张：右上偏下
         Positioned(
-          right: 0,
-          top: 16,
+          right: 8,
           child: Transform.rotate(
             angle: rotations[notes[1].id.hashCode % rotations.length],
             child: JournalDailyNoteView(
@@ -176,7 +175,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
         ),
         // 第一张：左上
         Positioned(
-          left: 0,
+          left: 8,
           top: 16,
           child: Transform.rotate(
             angle: rotations[notes[0].id.hashCode % rotations.length],
@@ -200,7 +199,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
       children: [
         // 第三张：左下
         Positioned(
-          left: 0,
+          left: 8,
           bottom: 16,
           child: Transform.rotate(
             angle: rotations[notes[2].id.hashCode % rotations.length],
@@ -245,7 +244,7 @@ class JournalDailyPinnedLayout extends StatelessWidget {
         ),
         // 第一张：左上
         Positioned(
-          left: 0,
+          left: 8,
           top: 8,
           child: Transform.rotate(
             angle: rotations[notes[0].id.hashCode % rotations.length],

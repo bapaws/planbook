@@ -209,7 +209,7 @@ class DatabaseNoteApi {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
-    List<NoteListMode> modes = NoteListMode.values,
+    NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
     String? userId,
   }) {
@@ -233,36 +233,18 @@ class DatabaseNoteApi {
       exp &= db.noteTags.tagId.isIn(tagIds);
     }
 
-    Expression<bool> modeExp = const Constant(true);
-    for (final mode in modes) {
-      switch (mode) {
-        case NoteListMode.written:
-          modeExp |=
-              db.tasks.id.isNull() &
-              db.notes.type.equals(NoteType.journal.name);
-        case NoteListMode.task:
-          modeExp |=
-              db.tasks.id.isNotNull() &
-              db.notes.type.equals(NoteType.journal.name);
-        case NoteListMode.dailyFocus:
-          modeExp |= db.notes.type.equals(NoteType.dailyFocus.name);
-        case NoteListMode.dailySummary:
-          modeExp |= db.notes.type.equals(NoteType.dailySummary.name);
-        case NoteListMode.weeklyFocus:
-          modeExp |= db.notes.type.equals(NoteType.weeklyFocus.name);
-        case NoteListMode.weeklySummary:
-          modeExp |= db.notes.type.equals(NoteType.weeklySummary.name);
-        case NoteListMode.monthlyFocus:
-          modeExp |= db.notes.type.equals(NoteType.monthlyFocus.name);
-        case NoteListMode.monthlySummary:
-          modeExp |= db.notes.type.equals(NoteType.monthlySummary.name);
-        case NoteListMode.yearlyFocus:
-          modeExp |= db.notes.type.equals(NoteType.yearlyFocus.name);
-        case NoteListMode.yearlySummary:
-          modeExp |= db.notes.type.equals(NoteType.yearlySummary.name);
-      }
+    switch (mode) {
+      case NoteListMode.all:
+        break;
+      case NoteListMode.written:
+        exp &= db.tasks.id.isNull();
+      case NoteListMode.task:
+        exp &= db.tasks.id.isNotNull();
+      case NoteListMode.journal:
+        exp &=
+            db.notes.type.isNull() |
+            db.notes.type.equals(NoteType.journal.name);
     }
-    exp &= modeExp;
 
     return (db.select(db.notes).join(
             [

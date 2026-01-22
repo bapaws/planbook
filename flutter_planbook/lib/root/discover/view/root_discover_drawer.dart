@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/discover/model/root_discover_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_drawer_list_tile.dart';
 import 'package:flutter_planbook/root/task/view/root_user_header.dart';
@@ -31,9 +30,7 @@ class RootDiscoverDrawer extends StatelessWidget {
                     iconBackgroundColor: tab.color,
                     title: tab.getName(context),
                     onPressed: () {
-                      context.read<RootDiscoverBloc>().add(
-                        RootDiscoverTabSelected(tab: tab),
-                      );
+                      context.tabsRouter.setActiveIndex(tab.index);
                       Scaffold.of(context).closeDrawer();
                     },
                   ),

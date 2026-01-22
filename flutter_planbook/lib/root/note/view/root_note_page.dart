@@ -6,16 +6,12 @@ import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/note/gallery/bloc/note_gallery_bloc.dart';
-import 'package:flutter_planbook/note/gallery/view/note_gallery_page.dart';
-import 'package:flutter_planbook/note/tag/view/note_tag_page.dart';
 import 'package:flutter_planbook/note/timeline/bloc/note_timeline_bloc.dart';
-import 'package:flutter_planbook/note/timeline/view/note_timeline_page.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
 import 'package:flutter_planbook/root/note/view/root_note_drawer.dart';
 import 'package:flutter_planbook/root/note/view/root_note_gallery_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
 class RootNotePage extends StatelessWidget {
@@ -37,22 +33,35 @@ class RootNotePage extends StatelessWidget {
           )..add(NoteGalleryRequested(date: Jiffy.now())),
         ),
       ],
-      child: _RootNotePage(),
+      child: AutoTabsRouter(
+        routes: [
+          NoteTimelineRoute(),
+          const NoteWrittenRoute(),
+          const NoteTaskRoute(),
+          const NoteGalleryRoute(),
+          const NoteTagRoute(),
+        ],
+        builder: (context, child) => _RootNotePage(child: child),
+      ),
     );
   }
 }
 
 class _RootNotePage extends StatelessWidget {
-  _RootNotePage();
+  _RootNotePage({required this.child});
+
+  final Widget child;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
+    final activeIndex = context.tabsRouter.activeIndex;
+    final tab = RootNoteTab.values[activeIndex];
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootNoteDrawer(),
-      drawerEdgeDragWidth: 120,
+      drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -65,7 +74,7 @@ class _RootNotePage extends StatelessWidget {
         title: BlocBuilder<RootNoteBloc, RootNoteState>(
           builder: (context, state) => AnimatedSwitcher(
             duration: Durations.medium1,
-            child: switch (state.tab) {
+            child: switch (tab) {
               RootNoteTab.gallery =>
                 BlocBuilder<NoteGalleryBloc, NoteGalleryState>(
                   builder: (context, state) => RootNoteGalleryTitleView(
@@ -117,45 +126,7 @@ class _RootNotePage extends StatelessWidget {
           ),
         ),
       ),
-      body: _buildBody(context),
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return BlocBuilder<RootNoteBloc, RootNoteState>(
-      buildWhen: (previous, current) =>
-          previous.tab != current.tab || previous.tag != current.tag,
-      builder: (context, state) => AnimatedSwitcher(
-        duration: Durations.medium1,
-        child: switch (state.tab) {
-          RootNoteTab.gallery => const NoteGalleryPage(),
-          RootNoteTab.timeline => const NoteTimelinePage(
-            key: ValueKey('timeline'),
-          ),
-          RootNoteTab.written => const NoteTimelinePage(
-            key: ValueKey('written'),
-            modes: [
-              NoteListMode.written,
-              NoteListMode.dailyFocus,
-              NoteListMode.dailySummary,
-              NoteListMode.weeklyFocus,
-              NoteListMode.weeklySummary,
-              NoteListMode.monthlyFocus,
-              NoteListMode.monthlySummary,
-              NoteListMode.yearlyFocus,
-              NoteListMode.yearlySummary,
-            ],
-          ),
-          RootNoteTab.task => const NoteTimelinePage(
-            key: ValueKey('task'),
-            modes: [NoteListMode.task],
-          ),
-          RootNoteTab.tag => NoteTagPage(
-            key: ValueKey(state.tag!.id),
-            tag: state.tag!,
-          ),
-        },
-      ),
+      body: child,
     );
   }
 }

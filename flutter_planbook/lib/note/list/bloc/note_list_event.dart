@@ -11,15 +11,15 @@ class NoteListRequested extends NoteListEvent {
   const NoteListRequested({
     required this.date,
     this.tagIds,
-    this.modes = NoteListMode.values,
+    this.mode = NoteListMode.all,
   });
 
   final Jiffy date;
   final List<String>? tagIds;
-  final List<NoteListMode> modes;
+  final NoteListMode mode;
 
   @override
-  List<Object?> get props => [date, tagIds, modes];
+  List<Object?> get props => [date, tagIds, mode];
 }
 
 final class NoteListDeleted extends NoteListEvent {

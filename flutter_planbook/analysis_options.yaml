@@ -1,5 +1,7 @@
 include: package:very_good_analysis/analysis_options.yaml
 analyzer:
+  errors:
+    no_default_cases: ignore
   exclude:
     - lib/l10n/gen/*
 linter:

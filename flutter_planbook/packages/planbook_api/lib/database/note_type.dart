@@ -1,3 +1,5 @@
+import 'package:jiffy/jiffy.dart';
+
 /// 笔记类型（用于区分不同用途的笔记）
 ///
 /// 笔记可以是日常的日记记录，也可以是用于目标设定的记录。
@@ -20,6 +22,18 @@ enum NoteType {
   /// 每年
   yearlyFocus,
   yearlySummary;
+
+  Unit get unit => switch (this) {
+    NoteType.dailyFocus => Unit.day,
+    NoteType.dailySummary => Unit.day,
+    NoteType.weeklyFocus => Unit.week,
+    NoteType.weeklySummary => Unit.week,
+    NoteType.monthlyFocus => Unit.month,
+    NoteType.monthlySummary => Unit.month,
+    NoteType.yearlyFocus => Unit.year,
+    NoteType.yearlySummary => Unit.year,
+    _ => throw UnimplementedError(),
+  };
 
   /// 从字符串创建（用于数据库反序列化）
   static NoteType? fromString(String? value) {

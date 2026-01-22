@@ -11,29 +11,31 @@ class JournalDailyPieChartView extends StatelessWidget {
 
   final Map<TaskPriority, int> taskPriorityCounts;
 
+  static const double pieChartRadius =
+      (kJournalDailyPieChartViewHeight - 24) / 2;
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: kJournalDailyPieChartViewHeight,
       child: Row(
         children: [
-          Expanded(
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  sectionsSpace: 4,
-                  centerSpaceRadius: 0,
-                  startDegreeOffset: -90,
-                  sections: [
-                    for (final taskPriorityCount in taskPriorityCounts.entries)
-                      _buildPieChartSectionData(
-                        context,
-                        taskPriorityCount.key,
-                        taskPriorityCount.value,
-                      ),
-                  ],
-                ),
+          SizedBox(
+            width: pieChartRadius * 2,
+            height: pieChartRadius * 2,
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 0,
+                startDegreeOffset: -90,
+                sections: [
+                  for (final taskPriorityCount in taskPriorityCounts.entries)
+                    _buildPieChartSectionData(
+                      context,
+                      taskPriorityCount.key,
+                      taskPriorityCount.value,
+                    ),
+                ],
               ),
             ),
           ),
@@ -58,7 +60,7 @@ class JournalDailyPieChartView extends StatelessWidget {
   ) {
     final colorScheme = priority.getColorScheme(context);
     return PieChartSectionData(
-      radius: (kJournalDailyPieChartViewHeight / 2) - 4,
+      radius: pieChartRadius,
       showTitle: false,
       value: value.toDouble(),
       color: colorScheme.primaryContainer,
@@ -90,7 +92,7 @@ class JournalDailyPieChartView extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(width: 4, height: 28),
+        const SizedBox(width: 4, height: 24),
         Text(
           priority.getTitle(context.l10n),
           style: theme.textTheme.bodySmall?.copyWith(

@@ -11,15 +11,6 @@ final class RootNoteRequested extends RootNoteEvent {
   const RootNoteRequested();
 }
 
-final class RootNoteTabSelected extends RootNoteEvent {
-  const RootNoteTabSelected({required this.tab});
-
-  final RootNoteTab tab;
-
-  @override
-  List<Object?> get props => [tab];
-}
-
 final class RootNoteTagSelected extends RootNoteEvent {
   const RootNoteTagSelected({required this.tag});
 

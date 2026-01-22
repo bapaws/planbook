@@ -130,7 +130,7 @@ class NotesRepository {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
-    List<NoteListMode> modes = NoteListMode.values,
+    NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
   }) {
     _syncNotes();
@@ -138,7 +138,7 @@ class NotesRepository {
       date,
       tagIds: tagIds,
       userId: userId,
-      modes: modes,
+      mode: mode,
     );
   }
 

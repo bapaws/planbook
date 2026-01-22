@@ -99,7 +99,10 @@ class AppRouter extends RootStackRouter {
           page: RootNoteRoute.page,
           children: [
             AutoRoute(page: NoteTimelineRoute.page),
+            AutoRoute(page: NoteWrittenRoute.page),
             AutoRoute(page: NoteGalleryRoute.page),
+            AutoRoute(page: NoteTaskRoute.page),
+            AutoRoute(page: NoteTagRoute.page),
           ],
         ),
       ],

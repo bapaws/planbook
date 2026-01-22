@@ -13,13 +13,10 @@ final class RootNoteState extends Equatable {
     required this.galleryDate,
     required this.tagDate,
     this.status = PageStatus.initial,
-    this.tab = RootNoteTab.timeline,
     this.tag,
   });
 
   final PageStatus status;
-
-  final RootNoteTab tab;
 
   final Jiffy galleryDate;
   final Jiffy tagDate;
@@ -28,7 +25,6 @@ final class RootNoteState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    tab,
     galleryDate,
     tagDate,
     tag,
@@ -36,14 +32,12 @@ final class RootNoteState extends Equatable {
 
   RootNoteState copyWith({
     PageStatus? status,
-    RootNoteTab? tab,
     Jiffy? galleryDate,
     Jiffy? tagDate,
     TagEntity? tag,
   }) {
     return RootNoteState(
       status: status ?? this.status,
-      tab: tab ?? this.tab,
       tag: tag ?? this.tag,
       galleryDate: galleryDate ?? this.galleryDate,
       tagDate: tagDate ?? this.tagDate,

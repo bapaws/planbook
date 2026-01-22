@@ -33,9 +33,7 @@ class TaskWeekCell extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () {
           if (day == null) return;
-          context.read<RootTaskBloc>().add(
-            const RootTaskTabSelected(tab: RootTaskTab.day),
-          );
+          context.tabsRouter.setActiveIndex(RootTaskTab.day.index);
           final isCompleted = context.read<RootTaskBloc>().isCompleted;
           context.read<TaskTodayBloc>().add(
             TaskTodayDateSelected(date: day!, isCompleted: isCompleted),

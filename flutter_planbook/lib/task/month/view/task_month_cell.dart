@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
@@ -27,9 +28,7 @@ class TaskMonthCell extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
-        context.read<RootTaskBloc>().add(
-          const RootTaskTabSelected(tab: RootTaskTab.day),
-        );
+        context.tabsRouter.setActiveIndex(RootTaskTab.day.index);
         final isCompleted = context.read<RootTaskBloc>().isCompleted;
         context.read<TaskTodayBloc>().add(
           TaskTodayDateSelected(date: day, isCompleted: isCompleted),

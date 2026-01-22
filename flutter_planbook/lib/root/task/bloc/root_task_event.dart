@@ -7,15 +7,6 @@ sealed class RootTaskEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class RootTaskTabSelected extends RootTaskEvent {
-  const RootTaskTabSelected({required this.tab});
-
-  final RootTaskTab tab;
-
-  @override
-  List<Object?> get props => [tab];
-}
-
 final class RootTaskTagSelected extends RootTaskEvent {
   const RootTaskTagSelected({required this.tag});
 

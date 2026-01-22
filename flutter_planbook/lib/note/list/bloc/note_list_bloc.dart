@@ -27,7 +27,7 @@ class NoteListBloc extends Bloc<NoteListEvent, NoteListState> {
       _notesRepository.getNoteEntitiesByDate(
         event.date,
         tagIds: event.tagIds,
-        modes: event.modes,
+        mode: event.mode,
       ),
       onData: (notes) => state.copyWith(
         status: PageStatus.success,

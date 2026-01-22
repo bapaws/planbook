@@ -4,16 +4,10 @@ import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/entity/tag_entity.dart';
 
 enum NoteListMode {
+  all,
   written,
   task,
-  dailyFocus,
-  dailySummary,
-  weeklyFocus,
-  weeklySummary,
-  monthlyFocus,
-  monthlySummary,
-  yearlyFocus,
-  yearlySummary,
+  journal,
 }
 
 class NoteEntity extends Equatable {

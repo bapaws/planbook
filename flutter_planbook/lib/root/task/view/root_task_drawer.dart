@@ -57,11 +57,9 @@ class RootTaskDrawer extends StatelessWidget {
                         iconBackgroundColor: tab.color,
                         title: tab.getName(context),
                         count: count,
+                        isSelected: context.tabsRouter.activeIndex == tab.index,
                         onPressed: () {
-                          // context.tabsRouter.setActiveIndex(tab.index);
-                          context.read<RootTaskBloc>().add(
-                            RootTaskTabSelected(tab: tab),
-                          );
+                          context.tabsRouter.setActiveIndex(tab.index);
 
                           Scaffold.of(context).closeDrawer();
                         },

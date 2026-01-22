@@ -129,29 +129,6 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
             },
           ),
           const Spacer(),
-          BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
-            buildWhen: (previous, current) => previous.year != current.year,
-            builder: (context, state) {
-              final startOfYear = state.date.startOf(Unit.year);
-              return Container(
-                width: pageWidth + 32,
-                height: pageHeight + 32,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                // clipBehavior: Clip.hardEdge,
-                child: FittedBox(
-                  child: FlipPageView(
-                    // key: ValueKey(state.year),
-                    itemsCount: state.days,
-                    controller: _controller,
-                    itemBuilder: (context, index) {
-                      final date = startOfYear.add(days: index);
-                      return JournalDailyPage(date: date);
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -160,7 +137,18 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
                 onPressed: () {
                   _controller.animateToPage(_controller.value - 1);
                 },
-                child: const Icon(FontAwesomeIcons.chevronLeft, size: 16),
+                child: Icon(
+                  FontAwesomeIcons.chevronLeft,
+                  size: 14,
+                  color: theme.colorScheme.surfaceContainerLowest,
+                  shadows: [
+                    BoxShadow(
+                      color: theme.colorScheme.onSurface,
+                      blurRadius: 3,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
               ),
               SizedBox(
                 width: 72,
@@ -176,7 +164,7 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
                       return Text(
                         date.startOf(Unit.year).add(days: page).MMMd,
                         style: theme.textTheme.titleSmall?.copyWith(
-                          color: theme.colorScheme.outline,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       );
                     },
@@ -188,11 +176,47 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
                 onPressed: () {
                   _controller.animateToPage(_controller.value + 1);
                 },
-                child: const Icon(FontAwesomeIcons.chevronRight, size: 16),
+                child: Icon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 14,
+                  color: theme.colorScheme.surfaceContainerLowest,
+                  shadows: [
+                    BoxShadow(
+                      color: theme.colorScheme.onSurface,
+                      blurRadius: 3,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
           const Spacer(),
+          BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
+            buildWhen: (previous, current) => previous.year != current.year,
+            builder: (context, state) {
+              final startOfYear = state.date.startOf(Unit.year);
+              return Container(
+                width: pageWidth + 32,
+                height: pageHeight + 32,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                // clipBehavior: Clip.hardEdge,
+                child: FittedBox(
+                  child: FlipPageView(
+                    // key: ValueKey(state.year),
+                    itemsCount: state.days,
+                    controller: _controller,
+                    spacing: 1,
+                    itemBuilder: (context, index) {
+                      final date = startOfYear.add(days: index);
+                      return JournalDailyPage(date: date);
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+          const Spacer(flex: 3),
           SizedBox(height: query.padding.bottom + kRootBottomBarHeight),
         ],
       ),

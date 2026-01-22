@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class RootDrawerListTile extends StatelessWidget {
   const RootDrawerListTile({
@@ -9,6 +10,7 @@ class RootDrawerListTile extends StatelessWidget {
     required this.title,
     required this.onPressed,
     this.count,
+    this.isSelected = false,
     super.key,
   });
 
@@ -16,6 +18,7 @@ class RootDrawerListTile extends StatelessWidget {
   final Color iconBackgroundColor;
   final String title;
   final int? count;
+  final bool isSelected;
   final VoidCallback onPressed;
 
   @override
@@ -28,11 +31,22 @@ class RootDrawerListTile extends StatelessWidget {
         child: Row(
           spacing: 8,
           children: [
+            if (isSelected)
+              Icon(
+                FontAwesomeIcons.check,
+                size: 16,
+                color: theme.colorScheme.primary,
+              ),
             AppIcon(icon, backgroundColor: iconBackgroundColor),
             Expanded(
               child: Text(
                 title,
-                style: theme.textTheme.titleMedium,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurface,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
             if (count != null)

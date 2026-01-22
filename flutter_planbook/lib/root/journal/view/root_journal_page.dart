@@ -69,7 +69,7 @@ class _RootJournalPageState extends State<_RootJournalPage> {
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootJournalDrawer(),
-      drawerEdgeDragWidth: 96,
+      drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         forceMaterialTransparency: true,
