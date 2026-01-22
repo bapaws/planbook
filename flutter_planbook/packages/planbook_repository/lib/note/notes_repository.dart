@@ -44,6 +44,7 @@ class NotesRepository {
 
   Future<Note> create({
     required String title,
+    String? id,
     String? content,
     List<String>? images,
     List<TagEntity>? tags,
@@ -52,7 +53,7 @@ class NotesRepository {
     Jiffy? focusAt,
     NoteType? type,
   }) async {
-    final noteId = const Uuid().v4();
+    final noteId = id ?? const Uuid().v4();
 
     final note = Note(
       id: noteId,
@@ -129,7 +130,7 @@ class NotesRepository {
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
-    List<NoteListMode> modes = NoteListMode.values,
+    NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
   }) {
     _syncNotes();
@@ -137,7 +138,7 @@ class NotesRepository {
       date,
       tagIds: tagIds,
       userId: userId,
-      modes: modes,
+      mode: mode,
     );
   }
 
@@ -188,14 +189,17 @@ class NotesRepository {
       'assets/${kDebugMode ? 'demo' : 'files'}/notes_$languageCode.json',
     );
     final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
+    final startOfMonth = Jiffy.now().startOf(Unit.month);
+    final diff = startOfMonth
+        .diff(Jiffy.parseFromList([2026, 1]), unit: Unit.day)
+        .toInt();
     for (final json in taskJson) {
       final map = json as Map<String, dynamic>;
       final noteMap = map['note'] as Map<String, dynamic>;
-      final note = Note.fromJson(noteMap).copyWith(
+      var note = Note.fromJson(noteMap).copyWith(
         id: kDebugMode ? null : uuid.v4(),
-        createdAt: Jiffy.now(),
       );
-
+      note = note.copyWith(createdAt: note.createdAt.add(days: diff));
       final tagNames = List<String>.from(map['tags'] as List<dynamic>);
       final tags = await Future.wait(
         tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),
@@ -203,6 +207,8 @@ class NotesRepository {
       await create(
         title: note.title,
         content: note.content,
+        images: note.images,
+        taskId: note.taskId,
         tags: tags.nonNulls.toList(),
         createdAt: note.createdAt,
       );

@@ -17,7 +17,6 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   }) : _tasksRepository = tasksRepository,
        _settingsRepository = settingsRepository,
        super(const RootTaskState()) {
-    on<RootTaskTabSelected>(_onTabSelected);
     on<RootTaskTagSelected>(_onTagSelected);
 
     on<RootTaskCountRequested>(_onCountRequested);
@@ -46,7 +45,6 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   RootTaskState? fromJson(Map<String, dynamic> json) {
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
-      tab: RootTaskTab.values.byName(json['tab'] as String),
       viewType: RootTaskViewType.values.byName(json['viewType'] as String),
       tag: json['tag'] != null
           ? TagEntity.fromJson(json['tag'] as Map<String, dynamic>)
@@ -73,7 +71,6 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   Map<String, dynamic>? toJson(RootTaskState state) {
     return {
       'status': state.status.name,
-      'tab': state.tab.name,
       'viewType': state.viewType.name,
       'showCompleted': state.showCompleted,
       'tag': state.tag?.toJson(),
@@ -85,18 +82,11 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     };
   }
 
-  Future<void> _onTabSelected(
-    RootTaskTabSelected event,
-    Emitter<RootTaskState> emit,
-  ) async {
-    emit(state.copyWith(tab: event.tab));
-  }
-
   Future<void> _onTagSelected(
     RootTaskTagSelected event,
     Emitter<RootTaskState> emit,
   ) async {
-    emit(state.copyWith(tab: RootTaskTab.tag, tag: event.tag));
+    emit(state.copyWith(tag: event.tag));
   }
 
   Future<void> _onCountRequested(

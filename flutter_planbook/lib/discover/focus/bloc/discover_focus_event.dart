@@ -4,16 +4,17 @@ sealed class DiscoverFocusEvent extends Equatable {
   const DiscoverFocusEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class DiscoverFocusRequested extends DiscoverFocusEvent {
-  const DiscoverFocusRequested({required this.date});
+  const DiscoverFocusRequested({this.date, this.noteType});
 
-  final Jiffy date;
+  final Jiffy? date;
+  final NoteType? noteType;
 
   @override
-  List<Object> get props => [date];
+  List<Object?> get props => [date, noteType];
 }
 
 final class DiscoverFocusNodeSelected extends DiscoverFocusEvent {
@@ -26,9 +27,24 @@ final class DiscoverFocusNodeSelected extends DiscoverFocusEvent {
 }
 
 final class DiscoverFocusAllNodesExpanded extends DiscoverFocusEvent {
-  const DiscoverFocusAllNodesExpanded({required this.isExpanded});
+  const DiscoverFocusAllNodesExpanded();
 
-  final bool isExpanded;
   @override
-  List<Object> get props => [isExpanded];
+  List<Object> get props => [];
+}
+
+final class DiscoverFocusCalendarExpanded extends DiscoverFocusEvent {
+  const DiscoverFocusCalendarExpanded();
+
+  @override
+  List<Object> get props => [];
+}
+
+final class DiscoverFocusCalendarDateSelected extends DiscoverFocusEvent {
+  const DiscoverFocusCalendarDateSelected({required this.date});
+
+  final Jiffy date;
+
+  @override
+  List<Object> get props => [date];
 }

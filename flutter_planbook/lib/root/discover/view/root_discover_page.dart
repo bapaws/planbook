@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
+import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
+import 'package:flutter_planbook/discover/summary/bloc/discover_summary_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/discover/model/root_discover_tab.dart';
@@ -28,6 +30,32 @@ class RootDiscoverPage extends StatelessWidget {
             now: Jiffy.now(),
           ),
         ),
+        BlocProvider(
+          create: (context) {
+            final state = context.read<RootDiscoverBloc>().state;
+            return DiscoverFocusBloc(
+              notesRepository: context.read(),
+            )..add(
+              DiscoverFocusRequested(
+                date: state.focusDate,
+                noteType: state.focusType,
+              ),
+            );
+          },
+        ),
+        BlocProvider(
+          create: (context) {
+            final state = context.read<RootDiscoverBloc>().state;
+            return DiscoverSummaryBloc(
+              notesRepository: context.read(),
+            )..add(
+              DiscoverFocusRequested(
+                date: state.summaryDate,
+                noteType: state.summaryType,
+              ),
+            );
+          },
+        ),
       ],
       child: AutoTabsRouter(
         routes: const [
@@ -35,14 +63,7 @@ class RootDiscoverPage extends StatelessWidget {
           DiscoverFocusRoute(),
           DiscoverSummaryRoute(),
         ],
-        builder: (context, child) =>
-            BlocListener<RootDiscoverBloc, RootDiscoverState>(
-              listenWhen: (previous, current) => previous.tab != current.tab,
-              listener: (context, state) {
-                context.tabsRouter.setActiveIndex(state.tab.index);
-              },
-              child: _RootDiscoverPage(child: child),
-            ),
+        builder: (context, child) => _RootDiscoverPage(child: child),
       ),
     );
   }
@@ -61,7 +82,7 @@ class _RootDiscoverPage extends StatelessWidget {
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootDiscoverDrawer(),
-      drawerEdgeDragWidth: 96,
+      drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -89,51 +110,96 @@ class _RootDiscoverPage extends StatelessWidget {
                       ),
                 ),
               ),
-            RootDiscoverTab.focusMindMap => Text(context.l10n.focusMindMap),
-            RootDiscoverTab.summaryMindMap => Text(context.l10n.summaryMindMap),
+            RootDiscoverTab.focusMindMap =>
+              BlocBuilder<DiscoverFocusBloc, DiscoverFocusState>(
+                builder: (context, state) => RootNoteGalleryTitleView(
+                  date: state.date,
+                  isCalendarExpanded: state.isCalendarExpanded,
+                  onDateSelected: (date) =>
+                      context.read<DiscoverFocusBloc>().add(
+                        DiscoverFocusCalendarDateSelected(date: date),
+                      ),
+                  onCalendarToggled: () =>
+                      context.read<DiscoverFocusBloc>().add(
+                        const DiscoverFocusCalendarExpanded(),
+                      ),
+                ),
+              ),
+            RootDiscoverTab.summaryMindMap =>
+              BlocBuilder<DiscoverSummaryBloc, DiscoverFocusState>(
+                builder: (context, state) => RootNoteGalleryTitleView(
+                  date: state.date,
+                  isCalendarExpanded: state.isCalendarExpanded,
+                  onDateSelected: (date) =>
+                      context.read<DiscoverSummaryBloc>().add(
+                        DiscoverFocusCalendarDateSelected(date: date),
+                      ),
+                  onCalendarToggled: () =>
+                      context.read<DiscoverSummaryBloc>().add(
+                        const DiscoverFocusCalendarExpanded(),
+                      ),
+                ),
+              ),
           },
         ),
         actions: [
           PullDownButton(
-            itemBuilder: (context) => [
-              PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
-              PullDownMenuItem(
-                icon: FontAwesomeIcons.calendarMinus,
-                title: context.l10n.thisWeek,
-                onTap: () {
-                  final now = Jiffy.now();
-                  final from = now.startOf(Unit.week);
-                  final to = now.endOf(Unit.week);
-                  context.read<RootDiscoverBloc>().add(
-                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                  );
-                },
-              ),
-              PullDownMenuItem(
-                icon: FontAwesomeIcons.calendarDays,
-                title: context.l10n.thisMonth,
-                onTap: () {
-                  final now = Jiffy.now();
-                  final from = now.startOf(Unit.month);
-                  final to = now.endOf(Unit.month);
-                  context.read<RootDiscoverBloc>().add(
-                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                  );
-                },
-              ),
-              PullDownMenuItem(
-                icon: FontAwesomeIcons.calendar,
-                title: context.l10n.thisYear,
-                onTap: () {
-                  final now = Jiffy.now();
-                  final from = now.startOf(Unit.year);
-                  final to = now.endOf(Unit.year);
-                  context.read<RootDiscoverBloc>().add(
-                    RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                  );
-                },
-              ),
-            ],
+            itemBuilder: (context) => switch (tab) {
+              RootDiscoverTab.journal => [
+                PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.calendarMinus,
+                  title: context.l10n.thisWeek,
+                  onTap: () {
+                    final now = Jiffy.now();
+                    final from = now.startOf(Unit.week);
+                    final to = now.endOf(Unit.week);
+                    context.read<RootDiscoverBloc>().add(
+                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                    );
+                  },
+                ),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.calendarDays,
+                  title: context.l10n.thisMonth,
+                  onTap: () {
+                    final now = Jiffy.now();
+                    final from = now.startOf(Unit.month);
+                    final to = now.endOf(Unit.month);
+                    context.read<RootDiscoverBloc>().add(
+                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                    );
+                  },
+                ),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.calendar,
+                  title: context.l10n.thisYear,
+                  onTap: () {
+                    final now = Jiffy.now();
+                    final from = now.startOf(Unit.year);
+                    final to = now.endOf(Unit.year);
+                    context.read<RootDiscoverBloc>().add(
+                      RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                    );
+                  },
+                ),
+              ],
+              RootDiscoverTab.focusMindMap ||
+              RootDiscoverTab.summaryMindMap => [
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.calendarMinus,
+                  title: context.l10n.thisWeek,
+                  onTap: () {
+                    context.read<DiscoverFocusBloc>().add(
+                      DiscoverFocusRequested(date: Jiffy.now()),
+                    );
+                    // context.read<DiscoverFocusBloc>().add(
+                    //   const DiscoverFocusAllNodesExpanded(),
+                    // );
+                  },
+                ),
+              ],
+            },
             buttonBuilder: (context, showMenu) => CupertinoButton(
               onPressed: showMenu,
               child: const Icon(FontAwesomeIcons.ellipsis),

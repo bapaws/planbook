@@ -50,17 +50,8 @@ class JournalDailyDataView extends StatelessWidget {
                 style: baseStyle,
               ),
               const SizedBox(height: 12),
-              BlocSelector<
-                JournalDailyBloc,
-                JournalDailyState,
-                Map<TaskPriority, int>
-              >(
-                selector: (state) => state.completedTaskPriorityCounts,
-                builder: (context, completedTaskPriorityCounts) {
-                  return JournalDailyPieChartView(
-                    taskPriorityCounts: completedTaskPriorityCounts,
-                  );
-                },
+              JournalDailyPieChartView(
+                taskPriorityCounts: state.completedTaskPriorityCounts,
               ),
               const SizedBox(height: 12),
             ],

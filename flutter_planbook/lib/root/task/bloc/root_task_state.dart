@@ -8,7 +8,6 @@ enum RootTaskViewType {
 final class RootTaskState extends Equatable {
   const RootTaskState({
     this.status = PageStatus.initial,
-    this.tab = RootTaskTab.day,
     this.viewType = RootTaskViewType.list,
     this.showCompleted = false,
     this.tag,
@@ -24,7 +23,6 @@ final class RootTaskState extends Equatable {
 
   final PageStatus status;
 
-  final RootTaskTab tab;
   final RootTaskViewType viewType;
   final bool showCompleted;
 
@@ -43,7 +41,6 @@ final class RootTaskState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    tab,
     viewType,
     showCompleted,
     tag,
@@ -55,7 +52,6 @@ final class RootTaskState extends Equatable {
 
   RootTaskState copyWith({
     PageStatus? status,
-    RootTaskTab? tab,
     RootTaskViewType? viewType,
     bool? showCompleted,
     TagEntity? tag,
@@ -66,7 +62,6 @@ final class RootTaskState extends Equatable {
   }) {
     return RootTaskState(
       status: status ?? this.status,
-      tab: tab ?? this.tab,
       viewType: viewType ?? this.viewType,
       showCompleted: showCompleted ?? this.showCompleted,
       tag: tag ?? this.tag,

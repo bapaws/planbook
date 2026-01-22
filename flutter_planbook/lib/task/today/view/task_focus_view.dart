@@ -11,6 +11,7 @@ class TaskFocusView extends StatelessWidget {
     required this.note,
     required this.noteType,
     required this.onTap,
+    required this.onMindMapTapped,
     super.key,
   });
 
@@ -18,6 +19,7 @@ class TaskFocusView extends StatelessWidget {
 
   final NoteType noteType;
   final VoidCallback onTap;
+  final VoidCallback onMindMapTapped;
 
   RootTaskTab get tab => switch (noteType) {
     NoteType.dailyFocus => RootTaskTab.day,
@@ -29,32 +31,6 @@ class TaskFocusView extends StatelessWidget {
     // NoteType.yearlyFocus => RootTaskTab.year,
     _ => throw UnimplementedError(),
   };
-
-  String getFocusTitle(AppLocalizations l10n) {
-    if (tab == RootTaskTab.day) {
-      return '${l10n.dailyFocus} 🎯';
-    }
-    if (tab == RootTaskTab.week) {
-      return '${l10n.weeklyFocus} 🎯';
-    }
-    if (tab == RootTaskTab.month) {
-      return '${l10n.monthlyFocus} 🎯';
-    }
-    throw UnimplementedError();
-  }
-
-  String getSummaryTitle(AppLocalizations l10n) {
-    if (tab == RootTaskTab.day) {
-      return '${l10n.dailySummary} 🎯';
-    }
-    if (tab == RootTaskTab.week) {
-      return '${l10n.weeklySummary} 🎯';
-    }
-    if (tab == RootTaskTab.month) {
-      return '${l10n.monthlySummary} 🎯';
-    }
-    throw UnimplementedError();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +53,11 @@ class TaskFocusView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TaskFocusHeaderView(noteType: noteType, tab: tab),
+            TaskFocusHeaderView(
+              noteType: noteType,
+              tab: tab,
+              onMindMapTapped: onMindMapTapped,
+            ),
             const SizedBox(
               height: 8,
               width: double.infinity,

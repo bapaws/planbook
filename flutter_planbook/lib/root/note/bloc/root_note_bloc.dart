@@ -16,7 +16,6 @@ class RootNoteBloc extends Bloc<RootNoteEvent, RootNoteState> {
         ),
       ) {
     on<RootNoteRequested>(_onRequested);
-    on<RootNoteTabSelected>(_onTabSelected);
     on<RootNoteTagSelected>(_onTagSelected);
     on<RootNoteDateSelected>(_onDateSelected);
   }
@@ -28,18 +27,11 @@ class RootNoteBloc extends Bloc<RootNoteEvent, RootNoteState> {
     emit(state.copyWith(status: PageStatus.loading));
   }
 
-  Future<void> _onTabSelected(
-    RootNoteTabSelected event,
-    Emitter<RootNoteState> emit,
-  ) async {
-    emit(state.copyWith(tab: event.tab));
-  }
-
   Future<void> _onTagSelected(
     RootNoteTagSelected event,
     Emitter<RootNoteState> emit,
   ) async {
-    emit(state.copyWith(tab: RootNoteTab.tag, tag: event.tag));
+    emit(state.copyWith(tag: event.tag));
   }
 
   Future<void> _onDateSelected(

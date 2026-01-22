@@ -38,7 +38,7 @@ class RootTaskPage extends StatelessWidget {
           )..add(TaskMonthDateSelected(date: Jiffy.now())),
         ),
       ],
-      child: AutoTabsRouter(
+      child: AutoTabsRouter.tabBar(
         routes: const [
           TaskInboxRoute(),
           TaskOverdueRoute(),
@@ -47,17 +47,7 @@ class RootTaskPage extends StatelessWidget {
           TaskMonthRoute(),
           TaskTagRoute(),
         ],
-        builder: (context, child) {
-          final activeTab = RootTaskTab.values[context.tabsRouter.activeIndex];
-          return BlocListener<RootTaskBloc, RootTaskState>(
-            listenWhen: (previous, current) =>
-                previous.tab != current.tab || activeTab != current.tab,
-            listener: (context, state) {
-              context.tabsRouter.setActiveIndex(state.tab.index);
-            },
-            child: _RootTaskPage(child: child),
-          );
-        },
+        builder: (context, child, controller) => _RootTaskPage(child: child),
       ),
     );
   }
@@ -76,7 +66,7 @@ class _RootTaskPage extends StatelessWidget {
     return AppScaffold(
       scaffoldKey: _scaffoldKey,
       drawer: const RootTaskDrawer(),
-      drawerEdgeDragWidth: 96,
+      drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -140,11 +130,12 @@ class _RootTaskPage extends StatelessWidget {
         actions: [
           PullDownButton(
             itemBuilder: (context) {
+              final activeIndex = context.tabsRouter.activeIndex;
+              final tab = RootTaskTab.values[activeIndex];
               final bloc = context.read<RootTaskBloc>();
               final theme = Theme.of(context);
               return [
-                if (bloc.state.tab != RootTaskTab.week &&
-                    bloc.state.tab != RootTaskTab.month) ...[
+                if (tab != RootTaskTab.week && tab != RootTaskTab.month) ...[
                   PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
                   PullDownMenuItem.selectable(
                     icon: FontAwesomeIcons.list,
@@ -169,15 +160,14 @@ class _RootTaskPage extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (bloc.state.tab != RootTaskTab.overdue ||
-                    bloc.state.tab == RootTaskTab.day ||
-                    bloc.state.tab == RootTaskTab.month) ...[
-                  if (bloc.state.tab != RootTaskTab.week &&
-                      bloc.state.tab != RootTaskTab.month)
+                if (tab != RootTaskTab.overdue ||
+                    tab == RootTaskTab.day ||
+                    tab == RootTaskTab.month) ...[
+                  if (tab != RootTaskTab.week && tab != RootTaskTab.month)
                     const PullDownMenuDivider.large(),
                   PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
                 ],
-                if (bloc.state.tab != RootTaskTab.overdue)
+                if (tab != RootTaskTab.overdue)
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.solidCircleCheck,
                     iconColor: theme.colorScheme.primary,
@@ -188,22 +178,20 @@ class _RootTaskPage extends StatelessWidget {
                       const RootTaskShowCompletedChanged(),
                     ),
                   ),
-                if (bloc.state.tab == RootTaskTab.day ||
-                    bloc.state.tab == RootTaskTab.month) ...[
+                if (tab == RootTaskTab.day || tab == RootTaskTab.month) ...[
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.arrowsToDot,
                     iconColor: theme.colorScheme.primary,
-                    title: bloc.state.tabFocusNoteTypes[bloc.state.tab] == null
+                    title: bloc.state.tabFocusNoteTypes[tab] == null
                         ? context.l10n.showFocusNote
                         : context.l10n.hideFocusNote,
                     onTap: () {
-                      final noteType =
-                          bloc.state.tabFocusNoteTypes[bloc.state.tab];
+                      final noteType = bloc.state.tabFocusNoteTypes[tab];
                       context.read<RootTaskBloc>().add(
                         RootTaskTabFocusNoteTypeChanged(
-                          tab: bloc.state.tab,
+                          tab: tab,
                           noteType: noteType == null
-                              ? switch (bloc.state.tab) {
+                              ? switch (tab) {
                                   RootTaskTab.day => NoteType.dailyFocus,
                                   RootTaskTab.week => NoteType.weeklyFocus,
                                   RootTaskTab.month => NoteType.monthlyFocus,

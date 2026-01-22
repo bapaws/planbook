@@ -73,11 +73,12 @@ class TaskListBlocProvider extends StatelessWidget {
 
           if (tagId != null)
             BlocListener<RootTaskBloc, RootTaskState>(
-              listenWhen: (previous, current) =>
-                  previous.tag != current.tag && current.tab == RootTaskTab.tag,
+              listenWhen: (previous, current) => previous.tag != current.tag,
               listener: (context, state) {
-                final event = requestEvent();
-                context.read<TaskListBloc>().add(event);
+                if (context.tabsRouter.activeIndex == RootTaskTab.tag.index) {
+                  final event = requestEvent();
+                  context.read<TaskListBloc>().add(event);
+                }
               },
             ),
         ],

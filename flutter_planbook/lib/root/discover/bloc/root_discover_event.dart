@@ -4,16 +4,7 @@ sealed class RootDiscoverEvent extends Equatable {
   const RootDiscoverEvent();
 
   @override
-  List<Object> get props => [];
-}
-
-final class RootDiscoverTabSelected extends RootDiscoverEvent {
-  const RootDiscoverTabSelected({required this.tab});
-
-  final RootDiscoverTab tab;
-
-  @override
-  List<Object> get props => [tab];
+  List<Object?> get props => [];
 }
 
 final class RootDiscoverAutoPlayRangeChanged extends RootDiscoverEvent {
@@ -27,4 +18,27 @@ final class RootDiscoverAutoPlayRangeChanged extends RootDiscoverEvent {
 
   @override
   List<Object> get props => [from, to];
+}
+
+final class RootDiscoverFocusDateChanged extends RootDiscoverEvent {
+  const RootDiscoverFocusDateChanged({required this.date, required this.type});
+
+  final Jiffy? date;
+  final NoteType? type;
+
+  @override
+  List<Object?> get props => [date, type];
+}
+
+final class RootDiscoverSummaryDateChanged extends RootDiscoverEvent {
+  const RootDiscoverSummaryDateChanged({
+    required this.date,
+    required this.type,
+  });
+
+  final Jiffy? date;
+  final NoteType? type;
+
+  @override
+  List<Object?> get props => [date, type];
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/discover/model/root_discover_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_drawer_list_tile.dart';
 import 'package:flutter_planbook/root/task/view/root_user_header.dart';
@@ -25,31 +24,16 @@ class RootDiscoverDrawer extends StatelessWidget {
                     height: 16,
                   ),
                 ),
-                RootDrawerListTile(
-                  icon: RootDiscoverTab.journal.icon,
-                  iconBackgroundColor: RootDiscoverTab.journal.color,
-                  title: RootDiscoverTab.journal.getName(context),
-                  onPressed: () {
-                    context.read<RootDiscoverBloc>().add(
-                      const RootDiscoverTabSelected(
-                        tab: RootDiscoverTab.journal,
-                      ),
-                    );
-                    Scaffold.of(context).closeDrawer();
-                  },
-                ),
-                // for (final tab in RootDiscoverTab.values)
-                //   RootDrawerListTile(
-                //     icon: tab.icon,
-                //     iconBackgroundColor: tab.color,
-                //     title: tab.getName(context),
-                //     onPressed: () {
-                //       context.read<RootDiscoverBloc>().add(
-                //         RootDiscoverTabSelected(tab: tab),
-                //       );
-                //       Scaffold.of(context).closeDrawer();
-                //     },
-                //   ),
+                for (final tab in RootDiscoverTab.values)
+                  RootDrawerListTile(
+                    icon: tab.icon,
+                    iconBackgroundColor: tab.color,
+                    title: tab.getName(context),
+                    onPressed: () {
+                      context.tabsRouter.setActiveIndex(tab.index);
+                      Scaffold.of(context).closeDrawer();
+                    },
+                  ),
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height:

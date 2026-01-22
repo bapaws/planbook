@@ -148,10 +148,7 @@ class JournalDailyBloc extends Bloc<JournalDailyEvent, JournalDailyState> {
     await emit.forEach(
       _notesRepository.getNoteEntitiesByDate(
         date,
-        modes: [
-          NoteListMode.written,
-          NoteListMode.task,
-        ],
+        mode: NoteListMode.journal,
       ),
       onData: (notes) {
         final startOfDay = date.toLocal().startOf(Unit.day);

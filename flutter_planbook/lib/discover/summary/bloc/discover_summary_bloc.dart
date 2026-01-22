@@ -1,13 +1,8 @@
-import 'package:bloc/bloc.dart';
-import 'package:equatable/equatable.dart';
+import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 
-part 'discover_summary_event.dart';
-part 'discover_summary_state.dart';
-
-class DiscoverSummaryBloc extends Bloc<DiscoverSummaryEvent, DiscoverSummaryState> {
-  DiscoverSummaryBloc() : super(DiscoverSummaryInitial()) {
-    on<DiscoverSummaryEvent>((event, emit) {
-      // TODO: implement event handler
-    });
-  }
+class DiscoverSummaryBloc extends DiscoverFocusBloc {
+  DiscoverSummaryBloc({
+    required super.notesRepository,
+    super.isSummary = true,
+  });
 }

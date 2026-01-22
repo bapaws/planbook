@@ -92,9 +92,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     // Create default tags and sample tasks on first launch
     if (_usersRepository.isFirstLaunch && !kDebugMode) {
       final languageCode = event.l10n.localeName.split('_').first;
-      await _tagsRepository.createDefaultTags(languageCode: languageCode);
-      await _tasksRepository.createDefaultTasks(languageCode: languageCode);
-      await _notesRepository.createDefaultNotes(languageCode: languageCode);
+      // await _tagsRepository.createDefaultTags(languageCode: languageCode);
+      // await _tasksRepository.createDefaultTasks(languageCode: languageCode);
+      // await _notesRepository.createDefaultNotes(languageCode: languageCode);
     }
 
     await _usersRepository.updateUserProfile(

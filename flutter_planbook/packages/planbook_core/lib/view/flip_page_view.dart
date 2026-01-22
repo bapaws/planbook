@@ -131,9 +131,14 @@ class FlipPageController extends ValueNotifier<int> {
     required _JumpToPageCallback jumpToPage,
     required _GetItemsCountCallback getItemsCount,
   }) {
-    _animateToPageCallback = animateToPage;
-    _jumpToPageCallback = jumpToPage;
-    _getItemsCountCallback = getItemsCount;
+    // 只有在回调为空或发生变化时才更新，避免 state 重建时不必要的覆盖
+    if (_animateToPageCallback != animateToPage ||
+        _jumpToPageCallback != jumpToPage ||
+        _getItemsCountCallback != getItemsCount) {
+      _animateToPageCallback = animateToPage;
+      _jumpToPageCallback = jumpToPage;
+      _getItemsCountCallback = getItemsCount;
+    }
   }
 
   void _detach() {
@@ -182,13 +187,13 @@ class _FlipPageViewState extends State<FlipPageView>
 
   double? _dragStartX;
   double _dragProgress = 0;
-  double _leftAngle = -math.pi / 8;
-  double _rightAngle = math.pi / 8;
+  double _leftAngle = -_defaultAngle;
+  double _rightAngle = _defaultAngle;
   bool _isAnimating = false;
 
   static const _perspective = 0.0002;
   static const _zeroAngle = 0.0001;
-  static const double _defaultAngle = math.pi / 8;
+  static const double _defaultAngle = math.pi / 6.5;
   static const double _maxAngle = math.pi / 2;
 
   int get _currentIndex => widget.controller.value;
@@ -269,11 +274,11 @@ class _FlipPageViewState extends State<FlipPageView>
 
     final velocity = details.velocity.pixelsPerSecond.dx;
     final screenWidth = MediaQuery.of(context).size.width;
-    final threshold = screenWidth * 0.3; // 30% of screen width
+    final threshold = screenWidth * 0.15; // 30% of screen width
 
     // Determine if we should complete the flip
     final shouldComplete =
-        _dragProgress.abs() > 0.5 ||
+        _dragProgress.abs() > 0.3 ||
         (details.primaryVelocity?.abs() ?? 0) > threshold ||
         (velocity.abs() > 500 && (velocity > 0) == (_dragProgress > 0));
 
@@ -320,6 +325,20 @@ class _FlipPageViewState extends State<FlipPageView>
     );
 
     // Register callbacks with controller for direct control
+    _attachCallbacks();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlipPageView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 当 widget 更新时（比如 itemsCount 改变），重新注册回调
+    if (oldWidget.controller != widget.controller ||
+        oldWidget.itemsCount != widget.itemsCount) {
+      _attachCallbacks();
+    }
+  }
+
+  void _attachCallbacks() {
     widget.controller._attach(
       animateToPage: _animateToPage,
       jumpToPage: _jumpToPage,
@@ -489,168 +508,192 @@ class _FlipPageViewState extends State<FlipPageView>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return GestureDetector(
       onHorizontalDragStart: _onHorizontalDragStart,
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              if ((_dragProgress > 0 && _dragProgress < 0.5) ||
-                  (_dragProgress < -0.5))
-                Transform(
-                  key: ValueKey(
-                    _currentIndex <= 1
-                        ? widget.itemsCount - 2 + _currentIndex
-                        : _currentIndex - 2,
+      child: Container(
+        decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.surfaceContainerHighest,
+              blurRadius: 20,
+              offset: const Offset(0, 20),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                // color: Color(0xFFFAFAFA),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 20,
+                    offset: Offset(10, 0),
                   ),
-                  alignment: Alignment.centerRight,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, _perspective)
-                    ..rotateY(_zeroAngle),
-                  child: ClipRect(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: 0.5,
-                      child: _buildPageContent(
+                ],
+              ),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  if ((_dragProgress > 0 && _dragProgress < 0.5) ||
+                      (_dragProgress < -0.5))
+                    Transform(
+                      key: ValueKey(
                         _currentIndex <= 1
                             ? widget.itemsCount - 2 + _currentIndex
                             : _currentIndex - 2,
-                        isCurrentPage: false,
+                      ),
+                      alignment: Alignment.centerRight,
+                      transform: Matrix4.identity()
+                        ..setEntry(3, 2, _perspective)
+                        ..rotateY(_zeroAngle),
+                      child: ClipRect(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          widthFactor: 0.5,
+                          child: _buildPageContent(
+                            _currentIndex <= 1
+                                ? widget.itemsCount - 2 + _currentIndex
+                                : _currentIndex - 2,
+                            isCurrentPage: false,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              Transform(
-                key: ValueKey(
-                  _currentIndex == 0
-                      ? widget.itemsCount - 1
-                      : _currentIndex - 1,
-                ),
-                alignment: Alignment.centerRight,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, _perspective)
-                  ..rotateY(
-                    _dragProgress > 0 && _dragProgress < 0.5
-                        ? _zeroAngle - _dragProgress * 2 * _defaultAngle
-                        : (_dragProgress < -0.5
-                              ? _zeroAngle -
-                                    (1 + _dragProgress) * 2 * _defaultAngle
-                              : _zeroAngle),
-                  ),
-                child: ClipRect(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: 0.5,
-                    child: _buildPageContent(
+                  Transform(
+                    key: ValueKey(
                       _currentIndex == 0
                           ? widget.itemsCount - 1
                           : _currentIndex - 1,
-                      isCurrentPage: false,
+                    ),
+                    alignment: Alignment.centerRight,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, _perspective)
+                      ..rotateY(
+                        _dragProgress > 0 && _dragProgress < 0.5
+                            ? _zeroAngle - _dragProgress * 2 * _defaultAngle
+                            : (_dragProgress < -0.5
+                                  ? _zeroAngle -
+                                        (1 + _dragProgress) * 2 * _defaultAngle
+                                  : _zeroAngle),
+                      ),
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: 0.5,
+                        child: _buildPageContent(
+                          _currentIndex == 0
+                              ? widget.itemsCount - 1
+                              : _currentIndex - 1,
+                          isCurrentPage: false,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                  Transform(
+                    key: ValueKey(_currentIndex),
+                    alignment: Alignment.centerRight,
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, _perspective)
+                      ..rotateY(_leftAngle),
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: 0.5,
+                        child: _buildPageContent(
+                          _currentIndex,
+                          isCurrentPage: false, // 左半边不需要注册，右半边注册
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              Transform(
-                key: ValueKey(_currentIndex),
-                alignment: Alignment.centerRight,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, _perspective)
-                  ..rotateY(_leftAngle),
-                child: ClipRect(
-                  child: Align(
+            ),
+            if (widget.spacing != null) SizedBox(width: widget.spacing),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                if ((_dragProgress < 0 && _dragProgress > -0.5) ||
+                    (_dragProgress > 0.5 && _dragProgress < 1))
+                  Transform(
+                    key: ValueKey(
+                      _currentIndex >= widget.itemsCount - 2
+                          ? _currentIndex - widget.itemsCount + 2
+                          : _currentIndex + 2,
+                    ),
                     alignment: Alignment.centerLeft,
-                    widthFactor: 0.5,
-                    child: _buildPageContent(
-                      _currentIndex,
-                      isCurrentPage: false, // 左半边不需要注册，右半边注册
+                    transform: Matrix4.identity()
+                      ..setEntry(3, 2, _perspective)
+                      ..rotateY(_zeroAngle),
+                    child: ClipRect(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        widthFactor: 0.5,
+                        child: _buildPageContent(
+                          _currentIndex >= widget.itemsCount - 2
+                              ? _currentIndex - widget.itemsCount + 2
+                              : _currentIndex + 2,
+                          isCurrentPage: false,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-          ),
-          if (widget.spacing != null) SizedBox(width: widget.spacing),
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              if ((_dragProgress < 0 && _dragProgress > -0.5) ||
-                  (_dragProgress > 0.5 && _dragProgress < 1))
                 Transform(
                   key: ValueKey(
-                    _currentIndex >= widget.itemsCount - 2
-                        ? _currentIndex - widget.itemsCount + 2
-                        : _currentIndex + 2,
+                    _currentIndex == widget.itemsCount - 1
+                        ? 0
+                        : _currentIndex + 1,
                   ),
                   alignment: Alignment.centerLeft,
                   transform: Matrix4.identity()
                     ..setEntry(3, 2, _perspective)
-                    ..rotateY(_zeroAngle),
+                    ..rotateY(
+                      _dragProgress > 0.5
+                          ? _zeroAngle + (1 - _dragProgress) * 2 * _defaultAngle
+                          : ((_dragProgress < 0 && _dragProgress > -0.5)
+                                ? _zeroAngle - _dragProgress * 2 * _defaultAngle
+                                : _zeroAngle),
+                    ),
                   child: ClipRect(
                     child: Align(
                       alignment: Alignment.centerRight,
                       widthFactor: 0.5,
                       child: _buildPageContent(
-                        _currentIndex >= widget.itemsCount - 2
-                            ? _currentIndex - widget.itemsCount + 2
-                            : _currentIndex + 2,
+                        _currentIndex == widget.itemsCount - 1
+                            ? 0
+                            : _currentIndex + 1,
                         isCurrentPage: false,
                       ),
                     ),
                   ),
                 ),
-              Transform(
-                key: ValueKey(
-                  _currentIndex == widget.itemsCount - 1
-                      ? 0
-                      : _currentIndex + 1,
-                ),
-                alignment: Alignment.centerLeft,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, _perspective)
-                  ..rotateY(
-                    _dragProgress > 0.5
-                        ? _zeroAngle + (1 - _dragProgress) * 2 * _defaultAngle
-                        : ((_dragProgress < 0 && _dragProgress > -0.5)
-                              ? _zeroAngle - _dragProgress * 2 * _defaultAngle
-                              : _zeroAngle),
-                  ),
-                child: ClipRect(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    widthFactor: 0.5,
-                    child: _buildPageContent(
-                      _currentIndex == widget.itemsCount - 1
-                          ? 0
-                          : _currentIndex + 1,
-                      isCurrentPage: false,
+                Transform(
+                  key: ValueKey(_currentIndex),
+                  alignment: Alignment.centerLeft,
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, _perspective)
+                    ..rotateY(_rightAngle),
+                  child: ClipRect(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      widthFactor: 0.5,
+                      child: _buildPageContent(
+                        _currentIndex,
+                        isCurrentPage: true, // 右半边注册用于截图
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Transform(
-                key: ValueKey(_currentIndex),
-                alignment: Alignment.centerLeft,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, _perspective)
-                  ..rotateY(_rightAngle),
-                child: ClipRect(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    widthFactor: 0.5,
-                    child: _buildPageContent(
-                      _currentIndex,
-                      isCurrentPage: true, // 右半边注册用于截图
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

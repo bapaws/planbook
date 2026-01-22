@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
@@ -155,6 +156,10 @@ class _TaskMonthPage extends StatelessWidget {
               ),
             );
           },
+          onMindMapTapped: () {
+            _addDiscoverEvent(context, noteType);
+            _navigateToRootDiscover(context, noteType);
+          },
         );
       },
     );
@@ -175,5 +180,31 @@ class _TaskMonthPage extends StatelessWidget {
   List<String> _getWeekdayNames(Jiffy date) {
     final startOfWeek = date.startOf(Unit.week);
     return List.generate(7, (index) => startOfWeek.add(days: index).E);
+  }
+
+  void _addDiscoverEvent(BuildContext context, NoteType noteType) {
+    final date = context.read<TaskMonthBloc>().state.date;
+    context.read<RootDiscoverBloc>().add(
+      noteType.isFocus
+          ? RootDiscoverFocusDateChanged(date: date, type: noteType)
+          : RootDiscoverSummaryDateChanged(date: date, type: noteType),
+    );
+  }
+
+  void _navigateToRootDiscover(BuildContext context, NoteType noteType) {
+    AutoRouter.of(context).navigate(
+      RootHomeRoute(
+        children: [
+          RootDiscoverRoute(
+            children: [
+              if (noteType.isFocus)
+                const DiscoverFocusRoute()
+              else
+                const DiscoverSummaryRoute(),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -36,9 +36,12 @@ class RootNoteDrawer extends StatelessWidget {
                   icon: FontAwesomeIcons.timeline,
                   iconBackgroundColor: Colors.orange,
                   title: context.l10n.timeline,
+                  isSelected:
+                      context.tabsRouter.activeIndex ==
+                      RootNoteTab.timeline.index,
                   onPressed: () {
-                    context.read<RootNoteBloc>().add(
-                      const RootNoteTabSelected(tab: RootNoteTab.timeline),
+                    context.tabsRouter.setActiveIndex(
+                      RootNoteTab.timeline.index,
                     );
                     Scaffold.of(context).closeDrawer();
                   },
@@ -47,9 +50,12 @@ class RootNoteDrawer extends StatelessWidget {
                   icon: FontAwesomeIcons.filePen,
                   iconBackgroundColor: Colors.blue,
                   title: context.l10n.note,
+                  isSelected:
+                      context.tabsRouter.activeIndex ==
+                      RootNoteTab.written.index,
                   onPressed: () {
-                    context.read<RootNoteBloc>().add(
-                      const RootNoteTabSelected(tab: RootNoteTab.written),
+                    context.tabsRouter.setActiveIndex(
+                      RootNoteTab.written.index,
                     );
                     Scaffold.of(context).closeDrawer();
                   },
@@ -58,9 +64,11 @@ class RootNoteDrawer extends StatelessWidget {
                   icon: FontAwesomeIcons.listCheck,
                   iconBackgroundColor: Colors.brown,
                   title: context.l10n.task,
+                  isSelected:
+                      context.tabsRouter.activeIndex == RootNoteTab.task.index,
                   onPressed: () {
-                    context.read<RootNoteBloc>().add(
-                      const RootNoteTabSelected(tab: RootNoteTab.task),
+                    context.tabsRouter.setActiveIndex(
+                      RootNoteTab.task.index,
                     );
                     Scaffold.of(context).closeDrawer();
                   },
@@ -69,9 +77,12 @@ class RootNoteDrawer extends StatelessWidget {
                   icon: FontAwesomeIcons.image,
                   iconBackgroundColor: Colors.green,
                   title: context.l10n.gallery,
+                  isSelected:
+                      context.tabsRouter.activeIndex ==
+                      RootNoteTab.gallery.index,
                   onPressed: () {
-                    context.read<RootNoteBloc>().add(
-                      const RootNoteTabSelected(tab: RootNoteTab.gallery),
+                    context.tabsRouter.setActiveIndex(
+                      RootNoteTab.gallery.index,
                     );
                     Scaffold.of(context).closeDrawer();
                   },
@@ -121,6 +132,9 @@ class RootNoteDrawer extends StatelessWidget {
                         onSelected: () {
                           context.read<RootNoteBloc>().add(
                             RootNoteTagSelected(tag: tag),
+                          );
+                          context.tabsRouter.setActiveIndex(
+                            RootNoteTab.tag.index,
                           );
                           Scaffold.of(context).closeDrawer();
                         },

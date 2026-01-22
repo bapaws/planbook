@@ -1,6 +1,6 @@
-import 'dart:ui';
-
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -13,14 +13,14 @@ const double kMonthlyNodeExpandedRadius = 100;
 const double kWeeklyNodeExpandedRadius = 44;
 const double kDailyNodeExpandedRadius = 28;
 
-const double kMonthlyMindMapRadius = 150;
-const double kWeeklyMindMapRadius = 280;
-const double kDailyMindMapRadius = 380;
+const double kMonthlyMindMapRadius = 190;
+const double kWeeklyMindMapRadius = 328;
+const double kDailyMindMapRadius = 460;
 
 const double kYearlyNodeRadius = 128;
-const double kMonthlyNodeRadius = 72;
-const double kWeeklyNodeRadius = 56;
-const double kDailyNodeRadius = 48;
+const double kMonthlyNodeRadius = 75;
+const double kWeeklyNodeRadius = 64;
+const double kDailyNodeRadius = 56;
 
 final class NoteMindMapEntity extends Equatable {
   const NoteMindMapEntity({
@@ -63,6 +63,37 @@ final class NoteMindMapEntity extends Equatable {
 
   String get key => '${date.format(pattern: 'yyyy-MM-dd')}-${type.name}';
 
+  ColorScheme getColorScheme(BuildContext context) {
+    if (type.isYearly) {
+      return type.isSummary ? context.greenColorScheme : context.redColorScheme;
+    }
+    final colorScheme = switch (date.month) {
+      1 => context.blueColorScheme,
+      2 => context.amberColorScheme,
+      3 => context.yellowColorScheme,
+      4 => context.pinkColorScheme,
+      5 => context.orangeColorScheme,
+      6 => context.brownColorScheme,
+      7 => context.indigoColorScheme,
+      8 => context.tealColorScheme,
+      9 => context.cyanColorScheme,
+      10 => context.limeColorScheme,
+      11 => context.purpleColorScheme,
+      12 => context.greyColorScheme,
+      _ => context.greyColorScheme,
+    };
+    return colorScheme;
+    // return switch (type) {
+    //   NoteType.yearlyFocus || NoteType.yearlySummary => context.redColorScheme,
+    //   NoteType.monthlyFocus ||
+    //   NoteType.monthlySummary => context.blueColorScheme,
+    //   NoteType.weeklyFocus ||
+    //   NoteType.weeklySummary => context.amberColorScheme,
+    //   NoteType.dailyFocus || NoteType.dailySummary => context.greenColorScheme,
+    //   _ => context.greyColorScheme,
+    // };
+  }
+
   double get expandedSize => switch (type) {
     NoteType.yearlyFocus || NoteType.yearlySummary => kYearlyNodeExpandedRadius,
     NoteType.monthlyFocus ||
@@ -81,18 +112,10 @@ final class NoteMindMapEntity extends Equatable {
 
   String get dateLabel => switch (type) {
     NoteType.yearlyFocus || NoteType.yearlySummary => date.format(pattern: 'y'),
-    NoteType.monthlyFocus || NoteType.monthlySummary => date.yMMM,
+    NoteType.monthlyFocus || NoteType.monthlySummary => date.MMM,
     NoteType.weeklyFocus || NoteType.weeklySummary => 'W${date.weekOfYear}',
-    NoteType.dailyFocus || NoteType.dailySummary => date.MMMd,
+    NoteType.dailyFocus || NoteType.dailySummary => date.format(pattern: 'd'),
     _ => date.format(pattern: 'yyyy-MM-dd'),
-  };
-
-  double get scale => switch (type) {
-    NoteType.yearlyFocus || NoteType.yearlySummary => 0.8,
-    NoteType.monthlyFocus || NoteType.monthlySummary => 1.0,
-    NoteType.weeklyFocus || NoteType.weeklySummary => 1.2,
-    NoteType.dailyFocus || NoteType.dailySummary => 1.5,
-    _ => 1.0,
   };
 
   @override
