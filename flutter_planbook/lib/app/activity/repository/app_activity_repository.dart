@@ -1,9 +1,15 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:planbook_api/supabase/app_purchases.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+enum ActivityPlatform {
+  ios,
+  android,
+}
 
 class ActivityMessageEntity {
   const ActivityMessageEntity({
@@ -20,6 +26,8 @@ class ActivityMessageEntity {
     this.isNotPro = true,
     this.startAt,
     this.endAt,
+    this.platforms = const [ActivityPlatform.ios],
+    this.isNew = false,
   });
   final int id;
   final String emoji;
@@ -34,6 +42,12 @@ class ActivityMessageEntity {
   final bool isNotPro;
   final DateTime? startAt;
   final DateTime? endAt;
+  final List<ActivityPlatform> platforms;
+  final bool isNew;
+
+  bool isAvailable(ActivityPlatform platform) {
+    return platforms.contains(platform);
+  }
 }
 
 class AppActivityRepository {
@@ -54,7 +68,7 @@ class AppActivityRepository {
   static const kActivityWillShowAt = 'activity_will_show_at';
 
   final List<ActivityMessageEntity> _items = [
-    ActivityMessageEntity(
+    const ActivityMessageEntity(
       id: 0,
       emoji: '🎁',
       title: '快来领取包月会员',
@@ -79,7 +93,8 @@ class AppActivityRepository {
   3. 将在 24 小时内，发送会员兑换码。
 **👉由于会员码的限制，只能在 App Store 兑换一次。**
 ''',
-      endAt: DateTime(2025, 12, 31),
+      // endAt: DateTime(2025, 12, 31),
+      isNew: true,
     ),
     const ActivityMessageEntity(
       id: 2,
@@ -156,7 +171,7 @@ class AppActivityRepository {
     return _appStoreRepository.isReleaseVersion();
   }
 
-  Future<List<ActivityMessageEntity>> fetch() async {
+  Future<List<ActivityMessageEntity>> fetch({bool isNew = false}) async {
     if (!await isReleaseVersion()) return [];
 
     final isPremium = await AppPurchases.instance.isPremium;
@@ -168,6 +183,17 @@ class AppActivityRepository {
 
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;
       if (item.endAt != null && now.isAfter(item.endAt!)) return false;
+
+      if (item.platforms.isEmpty) return false;
+      if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
+        return false;
+      }
+      if (Platform.isAndroid &&
+          !item.platforms.contains(ActivityPlatform.android)) {
+        return false;
+      }
+
+      if (isNew && !item.isNew) return false;
 
       final notShowAgain = _sp.getBool('${kActivityNotShowAgain}_${item.id}');
       if (notShowAgain != null && notShowAgain) return false;
@@ -196,6 +222,15 @@ class AppActivityRepository {
 
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;
       if (item.endAt != null && now.isAfter(item.endAt!)) return false;
+
+      if (item.platforms.isEmpty) return false;
+      if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
+        return false;
+      }
+      if (Platform.isAndroid &&
+          !item.platforms.contains(ActivityPlatform.android)) {
+        return false;
+      }
 
       if (kDebugMode) {
         _sp

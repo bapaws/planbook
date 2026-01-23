@@ -151,7 +151,7 @@ Future<void> _initPurchases() async {
   /// Dvelopment use same id
   PurchasesConfiguration configuration;
   if (Platform.isAndroid) {
-    configuration = PurchasesConfiguration('goog_GdvheXBOBiSswalySenyvhkdNZA');
+    configuration = PurchasesConfiguration('goog_jlxqPffDOplzoFISIizzxwRdFFk');
     // if (buildingForAmazon) {
     //   // use your preferred way to determine if this build is for Amazon store
     //   // checkout our MagicWeather sample for a suggestion

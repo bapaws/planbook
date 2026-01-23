@@ -18,8 +18,8 @@ enum RootDiscoverTab {
   Color get color {
     return switch (this) {
       RootDiscoverTab.journal => Colors.blue,
-      RootDiscoverTab.focusMindMap => Colors.green,
-      RootDiscoverTab.summaryMindMap => Colors.red,
+      RootDiscoverTab.focusMindMap => Colors.red,
+      RootDiscoverTab.summaryMindMap => Colors.green,
     };
   }
 

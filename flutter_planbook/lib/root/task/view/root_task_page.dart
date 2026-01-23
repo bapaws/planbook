@@ -1,6 +1,10 @@
+import 'package:animate_do/animate_do.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
@@ -128,6 +132,34 @@ class _RootTaskPage extends StatelessWidget {
           },
         ),
         actions: [
+          BlocSelector<
+            AppActivityBloc,
+            AppActivityState,
+            ActivityMessageEntity?
+          >(
+            selector: (state) =>
+                state.activities.firstWhereOrNull((activity) => activity.isNew),
+            builder: (context, activity) {
+              return activity != null
+                  ? CupertinoButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        context.router.push(
+                          AppActivityRoute(activity: activity),
+                        );
+                      },
+                      child:
+                          Text(
+                            activity.emoji,
+                          ).flash(
+                            infinite: true,
+                            duration: const Duration(seconds: 2),
+                            delay: const Duration(seconds: 1),
+                          ),
+                    )
+                  : const SizedBox.shrink();
+            },
+          ),
           PullDownButton(
             itemBuilder: (context) {
               final activeIndex = context.tabsRouter.activeIndex;

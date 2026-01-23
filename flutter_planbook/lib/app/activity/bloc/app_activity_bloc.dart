@@ -32,7 +32,7 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
     AppActivityFetched event,
     Emitter<AppActivityState> emit,
   ) async {
-    final activities = await _appActivityRepository.fetch();
+    final activities = await _appActivityRepository.fetch(isNew: event.isNew);
     emit(state.copyWith(activities: activities));
 
     add(const AppActivityRequested());

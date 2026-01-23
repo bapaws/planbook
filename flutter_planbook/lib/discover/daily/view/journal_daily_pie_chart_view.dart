@@ -40,13 +40,15 @@ class JournalDailyPieChartView extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              for (final priority in TaskPriority.values.reversed)
-                _buildPriorityItem(context, priority),
-            ],
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final priority in TaskPriority.values.reversed)
+                  _buildPriorityItem(context, priority),
+              ],
+            ),
           ),
         ],
       ),
@@ -93,10 +95,14 @@ class JournalDailyPieChartView extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 4, height: 24),
-        Text(
-          priority.getTitle(context.l10n),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: colorScheme.primary,
+        Expanded(
+          child: Text(
+            priority.getTitle(context.l10n),
+            maxLines: 1,
+            overflow: TextOverflow.fade,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: colorScheme.primary,
+            ),
           ),
         ),
         const SizedBox(width: 4),

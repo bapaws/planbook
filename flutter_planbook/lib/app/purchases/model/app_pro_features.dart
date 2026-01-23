@@ -7,7 +7,7 @@ enum AppProFeatures {
   tag,
   image,
   duration,
-  // subTask,
+  subTask,
   // statistics,
   // desktopWidget,
   theme,
@@ -21,15 +21,15 @@ enum AppProFeatures {
     duration => '⏰ ${context.l10n.duration}',
     // desktopWidget => '💻 ${context.l10n.desktopWidget}',
     theme => '🎨 ${context.l10n.theme}',
-    // subTask => '🔖 ${context.l10n.subTask}',
+    subTask => '🔖 ${context.l10n.subtasks}',
     // statistics => '📊 ${context.l10n.statistics}',
     more => '🔥 ${context.l10n.more}',
   };
 
   int get basicTotal => switch (this) {
-    task => 299,
+    task => 200,
+    note => 200,
     tag => 3,
-    note => 300,
     _ => 0,
   };
 
@@ -39,10 +39,11 @@ enum AppProFeatures {
   };
 
   String getBasicText(BuildContext context) => switch (this) {
-    task => '299',
+    task => '100',
     tag => '3',
-    note => '300',
+    note => '200',
     // desktopWidget => context.l10n.basic,
+    subTask => '✅',
     theme => context.l10n.basic,
     _ => '-',
   };
@@ -53,7 +54,7 @@ enum AppProFeatures {
     // desktopWidget => context.l10n.unlimited,
     theme => context.l10n.unlimited,
     // statistics => '✅',
-    // subTask => '✅',
+    subTask => '✅',
     more => '✅',
     _ => '♾️',
   };

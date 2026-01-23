@@ -29,6 +29,7 @@ class RootDiscoverDrawer extends StatelessWidget {
                     icon: tab.icon,
                     iconBackgroundColor: tab.color,
                     title: tab.getName(context),
+                    isSelected: context.tabsRouter.activeIndex == tab.index,
                     onPressed: () {
                       context.tabsRouter.setActiveIndex(tab.index);
                       Scaffold.of(context).closeDrawer();

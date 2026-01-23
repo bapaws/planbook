@@ -1,194 +1,1280 @@
 [
   {
-    "id": "n1a2b3c4-1234-5678-9abc-def012345678",
+    "id": "n1aab-0001-1000-abc-00010000",
     "note": {
-      "id": "n1a2b3c4-1234-5678-9abc-def012345678",
+      "id": "n1aab-0001-1000-abc-00010000",
       "user_id": null,
-      "title": "Sunny Breakfast",
-      "content": "Got up early today, a rare morning without hitting snooze.\n\nMade myself a fancy breakfast: fried eggs, avocado toast, and a freshly ground cup of coffee. Sunlight streamed through the curtains, warm and cozy.\n\nThis slow-paced life is so healing. I've decided to treat myself like this every weekend.",
-      "images": null,
-      "cover_image": null,
+      "title": "Future Technology Outlook",
+      "content": "Looking ahead to future technology trends, focusing on these areas:\n\n1. AI & Automation - Changing work methods\n2. Biotechnology - Extending human lifespan\n3. Space Exploration - Opening new frontiers\n4. Quantum Computing - Breaking computing limits\n5. Renewable Energy - Solving climate crisis\n6. Brain-Computer Interface - Human-machine fusion\n\nTechnology development is rapidly changing, we must maintain a learning attitude. The future is already here, what we need to do is embrace change.\n\nTechnology creates infinite possibilities! 🚀",
+      "images": "[\"https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2025-12-21T08:30:00.000Z",
+      "created_at": "2026-01-01T14:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "学习"
+    ]
   },
   {
-    "id": "n2b3c4d5-2345-6789-abcd-ef0123456789",
+    "id": "n2abc-0002-1001-bcd-00020000",
     "note": {
-      "id": "n2b3c4d5-2345-6789-abcd-ef0123456789",
+      "id": "n2abc-0002-1001-bcd-00020000",
       "user_id": null,
-      "title": "Oppenheimer Review",
-      "content": "Finally finished watching Nolan's new masterpiece \"Oppenheimer\", a three-hour epic.\n\nThe film presents the life of the father of the atomic bomb through non-linear narrative. Cillian Murphy's performance was stunning. The hearing scenes were suffocating, and the score perfectly complemented the visuals.\n\nWhat struck me most was the exploration of science and morality. \"I am become death, the destroyer of worlds\" echoes in my mind.\n\nRating: ⭐⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
+      "title": "Farewell to Winter",
+      "content": "January's last day, winter is about to leave, spring is coming soon.\n\nThis month experienced:\n- Cold winter morning runs\n- Warm café reading time\n- Intense project battles\n- Cozy family gatherings\n- Interesting technical learning\n- Unforgettable movie experiences\n\nLife is like this, sweet, sour, bitter, spicy interwoven, but every taste is worth tasting.\n\nWelcome the new season, welcome new challenges! ❄️🌸",
+      "images": "[\"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-13T22:15:00.000Z",
+      "created_at": "2026-01-01T06:30:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Movies"]
+    "tags": [
+      "生活"
+    ]
   },
   {
-    "id": "n3c4d5e6-3456-7890-bcde-f01234567890",
+    "id": "n3acd-0003-1002-cde-00030000",
     "note": {
-      "id": "n3c4d5e6-3456-7890-bcde-f01234567890",
+      "id": "n3acd-0003-1002-cde-00030000",
       "user_id": null,
-      "title": "First Baking Attempt",
-      "content": "Had a sudden urge to learn how to bake today, bought a bunch of ingredients.\n\nFollowed the recipe step by step, my arm was sore from whipping egg whites. The final product didn't look perfect, but it tasted pretty good! My family was supportive and finished it all.\n\nNext time I'll try making a chiffon cake, hope it doesn't collapse 🍰",
-      "images": null,
-      "cover_image": null,
+      "title": "First Day of New Year",
+      "content": "First day of 2024, sunny. Got up early to make a hearty breakfast, starting the new year.\n\nThe first hour of the new year was spent formulating annual plans, listing learning, work, and health as the three main goals. Hope to be more disciplined and focused this year.\n\nAfternoon went for a walk in the park, saw many people flying kites, the air filled with festive atmosphere. Evening made dumplings with family, symbolizing reunion.\n\nHappy New Year! 🎊",
+      "images": "[\"https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1482517967863-00e15c9b44be?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-12T16:45:00.000Z",
+      "created_at": "2026-01-02T08:30:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "生活"
+    ]
   },
   {
-    "id": "n4d5e6f7-4567-8901-cdef-012345678901",
+    "id": "n4ade-0004-1003-def-00040000",
     "note": {
-      "id": "n4d5e6f7-4567-8901-cdef-012345678901",
+      "id": "n4ade-0004-1003-def-00040000",
       "user_id": null,
-      "title": "The First Slam Dunk Movie",
-      "content": "After all these years, the theatrical version is finally here!\n\nThe movie focuses on Ryota Miyagi's story, completing his background. The new 3D art style took some getting used to, but the basketball scenes were absolutely thrilling!\n\nThe last ten minutes recreating the Sannoh match, paired with the classic BGM, had me in tears. My youth came rushing back!\n\n\"Coach, I want to play basketball.\" 🏀\n\nRating: ⭐⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
+      "title": "Annual Plan Formulation",
+      "content": "Spent a whole morning formulating 2024 annual plans.\n\nDivided into several sections:\n1. Learning goals - Master one new programming language, read 12 books\n2. Work goals - Complete project promotion, learn new technologies\n3. Health goals - Exercise 3 times a week, stick to swimming\n4. Personal goals - Travel to 3 cities, learn photography\n\nPlans are good, but execution is key. Decided to review progress weekly, adjust in time.\n\nNew year, come on! 💪",
+      "images": "[\"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1486312338219-ce68e2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-11T21:30:00.000Z",
+      "created_at": "2026-01-02T07:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Movies"]
+    "tags": [
+      "生活"
+    ]
   },
   {
-    "id": "n5e6f7a8-5678-9012-def0-123456789012",
+    "id": "n5aef-0005-1004-efg-00050000",
     "note": {
-      "id": "n5e6f7a8-5678-9012-def0-123456789012",
+      "id": "n5aef-0005-1004-efg-00050000",
       "user_id": null,
-      "title": "Morning Run at the Park",
-      "content": "Day 30 of consistent morning runs!\n\nRan 5 kilometers today, pace of 5:40 per km, my best record so far. The morning air was especially fresh, met a few other joggers and exchanged greetings.\n\nRunning is really addictive. Now I feel uncomfortable if I don't run every day. Keep it up! 💪",
-      "images": null,
-      "cover_image": null,
+      "title": "Learning React 18 New Features",
+      "content": "Started learning React 18 new features today.\n\nFocused on Concurrent Features, especially:\n- Automatic Batching\n- Suspense improvements\n- startTransition API\n\nThese features significantly improve React app user experience. Wrote some demos to test new APIs, feels interesting.\n\nPlanning to apply these new features in next project. Tech updates are so fast, must maintain learning attitude! 📚",
+      "images": "[\"https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-10T07:15:00.000Z",
+      "created_at": "2026-01-02T14:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "学习"
+    ]
   },
   {
-    "id": "n6f7a8b9-6789-0123-ef01-234567890123",
+    "id": "n6afg-0006-1005-fgh-00060000",
     "note": {
-      "id": "n6f7a8b9-6789-0123-ef01-234567890123",
+      "id": "n6afg-0006-1005-fgh-00060000",
       "user_id": null,
-      "title": "The Wandering Earth 2 - Amazing",
-      "content": "Another pinnacle of Chinese sci-fi!\n\nThe prequel setting is grander than the first film - digital life, space elevator, lunar crisis - every concept is mind-blowing. Andy Lau's character Tu Hengyu's storyline was so touching.\n\nThe special effects are truly world-class, especially the moon falling and space elevator scenes. So proud of Chinese sci-fi cinema!\n\n\"A civilization without people is meaningless.\"\n\nRating: ⭐⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
+      "title": "Winter Sunshine",
+      "content": "Rare winter sunshine, temperature rose to 15 degrees. Went to nearby café in the morning and sat for two hours, ordered hot chocolate, drinking while reading.\n\nPassed by a flower shop, saw blooming tulips, couldn't resist buying a bunch to take home. Flower fragrance filled the whole living room, making winter warm.\n\nAfternoon went grocery shopping, preparing to make hearty dinner. Life although ordinary, these small beauties accumulated, is the happiest thing.",
+      "images": "[\"https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-09T20:00:00.000Z",
+      "created_at": "2026-01-03T09:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Movies"]
+    "tags": [
+      "生活"
+    ]
   },
   {
-    "id": "n7a8b9c0-7890-1234-f012-345678901234",
+    "id": "n7agh-0007-1006-ghi-00070000",
     "note": {
-      "id": "n7a8b9c0-7890-1234-f012-345678901234",
+      "id": "n7agh-0007-1006-ghi-00070000",
       "user_id": null,
-      "title": "New Coffee Machine",
-      "content": "After much research, finally ordered the semi-automatic coffee machine I've been eyeing!\n\nSo excited when unboxing, the machine looks gorgeous. The first extraction was a bit sour, but that crema looked beautiful.\n\nNow I need to learn about adjusting grind size and extraction time, aiming to make café-quality lattes soon ☕",
-      "images": null,
-      "cover_image": null,
+      "title": "Reading One Hundred Years of Solitude",
+      "content": "Finally started reading \"One Hundred Years of Solitude\", deeply attracted by Marquez's magical realism style in the first 50 pages.\n\nFamily fate like Latin American history, absurd yet real.\n\nThat sentence \"Many years later, facing the firing squad, Colonel Aureliano Buendía would remember that distant afternoon when his father took him to discover ice\" is so classic.\n\nPlanning to slowly savor this book, feel the master's brushwork. 📖",
+      "images": "[\"https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-08T14:20:00.000Z",
+      "created_at": "2026-01-03T20:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "学习"
+    ]
   },
   {
-    "id": "n8b9c0d1-8901-2345-0123-456789012345",
+    "id": "n8ahi-0008-1007-hij-00080000",
     "note": {
-      "id": "n8b9c0d1-8901-2345-0123-456789012345",
+      "id": "n8ahi-0008-1007-hij-00080000",
       "user_id": null,
-      "title": "Spider-Man: Across the Spider-Verse",
-      "content": "This is absolutely the most stunning animated film I've ever seen!\n\nEvery frame is wallpaper-worthy, the art style switches between universes are amazing. Miles' growth, Gwen's storyline, and that villain Spider-Man 2099...\n\nThe cliffhanger ending makes me eager for the sequel! It's rare to see such a perfect blend of artistry and commercial appeal.\n\nRating: ⭐⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
+      "title": "Project Code Refactoring",
+      "content": "Spent whole day refactoring project code today.\n\nMainly did these things:\n1. Split oversized component files\n2. Extracted common utility functions\n3. Optimized state management logic\n4. Added better error handling\n\nAlthough process was painful, refactored code readability and maintainability improved a lot. Technical debt like rolling snowball, not handled timely, harder later.\n\nAchievement after refactoring is great! 🎉",
+      "images": "[\"https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-07T19:45:00.000Z",
+      "created_at": "2026-01-04T14:00:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Movies"]
+    "tags": [
+      "工作"
+    ]
   },
   {
-    "id": "n9c0d1e2-9012-3456-1234-567890123456",
+    "id": "n9aij-0009-1008-ijk-00090000",
     "note": {
-      "id": "n9c0d1e2-9012-3456-1234-567890123456",
-      "user_id": null,
-      "title": "Weekend Bookstore Trip",
-      "content": "Went to my favorite indie bookstore alone this afternoon.\n\nWandered aimlessly through the shelves for two hours, ended up finding a rare hardcover edition of \"The Little Prince\" and Haruki Murakami's new book.\n\nOrdered a hot chocolate and sat in the corner reading, light rain falling outside the window. Such a beautiful feeling.\n\n\"All grown-ups were once children, but only few of them remember it.\" 📚",
-      "images": null,
-      "cover_image": null,
-      "task_id": null,
-      "created_at": "2024-01-06T15:30:00.000Z",
-      "updated_at": null,
-      "deleted_at": null
-    },
-    "tags": ["Life"]
-  },
-  {
-    "id": "n0d1e2f3-0123-4567-2345-678901234567",
-    "note": {
-      "id": "n0d1e2f3-0123-4567-2345-678901234567",
-      "user_id": null,
-      "title": "Journey to the West Editorial Department",
-      "content": "A very unique Chinese sci-fi film.\n\nThe mockumentary format is interesting, following a group of ordinary people obsessed with finding aliens. Despite the low budget, the simplicity and sincerity are touching.\n\nTang Zhijun's line \"I just want to know if we are the only intelligent life in the universe\" speaks to so many people's questions.\n\nThis is true Chinese romantic sci-fi.\n\nRating: ⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
-      "task_id": null,
-      "created_at": "2024-01-05T21:00:00.000Z",
-      "updated_at": null,
-      "deleted_at": null
-    },
-    "tags": ["Movies"]
-  },
-  {
-    "id": "n1e2f3a4-1234-5678-3456-789012345678",
-    "note": {
-      "id": "n1e2f3a4-1234-5678-3456-789012345678",
-      "user_id": null,
-      "title": "Reunion with Old Friends",
-      "content": "Met up with my college roommates today after three years!\n\nEveryone has changed so much - some got married, some moved to different cities, some started businesses. But the moment we met, it felt like we were back to those all-night gaming sessions.\n\nWe talked about old times and laughed until our stomachs hurt. Despite our busy lives, this friendship will never change. We promised to reunite in that city where we had our graduation trip!",
-      "images": null,
-      "cover_image": null,
-      "task_id": null,
-      "created_at": "2024-01-04T18:30:00.000Z",
-      "updated_at": null,
-      "deleted_at": null
-    },
-    "tags": ["Life"]
-  },
-  {
-    "id": "n2f3a4b5-2345-6789-4567-890123456789",
-    "note": {
-      "id": "n2f3a4b5-2345-6789-4567-890123456789",
+      "id": "n9aij-0009-1008-ijk-00090000",
       "user_id": null,
       "title": "Barbie - Pink Storm",
-      "content": "Thought it would just be a commercial film, but what a pleasant surprise!\n\nOn the surface it's all pink bubbles, but underneath it explores many profound topics. Margot Robbie and Ryan Gosling's performances were fantastic, especially Ken singing \"I'm Just Ken\" - hilarious!\n\n\"You can be anything you want to be\" - such positive energy is truly healing.\n\nRating: ⭐⭐⭐⭐",
-      "images": null,
-      "cover_image": null,
+      "content": "Thought it was just a commercial film, but what a pleasant surprise!\n\nOn surface pink bubbles, but explores many profound topics underneath. Margot Robbie and Ryan Gosling's performances fantastic, especially Ken singing \"I'm Just Ken\" - hilarious!\n\n\"You can be anything you want to be\" such positive energy truly healing.\n\nRating: ⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
       "task_id": null,
-      "created_at": "2024-01-03T20:15:00.000Z",
+      "created_at": "2026-01-04T20:30:00.000Z",
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Movies"]
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n10ajk-0010-1009-jkl-00100000",
+    "note": {
+      "id": "n10ajk-0010-1009-jkl-00100000",
+      "user_id": null,
+      "title": "Meditation Practice",
+      "content": "Started meditation practice today, 10 minutes daily.\n\nFirst meditation very difficult, thoughts always drifting involuntarily. Tried focusing on breath, slowly calmed down. 10 minutes later body relaxed but thoughts still active.\n\nChecked some info, meditation needs persistence. Decided daily 10 minutes meditation before sleep, hope improve sleep quality and concentration.\n\nInner peace really important. 🧘‍♀️",
+      "images": "[\"https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-04T21:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n11akl-0011-1010-klm-00110000",
+    "note": {
+      "id": "n11akl-0011-1010-klm-00110000",
+      "user_id": null,
+      "title": "Reunion with Old Friends",
+      "content": "Met college roommates today after three years!\n\nEveryone changed so much - some married, some moved cities, some started businesses. But moment we met, like back to those all-night gaming sessions.\n\nTalked old times, laughed stomachs hurt. Although busy, this friendship never changes. Promised next reunion at graduation trip city!\n\nFriendship lasts forever! 👥",
+      "images": "[\"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1511632765486-a01980e01a18?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-05T19:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n12alm-0012-1011-lmn-00120000",
+    "note": {
+      "id": "n12alm-0012-1011-lmn-00120000",
+      "user_id": null,
+      "title": "Flutter Performance Optimization",
+      "content": "Researched Flutter app performance optimization techniques today.\n\nMainly learned:\n1. Use const constructors to reduce rebuilds\n2. Reasonable ListView.builder to avoid rendering all items at once\n3. Lazy loading and caching for images\n4. Memory leak detection and fixes\n\nApplied some optimizations in existing project, definitely feel app smoothness improved.\n\nPerformance optimization is a big subject, need continuous attention. 📱",
+      "images": "[\"https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-05T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n13amn-0013-1012-mno-00130000",
+    "note": {
+      "id": "n13amn-0013-1012-mno-00130000",
+      "user_id": null,
+      "title": "Team Meeting Notes",
+      "content": "Attended team weekly meeting today, mainly discussed these topics:\n\n1. Project progress review - All tasks proceeding as planned\n2. New feature requirements review - Confirmed next iteration development plan\n3. Tech sharing arrangement - Share Flutter performance optimization experience next week\n4. Team building activities - Plan monthly team building\n\nMeeting atmosphere very good, everyone motivated. Feel team maturing more.\n\nKeep working hard! 👥",
+      "images": "[\"https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1605540436563-5bca919ae766?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-05T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n14ano-0014-1013-nop-00140000",
+    "note": {
+      "id": "n14ano-0014-1013-nop-00140000",
+      "user_id": null,
+      "title": "Journey to the West Editorial Department",
+      "content": "Very unique Chinese sci-fi film.\n\nMockumentary format interesting, following group of ordinary people obsessed with finding aliens. Despite low budget, simplicity and sincerity touching.\n\nTang Zhijun's line \"I just want to know if we are the only intelligent life in universe\" speaks to many people's questions.\n\nThis is true Chinese romantic sci-fi.\n\nRating: ⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-06T12:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n15aop-0015-1014-opq-00150000",
+    "note": {
+      "id": "n15aop-0015-1014-opq-00150000",
+      "user_id": null,
+      "title": "Breakfast Recipe Sharing",
+      "content": "Tried new breakfast recipe today: blueberry muffins with yogurt.\n\nIngredients simple:\n- Small box blueberries\n- One cup yogurt\n- Oatmeal appropriate amount\n- Little honey\n\nMethod: Wash blueberries, pour yogurt in bowl, sprinkle oatmeal, drizzle honey, finally put fresh blueberries on top.\n\nLooks and tastes good! Nutrition balanced, protein, carbs, vitamins all there.\n\nBreakfast try some healthy and beautiful combinations in future. 🍳",
+      "images": "[\"https://images.unsplash.com/photo-1496318447583-f524534e9ce1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1496318447583-f524534e9ce1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-06T08:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n16apq-0016-1015-pqr-00160000",
+    "note": {
+      "id": "n16apq-0016-1015-pqr-00160000",
+      "user_id": null,
+      "title": "English Learning Plan",
+      "content": "Formulated monthly English learning plan.\n\nGoal: Improve listening and speaking, prepare for TOEFL\n\nSpecific plan:\n1. 20 new words daily\n2. One TV episode weekly\n3. One English oral practice weekly\n4. One English original book monthly\n5. One English diary weekly\n\nPersisted 5 days, feel improvement. Language learning needs persistence, hope keep going.\n\n\"The beautiful thing about learning is that no one can take it away from you.\" 📚",
+      "images": "[\"https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-06T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n17aqr-0017-1016-qrs-00170000",
+    "note": {
+      "id": "n17aqr-0017-1016-qrs-00170000",
+      "user_id": null,
+      "title": "Weekend Plan",
+      "content": "Weekend plan arrangement:\n\nSaturday morning: Go to library read books\nSaturday afternoon: Hiking with friends\nSaturday evening: Cooking entertaining friends at home\n\nSunday morning: Organize room and clothes\nSunday afternoon: Learn new cooking skills\nSunday evening: Prepare next week work plan\n\nHope this weekend fulfilling yet relaxing. Life needs rhythm!",
+      "images": "[\"https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-06T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n18ars-0018-1017-rst-00180000",
+    "note": {
+      "id": "n18ars-0018-1017-rst-00180000",
+      "user_id": null,
+      "title": "Weekend Bookstore Trip",
+      "content": "Alone to favorite indie bookstore this afternoon.\n\nWandered shelves aimlessly for two hours, finally found rare hardcover \"The Little Prince\" and Murakami's new book.\n\nOrdered hot chocolate, sat corner reading, light rain outside window, such beautiful feeling.\n\n\"All grown-ups were once children, but few remember it.\" 📚",
+      "images": "[\"https://images.unsplash.com/photo-1486312338219-ce68e2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-07T15:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n19ast-0019-1018-stu-00190000",
+    "note": {
+      "id": "n19ast-0019-1018-stu-00190000",
+      "user_id": null,
+      "title": "Learning Photography Techniques",
+      "content": "Learned basic photography composition techniques today.\n\nMainly mastered:\n1. Rule of thirds composition\n2. Symmetry composition\n3. Leading lines composition\n4. Frame composition\n\nAfternoon practiced in park, took many photos with phone. Found same scene different compositions completely different visual effects.\n\nPhotography really interesting art, need more practice and observation. 📷",
+      "images": "[\"https://images.unsplash.com/photo-1452587925148-ce544e77e70d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1542038784456-1ea8e935640e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-07T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n20atu-0020-1019-tuv-00200000",
+    "note": {
+      "id": "n20atu-0020-1019-tuv-00200000",
+      "user_id": null,
+      "title": "Spider-Man: Across the Spider-Verse",
+      "content": "Absolutely most stunning animated film ever seen!\n\nEvery frame wallpaper-worthy, universe art style switches amazing. Miles' growth, Gwen's storyline, that villain Spider-Man 2099...\n\nCliffhanger ending eager for sequel! Such perfect blend of artistry and commercial appeal rare.\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-08T20:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n21auv-0021-1020-uvw-00210000",
+    "note": {
+      "id": "n21auv-0021-1020-uvw-00210000",
+      "user_id": null,
+      "title": "Yoga Beginner Experience",
+      "content": "First yoga class today, chose beginner hatha yoga.\n\nCourse from basic breathing exercises, then learned simple poses:\n- Mountain pose\n- Tree balance pose\n- Cat-cow pose\n- Cobra pose\n\nAlthough poses not standard, felt whole body stretched. Instructor patient, guided some precautions after class.\n\nBody flexibility needs gradual cultivation, hope effect with persistent practice. 🧘‍♀️",
+      "images": "[\"https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-08T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n22avw-0022-1021-vwx-00220000",
+    "note": {
+      "id": "n22avw-0022-1021-vwx-00220000",
+      "user_id": null,
+      "title": "Product Design Ideas",
+      "content": "Spent day thinking about product iteration direction.\n\nCore problems:\n1. What does user need most?\n2. What advantages/disadvantages do competitors have?\n3. What innovation possibilities technically?\n4. How to improve user retention?\n\nDrew user journey map, identified several key improvement points. Prepare discuss feasibility with team.\n\nGood design should be natural and intuitive. 🎨",
+      "images": "[\"https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-08T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n23awx-0023-1022-wxy-00230000",
+    "note": {
+      "id": "n23awx-0023-1022-wxy-00230000",
+      "user_id": null,
+      "title": "New Coffee Machine",
+      "content": "After much research, finally ordered long-coveted semi-automatic coffee machine!\n\nExcited unboxing, machine looks gorgeous. First extraction a bit sour but crema beautiful.\n\nNow learn grind size and extraction time adjustment, aim make café-quality latte soon ☕",
+      "images": "[\"https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1459755486867-b55449bb39ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-09T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n24axy-0024-1023-xyz-00240000",
+    "note": {
+      "id": "n24axy-0024-1023-xyz-00240000",
+      "user_id": null,
+      "title": "Data Structures and Algorithms Review",
+      "content": "Reviewed data structures and algorithms basics today.\n\nFocused on:\n- Sorting algorithms: quick sort, merge sort, heap sort\n- Search algorithms: binary search, hash search\n- Tree structures: binary trees, balanced trees, red-black trees\n- Graph algorithms: DFS, BFS, shortest path\n\nAlthough basics, many details forgotten. Prepare systematic relearn.\n\nAlgorithms are programming soul! 💻",
+      "images": "[\"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-09T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n25ayz-0025-1024-yz{-00250000",
+    "note": {
+      "id": "n25ayz-0025-1024-yz{-00250000",
+      "user_id": null,
+      "title": "The Wandering Earth 2 - Amazing",
+      "content": "Another pinnacle of Chinese sci-fi!\n\nPrequel setting grander than first film - digital life, space elevator, lunar crisis, every concept mind-blowing. Andy Lau's Tu Hengyu storyline touching.\n\nSpecial effects world-class, especially moon falling and space elevator scenes. Proud of Chinese sci-fi cinema!\n\n\"No civilization without people meaningful.\"\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-10T20:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n26az{-0026-1025-z{|-00260000",
+    "note": {
+      "id": "n26az{-0026-1025-z{|-00260000",
+      "user_id": null,
+      "title": "Team Collaboration Experience Sharing",
+      "content": "Shared recent project collaboration experience with team today.\n\nMainly talked:\n1. Communication importance - Timely sync info, avoid information asymmetry\n2. Task assignment principles - Consider member abilities and interests\n3. Code review process - Effective means to improve code quality\n4. Conflict resolution methods - Facts, seek win-win\n\nTeam members' reactions positive, everyone shared experiences. Good collaboration lets team play 1+1>2 effect.\n\nKeep working hard! 👥",
+      "images": "[\"https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-10T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n27aab-0027-1026-abc-00270000",
+    "note": {
+      "id": "n27aab-0027-1026-abc-00270000",
+      "user_id": null,
+      "title": "First Baking Experience",
+      "content": "Had urge to learn baking today, bought bunch ingredients.\n\nProcess although arduous but interesting:\n- Whipping egg whites took 20 minutes, arm sore\n- Egg yolk mixture add gradually, avoid egg white deflating\n- Oven temperature control crucial\n\nFinal product sank a bit at edges but tasted good! Family supportive ate all.\n\nFailure is success mother, next try choux pastry, hope not collapse 🍰",
+      "images": "[\"https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-10T16:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n28abc-0028-1027-bcd-00280000",
+    "note": {
+      "id": "n28abc-0028-1027-bcd-00280000",
+      "user_id": null,
+      "title": "Park Morning Run Record",
+      "content": "Consistent morning run day 30!\n\nRan 5km today, pace 5:40 per km, best record so far. Morning air especially fresh, met fellow joggers exchanged greetings.\n\nRunning really addictive, now uncomfortable without daily run. Keep up! 💪",
+      "images": "[\"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-11T06:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n29acd-0029-1028-cde-00290000",
+    "note": {
+      "id": "n29acd-0029-1028-cde-00290000",
+      "user_id": null,
+      "title": "Design Patterns Learning",
+      "content": "Deeply learned design patterns in software development.\n\nFocused on creational patterns:\n1. Singleton - Ensure class has only one instance\n2. Factory Method - Define interface for creating objects\n3. Abstract Factory - Create series of related objects\n4. Builder - Complex object construction\n5. Prototype - Create objects by copying\n\nThese patterns although classic, modern languages provide many syntactic sugar. Understanding principles important!\n\nDesign patterns are crystallization of predecessors' wisdom. 📖",
+      "images": "[\"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-11T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n30ade-0030-1029-def-00300000",
+    "note": {
+      "id": "n30ade-0030-1029-def-00300000",
+      "user_id": null,
+      "title": "Slam Dunk: The Movie",
+      "content": "Finally waited for theatrical version after so many years!\n\nFilm focuses on Ryota Miyagi's story, completes his background. New 3D style took getting used to, but basketball scenes thrilling!\n\nLast 10 minutes Sannoh match recreation with classic BGM, tears unstoppable. Youth returned!\n\n\"Coach, I want to play basketball.\" 🏀\n\nRating: ⭐⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-12T20:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n31aef-0031-1030-efg-00310000",
+    "note": {
+      "id": "n31aef-0031-1030-efg-00310000",
+      "user_id": null,
+      "title": "Travel Plan Formulation",
+      "content": "Started planning Chinese New Year travel plans.\n\nPreliminary destinations:\n1. Tokyo Japan - Experience cultural tradition and modern tech fusion\n2. Phuket Thailand - Enjoy beach and spa\n3. Lijiang Yunnan - Feel ancient town charm\n\nConsider budget, transportation, time. Prepare make detailed itinerary.\n\nTravel best relaxation! ✈️",
+      "images": "[\"https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-12T11:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n32afg-0032-1031-fgh-00320000",
+    "note": {
+      "id": "n32afg-0032-1031-fgh-00320000",
+      "user_id": null,
+      "title": "Agile Development Practice",
+      "content": "Team started implementing agile development methods, effects significant.\n\nMain changes:\n1. Two-week iteration cycles\n2. Daily standups maintain sync\n3. User stories drive development\n4. Continuous integration and deployment\n5. Iteration end retrospectives\n\nTeam response speed significantly improved, product quality guaranteed. Agile not silver bullet but suitable for rapidly changing environments.\n\nGood processes let team more efficient! ⚡",
+      "images": "[\"https://images.unsplash.com/photo-1578321272176-b7bbc0679853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-12T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n33agh-0033-1032-ghi-00330000",
+    "note": {
+      "id": "n33agh-0033-1032-ghi-00330000",
+      "user_id": null,
+      "title": "第一次尝试烘焙",
+      "content": "English translation of: 今天心血来潮想学做蛋糕，买了一堆材料回来。\n\n按照食谱一步步来，打发蛋白的时候手都酸了。最后成品虽然卖相一般，但味道还不错！家人都很捧场地吃完了。\n\n下次要挑战戚风蛋糕，希望不要塌陷 🍰",
+      "images": "[\"https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-13T16:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n34ahi-0034-1033-hij-00340000",
+    "note": {
+      "id": "n34ahi-0034-1033-hij-00340000",
+      "user_id": null,
+      "title": "机器学习入门",
+      "content": "English translation of: 开始学习机器学习的基础知识。\n\n今天重点了解了：\n1. 监督学习和无监督学习的概念\n2. 线性回归的原理和应用\n3. 梯度下降算法\n4. 过拟合和欠拟合的问题\n5. 交叉验证的方法\n\n用Python实现了第一个线性回归模型，虽然很简单，但很有成就感。\n\nAI时代，机器学习是必备技能！🤖",
+      "images": "[\"https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-13T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n35aij-0035-1034-ijk-00350000",
+    "note": {
+      "id": "n35aij-0035-1034-ijk-00350000",
+      "user_id": null,
+      "title": "《奥本海默》观影感受",
+      "content": "English translation of: 终于看完了诺兰的新作《奥本海默》，三个小时的史诗巨作。\n\n电影以非线性叙事展现了原子弹之父的一生，基里安·墨菲的表演太震撼了。那场听证会的戏份让人窒息，配乐和画面的配合堪称完美。\n\n最让我震撼的是电影对科学与道德的探讨，\"我成为了死神，世界的毁灭者\"这句话久久回荡在脑海中。\n\n评分：⭐⭐⭐⭐⭐",
+      "images": "[\"https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1489599505726-547ffa77e38a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-14T20:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "观影"
+    ]
+  },
+  {
+    "id": "n36ajk-0036-1035-jkl-00360000",
+    "note": {
+      "id": "n36ajk-0036-1035-jkl-00360000",
+      "user_id": null,
+      "title": "健身计划调整",
+      "content": "English translation of: 根据身体状况调整了健身计划。\n\n新的训练安排：\n周一：胸部+三头肌\n周二：背部+二头肌\n周三：休息或有氧\n周四：腿部训练\n周五：肩部+腹肌\n周末：休息或轻量训练\n\n增加了热身和拉伸时间，避免受伤。饮食方面注重蛋白质摄入，保持热量平衡。\n\n健身是一场持久战，坚持就是胜利！💪",
+      "images": "[\"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-14T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n37akl-0037-1036-klm-00370000",
+    "note": {
+      "id": "n37akl-0037-1036-klm-00370000",
+      "user_id": null,
+      "title": "产品设计思考",
+      "content": "English translation of: 花了一天时间思考产品的迭代方向。\n\n核心问题：\n1. 用户最需要什么功能？\n2. 竞品有哪些优势和不足？\n3. 技术上有哪些创新可能？\n4. 如何提升用户留存率？\n\n绘制了用户旅程图，识别了几个关键的改进点。准备和团队开会讨论可行性。\n\n好的产品是解决问题的钥匙！🔑",
+      "images": "[\"https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-15T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n38alm-0038-1037-lmn-00380000",
+    "note": {
+      "id": "n38alm-0038-1037-lmn-00380000",
+      "user_id": null,
+      "title": "钢琴练习记录",
+      "content": "English translation of: 今天练习了肖邦的《夜曲》，虽然弹得磕磕绊绊，但感觉进步明显。\n\n技术要点：\n- 保持稳定的节奏感\n- 注意左右手的配合\n- 控制音量的层次变化\n- 情感表达要自然流畅\n\n钢琴让我找到内心的平静。准备每周坚持练习3-4次。\n\n音乐是灵魂的语言！🎹",
+      "images": "[\"https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-15T12:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n39amn-0039-1038-mno-00390000",
+    "note": {
+      "id": "n39amn-0039-1038-mno-00390000",
+      "user_id": null,
+      "title": "周末家庭聚餐",
+      "content": "English translation of: 周末邀请了家人一起吃饭，做了满满一桌菜。\n\n菜单包括：\n- 红烧肉\n- 清蒸鱼\n- 麻婆豆腐\n- 西红柿炒蛋\n- 酸辣土豆丝\n- 冬瓜汤\n\n虽然忙碌了两个小时，但看到家人吃得开心，一切都值得。厨房里弥漫着饭菜的香气，感觉特别温馨。\n\n家庭是最温暖的港湾！🥘",
+      "images": "[\"https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1495521821757-a1efb6729352?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-15T18:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n40ano-0040-1039-nop-00400000",
+    "note": {
+      "id": "n40ano-0040-1039-nop-00400000",
+      "user_id": null,
+      "title": "博物馆艺术展",
+      "content": "English translation of: 下午去了市博物馆参观现代艺术展。\n\n最喜欢的作品是那幅抽象画《城市的脉动》，艺术家用色彩和线条完美展现了都市的活力和节奏。很多作品让我思考艺术的本质是什么。\n\n艺术展让我感受到不同的世界观。准备以后多去博物馆走走，丰富自己的精神世界。\n\n艺术是灵魂的镜子！🎨",
+      "images": "[\"https://images.unsplash.com/photo-1578321272176-b7bbc0679853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-16T12:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n41aop-0041-1040-opq-00410000",
+    "note": {
+      "id": "n41aop-0041-1040-opq-00410000",
+      "user_id": null,
+      "title": "Programming Language Comparison",
+      "content": "Compared different programming languages characteristics and applicable scenarios.\n\nPython:\n- Concise syntax, gentle learning curve\n- Powerful data science and AI ecosystem\n- Execution efficiency general but development efficiency high\n\nGo:\n- Excellent concurrency performance\n- Fast compilation, easy deployment\n- Concise syntax, clear error handling\n\nRust:\n- Memory safety guarantee\n- Zero-cost abstractions\n- Steep learning curve but worth it\n\nChoose appropriate tools important!",
+      "images": "[\"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-16T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n42apq-0042-1041-pqr-00420000",
+    "note": {
+      "id": "n42apq-0042-1041-pqr-00420000",
+      "user_id": null,
+      "title": "Code Review Experience",
+      "content": "Conducted team code review today, found many noteworthy issues.\n\nGood code review should focus:\n1. Code specification and style consistency\n2. Logic errors and boundary conditions\n3. Performance issues and resource leaks\n4. Security vulnerabilities\n5. Maintainability and readability\n6. Test coverage\n\nCode review not just finding errors, but knowledge sharing and team growth opportunity.\n\nHigh-quality code is team foundation! 🔍",
+      "images": "[\"https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-17T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n43aqr-0043-1042-qrs-00430000",
+    "note": {
+      "id": "n43aqr-0043-1042-qrs-00430000",
+      "user_id": null,
+      "title": "Meditation and Mindfulness",
+      "content": "Persisted meditation practice two weeks, obvious changes.\n\nMindfulness practice lets me:\n- Focus better on present\n- Emotional fluctuations reduced\n- Sleep quality improved\n- Handle pressure more composed\n\n10 minutes daily investment, exchanged for better life quality.\n\nInner peace most precious wealth! 🧘‍♀️",
+      "images": "[\"https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-17T21:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n44ars-0044-1043-rst-00440000",
+    "note": {
+      "id": "n44ars-0044-1043-rst-00440000",
+      "user_id": null,
+      "title": "Investment and Finance Learning",
+      "content": "Started systematic learning of investment and finance knowledge.\n\nToday focused on:\n1. Asset allocation importance\n2. Stocks, funds, bonds characteristics\n3. Risk and return relationship\n4. Long-term investment vs short-term speculation\n5. Compound interest power\n\nInvestment not gambling, but rational asset management. Prepare start small practice.\n\nFinancial freedom needs planning and patience! 📊",
+      "images": "[\"https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-18T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n45ast-0045-1044-stu-00450000",
+    "note": {
+      "id": "n45ast-0045-1044-stu-00450000",
+      "user_id": null,
+      "title": "Project Progress Review",
+      "content": "Reviewed this week project progress.\n\nCompleted work:\n✅ User login module development\n✅ API interface integration\n✅ Frontend page optimization\n\nProblems encountered:\n❌ Third-party interface instability\n❌ Database query performance issues\n\nImprovement measures:\n🔄 Add interface retry mechanism\n🔄 Optimize database indexes\n🔄 Strengthen test coverage\n\nContinuous improvement to do better! 📈",
+      "images": "[\"https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-18T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n46atu-0046-1045-tuv-00460000",
+    "note": {
+      "id": "n46atu-0046-1045-tuv-00460000",
+      "user_id": null,
+      "title": "Winter Hot Spring Experience",
+      "content": "Weekend went to nearby hot spring resort relax whole day.\n\nHot spring area great, outdoor and indoor pools, water temperature comfortable, environment elegant. Soaking hot water watching snow scene, relaxing.\n\nAlso experienced hot spring spa, masseur technique professional, whole body relaxed. Evening hot spring hotel buffet, fresh ingredients good taste.\n\nPerfect weekend relaxation! ♨️",
+      "images": "[\"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1540541338287-41700207dee6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-19T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n47auv-0047-1046-uvw-00470000",
+    "note": {
+      "id": "n47auv-0047-1046-uvw-00470000",
+      "user_id": null,
+      "title": "Product Launch Observation",
+      "content": "Attended Apple product launch, although online viewing, still exciting.\n\nNew product highlights:\n- Vision Pro: Revolutionary spatial computing device\n- M3 chip: Performance innovation\n- 15-inch MacBook Air: Ultrabook new standard\n\nCook's speech always inspiring. Apple continuously breaks innovation boundaries, spirit worth learning.\n\nTech changes life ways really magical! 🍎",
+      "images": "[\"https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-19T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n48avw-0048-1047-vwx-00480000",
+    "note": {
+      "id": "n48avw-0048-1047-vwx-00480000",
+      "user_id": null,
+      "title": "Team Building Activity",
+      "content": "Organized team building activity today, went nearby farm experience farm work.\n\nActivities:\n- Pick fresh vegetables\n- Make organic fertilizer\n- Barbecue\n- Team collaboration games\n\nEveryone played happily, usual office barriers disappeared in activities. Team collaboration ability and communication skills exercised.\n\nGood team building enhances cohesion! 👥",
+      "images": "[\"https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-20T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n49awx-0049-1048-wxy-00490000",
+    "note": {
+      "id": "n49awx-0049-1048-wxy-00490000",
+      "user_id": null,
+      "title": "Gardening Experience",
+      "content": "Started trying planting some green plants and herbs on balcony.\n\nPlanting list:\n- Mint: Likes sunny environment\n- Basil: Kitchen essential herb\n- Aloe: Easy maintenance plant\n- Succulents: Balcony decoration\n\nLearned soil, watering, fertilizing basics. Plant growth needs patience, hope see them thrive.\n\nPlanting therapeutic way! 🌱",
+      "images": "[\"https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1500651230702-0e2d8a49d4ad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-20T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n50axy-0050-1049-xyz-00500000",
+    "note": {
+      "id": "n50axy-0050-1049-xyz-00500000",
+      "user_id": null,
+      "title": "AI Technology Trends",
+      "content": "Researched current AI technology development trends and application prospects.\n\nHot areas:\n1. Large language models: GPT-4, Claude etc.\n2. Multimodal AI: Text-to-image, text-to-video\n3. AI Agent: Autonomous task execution intelligent agents\n4. Edge computing: Device-side AI inference\n5. Federated learning: Privacy-preserving distributed training\n\nAI changing all industries. Programmers need continuously learn, keep up with tech development.\n\nFuture already here, just distributed unevenly! 🤖",
+      "images": "[\"https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1555255707-c07966088b7b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-21T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n51ayz-0051-1050-yz{-00510000",
+    "note": {
+      "id": "n51ayz-0051-1050-yz{-00510000",
+      "user_id": null,
+      "title": "Weekend Book Sharing",
+      "content": "Weekend stayed home finished \"The Kite Runner\", touching story.\n\nNovel through Afghan boy Amir's growth experiences, shows friendship, betrayal, redemption themes. Hosseini's narrative mastery, plot rises and falls.\n\nMost impressive \"For you, a thousand times over\" echoes in mind. Friendship sometimes so pure and deep.\n\nRecommend everyone read! 📚",
+      "images": "[\"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-21T20:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n52az{-0052-1051-z{|-00520000",
+    "note": {
+      "id": "n52az{-0052-1051-z{|-00520000",
+      "user_id": null,
+      "title": "Agile Development Practice",
+      "content": "Team started implementing agile development methods, effects significant.\n\nMain changes:\n1. Two-week iteration cycles\n2. Daily standups maintain sync\n3. User stories drive development\n4. Continuous integration and deployment\n5. Iteration end retrospectives\n\nTeam response speed significantly improved, product quality guaranteed. Agile not silver bullet but suitable for rapidly changing environments.\n\nGood processes let team more efficient! ⚡",
+      "images": "[\"https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-22T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n53aab-0053-1052-abc-00530000",
+    "note": {
+      "id": "n53aab-0053-1052-abc-00530000",
+      "user_id": null,
+      "title": "Coffee Tasting Experience",
+      "content": "Attended coffee tasting workshop, learned lots of professional knowledge.\n\nLearned:\n1. Coffee bean origins and varieties differences\n2. Roast degree influence on flavor\n3. Brewing method choices\n4. Professional coffee tasting terms\n5. Different origin characteristics\n\nFrom Ethiopian Yirgacheffe to Colombian Geisha, each coffee has unique charm.\n\nCoffee culture really profound! ☕",
+      "images": "[\"https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1459755486867-b55449bb39ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-22T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n54abc-0054-1053-bcd-00540000",
+    "note": {
+      "id": "n54abc-0054-1053-bcd-00540000",
+      "user_id": null,
+      "title": "开源项目贡献",
+      "content": "English translation of: 第一次向开源项目提交PR，虽然很紧张但很兴奋。\n\n贡献内容：\n- 修复了一个bug\n- 添加了单元测试\n- 更新了文档\n- 改进了代码结构\n\n项目维护者很快给了反馈，虽然有一些需要修改的地方，但整体给予了积极评价。\n\n开源精神值得尊重，希望以后能多做贡献！🌟",
+      "images": "[\"https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-23T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n55acd-0055-1054-cde-00550000",
+    "note": {
+      "id": "n55acd-0055-1054-cde-00550000",
+      "user_id": null,
+      "title": "冬季滑雪体验",
+      "content": "English translation of: 第一次尝试滑雪，虽然摔了很多跤但玩得很开心！\n\n雪场条件很好，雪质松软。教练教得耐心，从基本的刹车、转弯开始学习。\n\n虽然技术不好，但那种在雪地上驰骋的感觉太自由了。下午还体验了雪地摩托，刺激又好玩。\n\n冬天就是要感受冰雪的乐趣！❄️",
+      "images": "[\"https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1605540436563-5bca919ae766?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-23T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n56ade-0056-1055-def-00560000",
+    "note": {
+      "id": "n56ade-0056-1055-def-00560000",
+      "user_id": null,
+      "title": "技术分享准备",
+      "content": "English translation of: 准备下周的技术分享，主题是\"Flutter性能优化\"。\n\n分享大纲：\n1. 性能问题诊断工具\n2. UI渲染优化技巧\n3. 内存管理最佳实践\n4. 网络请求优化\n5. 包体积优化\n6. 实际案例分析\n\n希望能给大家带来有价值的干货。技术分享是很好的学习方式！\n\n准备充分才能分享得精彩！🎤",
+      "images": "[\"https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-24T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n57aef-0057-1056-efg-00570000",
+    "note": {
+      "id": "n57aef-0057-1056-efg-00570000",
+      "user_id": null,
+      "title": "烹饪技能提升",
+      "content": "English translation of: 今天学习了法式料理的基础技巧，厨艺又提升了！\n\n练习内容：\n- 基础刀工练习\n- 酱汁制作（贝夏梅酱）\n- 焗烤技巧\n- 香草和调料搭配\n\n做了份焗蜗牛，虽然卖相一般但味道不错。烹饪就像编程，需要精确和创造力。\n\n美食是最好的老师！👨‍🍳",
+      "images": "[\"https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-24T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n58afg-0058-1057-fgh-00580000",
+    "note": {
+      "id": "n58afg-0058-1057-fgh-00580000",
+      "user_id": null,
+      "title": "产品设计原则",
+      "content": "English translation of: 整理了产品设计的核心原则，供团队参考。\n\n关键原则：\n1. 以用户为中心 - 解决真实问题\n2. 简洁至上 - 去繁从简\n3. 一致性 - 统一的设计语言\n4. 可访问性 - 考虑所有用户群体\n5. 反馈机制 - 及时响应用户操作\n6. 渐进式增强 - 从核心功能开始\n\n好的设计应该自然而直观。设计不是装饰，而是解决问题！🎯",
+      "images": "[\"https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1561070791-2526d30994b5?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-25T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n59agh-0059-1058-ghi-00590000",
+    "note": {
+      "id": "n59agh-0059-1058-ghi-00590000",
+      "user_id": null,
+      "title": "冥想与自律",
+      "content": "English translation of: 通过冥想培养自律习惯已经一个月了，效果明显。\n\n变化：\n- 注意力更集中\n- 情绪更稳定\n- 决策更理性\n- 睡眠质量改善\n- 面对压力时更从容\n\n冥想不是逃避现实，而是更好地面对现实。每天10分钟的投资，换来的是更好的生活质量。\n\n自律带来自由！🧘‍♀️",
+      "images": "[\"https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-25T21:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n60ahi-0060-1059-hij-00600000",
+    "note": {
+      "id": "n60ahi-0060-1059-hij-00600000",
+      "user_id": null,
+      "title": "区块链技术探索",
+      "content": "English translation of: 开始学习区块链技术，虽然复杂但很有趣。\n\n核心概念：\n1. 分布式账本\n2. 共识机制（PoW、PoS）\n3. 智能合约\n4. 加密算法\n5. DeFi和NFT应用\n\n区块链不只是加密货币，更是信任的互联网基础设施。技术发展日新月异，需要持续关注。\n\n区块链正在改变世界！⛓️",
+      "images": "[\"https://images.unsplash.com/photo-1559526324-4b87b5e36e44?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-26T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n61aij-0061-1060-ijk-00610000",
+    "note": {
+      "id": "n61aij-0061-1060-ijk-00610000",
+      "user_id": null,
+      "title": "City Exploration",
+      "content": "Weekend aimlessly explored city, discovered many surprises.\n\nUnexpected discoveries:\n- Hidden coffee shop\n- Street artist graffiti wall\n- Century-old building inner garden\n- Local artist studio\n- Artistic second-hand bookstore\n\nCity like thick book, each exploration discovers new chapters. Slow down, experience life beautiful details.\n\nExploration makes life more interesting! 🏙️",
+      "images": "[\"https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-26T15:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n62ajk-0062-1061-jkl-00620000",
+    "note": {
+      "id": "n62ajk-0062-1061-jkl-00620000",
+      "user_id": null,
+      "title": "Team Collaboration Tools",
+      "content": "Compared different team collaboration tools, shared usage experience.\n\nMain tools:\n1. Slack - Real-time communication first choice\n2. Notion - Knowledge base management\n3. Jira - Project management\n4. GitHub - Code collaboration\n5. Figma - Design collaboration\n6. Zoom - Video meetings\n\nChoose appropriate tools significantly improves team efficiency. Tools are means, collaboration is purpose.\n\nGood tools make work more efficient! 🛠️",
+      "images": "[\"https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-27T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n63akl-0063-1062-klm-00630000",
+    "note": {
+      "id": "n63akl-0063-1062-klm-00630000",
+      "user_id": null,
+      "title": "Music Festival Experience",
+      "content": "Attended city music festival, atmosphere awesome!\n\nPerformance highlights:\n- Independent band exciting performances\n- Electronic music DJ stunning mixes\n- Audience enthusiastic interaction\n- Creative lighting and stage design\n\nAlthough stood 3 hours legs sore, music resonance and release feeling wonderful. Music hits soul!\n\nLooking forward to next music festival! 🎵",
+      "images": "[\"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-27T12:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n64alm-0064-1063-lmn-00640000",
+    "note": {
+      "id": "n64alm-0064-1063-lmn-00640000",
+      "user_id": null,
+      "title": "Microservices Architecture",
+      "content": "Deeply learned microservices architecture design and practice experience.\n\nCore points:\n1. Service splitting principles\n2. API gateway design\n3. Service registration discovery\n4. Configuration center management\n5. Circuit breaker and degradation\n6. Distributed transactions\n7. Monitoring and logging\n\nMicroservices not silver bullet, need choose according to business scenarios. Architecture design needs balance complexity and benefits.\n\nGood architecture supports business development! 🏗️",
+      "images": "[\"https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-28T10:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n65amn-0065-1064-mno-00650000",
+    "note": {
+      "id": "n65amn-0065-1064-mno-00650000",
+      "user_id": null,
+      "title": "Handmade Craft Experience",
+      "content": "Attended handmade workshop, learned leather goods making.\n\nMaking process:\n1. Design pattern\n2. Cut leather\n3. Punch holes and sew\n4. Dye and polish\n5. Install accessories\n\nAlthough technique unfamiliar, completion sense of achievement explosive. Handmade brings calm and peace.\n\nCreative handmade brings joy! ✂️",
+      "images": "[\"https://images.unsplash.com/photo-1452860606245-08befc0ff44b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1452860606245-08befc0ff44b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-28T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n66ano-0066-1065-nop-00660000",
+    "note": {
+      "id": "n66ano-0066-1065-nop-00660000",
+      "user_id": null,
+      "title": "Monthly Work Summary",
+      "content": "Made January work summary and reflection.\n\nMain achievements:\n✅ Completed core function development\n✅ Optimized user experience\n✅ Improved code quality\n✅ Team collaboration enhanced\n\nNeed improvement:\n🔄 Technical debt handling\n🔄 Documentation improvement\n🔄 Test coverage\n🔄 Learning time arrangement\n\nEvery month review and improve. Continuous progress to improve!\n\nPlanning guides direction! 📊",
+      "images": "[\"https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-29T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n67aop-0067-1066-opq-00670000",
+    "note": {
+      "id": "n67aop-0067-1066-opq-00670000",
+      "user_id": null,
+      "title": "Reading Habit Cultivation",
+      "content": "Formulated long-term reading plan, hope cultivate good reading habit.\n\nReading goals:\n- Read 2-3 books monthly\n- Cover different fields: tech, literature, history, philosophy\n- Set fixed time weekly for reading\n- Take reading notes and thoughts\n- Write one English diary weekly\n\nGood books broaden horizons, change thinking patterns. Reading best cost-effective self-investment.\n\nReading changes life! 📖",
+      "images": "[\"https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\", \"https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-29T20:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n68apq-0068-1067-pqr-00680000",
+    "note": {
+      "id": "n68apq-0068-1067-pqr-00680000",
+      "user_id": null,
+      "title": "Creative Thinking Training",
+      "content": "Attended creative thinking workshop, learned divergent thinking and problem-solving skills.\n\nLearned methods:\n1. Mind map divergent thinking\n2. SCAMPER innovation techniques\n3. Six thinking hats\n4. Brainstorming rules\n5. Prototype design methods\n6. User empathy practice\n\nCreative thinking trainable and cultivable. Break fixed thinking frameworks to find better solutions.\n\nInnovation changes world! 💡",
+      "images": "[\"https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1531482615713-2afd69097998?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-30T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "n69aqr-0069-1068-qrs-00690000",
+    "note": {
+      "id": "n69aqr-0069-1068-qrs-00690000",
+      "user_id": null,
+      "title": "Family Time",
+      "content": "Weekend spent warm time with family.\n\nActivities:\n- Make breakfast together\n- Park walk chat\n- Family movie watching\n- Board game competition\n- Share stories with each other\n\nFamily forever harbor. Busy life, spend time accompany family most important.\n\nFamily most warm existence! 👨‍👩‍👧‍👦",
+      "images": "[\"https://images.unsplash.com/photo-1511895426328-dc8714191300?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1511895426328-dc8714191300?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-30T08:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "n70ars-0070-1069-rst-00700000",
+    "note": {
+      "id": "n70ars-0070-1069-rst-00700000",
+      "user_id": null,
+      "title": "Career Planning Thoughts",
+      "content": "Spent time thinking career development planning.\n\nShort-term goals (1-2 years):\n- Deepen tech depth and breadth\n- Cultivate team management ability\n- Build personal brand influence\n\nLong-term goals (3-5 years):\n- Become tech field expert\n- Lead innovative projects\n- Share experience help others\n\nCareer development marathon, needs patience and persistence. Continuous learning and growth avoid being eliminated.\n\nPlanning guides direction! 🎯",
+      "images": "[\"https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-31T14:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "n71ast-0071-1070-stu-00710000",
+    "note": {
+      "id": "n71ast-0071-1070-stu-00710000",
+      "user_id": null,
+      "title": "January Life Summary",
+      "content": "January about to end, simple monthly summary.\n\nHarvests:\n✅ Persisted morning run habit\n✅ Learned new skills\n✅ Completed work goals\n✅ Met new friends\n\nReflections:\n🔄 Time management optimize\n🔄 Reading volume insufficient\n🔄 Investment finance strengthen\n\nFebruary goals:\n🎯 Read more books\n🎯 Learn English\n🎯 Exercise body\n🎯 Improve cooking skills\n\nPast month fulfilling, future continue effort! 📅",
+      "images": "[\"https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80\"]",
+      "cover_image": "https://images.unsplash.com/photo-1556075798-4825dfaaf498?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+      "task_id": null,
+      "created_at": "2026-01-31T06:30:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
   }
 ]

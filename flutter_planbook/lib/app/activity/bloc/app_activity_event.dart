@@ -12,7 +12,12 @@ final class AppActivityRequested extends AppActivityEvent {
 }
 
 final class AppActivityFetched extends AppActivityEvent {
-  const AppActivityFetched();
+  const AppActivityFetched({this.isNew = false});
+
+  final bool isNew;
+
+  @override
+  List<Object> get props => [isNew];
 }
 
 final class AppActivityNotShowAgain extends AppActivityEvent {

@@ -113,9 +113,9 @@ class NoteListTile extends StatelessWidget {
                               color: theme.colorScheme.onSurface,
                             ),
                           ),
-                        if (note.content != null)
+                        if (note.content != null && note.content!.isNotEmpty)
                           Text(
-                            note.content ?? '',
+                            note.content!,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),

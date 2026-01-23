@@ -12,7 +12,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -24,10 +24,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "today"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "01a1b1c1-1111-4111-8111-111111111102",
@@ -42,7 +43,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -54,10 +55,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "today"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "01a1b1c1-1111-4111-8111-111111111103",
@@ -72,7 +74,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T18:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -84,10 +86,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "today"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222201",
@@ -102,7 +105,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T10:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -114,10 +117,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+1"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222202",
@@ -132,7 +136,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -144,10 +148,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+1"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222203",
@@ -162,7 +167,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -174,10 +179,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+1"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333301",
@@ -192,7 +198,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -204,10 +210,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+2"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333302",
@@ -222,7 +229,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -234,10 +241,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+2"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333303",
@@ -252,7 +260,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -264,10 +272,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+2"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444401",
@@ -282,7 +291,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -294,10 +303,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+3"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444402",
@@ -312,7 +322,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -324,10 +334,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+3"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444403",
@@ -342,7 +353,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -354,10 +365,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+3"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555501",
@@ -372,7 +384,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -384,10 +396,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+4"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555502",
@@ -402,7 +415,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T14:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -414,10 +427,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+4"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555503",
@@ -432,7 +446,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -444,10 +458,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+4"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666601",
@@ -462,7 +477,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T10:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -474,10 +489,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+5"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666602",
@@ -492,7 +508,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -504,10 +520,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+5"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666603",
@@ -522,7 +539,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -534,10 +551,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+5"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777701",
@@ -552,7 +570,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -564,10 +582,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+6"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777702",
@@ -582,7 +601,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -594,10 +613,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+6"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777703",
@@ -612,7 +632,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -624,10 +644,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+6"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "08a8b8c8-8888-4888-8888-888888888801",
@@ -642,7 +663,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-08T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -654,10 +675,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+7"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "08a8b8c8-8888-4888-8888-888888888802",
@@ -672,7 +694,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-08T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -684,10 +706,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+7"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "09a9b9c9-9999-4999-8999-999999999901",
@@ -702,7 +725,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-09T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -714,10 +737,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+8"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "09a9b9c9-9999-4999-8999-999999999902",
@@ -732,7 +756,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-09T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -744,10 +768,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+8"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "10a0b0c0-0000-4000-8000-000000000001",
@@ -762,7 +787,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-10T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -774,10 +799,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+9"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "10a0b0c0-0000-4000-8000-000000000002",
@@ -792,7 +818,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-10T19:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -804,10 +830,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+9"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "11a1b1c1-1111-4111-8111-111111111101",
@@ -822,7 +849,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-11T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -834,10 +861,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+10"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "11a1b1c1-1111-4111-8111-111111111102",
@@ -852,7 +880,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-11T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -864,10 +892,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+10"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "12a2b2c2-2222-4222-8222-222222222201",
@@ -882,7 +911,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-12T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -894,10 +923,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+11"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "12a2b2c2-2222-4222-8222-222222222202",
@@ -912,7 +942,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-12T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -924,10 +954,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+11"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "13a3b3c3-3333-4333-8333-333333333301",
@@ -942,7 +973,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-13T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -954,10 +985,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+12"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "13a3b3c3-3333-4333-8333-333333333302",
@@ -972,7 +1004,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-13T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -984,10 +1016,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+12"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "14a4b4c4-4444-4444-8444-444444444401",
@@ -1002,7 +1035,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-14T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1014,10 +1047,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+13"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "14a4b4c4-4444-4444-8444-444444444402",
@@ -1032,7 +1066,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-14T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1044,10 +1078,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+13"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "15a5b5c5-5555-4555-8555-555555555501",
@@ -1062,7 +1097,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-15T10:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1074,10 +1109,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+14"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "15a5b5c5-5555-4555-8555-555555555502",
@@ -1092,7 +1128,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-15T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1104,10 +1140,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+14"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "16a6b6c6-6666-4666-8666-666666666601",
@@ -1122,7 +1159,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-16T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1134,10 +1171,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+15"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "17a7b7c7-7777-4777-8777-777777777701",
@@ -1152,7 +1190,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-17T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1164,10 +1202,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+16"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "17a7b7c7-7777-4777-8777-777777777702",
@@ -1182,7 +1221,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-17T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1194,10 +1233,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+16"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "18a8b8c8-8888-4888-8888-888888888801",
@@ -1212,7 +1252,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-18T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1224,10 +1264,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+17"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "18a8b8c8-8888-4888-8888-888888888802",
@@ -1242,7 +1283,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-18T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1254,10 +1295,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+17"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "19a9b9c9-9999-4999-8999-999999999901",
@@ -1272,7 +1314,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-19T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1284,10 +1326,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+18"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "19a9b9c9-9999-4999-8999-999999999902",
@@ -1302,7 +1345,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-19T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1314,10 +1357,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+18"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "20a0b0c0-0000-4000-8000-000000000001",
@@ -1332,7 +1376,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-20T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1344,10 +1388,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+19"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "20a0b0c0-0000-4000-8000-000000000002",
@@ -1362,7 +1407,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-20T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1374,10 +1419,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+19"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "21a1b1c1-1111-4111-8111-111111111101",
@@ -1392,7 +1438,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-21T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1404,10 +1450,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+20"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "21a1b1c1-1111-4111-8111-111111111102",
@@ -1422,7 +1469,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-21T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1434,10 +1481,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+20"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "22a2b2c2-2222-4222-8222-222222222201",
@@ -1452,7 +1500,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-22T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1464,10 +1512,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+21"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "22a2b2c2-2222-4222-8222-222222222202",
@@ -1482,7 +1531,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-22T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1494,10 +1543,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+21"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "23a3b3c3-3333-4333-8333-333333333301",
@@ -1512,7 +1562,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-23T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1524,10 +1574,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+22"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "23a3b3c3-3333-4333-8333-333333333302",
@@ -1542,7 +1593,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-23T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1554,10 +1605,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+22"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "24a4b4c4-4444-4444-8444-444444444401",
@@ -1572,7 +1624,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-24T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1584,10 +1636,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+23"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "24a4b4c4-4444-4444-8444-444444444402",
@@ -1602,7 +1655,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-24T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1614,10 +1667,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+23"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "25a5b5c5-5555-4555-8555-555555555501",
@@ -1632,7 +1686,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-25T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1644,10 +1698,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+24"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "25a5b5c5-5555-4555-8555-555555555502",
@@ -1662,7 +1717,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-25T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1674,10 +1729,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+24"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "26a6b6c6-6666-4666-8666-666666666601",
@@ -1692,7 +1748,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-26T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1704,10 +1760,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+25"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "26a6b6c6-6666-4666-8666-666666666602",
@@ -1722,7 +1779,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-26T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1734,10 +1791,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+25"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "27a7b7c7-7777-4777-8777-777777777701",
@@ -1752,7 +1810,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-27T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1764,10 +1822,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+26"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "28a8b8c8-8888-4888-8888-888888888801",
@@ -1782,7 +1841,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-28T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1794,10 +1853,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+27"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "28a8b8c8-8888-4888-8888-888888888802",
@@ -1812,7 +1872,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-28T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1824,10 +1884,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+27"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "29a9b9c9-9999-4999-8999-999999999901",
@@ -1842,7 +1903,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-29T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1854,10 +1915,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+28"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "29a9b9c9-9999-4999-8999-999999999902",
@@ -1872,7 +1934,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-29T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1884,10 +1946,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+28"
+      "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "30a0b0c0-0000-4000-8000-000000000001",
@@ -1902,7 +1965,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-30T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1914,10 +1977,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+29"
+      "deleted_at": null
     },
-    "tags": ["工作"]
+    "tags": [
+      "工作"
+    ]
   },
   {
     "id": "30a0b0c0-0000-4000-8000-000000000002",
@@ -1932,7 +1996,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-30T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -1944,10 +2008,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "day+29"
+      "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "inbox-01-8888-4888-8888-888888888801",
@@ -1976,7 +2041,9 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "inbox-02-8888-4888-8888-888888888802",
@@ -2005,7 +2072,9 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["学习"]
+    "tags": [
+      "学习"
+    ]
   },
   {
     "id": "inbox-03-8888-4888-8888-888888888803",
@@ -2034,7 +2103,9 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   },
   {
     "id": "inbox-04-8888-4888-8888-888888888804",
@@ -2063,6 +2134,8 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["生活"]
+    "tags": [
+      "生活"
+    ]
   }
 ]

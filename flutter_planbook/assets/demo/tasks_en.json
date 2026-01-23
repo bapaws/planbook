@@ -12,7 +12,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -24,10 +24,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "mon"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "01a1b1c1-1111-4111-8111-111111111102",
@@ -42,7 +43,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -54,10 +55,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "mon"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "01a1b1c1-1111-4111-8111-111111111103",
@@ -72,7 +74,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-06T18:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -84,10 +86,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "mon"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222201",
@@ -102,7 +105,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T10:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -114,10 +117,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "tue"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222202",
@@ -132,7 +136,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -144,10 +148,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "tue"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "02a2b2c2-2222-4222-8222-222222222203",
@@ -162,7 +167,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-07T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -174,10 +179,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "tue"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333301",
@@ -192,7 +198,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T14:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -204,10 +210,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "wed"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333302",
@@ -222,7 +229,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -234,10 +241,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "wed"
+      "deleted_at": null
     },
-    "tags": ["Study"]
+    "tags": [
+      "Study"
+    ]
   },
   {
     "id": "03a3b3c3-3333-4333-8333-333333333303",
@@ -252,7 +260,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-01T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -264,10 +272,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "wed"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444401",
@@ -282,7 +291,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -294,10 +303,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "thu"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444402",
@@ -312,7 +322,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -324,10 +334,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "thu"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "04a4b4c4-4444-4444-8444-444444444403",
@@ -342,7 +353,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-02T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -354,10 +365,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "thu"
+      "deleted_at": null
     },
-    "tags": ["Study"]
+    "tags": [
+      "Study"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555501",
@@ -372,7 +384,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -384,10 +396,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "fri"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555502",
@@ -402,7 +415,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T14:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -414,10 +427,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "fri"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "05a5b5c5-5555-4555-8555-555555555503",
@@ -432,7 +446,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-03T15:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -444,10 +458,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "fri"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666601",
@@ -462,7 +477,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T10:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -474,10 +489,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sat"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666602",
@@ -492,7 +508,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -504,10 +520,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sat"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "06a6b6c6-6666-4666-8666-666666666603",
@@ -522,7 +539,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-04T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -534,10 +551,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sat"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777701",
@@ -552,7 +570,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -564,10 +582,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sun"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777702",
@@ -582,7 +601,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -594,10 +613,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sun"
+      "deleted_at": null
     },
-    "tags": ["Life"]
+    "tags": [
+      "Life"
+    ]
   },
   {
     "id": "07a7b7c7-7777-4777-8777-777777777703",
@@ -612,7 +632,7 @@
       "start_at": null,
       "end_at": null,
       "is_all_day": false,
-      "due_at": null,
+      "due_at": "2026-01-05T09:00:00.000Z",
       "recurrence_rule": null,
       "detached_from_task_id": null,
       "detached_recurrence_at": null,
@@ -624,10 +644,11 @@
       "time_zone": null,
       "created_at": "2024-01-01T00:00:00.000Z",
       "updated_at": null,
-      "deleted_at": null,
-      "dueAt": "sun"
+      "deleted_at": null
     },
-    "tags": ["Work"]
+    "tags": [
+      "Work"
+    ]
   },
   {
     "id": "08a8b8c8-8888-4888-8888-888888888801",
@@ -656,7 +677,9 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Study"]
+    "tags": [
+      "Study"
+    ]
   },
   {
     "id": "08a8b8c8-8888-4888-8888-888888888802",
@@ -685,6 +708,8 @@
       "updated_at": null,
       "deleted_at": null
     },
-    "tags": ["Study"]
+    "tags": [
+      "Study"
+    ]
   }
 ]
