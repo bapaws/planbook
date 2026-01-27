@@ -4,6 +4,7 @@ final class DiscoverFocusState extends Equatable {
   const DiscoverFocusState({
     required this.date,
     this.mindMap,
+    this.flatNodes = const [],
     this.status = PageStatus.initial,
     this.isExpandedAllNodes = false,
     this.selectedYearlyNode,
@@ -18,6 +19,7 @@ final class DiscoverFocusState extends Equatable {
   final Jiffy date;
 
   final NoteMindMapEntity? mindMap;
+  final List<NoteMindMapEntity> flatNodes;
 
   final bool isExpandedAllNodes;
 
@@ -33,6 +35,7 @@ final class DiscoverFocusState extends Equatable {
     status,
     date,
     mindMap,
+    flatNodes,
     isExpandedAllNodes,
     selectedYearlyNode,
     selectedMonthlyNode,
@@ -45,6 +48,7 @@ final class DiscoverFocusState extends Equatable {
     PageStatus? status,
     Jiffy? date,
     NoteMindMapEntity? mindMap,
+    List<NoteMindMapEntity>? flatNodes,
     bool? isExpandedAllNodes,
     NoteMindMapEntity? selectedYearlyNode,
     NoteMindMapEntity? selectedMonthlyNode,
@@ -56,6 +60,7 @@ final class DiscoverFocusState extends Equatable {
       status: status ?? this.status,
       date: date ?? this.date,
       mindMap: mindMap ?? this.mindMap,
+      flatNodes: flatNodes ?? this.flatNodes,
       isExpandedAllNodes: isExpandedAllNodes ?? this.isExpandedAllNodes,
       selectedYearlyNode: selectedYearlyNode ?? this.selectedYearlyNode,
       selectedMonthlyNode: selectedMonthlyNode ?? this.selectedMonthlyNode,

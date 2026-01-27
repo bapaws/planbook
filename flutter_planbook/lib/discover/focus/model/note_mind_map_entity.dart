@@ -35,6 +35,7 @@ final class NoteMindMapEntity extends Equatable {
     this.selectedOffset = Offset.zero,
     this.unselectedOffset = Offset.zero,
     this.normalOffset = Offset.zero,
+    this.isVisible = true,
   });
 
   final Jiffy date;
@@ -48,6 +49,7 @@ final class NoteMindMapEntity extends Equatable {
   final Offset unselectedOffset;
 
   final Offset normalOffset;
+  final bool isVisible;
 
   Offset getOffset({bool isExpanded = false}) {
     if (isExpanded) return expandedOffset;
@@ -131,6 +133,7 @@ final class NoteMindMapEntity extends Equatable {
     selectedOffset,
     unselectedOffset,
     normalOffset,
+    isVisible,
   ];
 
   NoteMindMapEntity copyWith({
@@ -145,6 +148,7 @@ final class NoteMindMapEntity extends Equatable {
     Offset? normalOffset,
     Offset? selectedOffset,
     Offset? unselectedOffset,
+    bool? isVisible,
   }) {
     return NoteMindMapEntity(
       date: date ?? this.date,
@@ -158,6 +162,7 @@ final class NoteMindMapEntity extends Equatable {
       normalOffset: normalOffset ?? this.normalOffset,
       selectedOffset: selectedOffset ?? this.selectedOffset,
       unselectedOffset: unselectedOffset ?? this.unselectedOffset,
+      isVisible: isVisible ?? this.isVisible,
     );
   }
 }

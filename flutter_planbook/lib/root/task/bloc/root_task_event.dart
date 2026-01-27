@@ -69,3 +69,7 @@ final class RootTaskTabFocusNoteTypeChanged extends RootTaskEvent {
   @override
   List<Object?> get props => [tab, noteType];
 }
+
+final class RootTaskRefreshRequested extends RootTaskEvent {
+  const RootTaskRefreshRequested();
+}

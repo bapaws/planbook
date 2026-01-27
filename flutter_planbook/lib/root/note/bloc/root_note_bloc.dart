@@ -7,18 +7,24 @@ part 'root_note_event.dart';
 part 'root_note_state.dart';
 
 class RootNoteBloc extends Bloc<RootNoteEvent, RootNoteState> {
-  RootNoteBloc()
-    : super(
-        RootNoteState(
-          galleryDate: Jiffy.now().startOf(Unit.day),
+  RootNoteBloc({
+    required NotesRepository notesRepository,
+  }) : _notesRepository = notesRepository,
+       super(
+         RootNoteState(
+           galleryDate: Jiffy.now().startOf(Unit.day),
 
-          tagDate: Jiffy.now().startOf(Unit.day),
-        ),
-      ) {
+           tagDate: Jiffy.now().startOf(Unit.day),
+         ),
+       ) {
     on<RootNoteRequested>(_onRequested);
     on<RootNoteTagSelected>(_onTagSelected);
     on<RootNoteDateSelected>(_onDateSelected);
+
+    on<RootNoteRefreshRequested>(_onRefreshRequested);
   }
+
+  final NotesRepository _notesRepository;
 
   Future<void> _onRequested(
     RootNoteRequested event,
@@ -47,5 +53,14 @@ class RootNoteBloc extends Bloc<RootNoteEvent, RootNoteState> {
       case RootNoteTab.tag:
         emit(state.copyWith(tagDate: event.date));
     }
+  }
+
+  Future<void> _onRefreshRequested(
+    RootNoteRefreshRequested event,
+    Emitter<RootNoteState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    await _notesRepository.syncNotes(force: true);
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

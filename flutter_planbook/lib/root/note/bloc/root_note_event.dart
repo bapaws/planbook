@@ -29,3 +29,7 @@ final class RootNoteDateSelected extends RootNoteEvent {
   @override
   List<Object?> get props => [date, tab];
 }
+
+final class RootNoteRefreshRequested extends RootNoteEvent {
+  const RootNoteRefreshRequested();
+}

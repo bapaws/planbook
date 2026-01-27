@@ -63,7 +63,11 @@ class SupabaseNoteApi {
 
     var builder = supabase!
         .from('notes')
-        .select('*,note_tags(*,tag:tags!note_tags_tag_id_fkey(*))');
+        .select(
+          '*,'
+          'note_tags(*,tag:tags!note_tags_tag_id_fkey(*)),'
+          'tasks(*)',
+        );
     if (!force) {
       if (lastTimestamp != null) {
         final date = DateTime.fromMillisecondsSinceEpoch(

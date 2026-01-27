@@ -91,7 +91,7 @@ class NotesRepository {
     await _dbNoteApi.update(note: newNote, noteTags: noteTags);
   }
 
-  Future<void> _syncNotes({
+  Future<void> syncNotes({
     bool force = false,
   }) async {
     final list = await _supabaseNoteApi.getLatestNotes(force: force);
@@ -110,6 +110,16 @@ class NotesRepository {
             await _db
                 .into(_db.noteTags)
                 .insertOnConflictUpdate(NoteTag.fromJson(map));
+          }
+        }
+
+        if (item['tasks'] is List<dynamic>) {
+          for (final taskItem in item['tasks'] as List<dynamic>) {
+            final map = taskItem as Map<String, dynamic>;
+            final taskMap = map['task'] as Map<String, dynamic>?;
+            if (taskMap == null) continue;
+            final task = Task.fromJson(taskMap);
+            await _db.into(_db.tasks).insertOnConflictUpdate(task);
           }
         }
       }
@@ -133,7 +143,7 @@ class NotesRepository {
     NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
   }) {
-    _syncNotes();
+    syncNotes();
     return _dbNoteApi.getNoteEntitiesByDate(
       date,
       tagIds: tagIds,
@@ -150,7 +160,7 @@ class NotesRepository {
     Jiffy date, {
     List<String>? tagIds,
   }) {
-    _syncNotes();
+    syncNotes();
     return _dbNoteApi.getWrittenNoteEntities(
       date,
       tagIds: tagIds,
@@ -183,35 +193,44 @@ class NotesRepository {
 
   Future<void> createDefaultNotes({required String languageCode}) async {
     if (!kDebugMode) return;
-
     const uuid = Uuid();
-    final taskJsonString = await rootBundle.loadString(
-      'assets/${kDebugMode ? 'demo' : 'files'}/notes_$languageCode.json',
-    );
-    final taskJson = jsonDecode(taskJsonString) as List<dynamic>;
-    final startOfMonth = Jiffy.now().startOf(Unit.month);
-    final diff = startOfMonth
-        .diff(Jiffy.parseFromList([2026, 1]), unit: Unit.day)
-        .toInt();
-    for (final json in taskJson) {
-      final map = json as Map<String, dynamic>;
-      final noteMap = map['note'] as Map<String, dynamic>;
-      var note = Note.fromJson(noteMap).copyWith(
-        id: kDebugMode ? null : uuid.v4(),
+
+    final fileNames = [
+      'notes',
+      'task_notes',
+      'focus_notes',
+    ];
+    for (final fileName in fileNames) {
+      final jsonString = await rootBundle.loadString(
+        'assets/${kDebugMode ? 'demo' : 'files'}/${fileName}_$languageCode.json',
       );
-      note = note.copyWith(createdAt: note.createdAt.add(days: diff));
-      final tagNames = List<String>.from(map['tags'] as List<dynamic>);
-      final tags = await Future.wait(
-        tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),
-      );
-      await create(
-        title: note.title,
-        content: note.content,
-        images: note.images,
-        taskId: note.taskId,
-        tags: tags.nonNulls.toList(),
-        createdAt: note.createdAt,
-      );
+      final json = jsonDecode(jsonString) as List<dynamic>;
+      final startOfMonth = Jiffy.now().startOf(Unit.month);
+      final diff = startOfMonth
+          .diff(Jiffy.parseFromList([2026, 1]), unit: Unit.day)
+          .toInt();
+      for (final item in json) {
+        final map = item as Map<String, dynamic>;
+        final noteMap = map['note'] as Map<String, dynamic>;
+        var note = Note.fromJson(noteMap).copyWith(
+          id: kDebugMode ? null : uuid.v4(),
+        );
+        note = note.copyWith(createdAt: note.createdAt.add(days: diff));
+        final tagNames = List<String>.from(map['tags'] as List<dynamic>);
+        final tags = await Future.wait(
+          tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),
+        );
+        await create(
+          title: note.title,
+          content: note.content,
+          images: note.images,
+          taskId: note.taskId,
+          focusAt: note.focusAt,
+          type: note.type,
+          tags: tags.nonNulls.toList(),
+          createdAt: note.createdAt,
+        );
+      }
     }
   }
 }

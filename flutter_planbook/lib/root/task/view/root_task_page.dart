@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 
@@ -42,16 +44,26 @@ class RootTaskPage extends StatelessWidget {
           )..add(TaskMonthDateSelected(date: Jiffy.now())),
         ),
       ],
-      child: AutoTabsRouter.tabBar(
-        routes: const [
-          TaskInboxRoute(),
-          TaskOverdueRoute(),
-          TaskTodayRoute(),
-          TaskWeekRoute(),
-          TaskMonthRoute(),
-          TaskTagRoute(),
-        ],
-        builder: (context, child, controller) => _RootTaskPage(child: child),
+      child: BlocListener<RootTaskBloc, RootTaskState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == PageStatus.loading) {
+            EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+          } else if (EasyLoading.isShow) {
+            EasyLoading.dismiss();
+          }
+        },
+        child: AutoTabsRouter.tabBar(
+          routes: const [
+            TaskInboxRoute(),
+            TaskOverdueRoute(),
+            TaskTodayRoute(),
+            TaskWeekRoute(),
+            TaskMonthRoute(),
+            TaskTagRoute(),
+          ],
+          builder: (context, child, controller) => _RootTaskPage(child: child),
+        ),
       ),
     );
   }
@@ -235,6 +247,17 @@ class _RootTaskPage extends StatelessWidget {
                     },
                   ),
                 ],
+                const PullDownMenuDivider.large(),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.refresh,
+                  iconColor: theme.colorScheme.primary,
+                  title: context.l10n.refresh,
+                  onTap: () {
+                    context.read<RootTaskBloc>().add(
+                      const RootTaskRefreshRequested(),
+                    );
+                  },
+                ),
               ];
             },
             buttonBuilder: (context, showMenu) => CupertinoButton(

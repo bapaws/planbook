@@ -129,6 +129,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
         expandedAngle: angle,
         angle: angle,
         isSelected: isSelected,
+        isVisible: yearlyNode.isSelected,
       );
       // if (isSelected || state.isExpandedAllNodes) {
       entity = entity.copyWith(
@@ -222,6 +223,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
         expandedAngle: expandedAngle,
         angle: angle,
         isSelected: isSelected,
+        isVisible: monthlyNode.isSelected,
       );
       // if (isSelected || state.isExpandedAllNodes) {
       entity = entity.copyWith(
@@ -316,6 +318,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
                 unit: Unit.day,
               ) ??
               false,
+          isVisible: weeklyNode.isSelected,
         ),
       );
     }
@@ -373,18 +376,21 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           dailyNodes[k] = dailyNode.copyWith(
             isSelected: false,
             normalOffset: monthlyNormalOffset,
+            isVisible: false,
           );
         }
         weeklyNodes[j] = weeklyNode.copyWith(
           children: dailyNodes,
           isSelected: false,
           normalOffset: monthlyNormalOffset,
+          isVisible: false,
         );
       }
       monthlyNodes[i] = monthlyNode.copyWith(
         children: weeklyNodes,
         isSelected: false,
         normalOffset: monthlyNormalOffset,
+        isVisible: isYearlySelected,
       );
     }
     return yearlyNode.copyWith(
@@ -416,6 +422,7 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           final dailyNode = dailyNodes[k];
           dailyNodes[k] = dailyNode.copyWith(
             isSelected: false,
+            isVisible: false,
             normalOffset: weeklyNormalOffset,
           );
         }
@@ -423,12 +430,14 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           children: dailyNodes,
           isSelected: false,
           normalOffset: weeklyNormalOffset,
+          isVisible: isMonthlySelected,
         );
       }
       monthlyNodes[i] = monthlyNode.copyWith(
         children: weeklyNodes,
         isSelected: isMonthlySelected,
         normalOffset: monthlyNormalOffset,
+        isVisible: yearlyNode.isSelected,
       );
     }
     return yearlyNode.copyWith(
@@ -457,11 +466,13 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
         final dailyNodes = [...weeklyNode.children];
         for (var k = 0; k < dailyNodes.length; k++) {
           final dailyNode = dailyNodes[k];
+          final dailyNormalOffset = isWeeklySelected
+              ? dailyNode.unselectedOffset
+              : weeklyNormalOffset;
           dailyNodes[k] = dailyNode.copyWith(
             isSelected: false,
-            normalOffset: isWeeklySelected
-                ? dailyNode.unselectedOffset
-                : weeklyNormalOffset,
+            normalOffset: dailyNormalOffset,
+            isVisible: isWeeklySelected,
           );
         }
         weeklyNodes[j] = weeklyNode.copyWith(
@@ -494,17 +505,19 @@ class DiscoverFocusBloc extends Bloc<DiscoverFocusEvent, DiscoverFocusState> {
           final dailyNode = dailyNodes[k];
           final isDailySelected =
               dailyNode.key == selectedNode.key && !dailyNode.isSelected;
+          final dailyNormalOffset = isDailySelected
+              ? dailyNode.selectedOffset
+              : weeklyNode.isSelected
+              ? dailyNode.unselectedOffset
+              : monthlyNode.isSelected
+              ? weeklyNode.unselectedOffset
+              : yearlyNode.isSelected
+              ? monthlyNode.unselectedOffset
+              : yearlyNode.unselectedOffset;
           dailyNodes[k] = dailyNode.copyWith(
             isSelected: isDailySelected,
-            normalOffset: isDailySelected
-                ? dailyNode.selectedOffset
-                : weeklyNode.isSelected
-                ? dailyNode.unselectedOffset
-                : monthlyNode.isSelected
-                ? weeklyNode.unselectedOffset
-                : yearlyNode.isSelected
-                ? monthlyNode.unselectedOffset
-                : yearlyNode.unselectedOffset,
+            normalOffset: dailyNormalOffset,
+            isVisible: weeklyNode.isSelected,
           );
         }
         weeklyNodes[j] = weeklyNode.copyWith(

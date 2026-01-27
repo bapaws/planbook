@@ -200,6 +200,30 @@ class UsersRepository {
     return null;
   }
 
+  Future<AuthResponse?> signInWithApple() async {
+    final response = await AppSupabase.instance.signInWithApple();
+    if (response?.user != null) {
+      await AppHomeWidget.saveWidgetData(
+        kUserId,
+        response!.user!.id,
+      );
+      await getUserProfile();
+    }
+    return response;
+  }
+
+  Future<AuthResponse?> signInWithGoogle() async {
+    final response = await AppSupabase.instance.signInWithGoogle();
+    if (response?.user != null) {
+      await AppHomeWidget.saveWidgetData(
+        kUserId,
+        response!.user!.id,
+      );
+      await getUserProfile();
+    }
+    return response;
+  }
+
   Future<UserEntity?> updateUser({
     String? email,
     String? phone,

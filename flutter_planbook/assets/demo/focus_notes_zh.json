@@ -1,0 +1,982 @@
+[
+  {
+    "id": "monthly-focus-2026-01",
+    "note": {
+      "id": "monthly-focus-2026-01",
+      "user_id": null,
+      "title": "月重点",
+      "content": "完成核心项目里程碑，提升技术技能，保持工作生活平衡",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-01-01T00:00:00.000Z",
+      "created_at": "2026-01-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-02",
+    "note": {
+      "id": "monthly-focus-2026-02",
+      "user_id": null,
+      "title": "月重点",
+      "content": "发布新产品功能，加强团队协作，持续学习提升",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-02-01T00:00:00.000Z",
+      "created_at": "2026-02-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-03",
+    "note": {
+      "id": "monthly-focus-2026-03",
+      "user_id": null,
+      "title": "月重点",
+      "content": "优化系统架构，完成季度总结，扩展职业人脉",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-03-01T00:00:00.000Z",
+      "created_at": "2026-03-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-04",
+    "note": {
+      "id": "monthly-focus-2026-04",
+      "user_id": null,
+      "title": "月重点",
+      "content": "实施性能优化，参加技术会议，关注健康生活",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-04-01T00:00:00.000Z",
+      "created_at": "2026-04-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-05",
+    "note": {
+      "id": "monthly-focus-2026-05",
+      "user_id": null,
+      "title": "月重点",
+      "content": "扩展基础设施，指导初级开发者，规划夏季活动",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-05-01T00:00:00.000Z",
+      "created_at": "2026-05-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-06",
+    "note": {
+      "id": "monthly-focus-2026-06",
+      "user_id": null,
+      "title": "月重点",
+      "content": "完成年中目标，加强安全措施，享受夏日假期",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-06-01T00:00:00.000Z",
+      "created_at": "2026-06-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-07",
+    "note": {
+      "id": "monthly-focus-2026-07",
+      "user_id": null,
+      "title": "月重点",
+      "content": "重构遗留代码，学习新技术，保持工作生活和谐",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-07-01T00:00:00.000Z",
+      "created_at": "2026-07-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-08",
+    "note": {
+      "id": "monthly-focus-2026-08",
+      "user_id": null,
+      "title": "月重点",
+      "content": "构建新功能，提升代码质量，规划休假时间",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-08-01T00:00:00.000Z",
+      "created_at": "2026-08-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-09",
+    "note": {
+      "id": "monthly-focus-2026-09",
+      "user_id": null,
+      "title": "月重点",
+      "content": "准备第四季度发布，开展团队培训，建立新习惯",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-09-01T00:00:00.000Z",
+      "created_at": "2026-09-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-10",
+    "note": {
+      "id": "monthly-focus-2026-10",
+      "user_id": null,
+      "title": "月重点",
+      "content": "执行重大发布，优化用户体验，庆祝取得的成就",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-10-01T00:00:00.000Z",
+      "created_at": "2026-10-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-11",
+    "note": {
+      "id": "monthly-focus-2026-11",
+      "user_id": null,
+      "title": "月重点",
+      "content": "完成年度目标，准备年终总结，规划来年计划",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-11-01T00:00:00.000Z",
+      "created_at": "2026-11-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-12",
+    "note": {
+      "id": "monthly-focus-2026-12",
+      "user_id": null,
+      "title": "月重点",
+      "content": "回顾一年历程，庆祝重要里程碑，制定新年目标",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-12-01T00:00:00.000Z",
+      "created_at": "2026-12-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "weekly-focus-2025-12-29",
+    "note": {
+      "id": "weekly-focus-2025-12-29",
+      "user_id": null,
+      "title": "周重点",
+      "content": "开启新一年，设定清晰目标，建立高效工作节奏",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2025-12-29T00:00:00.000Z",
+      "created_at": "2025-12-29T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-01",
+    "note": {
+      "id": "focus-2026-01-01",
+      "user_id": null,
+      "title": "日重点",
+      "content": "回复产品经理的需求文档并创建周工作计划",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-01T00:00:00.000Z",
+      "created_at": "2026-01-01T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-02",
+    "note": {
+      "id": "focus-2026-01-02",
+      "user_id": null,
+      "title": "日重点",
+      "content": "参加项目状态会议并完成新功能开发",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-02T00:00:00.000Z",
+      "created_at": "2026-01-02T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-03",
+    "note": {
+      "id": "focus-2026-01-03",
+      "user_id": null,
+      "title": "日重点",
+      "content": "支付信用卡账单并与团队成员进行一对一沟通",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-03T00:00:00.000Z",
+      "created_at": "2026-01-03T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-04",
+    "note": {
+      "id": "focus-2026-01-04",
+      "user_id": null,
+      "title": "日重点",
+      "content": "准备技术分享幻灯片并预约牙科检查",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-04T00:00:00.000Z",
+      "created_at": "2026-01-04T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-05",
+    "note": {
+      "id": "weekly-focus-2026-01-05",
+      "user_id": null,
+      "title": "周重点",
+      "content": "完成项目里程碑，提交周报，保持团队协作",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-05T00:00:00.000Z",
+      "created_at": "2026-01-05T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-05",
+    "note": {
+      "id": "focus-2026-01-05",
+      "user_id": null,
+      "title": "日重点",
+      "content": "提交周报并进行周工作总结",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-05T00:00:00.000Z",
+      "created_at": "2026-01-05T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-06",
+    "note": {
+      "id": "focus-2026-01-06",
+      "user_id": null,
+      "title": "日重点",
+      "content": "采购日用品并进行周末大扫除",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-06T00:00:00.000Z",
+      "created_at": "2026-01-06T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-07",
+    "note": {
+      "id": "focus-2026-01-07",
+      "user_id": null,
+      "title": "日重点",
+      "content": "给父母打电话并规划下周工作",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-07T00:00:00.000Z",
+      "created_at": "2026-01-07T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活",
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-08",
+    "note": {
+      "id": "focus-2026-01-08",
+      "user_id": null,
+      "title": "日重点",
+      "content": "完成在线课程第3章并研究新技术框架",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-08T00:00:00.000Z",
+      "created_at": "2026-01-08T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-09",
+    "note": {
+      "id": "focus-2026-01-09",
+      "user_id": null,
+      "title": "日重点",
+      "content": "代码审查并完成在线课程第3章",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-09T00:00:00.000Z",
+      "created_at": "2026-01-09T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-10",
+    "note": {
+      "id": "focus-2026-01-10",
+      "user_id": null,
+      "title": "日重点",
+      "content": "修复线上bug并参加瑜伽课",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-10T00:00:00.000Z",
+      "created_at": "2026-01-10T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-11",
+    "note": {
+      "id": "focus-2026-01-11",
+      "user_id": null,
+      "title": "日重点",
+      "content": "团队周会并缴纳水电费",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-11T00:00:00.000Z",
+      "created_at": "2026-01-11T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-12",
+    "note": {
+      "id": "weekly-focus-2026-01-12",
+      "user_id": null,
+      "title": "周重点",
+      "content": "优化系统性能，完成客户会议，推进学习目标",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-12T00:00:00.000Z",
+      "created_at": "2026-01-12T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-12",
+    "note": {
+      "id": "focus-2026-01-12",
+      "user_id": null,
+      "title": "日重点",
+      "content": "完成性能优化方案并练习英语口语",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-12T00:00:00.000Z",
+      "created_at": "2026-01-12T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-13",
+    "note": {
+      "id": "focus-2026-01-13",
+      "user_id": null,
+      "title": "日重点",
+      "content": "与客户会面讨论合作事宜并去银行办理业务",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-13T00:00:00.000Z",
+      "created_at": "2026-01-13T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-14",
+    "note": {
+      "id": "focus-2026-01-14",
+      "user_id": null,
+      "title": "日重点",
+      "content": "准备月度报告材料并学习Rust语言基础",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-14T00:00:00.000Z",
+      "created_at": "2026-01-14T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-15",
+    "note": {
+      "id": "focus-2026-01-15",
+      "user_id": null,
+      "title": "日重点",
+      "content": "准备周末露营用品并与老同学共进晚餐",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-15T00:00:00.000Z",
+      "created_at": "2026-01-15T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-16",
+    "note": {
+      "id": "focus-2026-01-16",
+      "user_id": null,
+      "title": "日重点",
+      "content": "撰写技术博客文章",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-16T00:00:00.000Z",
+      "created_at": "2026-01-16T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-17",
+    "note": {
+      "id": "focus-2026-01-17",
+      "user_id": null,
+      "title": "日重点",
+      "content": "部门季度总结会议并保养车辆",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-17T00:00:00.000Z",
+      "created_at": "2026-01-17T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-18",
+    "note": {
+      "id": "focus-2026-01-18",
+      "user_id": null,
+      "title": "日重点",
+      "content": "API接口设计评审并阅读新书",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-18T00:00:00.000Z",
+      "created_at": "2026-01-18T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-19",
+    "note": {
+      "id": "weekly-focus-2026-01-19",
+      "user_id": null,
+      "title": "周重点",
+      "content": "发布新版本，完成接口集成，平衡工作与家庭时间",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-19T00:00:00.000Z",
+      "created_at": "2026-01-19T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-19",
+    "note": {
+      "id": "focus-2026-01-19",
+      "user_id": null,
+      "title": "日重点",
+      "content": "发布新版本并带孩子去游乐园",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-19T00:00:00.000Z",
+      "created_at": "2026-01-19T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-20",
+    "note": {
+      "id": "focus-2026-01-20",
+      "user_id": null,
+      "title": "日重点",
+      "content": "参加行业线下活动并预约体检",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-20T00:00:00.000Z",
+      "created_at": "2026-01-20T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-21",
+    "note": {
+      "id": "focus-2026-01-21",
+      "user_id": null,
+      "title": "日重点",
+      "content": "完成测试用例编写并整理数字相册",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-21T00:00:00.000Z",
+      "created_at": "2026-01-21T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-22",
+    "note": {
+      "id": "focus-2026-01-22",
+      "user_id": null,
+      "title": "日重点",
+      "content": "需求评审会议并学习Docker容器化",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-22T00:00:00.000Z",
+      "created_at": "2026-01-22T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-23",
+    "note": {
+      "id": "focus-2026-01-23",
+      "user_id": null,
+      "title": "日重点",
+      "content": "完成接口集成并游泳1小时",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-23T00:00:00.000Z",
+      "created_at": "2026-01-23T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-24",
+    "note": {
+      "id": "focus-2026-01-24",
+      "user_id": null,
+      "title": "日重点",
+      "content": "处理遗留技术债务并购买生日礼物",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-24T00:00:00.000Z",
+      "created_at": "2026-01-24T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-25",
+    "note": {
+      "id": "focus-2026-01-25",
+      "user_id": null,
+      "title": "日重点",
+      "content": "完成自动化测试并参加朋友生日聚会",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-25T00:00:00.000Z",
+      "created_at": "2026-01-25T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-26",
+    "note": {
+      "id": "weekly-focus-2026-01-26",
+      "user_id": null,
+      "title": "周重点",
+      "content": "完成自动化测试，准备月末报告，规划下一迭代",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-26T00:00:00.000Z",
+      "created_at": "2026-01-26T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作"
+    ]
+  },
+  {
+    "id": "focus-2026-01-26",
+    "note": {
+      "id": "focus-2026-01-26",
+      "user_id": null,
+      "title": "日重点",
+      "content": "尝试新菜谱烹饪并整理书架",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-26T00:00:00.000Z",
+      "created_at": "2026-01-26T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-27",
+    "note": {
+      "id": "focus-2026-01-27",
+      "user_id": null,
+      "title": "日重点",
+      "content": "参加技术沙龙",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-27T00:00:00.000Z",
+      "created_at": "2026-01-27T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-28",
+    "note": {
+      "id": "focus-2026-01-28",
+      "user_id": null,
+      "title": "日重点",
+      "content": "准备月末报告并与家人视频通话",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-28T00:00:00.000Z",
+      "created_at": "2026-01-28T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  },
+  {
+    "id": "focus-2026-01-29",
+    "note": {
+      "id": "focus-2026-01-29",
+      "user_id": null,
+      "title": "日重点",
+      "content": "月度工作总结并规划下月学习计划",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-29T00:00:00.000Z",
+      "created_at": "2026-01-29T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "学习"
+    ]
+  },
+  {
+    "id": "focus-2026-01-30",
+    "note": {
+      "id": "focus-2026-01-30",
+      "user_id": null,
+      "title": "日重点",
+      "content": "规划下一迭代任务并进行月末放松",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-30T00:00:00.000Z",
+      "created_at": "2026-01-30T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "工作",
+      "生活"
+    ]
+  }
+]
+
+

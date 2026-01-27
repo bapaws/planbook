@@ -1,0 +1,981 @@
+[
+  {
+    "id": "monthly-focus-2026-01",
+    "note": {
+      "id": "monthly-focus-2026-01",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Complete core project milestones, enhance technical skills, and maintain work-life balance",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-01-01T00:00:00.000Z",
+      "created_at": "2026-01-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-02",
+    "note": {
+      "id": "monthly-focus-2026-02",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Launch new product features, strengthen team collaboration, and pursue continuous learning",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-02-01T00:00:00.000Z",
+      "created_at": "2026-02-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-03",
+    "note": {
+      "id": "monthly-focus-2026-03",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Optimize system architecture, complete quarterly reviews, and expand professional network",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-03-01T00:00:00.000Z",
+      "created_at": "2026-03-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-04",
+    "note": {
+      "id": "monthly-focus-2026-04",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Implement performance improvements, attend tech conferences, and focus on health and wellness",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-04-01T00:00:00.000Z",
+      "created_at": "2026-04-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-05",
+    "note": {
+      "id": "monthly-focus-2026-05",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Scale infrastructure, mentor junior developers, and plan summer activities",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-05-01T00:00:00.000Z",
+      "created_at": "2026-05-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-06",
+    "note": {
+      "id": "monthly-focus-2026-06",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Deliver mid-year goals, enhance security measures, and enjoy summer break",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-06-01T00:00:00.000Z",
+      "created_at": "2026-06-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-07",
+    "note": {
+      "id": "monthly-focus-2026-07",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Refactor legacy code, learn new technologies, and maintain work-life harmony",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-07-01T00:00:00.000Z",
+      "created_at": "2026-07-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-08",
+    "note": {
+      "id": "monthly-focus-2026-08",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Build new features, improve code quality, and plan vacation time",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-08-01T00:00:00.000Z",
+      "created_at": "2026-08-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-09",
+    "note": {
+      "id": "monthly-focus-2026-09",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Prepare for Q4 launch, conduct team training, and establish new routines",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-09-01T00:00:00.000Z",
+      "created_at": "2026-09-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-10",
+    "note": {
+      "id": "monthly-focus-2026-10",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Execute major releases, optimize user experience, and celebrate achievements",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-10-01T00:00:00.000Z",
+      "created_at": "2026-10-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-11",
+    "note": {
+      "id": "monthly-focus-2026-11",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Complete annual objectives, prepare year-end reviews, and plan for next year",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-11-01T00:00:00.000Z",
+      "created_at": "2026-11-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "monthly-focus-2026-12",
+    "note": {
+      "id": "monthly-focus-2026-12",
+      "user_id": null,
+      "title": "Monthly Focus",
+      "content": "Reflect on the year, celebrate milestones, and set goals for the new year",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "monthlyFocus",
+      "focus_at": "2026-12-01T00:00:00.000Z",
+      "created_at": "2026-12-01T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "weekly-focus-2025-12-29",
+    "note": {
+      "id": "weekly-focus-2025-12-29",
+      "user_id": null,
+      "title": "Weekly Focus",
+      "content": "Start the new year strong, set clear goals, and establish productive routines",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2025-12-29T00:00:00.000Z",
+      "created_at": "2025-12-29T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-01",
+    "note": {
+      "id": "focus-2026-01-01",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Reply to PM's requirements doc and create weekly work plan",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-01T00:00:00.000Z",
+      "created_at": "2026-01-01T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-02",
+    "note": {
+      "id": "focus-2026-01-02",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Attend project status meeting and complete new feature development",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-02T00:00:00.000Z",
+      "created_at": "2026-01-02T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-03",
+    "note": {
+      "id": "focus-2026-01-03",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Pay credit card bill and have 1:1 with team member",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-03T00:00:00.000Z",
+      "created_at": "2026-01-03T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-04",
+    "note": {
+      "id": "focus-2026-01-04",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Prepare tech sharing slides and schedule dental checkup",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-04T00:00:00.000Z",
+      "created_at": "2026-01-04T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-05",
+    "note": {
+      "id": "weekly-focus-2026-01-05",
+      "user_id": null,
+      "title": "Weekly Focus",
+      "content": "Complete project milestones, submit weekly reports, and maintain team collaboration",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-05T00:00:00.000Z",
+      "created_at": "2026-01-05T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-05",
+    "note": {
+      "id": "focus-2026-01-05",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Submit weekly report and conduct weekly work retrospective",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-05T00:00:00.000Z",
+      "created_at": "2026-01-05T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-06",
+    "note": {
+      "id": "focus-2026-01-06",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Grocery shopping and weekend deep cleaning",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-06T00:00:00.000Z",
+      "created_at": "2026-01-06T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-07",
+    "note": {
+      "id": "focus-2026-01-07",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Call parents and plan next week's work",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-07T00:00:00.000Z",
+      "created_at": "2026-01-07T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Life",
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-08",
+    "note": {
+      "id": "focus-2026-01-08",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Complete online course chapter 3 and research new tech framework",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-08T00:00:00.000Z",
+      "created_at": "2026-01-08T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-09",
+    "note": {
+      "id": "focus-2026-01-09",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Code review and complete online course chapter 3",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-09T00:00:00.000Z",
+      "created_at": "2026-01-09T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-10",
+    "note": {
+      "id": "focus-2026-01-10",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Fix online bug and attend yoga class",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-10T00:00:00.000Z",
+      "created_at": "2026-01-10T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-11",
+    "note": {
+      "id": "focus-2026-01-11",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Team weekly meeting and pay utility bills",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-11T00:00:00.000Z",
+      "created_at": "2026-01-11T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-12",
+    "note": {
+      "id": "weekly-focus-2026-01-12",
+      "user_id": null,
+      "title": "Weekly Focus",
+      "content": "Optimize system performance, complete client meetings, and advance learning goals",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-12T00:00:00.000Z",
+      "created_at": "2026-01-12T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-12",
+    "note": {
+      "id": "focus-2026-01-12",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Complete performance optimization plan and practice English speaking",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-12T00:00:00.000Z",
+      "created_at": "2026-01-12T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-13",
+    "note": {
+      "id": "focus-2026-01-13",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Meet with clients for cooperation discussion and go to bank for business",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-13T00:00:00.000Z",
+      "created_at": "2026-01-13T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-14",
+    "note": {
+      "id": "focus-2026-01-14",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Prepare monthly report materials and learn Rust language basics",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-14T00:00:00.000Z",
+      "created_at": "2026-01-14T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-15",
+    "note": {
+      "id": "focus-2026-01-15",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Prepare camping supplies for weekend and dinner with old classmates",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-15T00:00:00.000Z",
+      "created_at": "2026-01-15T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-16",
+    "note": {
+      "id": "focus-2026-01-16",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Write technical blog post",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-16T00:00:00.000Z",
+      "created_at": "2026-01-16T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-17",
+    "note": {
+      "id": "focus-2026-01-17",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Department quarterly summary meeting and car maintenance",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-17T00:00:00.000Z",
+      "created_at": "2026-01-17T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-18",
+    "note": {
+      "id": "focus-2026-01-18",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "API interface design review and read a new book",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-18T00:00:00.000Z",
+      "created_at": "2026-01-18T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-19",
+    "note": {
+      "id": "weekly-focus-2026-01-19",
+      "user_id": null,
+      "title": "Weekly Focus",
+      "content": "Release new version, complete interface integration, and balance work with family time",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-19T00:00:00.000Z",
+      "created_at": "2026-01-19T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-19",
+    "note": {
+      "id": "focus-2026-01-19",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Release new version and take child to amusement park",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-19T00:00:00.000Z",
+      "created_at": "2026-01-19T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-20",
+    "note": {
+      "id": "focus-2026-01-20",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Attend industry offline event and medical checkup appointment",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-20T00:00:00.000Z",
+      "created_at": "2026-01-20T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-21",
+    "note": {
+      "id": "focus-2026-01-21",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Complete test case writing and organize digital photo album",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-21T00:00:00.000Z",
+      "created_at": "2026-01-21T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-22",
+    "note": {
+      "id": "focus-2026-01-22",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Requirements review meeting and learn Docker containerization",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-22T00:00:00.000Z",
+      "created_at": "2026-01-22T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-23",
+    "note": {
+      "id": "focus-2026-01-23",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Complete interface integration and swim for 1 hour",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-23T00:00:00.000Z",
+      "created_at": "2026-01-23T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-24",
+    "note": {
+      "id": "focus-2026-01-24",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Handle legacy technical debt and buy birthday gift",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-24T00:00:00.000Z",
+      "created_at": "2026-01-24T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-25",
+    "note": {
+      "id": "focus-2026-01-25",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Complete automated testing and attend friend birthday party",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-25T00:00:00.000Z",
+      "created_at": "2026-01-25T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "weekly-focus-2026-01-26",
+    "note": {
+      "id": "weekly-focus-2026-01-26",
+      "user_id": null,
+      "title": "Weekly Focus",
+      "content": "Complete automated testing, prepare end-of-month reports, and plan next iteration",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "weeklyFocus",
+      "focus_at": "2026-01-26T00:00:00.000Z",
+      "created_at": "2026-01-26T07:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work"
+    ]
+  },
+  {
+    "id": "focus-2026-01-26",
+    "note": {
+      "id": "focus-2026-01-26",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Cook trying new recipes and organize bookshelf",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-26T00:00:00.000Z",
+      "created_at": "2026-01-26T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-27",
+    "note": {
+      "id": "focus-2026-01-27",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Attend tech salon",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-27T00:00:00.000Z",
+      "created_at": "2026-01-27T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-28",
+    "note": {
+      "id": "focus-2026-01-28",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Prepare end-of-month reports and video call with family",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-28T00:00:00.000Z",
+      "created_at": "2026-01-28T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  },
+  {
+    "id": "focus-2026-01-29",
+    "note": {
+      "id": "focus-2026-01-29",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Monthly work summary and plan next month learning schedule",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-29T00:00:00.000Z",
+      "created_at": "2026-01-29T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Study"
+    ]
+  },
+  {
+    "id": "focus-2026-01-30",
+    "note": {
+      "id": "focus-2026-01-30",
+      "user_id": null,
+      "title": "Daily Focus",
+      "content": "Plan next iteration tasks and end-of-month relaxation",
+      "images": "[]",
+      "cover_image": "",
+      "task_id": null,
+      "type": "dailyFocus",
+      "focus_at": "2026-01-30T00:00:00.000Z",
+      "created_at": "2026-01-30T08:00:00.000Z",
+      "updated_at": null,
+      "deleted_at": null
+    },
+    "tags": [
+      "Work",
+      "Life"
+    ]
+  }
+]
+

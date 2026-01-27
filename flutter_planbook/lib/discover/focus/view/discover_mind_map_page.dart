@@ -28,13 +28,22 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
   double _maxWidth = 0;
   double _maxHeight = 0;
   TransformationController? _controller;
-  late AnimationController? _animationController;
+  late AnimationController _animationController;
 
   double get bottomPadding =>
       kBottomNavigationBarHeight + MediaQuery.of(context).padding.bottom;
   double get scale => widget.isExpanded ? 1.0 : 0.8;
 
   StreamSubscription<RootDiscoverState>? _streamSubscription;
+
+  bool _isAnimating = false;
+  set isAnimating(bool value) {
+    if (_isAnimating == value) return;
+    _isAnimating = value;
+    setState(() {});
+  }
+
+  bool get isAnimating => _isAnimating;
 
   @override
   void initState() {
@@ -50,7 +59,7 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
     _streamSubscription?.cancel();
     _streamSubscription = null;
 
-    _animationController?.dispose();
+    _animationController.dispose();
     _controller?.dispose();
     super.dispose();
   }
@@ -116,6 +125,9 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
         _buildAllNodes(context, center, child),
       );
     }
+
+    if (!node.isVisible) return widgets;
+
     final offset = node.getOffset(isExpanded: widget.isExpanded);
     final nodeCenter = center + offset;
     return widgets..add(
@@ -125,52 +137,57 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
         curve: Curves.easeInOut,
         left: nodeCenter.dx - node.size / 2,
         top: nodeCenter.dy - node.size / 2,
-        child: _CircleNode(
-          key: ValueKey(node.key),
-          node: node,
-          isExpanded: widget.isExpanded,
-          onTap: (node) {
-            if (node.isSelected) {
-              switch (node.type) {
-                case NoteType.yearlyFocus ||
-                    NoteType.yearlySummary ||
-                    NoteType.monthlyFocus ||
-                    NoteType.monthlySummary:
-                  _animateToNode(widget.mindMap, center);
-                case NoteType.weeklyFocus || NoteType.weeklySummary:
-                  final startOfMonth = node.date.startOf(Unit.month);
-                  final monthlySelectedNode = widget.mindMap.children
-                      .firstWhere(
-                        (element) => element.date.isSame(
-                          startOfMonth,
-                          unit: Unit.month,
-                        ),
-                      );
-                  _animateToNode(monthlySelectedNode, center);
+        child: AnimatedOpacity(
+          opacity: node.isVisible ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+          child: _CircleNode(
+            key: ValueKey(node.key),
+            node: node,
+            isExpanded: widget.isExpanded,
+            onTap: (node) {
+              if (node.isSelected) {
+                switch (node.type) {
+                  case NoteType.yearlyFocus ||
+                      NoteType.yearlySummary ||
+                      NoteType.monthlyFocus ||
+                      NoteType.monthlySummary:
+                    _animateToNode(widget.mindMap, center);
+                  case NoteType.weeklyFocus || NoteType.weeklySummary:
+                    final startOfMonth = node.date.startOf(Unit.month);
+                    final monthlySelectedNode = widget.mindMap.children
+                        .firstWhere(
+                          (element) => element.date.isSame(
+                            startOfMonth,
+                            unit: Unit.month,
+                          ),
+                        );
+                    _animateToNode(monthlySelectedNode, center);
 
-                case NoteType.dailyFocus || NoteType.dailySummary:
-                  final startOfWeek = node.date.startOf(Unit.week);
-                  final startOfMonth = node.date.startOf(Unit.month);
-                  final selectedNode = widget.mindMap.children.firstWhere(
-                    (element) => element.date.isSame(
-                      startOfMonth,
-                      unit: Unit.month,
-                    ),
-                  );
-                  final weeklySelectedNode = selectedNode.children.firstWhere(
-                    (element) =>
-                        element.date.isSame(startOfWeek, unit: Unit.week),
-                  );
-                  _animateToNode(weeklySelectedNode, center);
+                  case NoteType.dailyFocus || NoteType.dailySummary:
+                    final startOfWeek = node.date.startOf(Unit.week);
+                    final startOfMonth = node.date.startOf(Unit.month);
+                    final selectedNode = widget.mindMap.children.firstWhere(
+                      (element) => element.date.isSame(
+                        startOfMonth,
+                        unit: Unit.month,
+                      ),
+                    );
+                    final weeklySelectedNode = selectedNode.children.firstWhere(
+                      (element) =>
+                          element.date.isSame(startOfWeek, unit: Unit.week),
+                    );
+                    _animateToNode(weeklySelectedNode, center);
 
-                case _:
-                  break;
+                  case _:
+                    break;
+                }
+              } else {
+                _animateToNode(node.copyWith(isSelected: true), center);
               }
-            } else {
-              _animateToNode(node.copyWith(isSelected: true), center);
-            }
-            context.read<T>().add(DiscoverFocusNodeSelected(node: node));
-          },
+              context.read<T>().add(DiscoverFocusNodeSelected(node: node));
+            },
+          ),
         ),
       ),
     );
@@ -272,7 +289,7 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
   }
 
   Future<void> _animateToNode(NoteMindMapEntity node, Offset center) async {
-    if (_controller == null || _animationController == null) return;
+    if (_controller == null) return;
     // 计算节点中心点，先触发点击事件，再修改选中状态
     final nodeCenter =
         center +
@@ -306,7 +323,7 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
           end: targetMatrix,
         ).animate(
           CurvedAnimation(
-            parent: _animationController!,
+            parent: _animationController,
             curve: Curves.easeInOut,
           ),
         );
@@ -317,7 +334,7 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
       }
     });
 
-    await _animationController!.forward(from: 0);
+    await _animationController.forward(from: 0);
   }
 }
 

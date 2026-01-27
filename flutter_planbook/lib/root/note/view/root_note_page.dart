@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/gallery/bloc/note_gallery_bloc.dart';
 import 'package:flutter_planbook/note/timeline/bloc/note_timeline_bloc.dart';
 import 'package:flutter_planbook/root/note/bloc/root_note_bloc.dart';
@@ -12,6 +14,8 @@ import 'package:flutter_planbook/root/note/view/root_note_drawer.dart';
 import 'package:flutter_planbook/root/note/view/root_note_gallery_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:planbook_core/data/page_status.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 @RoutePage()
 class RootNotePage extends StatelessWidget {
@@ -22,7 +26,9 @@ class RootNotePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => RootNoteBloc(),
+          create: (context) => RootNoteBloc(
+            notesRepository: context.read(),
+          ),
         ),
         BlocProvider(
           create: (context) => NoteTimelineBloc(),
@@ -33,15 +39,25 @@ class RootNotePage extends StatelessWidget {
           )..add(NoteGalleryRequested(date: Jiffy.now())),
         ),
       ],
-      child: AutoTabsRouter(
-        routes: [
-          NoteTimelineRoute(),
-          const NoteWrittenRoute(),
-          const NoteTaskRoute(),
-          const NoteGalleryRoute(),
-          const NoteTagRoute(),
-        ],
-        builder: (context, child) => _RootNotePage(child: child),
+      child: BlocListener<RootNoteBloc, RootNoteState>(
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.status == PageStatus.loading) {
+            EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+          } else if (EasyLoading.isShow) {
+            EasyLoading.dismiss();
+          }
+        },
+        child: AutoTabsRouter(
+          routes: [
+            NoteTimelineRoute(),
+            const NoteWrittenRoute(),
+            const NoteTaskRoute(),
+            const NoteGalleryRoute(),
+            const NoteTagRoute(),
+          ],
+          builder: (context, child) => _RootNotePage(child: child),
+        ),
       ),
     );
   }
@@ -125,6 +141,31 @@ class _RootNotePage extends StatelessWidget {
             },
           ),
         ),
+        actions: [
+          PullDownButton(
+            itemBuilder: (context) {
+              final theme = Theme.of(context);
+              return [
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.arrowsRotate,
+                  iconColor: theme.colorScheme.primary,
+                  title: context.l10n.refresh,
+                  onTap: () {
+                    context.read<RootNoteBloc>().add(
+                      const RootNoteRefreshRequested(),
+                    );
+                  },
+                ),
+              ];
+            },
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              padding: EdgeInsets.zero,
+              minimumSize: const Size.square(kMinInteractiveDimension),
+              onPressed: showMenu,
+              child: const Icon(FontAwesomeIcons.ellipsis),
+            ),
+          ),
+        ],
       ),
       body: child,
     );

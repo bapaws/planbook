@@ -21,7 +21,9 @@ class SignHomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SignHomeCubit()..onInitialized(),
+          create: (context) => SignHomeCubit(
+            usersRepository: context.read(),
+          )..onInitialized(),
         ),
         BlocProvider(
           create: (context) => SignInCubit(

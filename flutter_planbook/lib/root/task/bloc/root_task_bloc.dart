@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -34,6 +35,8 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       transformer: concurrent(),
     );
     on<RootTaskTabFocusNoteTypeChanged>(_onTabFocusNoteTypeChanged);
+
+    on<RootTaskRefreshRequested>(_onRefreshRequested);
   }
 
   final TasksRepository _tasksRepository;
@@ -181,5 +184,21 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
         },
       ),
     );
+  }
+
+  Future<void> _onRefreshRequested(
+    RootTaskRefreshRequested event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    try {
+      await _tasksRepository.syncTasks(force: true);
+      emit(state.copyWith(status: PageStatus.success));
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error syncing tasks: $e');
+      }
+      emit(state.copyWith(status: PageStatus.failure));
+    }
   }
 }

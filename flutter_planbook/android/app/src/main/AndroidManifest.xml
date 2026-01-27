@@ -4,9 +4,8 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Permissions for saving images to gallery -->
-    <!-- For Android 13 (API 33) and above -->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!-- For Android 12 (API 31) and below -->
+    <!-- Note: For Android 13+ (API 33+), we use Photo Picker for selecting images (no READ_MEDIA_IMAGES needed) -->
+    <!-- For Android 12 (API 31) and below, we need storage permissions for compatibility -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:ignore="ScopedStorage" />
     

@@ -205,7 +205,7 @@ class TasksRepository {
     return hasDetached;
   }
 
-  Future<void> _syncTasks({
+  Future<void> syncTasks({
     bool force = false,
   }) async {
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
@@ -257,7 +257,7 @@ class TasksRepository {
     TaskPriority? priority,
     bool? isCompleted,
   }) async* {
-    unawaited(_syncTasks());
+    unawaited(syncTasks());
 
     yield* switch (mode) {
       TaskListMode.inbox => _dbTaskInboxApi.getInboxTaskCount(
@@ -489,42 +489,16 @@ class TasksRepository {
       var task = Task.fromJson(taskMap).copyWith(
         id: kDebugMode ? null : uuid.v4(),
       );
-
-      /// Parse relative date from dueAt field
-      /// Supports: "today", "tomorrow", "day+N", "day-N",
-      /// and weekdays: "mon", "tue", "wed", "thu", "fri", "sat", "sun"
-      if (taskMap['dueAt'] != null) {
-        final dueAtStr = taskMap['dueAt'] as String;
-        var date = Jiffy.now();
-
-        if (dueAtStr == 'tomorrow') {
-          date = date.add(days: 1);
-        } else if (dueAtStr.startsWith('day+')) {
-          final days = int.tryParse(dueAtStr.substring(4)) ?? 0;
-          date = date.add(days: days);
-        } else if (dueAtStr.startsWith('day-')) {
-          final days = int.tryParse(dueAtStr.substring(4)) ?? 0;
-          date = date.subtract(days: days);
-        } else {
-          // Parse weekday: "mon", "tue", "wed", "thu", "fri", "sat", "sun"
-          final weekdayMap = {
-            'mon': 1,
-            'tue': 2,
-            'wed': 3,
-            'thu': 4,
-            'fri': 5,
-            'sat': 6,
-            'sun': 7,
-          };
-          final targetWeekday = weekdayMap[dueAtStr.toLowerCase()];
-          if (targetWeekday != null) {
-            // Get start of this week (Monday) and add days
-            date = date.startOf(Unit.week).add(days: targetWeekday - 1);
-          }
-        }
-
-        task = task.copyWith(dueAt: Value(date));
+      final startOfMonth = Jiffy.now().startOf(Unit.month);
+      final diff = startOfMonth
+          .diff(Jiffy.parseFromList([2026, 1]), unit: Unit.day)
+          .toInt();
+      if (task.dueAt != null) {
+        task = task.copyWith(dueAt: Value(task.dueAt!.add(days: diff)));
+      } else if (taskMap['dueAt'] == 'today') {
+        task = task.copyWith(dueAt: Value(Jiffy.now().startOf(Unit.day)));
       }
+
       final tagNames = List<String>.from(map['tags'] as List<dynamic>);
       final tags = await Future.wait(
         tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),

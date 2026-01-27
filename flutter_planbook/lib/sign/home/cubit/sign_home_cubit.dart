@@ -1,13 +1,17 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:planbook_api/supabase/app_supabase.dart';
+import 'package:planbook_repository/users/users_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 part 'sign_home_state.dart';
 
 class SignHomeCubit extends Cubit<SignHomeState> {
-  SignHomeCubit() : super(const SignHomeState());
+  SignHomeCubit({required UsersRepository usersRepository})
+    : _usersRepository = usersRepository,
+      super(const SignHomeState());
+
+  final UsersRepository _usersRepository;
 
   void onInitialized() {
     FlutterNativeSplash.remove();
@@ -46,14 +50,14 @@ class SignHomeCubit extends Cubit<SignHomeState> {
   }
 
   Future<void> signInWithApple() async {
-    final authResponse = await AppSupabase.instance.signInWithApple();
+    final authResponse = await _usersRepository.signInWithApple();
     if (authResponse != null) {
       emit(state.copyWith(authResponse: authResponse));
     }
   }
 
   Future<void> signInWithGoogle() async {
-    final authResponse = await AppSupabase.instance.signInWithGoogle();
+    final authResponse = await _usersRepository.signInWithGoogle();
     if (authResponse != null) {
       emit(state.copyWith(authResponse: authResponse));
     }
