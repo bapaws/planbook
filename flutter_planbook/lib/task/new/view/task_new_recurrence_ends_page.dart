@@ -82,6 +82,7 @@ class _TaskNewRecurrenceEndAtPageState
             leading: const NavigationBarBackButton(),
             actions: [
               CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 onPressed: () {
                   widget.onRecurrenceEndChanged(null);
                   context.pop();

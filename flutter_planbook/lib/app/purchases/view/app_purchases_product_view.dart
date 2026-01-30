@@ -1,21 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:planbook_api/planbook_api.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 class AppPurchasesProductView extends StatelessWidget {
   const AppPurchasesProductView({
-    required this.package,
-    this.originalPackage,
+    required this.product,
+    this.originalProduct,
     this.onPressed,
     this.isSelected = false,
     this.itemWidth = 100,
     super.key,
   });
 
-  final Package package;
-  final Package? originalPackage;
+  final StoreProduct product;
+  final StoreProduct? originalProduct;
   final VoidCallback? onPressed;
   final bool isSelected;
   final double itemWidth;
@@ -50,14 +51,14 @@ class AppPurchasesProductView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  package.storeProduct.title,
+                  product.title,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.outline,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  package.storeProduct.priceString,
+                  product.priceString,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: isSelected
@@ -65,10 +66,10 @@ class AppPurchasesProductView extends StatelessWidget {
                         : theme.colorScheme.primary,
                   ),
                 ),
-                if (originalPackage != null) ...[
+                if (originalProduct != null) ...[
                   const SizedBox(height: 4),
                   Text(
-                    originalPackage!.storeProduct.priceString,
+                    originalProduct!.priceString,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.outline,
                       decoration: TextDecoration.lineThrough,
@@ -78,28 +79,32 @@ class AppPurchasesProductView extends StatelessWidget {
               ],
             ),
           ),
-          if (package.isAnnual())
-            PositionedDirectional(
-              top: -10,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                alignment: AlignmentDirectional.center,
-                child: Text(
-                  context.l10n.savePercent(50),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+          BlocSelector<AppPurchasesBloc, AppPurchasesState, String?>(
+            selector: (state) => state.savePercentId,
+            builder: (context, savePercentId) => savePercentId == product.id
+                ? PositionedDirectional(
+                    top: -10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      alignment: AlignmentDirectional.center,
+                      child: Text(
+                        context.l10n.savePercent(50),
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  )
+                : const SizedBox.shrink(),
+          ),
         ],
       ),
     );

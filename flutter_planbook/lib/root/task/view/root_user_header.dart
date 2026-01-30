@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
+import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -79,13 +81,33 @@ class RootUserHeader extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (user != null)
-                            Text(
-                              context.l10n.joinedDaysAgo(user.joinDays),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
+
+                          Row(
+                            children: [
+                              BlocSelector<
+                                AppPurchasesBloc,
+                                AppPurchasesState,
+                                bool
+                              >(
+                                selector: (state) => state.isPremium,
+                                builder: (context, isPremium) {
+                                  return AppProButton(
+                                    isPremium: isPremium,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
+                              const SizedBox(width: 4),
+                              Text(
+                                context.l10n.joinedDaysAgo(user?.joinDays ?? 0),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),

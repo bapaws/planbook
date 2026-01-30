@@ -108,7 +108,6 @@ Future<Widget> _initApp() async {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(
-          lazy: false,
           create: (context) =>
               AppPurchasesBloc(
                   tasksRepository: context.read(),
@@ -116,9 +115,8 @@ Future<Widget> _initApp() async {
                   tagsRepository: context.read(),
                   usersRepository: context.read(),
                 )
-                ..add(const AppPurchasesSubscriptionRequested())
-                ..add(const AppPurchasesUserRequested())
-                ..add(const AppPurchasesPackageRequested()),
+                ..add(const AppPurchasesRequested())
+                ..add(const AppPurchasesUserRequested()),
         ),
         BlocProvider(
           create: (context) =>

@@ -2,6 +2,7 @@ import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_core/planbook_core.dart';
 
 Future<bool?> showColorPicker(
@@ -25,14 +26,15 @@ Future<bool?> showColorPicker(
           children: [
             AppBar(
               forceMaterialTransparency: true,
-              title: const Text('Select color'),
+              title: Text(context.l10n.selectColor),
               leading: const NavigationBarBackButton(),
               actions: [
                 CupertinoButton(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Save'),
+                  child: Text(context.l10n.save),
                 ),
               ],
             ),

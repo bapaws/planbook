@@ -1,12 +1,16 @@
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/purchases/view/app_purchases_product_view.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class AppPurchasesFooter extends StatelessWidget {
   const AppPurchasesFooter({
@@ -18,11 +22,8 @@ class AppPurchasesFooter extends StatelessWidget {
     final theme = Theme.of(context);
     return BlocBuilder<AppPurchasesBloc, AppPurchasesState>(
       builder: (context, state) {
-        final availablePackages = state.availablePackages;
-        if (availablePackages.isEmpty) {
-          context.read<AppPurchasesBloc>().add(
-            const AppPurchasesPackageRequested(),
-          );
+        final storeProducts = state.storeProducts;
+        if (storeProducts.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -47,30 +48,25 @@ class AppPurchasesFooter extends StatelessWidget {
             top: false,
             child: Column(
               children: [
-                BlocSelector<AppPurchasesBloc, AppPurchasesState, Package?>(
-                  selector: (state) => state.selectedPackage,
-                  builder: (context, selectedPackage) {
+                BlocSelector<
+                  AppPurchasesBloc,
+                  AppPurchasesState,
+                  StoreProduct?
+                >(
+                  selector: (state) => state.selectedStoreProduct,
+                  builder: (context, selectedStoreProduct) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(width: spacing),
-                        for (final package in availablePackages) ...[
+                        for (final product in storeProducts) ...[
                           AppPurchasesProductView(
-                            package: package,
-                            originalPackage: context
-                                .read<AppPurchasesBloc>()
-                                .state
-                                .originalPackages
-                                .firstWhereOrNull(
-                                  (e) => e.storeProduct.identifier.startsWith(
-                                    package.storeProduct.identifier,
-                                  ),
-                                ),
+                            product: product,
                             itemWidth: productItemWidth,
-                            isSelected: selectedPackage == package,
+                            isSelected: selectedStoreProduct == product,
                             onPressed: () {
                               context.read<AppPurchasesBloc>().add(
-                                AppPurchasesPackageSelected(package),
+                                AppPurchasesProductSelected(product),
                               );
                             },
                           ),
@@ -83,10 +79,23 @@ class AppPurchasesFooter extends StatelessWidget {
                 const SizedBox(height: 16),
                 CupertinoButton(
                   padding: EdgeInsets.zero,
-                  onPressed: () {
-                    context.read<AppPurchasesBloc>().add(
-                      const AppPurchasesPurchased(),
-                    );
+                  onPressed: () async {
+                    if (AppPurchases.instance.isAndroidChina) {
+                      final isAgreed = await _showAgreementDialog(context);
+                      if ((isAgreed ?? false) && context.mounted) {
+                        context.read<AppPurchasesBloc>()
+                          ..add(
+                            const AppPurchasesAgreedToConditions(
+                              isAgreed: true,
+                            ),
+                          )
+                          ..add(const AppPurchasesPurchased());
+                      }
+                    } else {
+                      context.read<AppPurchasesBloc>().add(
+                        const AppPurchasesPurchased(),
+                      );
+                    }
                   },
                   minimumSize: Size.zero,
                   child: Container(
@@ -114,38 +123,120 @@ class AppPurchasesFooter extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (state.originalPackages.isNotEmpty)
+                if (AppPurchases.instance.isAndroidChina)
                   CupertinoButton(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
                     ),
-                    onPressed: () {
+                    onPressed: () async {
+                      final isAgreed = context
+                          .read<AppPurchasesBloc>()
+                          .state
+                          .isAgreedToConditions;
                       context.read<AppPurchasesBloc>().add(
-                        const AppPurchasesSupportUsFullPrice(),
+                        AppPurchasesAgreedToConditions(isAgreed: !isAgreed),
                       );
                     },
                     minimumSize: Size.zero,
-                    child: SizedBox(
-                      width: productItemWidth * 3 + spacing * 2,
-                      child: Row(
-                        children: [
-                          const Spacer(),
-                          Text(
-                            context.l10n.supportUsFullPrice,
-                            style: theme.textTheme.labelSmall!.copyWith(
-                              color: theme.colorScheme.primary,
-                            ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
+                          selector: (state) => state.isAgreedToConditions,
+                          builder: (context, isAgreedToConditions) => Icon(
+                            isAgreedToConditions
+                                ? FontAwesomeIcons.circleCheck
+                                : FontAwesomeIcons.circle,
+                            size: 16,
+                            color: isAgreedToConditions
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurfaceVariant,
                           ),
-                          const Spacer(),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 4),
+                        _buildAgreementText(context),
+                      ],
                     ),
                   ),
+                // if (state.storeProducts.isNotEmpty)
+                //   CupertinoButton(
+                //     padding: const EdgeInsets.symmetric(
+                //       vertical: 8,
+                //     ),
+                //     onPressed: () {
+                //       context.read<AppPurchasesBloc>().add(
+                //         const AppPurchasesSupportUsFullPrice(),
+                //       );
+                //     },
+                //     minimumSize: Size.zero,
+                //     child: SizedBox(
+                //       width: productItemWidth * 3 + spacing * 2,
+                //       child: Row(
+                //         children: [
+                //           const Spacer(),
+                //           Text(
+                //             context.l10n.supportUsFullPrice,
+                //             style: theme.textTheme.labelSmall!.copyWith(
+                //               color: theme.colorScheme.primary,
+                //             ),
+                //           ),
+                //           const Spacer(),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Future<bool?> _showAgreementDialog(BuildContext context) async {
+    return showCupertinoDialog<bool>(
+      context: context,
+      builder: (_) => CupertinoAlertDialog(
+        title: _buildAgreementText(context),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+            child: Text(context.l10n.cancel),
+          ),
+          CupertinoDialogAction(
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+            child: Text(context.l10n.confirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgreementText(BuildContext context) {
+    final theme = Theme.of(context);
+    return RichText(
+      text: TextSpan(
+        style: theme.textTheme.bodyMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+        children: [
+          const TextSpan(text: '开通前请阅读'),
+          TextSpan(
+            text: '《会员协议》',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+            recognizer: TapGestureRecognizer()
+              ..onTap = () => launchUrlString(
+                'https://uxsyr9xrl46.feishu.cn/wiki/Y8qhw3DLriHC1CkeT2pcUvbunye',
+              ),
+          ),
+        ],
+      ),
     );
   }
 }

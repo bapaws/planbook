@@ -3,8 +3,10 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/purchases/store_product.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:purchases_flutter/models/package_wrapper.dart';
 
 part 'app_purchases_event.dart';
 part 'app_purchases_state.dart';
@@ -20,15 +22,15 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
        _tagsRepository = tagsRepository,
        _usersRepository = usersRepository,
        super(const AppPurchasesState()) {
-    on<AppPurchasesSubscriptionRequested>(_onSubscriptionRequested);
+    on<AppPurchasesRequested>(_onRequested);
     on<AppPurchasesUserRequested>(_onUserRequested);
-    on<AppPurchasesPackageRequested>(_onPackageRequested);
     on<AppPurchasesRestored>(_onRestored);
     on<AppPurchasesLogin>(_onLogin);
 
-    on<AppPurchasesPackageSelected>(_onPackageSelected);
+    on<AppPurchasesProductSelected>(_onProductSelected);
     on<AppPurchasesPurchased>(_onPurchased);
     on<AppPurchasesSupportUsFullPrice>(_onSupportUsFullPrice);
+    on<AppPurchasesAgreedToConditions>(_onAgreedToConditions);
   }
 
   final TasksRepository _tasksRepository;
@@ -58,29 +60,35 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     return count >= AppProFeatures.note.basicTotal;
   }
 
-  Future<void> _onSubscriptionRequested(
-    AppPurchasesSubscriptionRequested event,
+  Future<void> _onRequested(
+    AppPurchasesRequested event,
     Emitter<AppPurchasesState> emit,
   ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    final storeProducts = (await AppPurchases.instance.getStoreProducts())
+        .sorted((a, b) => a.price.compareTo(b.price));
     // if (kDebugMode) {
     //   emit(
     //     state.copyWith(
     //       activeProductIdentifier: 'lifetime',
     //     ),
     //   );
+    //   return;
     // }
-    await emit.forEach(
-      AppPurchases.instance.getCustomerInfo(),
-      onData: (info) {
-        // if (kDebugMode) {
-        //   return state.copyWith(
-        //     activeProductIdentifier: 'lifetime',
-        //   );
-        // }
-        return state.copyWith(
-          activeProductIdentifier: info?.activeProductIdentifier,
-        );
-      },
+
+    final selectedStoreProduct = storeProducts.isEmpty
+        ? null
+        : storeProducts[storeProducts.length ~/ 2];
+    final activeProductIdentifier = await AppPurchases.instance
+        .getActiveIdentifier();
+    emit(
+      state.copyWith(
+        status: PageStatus.success,
+        activeProductId: activeProductIdentifier,
+        storeProducts: storeProducts,
+        selectedStoreProduct: selectedStoreProduct,
+        savePercentId: selectedStoreProduct?.id,
+      ),
     );
   }
 
@@ -101,35 +109,6 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     );
   }
 
-  Future<void> _onPackageRequested(
-    AppPurchasesPackageRequested event,
-    Emitter<AppPurchasesState> emit,
-  ) async {
-    if (state.availablePackages.isNotEmpty) return;
-
-    final availablePackages = await AppPurchases.instance
-        .getAvailablePackages();
-
-    final activeProductIdentifier = await AppPurchases.instance
-        .getActiveProductIdentifier();
-    final activePackage = availablePackages?.firstWhereOrNull(
-      (e) => e.storeProduct.identifier == activeProductIdentifier,
-    );
-
-    final originalPackages = await AppPurchases.instance.getOriginalPackages();
-
-    emit(
-      state.copyWith(
-        activePackage: activePackage,
-        availablePackages: availablePackages,
-        selectedPackage: availablePackages?.firstWhereOrNull(
-          (e) => e.isAnnual(),
-        ),
-        originalPackages: originalPackages,
-      ),
-    );
-  }
-
   Future<void> _onLogin(
     AppPurchasesLogin event,
     Emitter<AppPurchasesState> emit,
@@ -141,10 +120,10 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     final appUserId = await AppPurchases.instance.getAppUserID();
     if (appUserId == id) return;
 
-    final info = await AppPurchases.instance.logIn(id);
+    final activeProductIdentifier = await AppPurchases.instance.logIn(id);
     emit(
       state.copyWith(
-        activeProductIdentifier: info.customerInfo.activeProductIdentifier,
+        activeProductId: activeProductIdentifier,
       ),
     );
   }
@@ -153,21 +132,23 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesRestored event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    final info = await AppPurchases.instance.restore();
+    emit(state.copyWith(status: PageStatus.loading));
+    final activeProductIdentifier = await AppPurchases.instance.restore();
     emit(
       state.copyWith(
-        activeProductIdentifier: info.activeProductIdentifier,
+        status: PageStatus.success,
+        activeProductId: activeProductIdentifier,
       ),
     );
   }
 
-  Future<void> _onPackageSelected(
-    AppPurchasesPackageSelected event,
+  Future<void> _onProductSelected(
+    AppPurchasesProductSelected event,
     Emitter<AppPurchasesState> emit,
   ) async {
     emit(
       state.copyWith(
-        selectedPackage: event.package,
+        selectedStoreProduct: event.product,
       ),
     );
   }
@@ -180,20 +161,21 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesPurchased event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    final package =
-        state.selectedPackage ??
-        state.availablePackages.firstWhereOrNull(
-          (e) => e.isAnnual(),
-        ) ??
-        state.availablePackages.first;
+    emit(state.copyWith(status: PageStatus.loading));
+    final storeProduct =
+        state.selectedStoreProduct ??
+        state.storeProducts.firstWhereOrNull((e) => e.isAnnual) ??
+        state.storeProducts.first;
 
-    final info = await AppPurchases.instance.purchasePackage(
-      package,
+    final activeProductIdentifier = await AppPurchases.instance.purchase(
+      storeProduct,
     );
     emit(
       state.copyWith(
-        activeProductIdentifier: info.activeProductIdentifier,
-        activePackage: package,
+        status: activeProductIdentifier == null
+            ? PageStatus.failure
+            : PageStatus.success,
+        activeProductId: activeProductIdentifier,
       ),
     );
   }
@@ -202,26 +184,24 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesSupportUsFullPrice event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    final selectedPackage = state.selectedPackage;
-    if (selectedPackage == null) return;
+    final selectedStoreProduct = state.selectedStoreProduct;
+    if (selectedStoreProduct == null) return;
 
-    final package =
-        state.originalPackages.firstWhereOrNull(
-          (e) => e.storeProduct.identifier.startsWith(
-            selectedPackage.storeProduct.identifier,
-          ),
-        ) ??
-        selectedPackage;
-
-    final info = await AppPurchases.instance.purchasePackage(
-      package,
+    final activeProductIdentifier = await AppPurchases.instance.purchase(
+      selectedStoreProduct,
     );
     emit(
       state.copyWith(
-        activeProductIdentifier: info.activeProductIdentifier,
-        activePackage: package,
+        activeProductId: activeProductIdentifier,
       ),
     );
+  }
+
+  Future<void> _onAgreedToConditions(
+    AppPurchasesAgreedToConditions event,
+    Emitter<AppPurchasesState> emit,
+  ) async {
+    emit(state.copyWith(isAgreedToConditions: event.isAgreed));
   }
 }
 

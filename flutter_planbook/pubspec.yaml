@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 2.4.2+92
+version: 2.4.3+93
 publish_to: none
 
 environment:
@@ -84,6 +84,7 @@ dependencies:
   tab_indicator_styler: ^2.0.0
   table_calendar: ^3.2.0
   timezone: ^0.10.1
+  tobias: ^5.3.2
   upgrader: ^12.3.0
   url_launcher: ^6.3.2
   uuid: ^4.5.1
@@ -116,3 +117,26 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   image_path: "assets/logos/logo.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
+
+flutter_native_splash:
+  web: false
+  color: "#FAFAFA"
+  color_dark: "#181818"
+  branding: assets/logos/logo@256.png
+  # branding_dark: assets/dart_dark.png
+  branding_mode: bottom
+  branding_bottom_padding: 32
+  android_12:
+    # background color
+    color: "#FAFAFA"
+    color_dark: "#181818"
+    branding: assets/logos/logo@256.png
+    # branding_dark: assets/dart_dark.png
+    branding_mode: bottom
+    branding_bottom_padding: 32
+
+tobias:
+  url_scheme: planbook.bapaws
+  ios:
+    ignore_security: true
+    universal_link: https://bapaws.github.io

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
-import 'package:planbook_api/supabase/app_purchases.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ActivityPlatform {

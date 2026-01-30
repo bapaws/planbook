@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
@@ -28,6 +29,9 @@ class RootHomePage extends StatelessWidget {
             /// Trigger app launched to create default tags and sample tasks
             context.read<AppBloc>().add(AppLaunched(l10n: l10n));
             FlutterNativeSplash.remove();
+
+            /// Trigger app purchases requested to get store products
+            context.read<AppPurchasesBloc>();
 
             return RootHomeBloc(
               tagsRepository: context.read(),

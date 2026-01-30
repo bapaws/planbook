@@ -292,11 +292,11 @@ class UsersRepository {
     });
   }
 
-  Future<UserProfileEntity?> getUserProfile() async {
+  Future<UserProfileEntity?> getUserProfile({bool force = false}) async {
     if (user == null) return null;
 
     final cache = await _getUserProfileFromCache();
-    if (cache == null) {
+    if (cache == null || force) {
       final response = await _getUserProfileFromSupabase();
       if (response != null) {
         _onUserProfileChangeController.add(response);

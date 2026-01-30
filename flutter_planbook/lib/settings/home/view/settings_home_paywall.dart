@@ -1,11 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:flutter_planbook/settings/home/view/settings_home_upgrade_button.dart';
 
 class SettingsPaywall extends StatelessWidget {
   const SettingsPaywall({
@@ -25,7 +21,7 @@ class SettingsPaywall extends StatelessWidget {
           horizontal: 16,
         ),
         padding: const EdgeInsets.symmetric(
-          vertical: 24,
+          vertical: 16,
           horizontal: 16,
         ),
         decoration: BoxDecoration(
@@ -60,52 +56,15 @@ class SettingsPaywall extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (context.read<AppPurchasesBloc>().state.isLifetime) {
-                  return;
-                }
-                context.router.push(const AppPurchasesRoute());
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(32),
-                  border: Border.all(
-                    color: theme.colorScheme.outline,
-                  ),
-                ),
-                child: Shimmer(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Colors.red,
-                      Colors.blue,
-                      Colors.red,
-                    ],
-                  ),
-                  child:
-                      BlocSelector<
-                        AppPurchasesBloc,
-                        AppPurchasesState,
-                        Package?
-                      >(
-                        selector: (state) => state.activePackage,
-                        builder: (context, activePackage) {
-                          return Text(
-                            activePackage?.storeProduct.title ?? l10n.upgrade,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                          );
-                        },
-                      ),
+            Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(32),
+                border: Border.all(
+                  color: theme.colorScheme.outline,
                 ),
               ),
+              child: const SettingsHomeUpgradeButton(),
             ),
           ],
         ),

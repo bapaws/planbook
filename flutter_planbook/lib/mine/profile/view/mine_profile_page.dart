@@ -55,6 +55,7 @@ class _MineProfilePage extends StatelessWidget {
         actions: [
           PullDownButton(
             buttonBuilder: (context, show) => CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               onPressed: show,
               child: const Icon(FontAwesomeIcons.ellipsis),
             ),

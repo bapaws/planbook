@@ -7,16 +7,12 @@ sealed class AppPurchasesEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class AppPurchasesSubscriptionRequested extends AppPurchasesEvent {
-  const AppPurchasesSubscriptionRequested();
+class AppPurchasesRequested extends AppPurchasesEvent {
+  const AppPurchasesRequested();
 }
 
 class AppPurchasesUserRequested extends AppPurchasesEvent {
   const AppPurchasesUserRequested();
-}
-
-class AppPurchasesPackageRequested extends AppPurchasesEvent {
-  const AppPurchasesPackageRequested();
 }
 
 class AppPurchasesRestored extends AppPurchasesEvent {
@@ -29,10 +25,10 @@ class AppPurchasesLogin extends AppPurchasesEvent {
   final String userId;
 }
 
-class AppPurchasesPackageSelected extends AppPurchasesEvent {
-  const AppPurchasesPackageSelected(this.package);
+class AppPurchasesProductSelected extends AppPurchasesEvent {
+  const AppPurchasesProductSelected(this.product);
 
-  final Package package;
+  final StoreProduct product;
 }
 
 class AppPurchasesPurchased extends AppPurchasesEvent {
@@ -41,4 +37,13 @@ class AppPurchasesPurchased extends AppPurchasesEvent {
 
 class AppPurchasesSupportUsFullPrice extends AppPurchasesEvent {
   const AppPurchasesSupportUsFullPrice();
+}
+
+class AppPurchasesAgreedToConditions extends AppPurchasesEvent {
+  const AppPurchasesAgreedToConditions({required this.isAgreed});
+
+  final bool isAgreed;
+
+  @override
+  List<Object> get props => [isAgreed];
 }

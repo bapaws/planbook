@@ -618,5 +618,16 @@
   "punctuationCloseParen": ").",
   "punctuationPeriod": ".",
   "punctuationListSeparator": ", ",
-  "punctuationEnumSeparator": ", "
+  "punctuationEnumSeparator": ", ",
+  "selectColor": "Select Color",
+  "expiresAtDescription": "Expires on {date}.",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "unlockedPro": "Unlocked Pro"
 }

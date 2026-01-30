@@ -211,6 +211,46 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
 CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profiles(deleted_at) WHERE deleted_at IS NULL;
 
 -- ============================================
+-- StoreProducts 表（应用内商品信息表）
+-- ============================================
+-- 用于存储应用内购买商品信息，完全对应 RevenueCat SDK 中的 StoreProduct
+CREATE TABLE IF NOT EXISTS planbook.store_products (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    -- 产品标识符（唯一，如：com.bapaws.planbook.monthly）
+    identifier TEXT NOT NULL UNIQUE,
+    -- 平台（ios, android, all）
+    platform TEXT NOT NULL CHECK (platform IN ('ios', 'android', 'all')),
+    -- 产品标题
+    title TEXT NOT NULL,
+    -- 产品描述
+    description TEXT,
+    -- 价格（double，本地货币）
+    price DECIMAL(10, 2) NOT NULL,
+    -- 格式化价格字符串（包含货币符号）
+    price_string TEXT NOT NULL,
+    -- 货币代码（如：USD, CNY）
+    currency_code TEXT NOT NULL,
+    -- 订阅周期（ISO 8601 格式，如：P1W, P1M, P3M, P6M, P1Y）
+    -- P1W = 1周, P1M = 1月, P3M = 3月, P6M = 6月, P1Y = 1年
+    subscription_period TEXT,
+    -- 是否启用
+    is_enabled BOOLEAN NOT NULL DEFAULT true,
+    -- 排序顺序
+    "order" INTEGER NOT NULL DEFAULT 0,
+    -- 时间戳
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ
+);
+
+-- StoreProducts 表索引
+CREATE INDEX IF NOT EXISTS idx_store_products_identifier ON planbook.store_products(identifier);
+CREATE INDEX IF NOT EXISTS idx_store_products_platform ON planbook.store_products(platform);
+CREATE INDEX IF NOT EXISTS idx_store_products_is_enabled ON planbook.store_products(is_enabled) WHERE is_enabled = true;
+CREATE INDEX IF NOT EXISTS idx_store_products_deleted_at ON planbook.store_products(deleted_at) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_store_products_order ON planbook.store_products("order");
+
+-- ============================================
 -- 表权限设置
 -- ============================================
 -- 授予 authenticated、service_role 对所有表的操作权限
@@ -221,6 +261,7 @@ GRANT ALL ON planbook.note_tags TO authenticated, service_role;
 GRANT ALL ON planbook.task_tags TO authenticated, service_role;
 GRANT ALL ON planbook.task_activities TO authenticated, service_role;
 GRANT ALL ON planbook.user_profiles TO authenticated, service_role;
+GRANT ALL ON planbook.store_products TO authenticated, service_role;
 
 -- ============================================
 -- 启用 Row Level Security (RLS)
@@ -233,6 +274,7 @@ ALTER TABLE planbook.note_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.task_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.task_activities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.user_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE planbook.store_products ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- Tasks 表 RLS 策略
@@ -375,6 +417,23 @@ CREATE POLICY "Users can update their own user_profiles"
 CREATE POLICY "Users can delete their own user_profiles"
   ON planbook.user_profiles FOR DELETE
   USING (auth.uid() = id);
+
+-- ============================================
+-- StoreProducts 表 RLS 策略
+-- ============================================
+-- 商品信息表对所有认证用户只读（公开信息）
+CREATE POLICY "Allow authenticated users to select store products"
+  ON planbook.store_products FOR SELECT
+  TO authenticated
+  USING (deleted_at IS NULL AND is_enabled = true);
+
+-- 只有 service_role 可以管理商品信息（插入、更新、删除）
+-- 注意：这些操作应该通过后端服务或管理员界面完成
+CREATE POLICY "Allow service role to manage store products"
+  ON planbook.store_products FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
 
 -- ============================================
 -- Storage Buckets（存储桶）

@@ -356,6 +356,9 @@
   "punctuationCloseParen": "）。",
   "punctuationPeriod": "。",
   "punctuationListSeparator": "，",
-  "punctuationEnumSeparator": "、"
+  "punctuationEnumSeparator": "、",
+  "selectColor": "选择颜色",
+  "expiresAtDescription": "会员将于 {date} 到期。",
+  "unlockedPro": "已解锁高级版"
 }
 

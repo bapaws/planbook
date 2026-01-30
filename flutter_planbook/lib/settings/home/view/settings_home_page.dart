@@ -7,16 +7,21 @@ import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/app/view/app_network_image.dart';
+import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/bloc/settings_home_bloc.dart';
 import 'package:flutter_planbook/settings/home/view/settings_home_paywall.dart';
+import 'package:flutter_planbook/settings/home/view/settings_home_upgrade_button.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:flutter_planbook/settings/home/view/settings_section_header.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/user_entity.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
+import 'package:planbook_repository/assets/assets_repository.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -46,13 +51,18 @@ class _SettingsHomePage extends StatelessWidget {
         forceMaterialTransparency: true,
         title: Text(context.l10n.settings),
         leading: const NavigationBarBackButton(),
+        actions: const [
+          SettingsHomeUpgradeButton(),
+        ],
       ),
       body: ListView(
         children: [
           BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
-            selector: (state) => state.isLifetime,
-            builder: (context, state) {
-              return state ? const SizedBox.shrink() : const SettingsPaywall();
+            selector: (state) => state.isPremium,
+            builder: (context, isPremium) {
+              return isPremium
+                  ? const SizedBox.shrink()
+                  : const SettingsPaywall();
             },
           ),
           CupertinoButton(
@@ -77,29 +87,62 @@ class _SettingsHomePage extends StatelessWidget {
                 ),
                 borderRadius: BorderRadius.circular(24),
               ),
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: SvgPicture.asset(
-                      'assets/images/logo.svg',
-                      width: 32,
-                      height: 32,
+              child: BlocSelector<AppBloc, AppState, UserEntity?>(
+                selector: (state) => state.user,
+                builder: (context, user) => Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: user?.avatar == null
+                          ? SvgPicture.asset(
+                              'assets/images/logo.svg',
+                              width: 40,
+                              height: 40,
+                            )
+                          : AppNetworkImage(
+                              url: user?.avatar,
+                              bucket: ResBucket.userAvatars,
+                              width: 40,
+                              height: 40,
+                            ),
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  BlocSelector<AppBloc, AppState, UserEntity?>(
-                    selector: (state) => state.user,
-                    builder: (context, user) => Text(
-                      user?.displayName ?? context.l10n.notLoggedIn,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        color: theme.colorScheme.primary,
+                    const SizedBox(width: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          user?.displayName ?? context.l10n.notLoggedIn,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        if (user?.profile?.expiresAt != null)
+                          _buildExpiresAt(context, user!.profile!.expiresAt!),
+                      ],
+                    ),
+                    const Spacer(),
+                    BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
+                      selector: (state) => state.isPremium,
+                      builder: (context, isPremium) => AppProButton(
+                        isPremium: isPremium,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  const CupertinoListTileChevron(),
-                ],
+                    const CupertinoListTileChevron(),
+                  ],
+                ),
               ),
             ),
           ),
@@ -245,6 +288,39 @@ class _SettingsHomePage extends StatelessWidget {
             },
           ),
           const SizedBox(height: kToolbarHeight),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExpiresAt(BuildContext context, DateTime expiresAt) {
+    final theme = Theme.of(context);
+    final date = Jiffy.parseFromDateTime(expiresAt);
+    final formattedDate = date.yMMMd;
+    final text = context.l10n.expiresAtDescription(formattedDate);
+    final parts = text.split(formattedDate);
+    final diff = expiresAt.difference(DateTime.now()).inDays;
+    return DefaultTextStyle(
+      style: theme.textTheme.labelSmall!.copyWith(
+        color: theme.colorScheme.outline,
+      ),
+      child: Row(
+        children: [
+          Text(
+            parts[0],
+          ),
+          Text(
+            formattedDate,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: diff <= 10
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.outline,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          Text(
+            parts[1],
+          ),
         ],
       ),
     );

@@ -64,6 +64,7 @@ class _NoteNewViewState extends State<NoteNewView> {
           actions: [
             if (context.read<NoteNewCubit>().state.initialNote != null)
               CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 foregroundColor: colorScheme.error,
                 onPressed: _showDeleteConfirmation,
                 child: const Icon(FontAwesomeIcons.trash),

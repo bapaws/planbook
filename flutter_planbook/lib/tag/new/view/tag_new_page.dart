@@ -117,10 +117,11 @@ class _TagNewPageState extends State<_TagNewPage> {
           children: [
             AppBar(
               forceMaterialTransparency: true,
-              title: const Text('New Tag'),
+              title: Text(context.l10n.addTag),
               leading: const NavigationBarBackButton(),
               actions: [
                 CupertinoButton(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   onPressed: () {
                     context.read<TagNewCubit>().onSave();
                   },

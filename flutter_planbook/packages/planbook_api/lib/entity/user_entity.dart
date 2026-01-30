@@ -39,6 +39,10 @@ class UserProfileEntity extends Equatable {
     this.birthday,
     this.lastLaunchAppAt,
     this.launchCount = 0,
+    this.productId,
+    this.expiresAt,
+    this.alipayOutTradeNo,
+    this.alipayTradeNo,
   });
 
   factory UserProfileEntity.fromMap(Map<String, dynamic> map) {
@@ -69,6 +73,12 @@ class UserProfileEntity extends Equatable {
           ? DateTime.parse(map['last_launch_app_at'] as String)
           : null,
       launchCount: map['launch_count'] as int? ?? 0,
+      productId: map['product_id'] as String?,
+      expiresAt: map['expires_at'] != null
+          ? DateTime.parse(map['expires_at'] as String)
+          : null,
+      alipayOutTradeNo: map['alipay_out_trade_no'] as String?,
+      alipayTradeNo: map['alipay_trade_no'] as String?,
     );
   }
 
@@ -82,6 +92,11 @@ class UserProfileEntity extends Equatable {
   final DateTime? birthday;
   final DateTime? lastLaunchAppAt;
   final int launchCount;
+
+  final String? productId;
+  final DateTime? expiresAt;
+  final String? alipayOutTradeNo;
+  final String? alipayTradeNo;
 
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -99,6 +114,10 @@ class UserProfileEntity extends Equatable {
     birthday,
     lastLaunchAppAt,
     launchCount,
+    productId,
+    expiresAt,
+    alipayOutTradeNo,
+    alipayTradeNo,
   ];
 
   UserProfileEntity copyWith({
@@ -112,6 +131,10 @@ class UserProfileEntity extends Equatable {
     DateTime? birthday,
     DateTime? lastLaunchAppAt,
     int? launchCount,
+    String? productId,
+    DateTime? expiresAt,
+    String? alipayOutTradeNo,
+    String? alipayTradeNo,
   }) {
     return UserProfileEntity(
       id: id ?? this.id,
@@ -124,6 +147,10 @@ class UserProfileEntity extends Equatable {
       birthday: birthday ?? this.birthday,
       lastLaunchAppAt: lastLaunchAppAt ?? this.lastLaunchAppAt,
       launchCount: launchCount ?? this.launchCount,
+      productId: productId ?? this.productId,
+      expiresAt: expiresAt ?? this.expiresAt,
+      alipayOutTradeNo: alipayOutTradeNo ?? this.alipayOutTradeNo,
+      alipayTradeNo: alipayTradeNo ?? this.alipayTradeNo,
     );
   }
 
@@ -140,6 +167,10 @@ class UserProfileEntity extends Equatable {
       if (lastLaunchAppAt != null)
         'last_launch_app_at': lastLaunchAppAt?.toIso8601String(),
       'launch_count': launchCount,
+      if (productId != null) 'product_id': productId,
+      if (expiresAt != null) 'expires_at': expiresAt?.toIso8601String(),
+      if (alipayOutTradeNo != null) 'alipay_out_trade_no': alipayOutTradeNo,
+      if (alipayTradeNo != null) 'alipay_trade_no': alipayTradeNo,
     };
   }
 

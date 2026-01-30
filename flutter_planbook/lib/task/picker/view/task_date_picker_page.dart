@@ -33,6 +33,7 @@ class TaskDatePickerPage extends StatelessWidget {
             leading: const NavigationBarCloseButton(),
             actions: [
               CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 onPressed: () {
                   onDateChanged?.call(null);
                   context.router.maybePop(Jiffy.now());

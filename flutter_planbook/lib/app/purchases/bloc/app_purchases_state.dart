@@ -2,56 +2,66 @@ part of 'app_purchases_bloc.dart';
 
 class AppPurchasesState extends Equatable {
   const AppPurchasesState({
-    this.selectedPackage,
-    this.availablePackages = const [],
-    this.activeProductIdentifier,
-    this.activePackage,
-    this.originalPackages = const [],
+    this.status = PageStatus.initial,
+    this.activeProductId,
+    this.storeProducts = const [],
+    this.selectedStoreProduct,
     this.userId,
+    this.isAgreedToConditions = false,
+    this.savePercentId,
+    this.savePercent,
   });
 
-  final String? activeProductIdentifier;
-  final Package? activePackage;
+  final PageStatus status;
+  final String? activeProductId;
 
-  final List<Package> availablePackages;
-  final Package? selectedPackage;
+  final List<StoreProduct> storeProducts;
+  final StoreProduct? selectedStoreProduct;
 
-  final List<Package> originalPackages;
+  final bool isAgreedToConditions;
 
   final String? userId;
 
-  bool get isPremium => activeProductIdentifier != null;
+  final String? savePercentId;
+  final int? savePercent;
+
+  bool get isPremium => activeProductId != null;
   bool get isLifetime =>
-      activeProductIdentifier?.toLowerCase().contains('lifetime') ?? false;
+      activeProductId?.toLowerCase().contains('lifetime') ?? false;
 
   @override
   List<Object?> get props => [
+    status,
     isPremium,
     isLifetime,
-    activeProductIdentifier,
-    selectedPackage,
-    availablePackages,
-    activePackage,
-    originalPackages,
+    activeProductId,
+    storeProducts,
+    selectedStoreProduct,
     userId,
+    isAgreedToConditions,
+    savePercentId,
+    savePercent,
   ];
 
   AppPurchasesState copyWith({
-    Package? selectedPackage,
-    List<Package>? availablePackages,
-    String? activeProductIdentifier,
-    Package? activePackage,
-    List<Package>? originalPackages,
+    PageStatus? status,
+    String? activeProductId,
+    List<StoreProduct>? storeProducts,
+    StoreProduct? selectedStoreProduct,
     String? userId,
+    bool? isAgreedToConditions,
+    String? savePercentId,
+    int? savePercent,
   }) {
     return AppPurchasesState(
-      selectedPackage: selectedPackage ?? this.selectedPackage,
-      availablePackages: availablePackages ?? this.availablePackages,
-      activeProductIdentifier:
-          activeProductIdentifier ?? this.activeProductIdentifier,
-      activePackage: activePackage ?? this.activePackage,
-      originalPackages: originalPackages ?? this.originalPackages,
+      status: status ?? this.status,
+      activeProductId: activeProductId ?? this.activeProductId,
+      storeProducts: storeProducts ?? this.storeProducts,
+      selectedStoreProduct: selectedStoreProduct ?? this.selectedStoreProduct,
       userId: userId ?? this.userId,
+      isAgreedToConditions: isAgreedToConditions ?? this.isAgreedToConditions,
+      savePercentId: savePercentId ?? this.savePercentId,
+      savePercent: savePercent ?? this.savePercent,
     );
   }
 }

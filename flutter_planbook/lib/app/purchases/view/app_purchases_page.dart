@@ -1,17 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/purchases/model/app_future_features.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
 import 'package:flutter_planbook/app/purchases/view/app_purchases_footer.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:in_app_review/in_app_review.dart';
+import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 @RoutePage()
@@ -26,7 +29,7 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
   @override
   void initState() {
     super.initState();
-    context.read<AppPurchasesBloc>().add(const AppPurchasesPackageRequested());
+    context.read<AppPurchasesBloc>().add(const AppPurchasesRequested());
 
     // _requestReview();
   }
@@ -40,14 +43,28 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AppPurchasesBloc, AppPurchasesState>(
-      listenWhen: (previous, current) =>
-          previous.isPremium != current.isPremium,
-      listener: (context, state) {
-        if (state.isPremium) {
-          Navigator.of(context).pop();
-        }
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AppPurchasesBloc, AppPurchasesState>(
+          listenWhen: (previous, current) =>
+              previous.isPremium != current.isPremium,
+          listener: (context, state) {
+            if (state.isPremium) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        BlocListener<AppPurchasesBloc, AppPurchasesState>(
+          listenWhen: (previous, current) => previous.status != current.status,
+          listener: (context, state) {
+            if (state.status == PageStatus.loading) {
+              EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+            } else if (EasyLoading.isShow) {
+              EasyLoading.dismiss();
+            }
+          },
+        ),
+      ],
       child: const _AppPurchasesPage(),
     );
   }
@@ -64,24 +81,10 @@ class _AppPurchasesPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         leading: const NavigationBarBackButton(),
-        title: Shimmer(
-          gradient: const LinearGradient(
-            colors: [
-              Colors.red,
-              Colors.blue,
-              Colors.red,
-            ],
-          ),
-          child: Text(
-            'PRO',
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: theme.colorScheme.tertiary,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        title: const AppProView(),
         actions: [
           CupertinoButton(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(l10n.restore),
             onPressed: () {
               context.read<AppPurchasesBloc>().add(
@@ -280,8 +283,8 @@ class _AppPurchasesPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Spacer(),
                         CupertinoButton(
                           child: Text(
                             l10n.privacy,
@@ -293,7 +296,7 @@ class _AppPurchasesPage extends StatelessWidget {
                             launchUrlString(l10n.privacyAgreementUrl);
                           },
                         ),
-                        const Text('  |  '),
+                        const Text('|'),
                         CupertinoButton(
                           child: Text(
                             l10n.terms,
@@ -305,7 +308,22 @@ class _AppPurchasesPage extends StatelessWidget {
                             launchUrlString(l10n.userAgreementUrl);
                           },
                         ),
-                        const Spacer(),
+                        if (AppPurchases.instance.isAndroidChina) ...[
+                          const Text('|'),
+                          CupertinoButton(
+                            onPressed: () {
+                              launchUrlString(
+                                'https://uxsyr9xrl46.feishu.cn/wiki/Y8qhw3DLriHC1CkeT2pcUvbunye',
+                              );
+                            },
+                            child: Text(
+                              '会员协议',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.disabledColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                     // const SizedBox(height: kMinInteractiveDimension),
