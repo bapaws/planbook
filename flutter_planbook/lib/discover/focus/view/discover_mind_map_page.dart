@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 import 'package:flutter_planbook/discover/focus/model/note_mind_map_entity.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
@@ -137,57 +138,52 @@ class _DiscoverMindMapPageState<T extends DiscoverFocusBloc>
         curve: Curves.easeInOut,
         left: nodeCenter.dx - node.size / 2,
         top: nodeCenter.dy - node.size / 2,
-        child: AnimatedOpacity(
-          opacity: node.isVisible ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-          child: _CircleNode(
-            key: ValueKey(node.key),
-            node: node,
-            isExpanded: widget.isExpanded,
-            onTap: (node) {
-              if (node.isSelected) {
-                switch (node.type) {
-                  case NoteType.yearlyFocus ||
-                      NoteType.yearlySummary ||
-                      NoteType.monthlyFocus ||
-                      NoteType.monthlySummary:
-                    _animateToNode(widget.mindMap, center);
-                  case NoteType.weeklyFocus || NoteType.weeklySummary:
-                    final startOfMonth = node.date.startOf(Unit.month);
-                    final monthlySelectedNode = widget.mindMap.children
-                        .firstWhere(
-                          (element) => element.date.isSame(
-                            startOfMonth,
-                            unit: Unit.month,
-                          ),
-                        );
-                    _animateToNode(monthlySelectedNode, center);
+        child: _CircleNode(
+          key: ValueKey(node.key),
+          node: node,
+          isExpanded: widget.isExpanded,
+          onTap: (node) {
+            if (node.isSelected) {
+              switch (node.type) {
+                case NoteType.yearlyFocus ||
+                    NoteType.yearlySummary ||
+                    NoteType.monthlyFocus ||
+                    NoteType.monthlySummary:
+                  _animateToNode(widget.mindMap, center);
+                case NoteType.weeklyFocus || NoteType.weeklySummary:
+                  final startOfMonth = node.date.startOf(Unit.month);
+                  final monthlySelectedNode = widget.mindMap.children
+                      .firstWhere(
+                        (element) => element.date.isSame(
+                          startOfMonth,
+                          unit: Unit.month,
+                        ),
+                      );
+                  _animateToNode(monthlySelectedNode, center);
 
-                  case NoteType.dailyFocus || NoteType.dailySummary:
-                    final startOfWeek = node.date.startOf(Unit.week);
-                    final startOfMonth = node.date.startOf(Unit.month);
-                    final selectedNode = widget.mindMap.children.firstWhere(
-                      (element) => element.date.isSame(
-                        startOfMonth,
-                        unit: Unit.month,
-                      ),
-                    );
-                    final weeklySelectedNode = selectedNode.children.firstWhere(
-                      (element) =>
-                          element.date.isSame(startOfWeek, unit: Unit.week),
-                    );
-                    _animateToNode(weeklySelectedNode, center);
+                case NoteType.dailyFocus || NoteType.dailySummary:
+                  final startOfWeek = node.date.startOf(Unit.week);
+                  final startOfMonth = node.date.startOf(Unit.month);
+                  final selectedNode = widget.mindMap.children.firstWhere(
+                    (element) => element.date.isSame(
+                      startOfMonth,
+                      unit: Unit.month,
+                    ),
+                  );
+                  final weeklySelectedNode = selectedNode.children.firstWhere(
+                    (element) =>
+                        element.date.isSame(startOfWeek, unit: Unit.week),
+                  );
+                  _animateToNode(weeklySelectedNode, center);
 
-                  case _:
-                    break;
-                }
-              } else {
-                _animateToNode(node.copyWith(isSelected: true), center);
+                case _:
+                  break;
               }
-              context.read<T>().add(DiscoverFocusNodeSelected(node: node));
-            },
-          ),
+            } else {
+              _animateToNode(node.copyWith(isSelected: true), center);
+            }
+            context.read<T>().add(DiscoverFocusNodeSelected(node: node));
+          },
         ),
       ),
     );
@@ -364,7 +360,29 @@ class _CircleNode extends StatelessWidget {
         : node.type.isWeekly
         ? colorScheme.tertiaryContainer
         : colorScheme.secondaryContainer;
+    var textColor = node.type.isYearly || node.type.isMonthly
+        ? colorScheme.primary
+        : node.type.isWeekly
+        ? colorScheme.tertiary
+        : colorScheme.secondary;
+    if (contentIsNotEmpty) {
+      textColor = node.type.isYearly || node.type.isMonthly
+          ? colorScheme.primaryFixedDim
+          : node.type.isWeekly
+          ? colorScheme.tertiaryFixedDim
+          : colorScheme.secondaryFixedDim;
+    }
     return GestureDetector(
+      onLongPress: () {
+        context.router.push(
+          NoteNewTypeRoute(type: node.type, focusAt: node.date),
+        );
+      },
+      onDoubleTap: () {
+        context.router.push(
+          NoteNewTypeRoute(type: node.type, focusAt: node.date),
+        );
+      },
       onTap: () {
         onTap(node);
       },
@@ -394,27 +412,13 @@ class _CircleNode extends StatelessWidget {
               child: AnimatedDefaultTextStyle(
                 duration: Durations.medium1,
                 style: TextStyle(
-                  color: contentIsNotEmpty
-                      ? colorScheme.surfaceBright
-                      : node.type.isYearly || node.type.isMonthly
-                      ? colorScheme.primary
-                      : node.type.isWeekly
-                      ? colorScheme.tertiary
-                      : colorScheme.secondary,
+                  color: textColor,
                   fontWeight: node.isSelected
                       ? FontWeight.bold
                       : FontWeight.normal,
                   fontSize: contentIsNotEmpty
                       ? (radius * 0.1).roundToDouble()
                       : (radius * 0.2).roundToDouble(),
-                  shadows: contentIsNotEmpty
-                      ? [
-                          Shadow(
-                            color: colorScheme.outlineVariant,
-                            blurRadius: 5,
-                          ),
-                        ]
-                      : null,
                 ),
                 child: Text(
                   node.dateLabel,

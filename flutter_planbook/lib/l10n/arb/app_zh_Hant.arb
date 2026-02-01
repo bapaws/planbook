@@ -321,6 +321,7 @@
   "thisMonth": "本月",
   "thisYear": "今年",
   "autoPlay": "自動播放",
+  "startPlaying": "開始播放",
   "everyInterval": "每 {interval} {unit}",
   "recurrenceWithEndDate": "{frequency}，{date} 結束",
   "recurrenceWithEndCount": "{frequency}，{count} 次後結束",

@@ -40,6 +40,35 @@ final class NoteTypeNewState extends Equatable {
 
   String get content => type.isSummary ? summaryContent : focusContent;
 
+  Jiffy get normalizedFocusAt => switch (type) {
+    NoteType.dailyFocus || NoteType.dailySummary => focusAt.startOf(Unit.day),
+    NoteType.weeklyFocus || NoteType.weeklySummary =>
+      focusAt.subtract(days: focusAt.dateTime.weekday - 1).startOf(Unit.day),
+    NoteType.monthlyFocus ||
+    NoteType.monthlySummary => focusAt.startOf(Unit.month),
+    NoteType.yearlyFocus ||
+    NoteType.yearlySummary => focusAt.startOf(Unit.year),
+    NoteType.journal => throw UnimplementedError(),
+  };
+
+  String getTitle(AppLocalizations l10n) => switch (type) {
+    NoteType.dailyFocus => l10n.dailyFocusTitle(focusAt.dateTime),
+    NoteType.dailySummary => l10n.dailySummaryTitle(focusAt.dateTime),
+    NoteType.weeklyFocus => l10n.weeklyFocusTitle(normalizedFocusAt.weekOfYear),
+    NoteType.weeklySummary => l10n.weeklySummaryTitle(
+      normalizedFocusAt.weekOfYear,
+    ),
+    NoteType.monthlyFocus => l10n.monthlyFocusTitle(normalizedFocusAt.yMMM),
+    NoteType.monthlySummary => l10n.monthlySummaryTitle(normalizedFocusAt.yMMM),
+    NoteType.yearlyFocus => l10n.yearlyFocusTitle(
+      normalizedFocusAt.format(pattern: 'y'),
+    ),
+    NoteType.yearlySummary => l10n.yearlySummaryTitle(
+      focusAt.format(pattern: 'y'),
+    ),
+    NoteType.journal => throw UnimplementedError(),
+  };
+
   @override
   List<Object?> get props => [
     status,

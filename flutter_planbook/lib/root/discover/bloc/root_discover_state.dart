@@ -2,16 +2,14 @@ part of 'root_discover_bloc.dart';
 
 final class RootDiscoverState extends Equatable {
   const RootDiscoverState({
-    this.autoPlayFrom,
-    this.autoPlayTo,
+    this.autoPlayCount = 0,
     this.focusDate,
     this.focusType,
     this.summaryDate,
     this.summaryType,
   });
 
-  final Jiffy? autoPlayFrom;
-  final Jiffy? autoPlayTo;
+  final int autoPlayCount;
 
   final Jiffy? focusDate;
   final NoteType? focusType;
@@ -21,8 +19,7 @@ final class RootDiscoverState extends Equatable {
 
   @override
   List<Object?> get props => [
-    autoPlayFrom,
-    autoPlayTo,
+    autoPlayCount,
     focusDate,
     focusType,
     summaryDate,
@@ -30,16 +27,14 @@ final class RootDiscoverState extends Equatable {
   ];
 
   RootDiscoverState copyWith({
-    Jiffy? autoPlayFrom,
-    Jiffy? autoPlayTo,
+    int? autoPlayCount,
     ValueGetter<Jiffy?>? focusDate,
     ValueGetter<NoteType?>? focusType,
     ValueGetter<Jiffy?>? summaryDate,
     ValueGetter<NoteType?>? summaryType,
   }) {
     return RootDiscoverState(
-      autoPlayFrom: autoPlayFrom ?? this.autoPlayFrom,
-      autoPlayTo: autoPlayTo ?? this.autoPlayTo,
+      autoPlayCount: autoPlayCount ?? this.autoPlayCount,
       focusDate: focusDate != null ? focusDate() : this.focusDate,
       focusType: focusType != null ? focusType() : this.focusType,
       summaryDate: summaryDate != null ? summaryDate() : this.summaryDate,

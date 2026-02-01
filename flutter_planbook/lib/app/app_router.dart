@@ -158,5 +158,7 @@ class AppRouter extends RootStackRouter {
 
     AutoRoute(page: AppActivityRoute.page),
     AutoRoute(page: AppActivityListRoute.page),
+
+    _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
   ];
 }

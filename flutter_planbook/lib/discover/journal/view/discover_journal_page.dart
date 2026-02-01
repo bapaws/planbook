@@ -28,7 +28,6 @@ class DiscoverJournalPage extends StatefulWidget {
 
 class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
   late final FlipPageController _controller;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   Timer? _timer;
 
@@ -93,11 +92,18 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
         ),
         BlocListener<RootDiscoverBloc, RootDiscoverState>(
           listenWhen: (previous, current) =>
-              previous.autoPlayFrom != current.autoPlayFrom ||
-              previous.autoPlayTo != current.autoPlayTo,
-          listener: (context, state) {
-            if (state.autoPlayFrom == null || state.autoPlayTo == null) return;
-            _play(from: state.autoPlayFrom!, to: state.autoPlayTo!);
+              previous.autoPlayCount != current.autoPlayCount,
+          listener: (context, state) async {
+            final result = await context.router.push<Map<String, dynamic>>(
+              const DiscoverJournalPlayRoute(),
+            );
+            if (result == null) return;
+
+            final from = result['from'];
+            final to = result['to'];
+            if (from != null && from is Jiffy && to != null && to is Jiffy) {
+              await _play(from: from, to: to);
+            }
           },
         ),
       ],

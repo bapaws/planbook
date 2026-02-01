@@ -7,17 +7,8 @@ sealed class RootDiscoverEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class RootDiscoverAutoPlayRangeChanged extends RootDiscoverEvent {
-  const RootDiscoverAutoPlayRangeChanged({
-    required this.from,
-    required this.to,
-  });
-
-  final Jiffy from;
-  final Jiffy to;
-
-  @override
-  List<Object> get props => [from, to];
+final class RootDiscoverAutoPlay extends RootDiscoverEvent {
+  const RootDiscoverAutoPlay();
 }
 
 final class RootDiscoverFocusDateChanged extends RootDiscoverEvent {

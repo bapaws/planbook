@@ -446,6 +446,7 @@
   "thisMonth": "This Month",
   "thisYear": "This Year",
   "autoPlay": "Auto Play",
+  "startPlaying": "Start Playing",
   "everyInterval": "Every {interval} {unit}",
   "@everyInterval": {
     "description": "Recurrence interval description",

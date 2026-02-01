@@ -10,7 +10,7 @@ part 'root_discover_state.dart';
 
 class RootDiscoverBloc extends Bloc<RootDiscoverEvent, RootDiscoverState> {
   RootDiscoverBloc() : super(const RootDiscoverState()) {
-    on<RootDiscoverAutoPlayRangeChanged>(_onAutoPlayRangeChanged);
+    on<RootDiscoverAutoPlay>(_onAutoPlay);
     on<RootDiscoverFocusDateChanged>(
       _onFocusDateChanged,
       transformer: sequential(),
@@ -21,11 +21,11 @@ class RootDiscoverBloc extends Bloc<RootDiscoverEvent, RootDiscoverState> {
     );
   }
 
-  Future<void> _onAutoPlayRangeChanged(
-    RootDiscoverAutoPlayRangeChanged event,
+  Future<void> _onAutoPlay(
+    RootDiscoverAutoPlay event,
     Emitter<RootDiscoverState> emit,
   ) async {
-    emit(state.copyWith(autoPlayFrom: event.from, autoPlayTo: event.to));
+    emit(state.copyWith(autoPlayCount: state.autoPlayCount + 1));
   }
 
   Future<void> _onFocusDateChanged(

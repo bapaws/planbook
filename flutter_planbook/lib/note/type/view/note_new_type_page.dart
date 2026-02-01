@@ -6,7 +6,6 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/cubit/note_type_new_cubit.dart';
-import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:flutter_planbook/note/type/view/note_new_type_textfield.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
@@ -65,6 +64,7 @@ class _NoteNewTypePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return AppPageScaffold(
       borderRadius: BorderRadius.circular(16),
       constraints: BoxConstraints(
@@ -78,52 +78,16 @@ class _NoteNewTypePage extends StatelessWidget {
             AppBar(
               leading: const NavigationBarCloseButton(),
               title: BlocSelector<NoteTypeNewCubit, NoteTypeNewState, String>(
-                selector: (state) => state.type.getTitle(context.l10n),
+                selector: (state) => state.getTitle(context.l10n),
                 builder: (context, title) {
-                  return Text(title);
+                  return Text(
+                    title,
+                    style: theme.appBarTheme.titleTextStyle?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  );
                 },
               ),
-              // title: TabBar(
-              //   isScrollable: true,
-              //   dividerColor: Colors.transparent,
-              //   tabAlignment: TabAlignment.start,
-              //   labelPadding: const EdgeInsets.symmetric(horizontal: 8),
-              //   labelStyle: theme.textTheme.titleMedium?.copyWith(
-              //     color: theme.colorScheme.onPrimaryContainer,
-              //     fontWeight: FontWeight.w600,
-              //   ),
-              //   unselectedLabelStyle: theme.textTheme.bodyMedium?.copyWith(
-              //     color: theme.colorScheme.outline,
-              //   ),
-              //   overlayColor: WidgetStateProperty.resolveWith<Color?>(
-              //     (
-              //       Set<WidgetState> states,
-              //     ) => states.contains(WidgetState.focused)
-              //         ? null
-              //         : Colors.transparent,
-              //   ),
-              //   splashFactory: NoSplash.splashFactory,
-              //   indicatorSize: TabBarIndicatorSize.label,
-              //   indicatorPadding: const EdgeInsets.symmetric(vertical: 5),
-              //   indicator: MaterialIndicator(
-              //     topLeftRadius: 32,
-              //     topRightRadius: 32,
-              //     bottomLeftRadius: 32,
-              //     bottomRightRadius: 32,
-              //     horizontalPadding: 8,
-              //     color: theme.colorScheme.primary,
-              //   ),
-              //   tabs: [
-              //     Tab(text: context.l10n.noteFocus),
-              //     Tab(text: context.l10n.noteSummary),
-              //   ],
-              //   onTap: (value) {
-              //     final type = context.read<NoteTypeNewCubit>().state.type;
-              //     context.read<NoteTypeNewCubit>().onTypeChanged(
-              //       value == 0 ? type.focusType : type.summaryType,
-              //     );
-              //   },
-              // ),
             ),
             const NoteNewTypeTextfield(),
             Row(

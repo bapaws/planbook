@@ -147,40 +147,12 @@ class _RootDiscoverPage extends StatelessWidget {
             PullDownButton(
               itemBuilder: (context) => switch (tab) {
                 RootDiscoverTab.journal => [
-                  PullDownMenuTitle(title: Text(context.l10n.autoPlay)),
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.calendarMinus,
-                    title: context.l10n.thisWeek,
+                    icon: FontAwesomeIcons.play,
+                    title: context.l10n.autoPlay,
                     onTap: () {
-                      final now = Jiffy.now();
-                      final from = now.startOf(Unit.week);
-                      final to = now.endOf(Unit.week);
                       context.read<RootDiscoverBloc>().add(
-                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                      );
-                    },
-                  ),
-                  PullDownMenuItem(
-                    icon: FontAwesomeIcons.calendarDays,
-                    title: context.l10n.thisMonth,
-                    onTap: () {
-                      final now = Jiffy.now();
-                      final from = now.startOf(Unit.month);
-                      final to = now.endOf(Unit.month);
-                      context.read<RootDiscoverBloc>().add(
-                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
-                      );
-                    },
-                  ),
-                  PullDownMenuItem(
-                    icon: FontAwesomeIcons.calendar,
-                    title: context.l10n.thisYear,
-                    onTap: () {
-                      final now = Jiffy.now();
-                      final from = now.startOf(Unit.year);
-                      final to = now.endOf(Unit.year);
-                      context.read<RootDiscoverBloc>().add(
-                        RootDiscoverAutoPlayRangeChanged(from: from, to: to),
+                        const RootDiscoverAutoPlay(),
                       );
                     },
                   ),

@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 2.4.3+93
+version: 2.4.3+94
 publish_to: none
 
 environment:
@@ -118,22 +118,18 @@ flutter_launcher_icons:
   image_path: "assets/logos/logo.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
 
-flutter_native_splash:
-  web: false
-  color: "#FAFAFA"
-  color_dark: "#181818"
-  branding: assets/logos/logo@256.png
-  # branding_dark: assets/dart_dark.png
-  branding_mode: bottom
-  branding_bottom_padding: 32
-  android_12:
-    # background color
-    color: "#FAFAFA"
-    color_dark: "#181818"
-    branding: assets/logos/logo@256.png
-    # branding_dark: assets/dart_dark.png
-    branding_mode: bottom
-    branding_bottom_padding: 32
+# 由于 Android 12+ 的 branding 要求 800x320 px，256x256 会被拉伸，故禁用
+# flutter_native_splash:
+#   web: false
+#   color: "#FAFAFA"
+#   color_dark: "#181818"
+#   image: assets/logos/logo@768.png
+#   android_gravity: center
+#   ios_content_mode: center
+#   android_12:
+#     color: "#FAFAFA"
+#     color_dark: "#181818"
+#     image: assets/logos/logo@768.png
 
 tobias:
   url_scheme: planbook.bapaws

@@ -5,11 +5,16 @@ final class DiscoverJournalState extends Equatable {
     required this.date,
     this.status = PageStatus.initial,
     this.isCalendarExpanded = false,
+    this.autoPlayFrom,
+    this.autoPlayTo,
   });
 
   final PageStatus status;
 
   final Jiffy date;
+
+  final Jiffy? autoPlayFrom;
+  final Jiffy? autoPlayTo;
 
   int get year => date.year;
   int get days {
@@ -20,21 +25,27 @@ final class DiscoverJournalState extends Equatable {
   final bool isCalendarExpanded;
 
   @override
-  List<Object> get props => [
+  List<Object?> get props => [
     status,
     isCalendarExpanded,
     date,
+    autoPlayFrom,
+    autoPlayTo,
   ];
 
   DiscoverJournalState copyWith({
     PageStatus? status,
     bool? isCalendarExpanded,
     Jiffy? date,
+    Jiffy? autoPlayFrom,
+    Jiffy? autoPlayTo,
   }) {
     return DiscoverJournalState(
       status: status ?? this.status,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
       date: date ?? this.date,
+      autoPlayFrom: autoPlayFrom ?? this.autoPlayFrom,
+      autoPlayTo: autoPlayTo ?? this.autoPlayTo,
     );
   }
 }
