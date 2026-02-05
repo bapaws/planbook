@@ -27,35 +27,35 @@ class AppHomeWidget {
   }
 
   /// Returns a list of widgets currently installed on the home screen.
-  static Future<List<HomeWidgetInfo>> getInstalledWidgets() {
-    return HomeWidget.getInstalledWidgets();
-  }
+  // static Future<List<HomeWidgetInfo>> getInstalledWidgets() {
+  //   return HomeWidget.getInstalledWidgets();
+  // }
 
-  /// Updates the widget with the given name.
-  static Future<void> updateWidget({
-    String? name,
-    String? androidName,
-    String? iOSName,
-    String? qualifiedAndroidName,
-  }) async {
-    await HomeWidget.updateWidget(
-      name: name,
-      androidName: androidName,
-      iOSName: iOSName,
-      qualifiedAndroidName: qualifiedAndroidName,
-    );
-  }
+  // /// Updates the widget with the given name.
+  // static Future<void> updateWidget({
+  //   String? name,
+  //   String? androidName,
+  //   String? iOSName,
+  //   String? qualifiedAndroidName,
+  // }) async {
+  //   await HomeWidget.updateWidget(
+  //     name: name,
+  //     androidName: androidName,
+  //     iOSName: iOSName,
+  //     qualifiedAndroidName: qualifiedAndroidName,
+  //   );
+  // }
 
-  /// Updates all widgets.
-  static Future<void> updateAllWidget() async {
-    final widgets = await getInstalledWidgets();
-    for (final widget in widgets) {
-      await updateWidget(
-        name: widget.iOSKind,
-        androidName: widget.androidClassName,
-        iOSName: widget.iOSKind,
-        qualifiedAndroidName: widget.androidClassName,
-      );
-    }
-  }
+  // /// Updates all widgets.
+  // static Future<void> updateAllWidget() async {
+  //   final widgets = await getInstalledWidgets();
+  //   for (final widget in widgets) {
+  //     await updateWidget(
+  //       name: widget.iOSKind,
+  //       androidName: widget.androidClassName,
+  //       iOSName: widget.iOSKind,
+  //       qualifiedAndroidName: widget.androidClassName,
+  //     );
+  //   }
+  // }
 }

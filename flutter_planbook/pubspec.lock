@@ -81,6 +81,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.4"
+  app_settings:
+    dependency: "direct main"
+    description:
+      name: app_settings
+      sha256: "64d50e666fd96ae90301bf71205f05019286f940ad6f5fed3d1be19c6af7546a"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "7.0.0"
   archive:
     dependency: transitive
     description:
@@ -645,6 +653,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.4.1"
+  flutter_confetti:
+    dependency: "direct main"
+    description:
+      name: flutter_confetti
+      sha256: "7e46b82ea0adc456afc91037652bbfbd52a951804fde0708822fad5d68be6398"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.5.1"
   flutter_dynamic_icon_plus:
     dependency: "direct main"
     description:
@@ -670,7 +686,7 @@ packages:
     source: hosted
     version: "0.14.4"
   flutter_local_notifications:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flutter_local_notifications
       sha256: "19ffb0a8bb7407875555e5e98d7343a633bb73707bae6c6a5f37c90014077875"
@@ -775,6 +791,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_timezone:
+    dependency: transitive
+    description:
+      name: flutter_timezone
+      sha256: "13b2109ad75651faced4831bf262e32559e44aa549426eab8a597610d385d934"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -919,11 +943,10 @@ packages:
   home_widget:
     dependency: transitive
     description:
-      name: home_widget
-      sha256: "908d033514a981f829fd98213909e11a428104327be3b422718aa643ac9d084a"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.8.1"
+      path: "packages/home_widget"
+      relative: true
+    source: path
+    version: "0.9.0"
   hotreloader:
     dependency: transitive
     description:
@@ -1982,7 +2005,7 @@ packages:
     source: hosted
     version: "0.6.11"
   timezone:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: timezone
       sha256: dd14a3b83cfd7cb19e7888f1cbc20f258b8d71b54c06f79ac585f14093a287d1

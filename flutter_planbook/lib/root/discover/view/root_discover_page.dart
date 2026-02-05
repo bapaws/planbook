@@ -25,8 +25,6 @@ class RootDiscoverPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => DiscoverJournalBloc(
-            tasksRepository: context.read(),
-            notesRepository: context.read(),
             now: Jiffy.now(),
           ),
         ),

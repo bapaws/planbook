@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
@@ -85,6 +87,11 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     if (taskId == null) return;
     await _tasksRepository.deleteTaskById(taskId);
     emit(state.copyWith(status: PageStatus.dispose));
+
+    /// 取消任务的提醒
+    unawaited(
+      AlarmNotificationService.instance.cancelForTask(taskId),
+    );
   }
 
   Future<void> _onTitleChanged(
@@ -198,6 +205,13 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         newChildren[index] = newChildren[index].copyWith(activity: activity);
         emit(state.copyWith(task: state.task!.copyWith(children: newChildren)));
       }
+
+      /// 取消任务的提醒
+      if (activity.taskId != null) {
+        unawaited(
+          AlarmNotificationService.instance.cancelForTask(activity.taskId!),
+        );
+      }
     }
     emit(
       state.copyWith(
@@ -285,9 +299,10 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     final entity = state.task;
     if (entity == null) return;
 
+    final task = _updatedTask ?? entity.task;
     await _tasksRepository.updateWithEditMode(
       entity: entity,
-      task: _updatedTask ?? entity.task,
+      task: task,
       editMode: event.mode!,
       tags: _updatedTags,
       children: _updatedChildren,
@@ -305,6 +320,9 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     _updatedTask = null;
     _updatedTags = null;
     _updatedChildren = null;
+
+    /// 重新调度任务的提醒
+    unawaited(AlarmNotificationService.instance.scheduleForTask(task));
   }
 
   Future<void> _onUpdated(

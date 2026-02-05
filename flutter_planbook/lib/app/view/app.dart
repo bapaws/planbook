@@ -10,6 +10,7 @@ import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -71,7 +72,11 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {}
+    if (state == AppLifecycleState.resumed && mounted) {
+      // 从后台回到前台时滚动补 schedule，使重复任务提醒窗口始终覆盖未来一段时间
+      final repo = context.read<TasksRepository>();
+      Future.microtask(repo.rescheduleAllRecurringAlarms);
+    }
   }
 
   /// 设置系统导航栏样式（保留用于平台亮度变化时的更新）

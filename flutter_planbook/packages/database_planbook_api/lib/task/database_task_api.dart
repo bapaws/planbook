@@ -114,6 +114,26 @@ class DatabaseTaskApi {
         .getSingleOrNull();
   }
 
+  /// 获取所有带闹钟的重复任务（用于滚动补 schedule）
+  Future<List<Task>> getRecurringTasksWithAlarms({
+    required String? userId,
+  }) async {
+    final query = db.select(db.tasks)
+      ..where(
+        (t) =>
+            t.deletedAt.isNull() &
+            t.recurrenceRule.isNotNull() &
+            t.alarms.isNotNull() &
+            (userId == null ? t.userId.isNull() : t.userId.equals(userId)),
+      );
+    final list = await query.get();
+    return list
+        .where(
+          (t) => t.alarms.isNotEmpty && (t.startAt != null || t.dueAt != null),
+        )
+        .toList();
+  }
+
   Future<TaskEntity?> getTaskEntityById(
     String taskId, {
     Jiffy? occurrenceAt,

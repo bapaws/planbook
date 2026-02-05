@@ -77,53 +77,97 @@ class AppPurchasesFooter extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 16),
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    if (AppPurchases.instance.isAndroidChina) {
-                      final isAgreed = await _showAgreementDialog(context);
-                      if ((isAgreed ?? false) && context.mounted) {
-                        context.read<AppPurchasesBloc>()
-                          ..add(
-                            const AppPurchasesAgreedToConditions(
-                              isAgreed: true,
-                            ),
-                          )
-                          ..add(const AppPurchasesPurchased());
+                if (!AppPurchases.instance.isAndroidChina)
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () async {
+                      if (AppPurchases.instance.isAndroidChina) {
+                        final isAgreed = await _showAgreementDialog(context);
+                        if ((isAgreed ?? false) && context.mounted) {
+                          context.read<AppPurchasesBloc>()
+                            ..add(
+                              const AppPurchasesAgreedToConditions(
+                                isAgreed: true,
+                              ),
+                            )
+                            ..add(const AppPurchasesPurchased());
+                        }
+                      } else {
+                        context.read<AppPurchasesBloc>().add(
+                          const AppPurchasesPurchased(),
+                        );
                       }
-                    } else {
-                      context.read<AppPurchasesBloc>().add(
-                        const AppPurchasesPurchased(),
-                      );
-                    }
-                  },
-                  minimumSize: Size.zero,
-                  child: Container(
-                    width: productItemWidth * 3 + spacing * 2,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(
-                        kMinInteractiveDimension,
+                    },
+                    minimumSize: Size.zero,
+                    child: Container(
+                      width: productItemWidth * 3 + spacing * 2,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(
+                          kMinInteractiveDimension,
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Spacer(),
+                          Text(
+                            context.l10n.getPro,
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          ),
+                          const Spacer(),
+                        ],
                       ),
                     ),
+                  )
+                else ...[
+                  SizedBox(
+                    width: productItemWidth * 3 + spacing * 2,
                     child: Row(
+                      spacing: 8,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Spacer(),
-                        Text(
-                          context.l10n.getPro,
-                          style: theme.textTheme.titleMedium!.copyWith(
-                            color: theme.colorScheme.onPrimary,
+                        Expanded(
+                          child: CupertinoButton(
+                            color: const Color(0xFF027aff),
+                            borderRadius: BorderRadius.circular(
+                              kMinInteractiveDimension,
+                            ),
+                            onPressed: () async {
+                              var isAgreed = context
+                                  .read<AppPurchasesBloc>()
+                                  .state
+                                  .isAgreedToConditions;
+                              if (!isAgreed) {
+                                isAgreed =
+                                    (await _showAgreementDialog(context)) ??
+                                    false;
+                              }
+                              if (isAgreed && context.mounted) {
+                                context.read<AppPurchasesBloc>()
+                                  ..add(
+                                    const AppPurchasesAgreedToConditions(
+                                      isAgreed: true,
+                                    ),
+                                  )
+                                  ..add(const AppPurchasesPurchased());
+                              }
+                            },
+                            child: Text(
+                              '支付宝支付',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                        const Spacer(),
                       ],
                     ),
                   ),
-                ),
-                if (AppPurchases.instance.isAndroidChina)
                   CupertinoButton(
                     padding: const EdgeInsets.symmetric(
                       vertical: 8,
@@ -158,33 +202,7 @@ class AppPurchasesFooter extends StatelessWidget {
                       ],
                     ),
                   ),
-                // if (state.storeProducts.isNotEmpty)
-                //   CupertinoButton(
-                //     padding: const EdgeInsets.symmetric(
-                //       vertical: 8,
-                //     ),
-                //     onPressed: () {
-                //       context.read<AppPurchasesBloc>().add(
-                //         const AppPurchasesSupportUsFullPrice(),
-                //       );
-                //     },
-                //     minimumSize: Size.zero,
-                //     child: SizedBox(
-                //       width: productItemWidth * 3 + spacing * 2,
-                //       child: Row(
-                //         children: [
-                //           const Spacer(),
-                //           Text(
-                //             context.l10n.supportUsFullPrice,
-                //             style: theme.textTheme.labelSmall!.copyWith(
-                //               color: theme.colorScheme.primary,
-                //             ),
-                //           ),
-                //           const Spacer(),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
+                ],
               ],
             ),
           ),

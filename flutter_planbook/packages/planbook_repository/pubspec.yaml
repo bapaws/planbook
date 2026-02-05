@@ -17,6 +17,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_cache_manager: ^3.4.1
+  flutter_local_notifications: ^19.3.1
+  flutter_timezone: ^4.0.0
   jiffy: ^6.4.3
   path_provider: ^2.1.5
   planbook_api:
@@ -28,6 +30,7 @@ dependencies:
   supabase_flutter: ^2.9.1
   supabase_planbook_api:
     path: ../supabase_planbook_api
+  timezone: ^0.10.1
   uuid: ^4.5.1
 
 dev_dependencies:

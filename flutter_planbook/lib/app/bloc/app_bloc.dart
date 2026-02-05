@@ -85,6 +85,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     );
   }
 
+  /// 应用启动进入主页时触发
   Future<void> _onLaunched(
     AppLaunched event,
     Emitter<AppState> emit,
@@ -102,8 +103,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       // await _notesRepository.createDefaultNotes(languageCode: languageCode);
     }
 
-    await _usersRepository.updateUserProfile(
-      lastLaunchAppAt: DateTime.now(),
+    unawaited(
+      _usersRepository.updateUserProfile(
+        lastLaunchAppAt: DateTime.now(),
+      ),
     );
   }
 

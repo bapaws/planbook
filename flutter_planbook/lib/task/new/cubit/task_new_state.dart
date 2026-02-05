@@ -21,7 +21,7 @@ final class TaskNewState extends Equatable {
     this.isAllDay = true,
     this.recurrenceRule,
     this.priority = TaskPriority.none,
-    this.alarms,
+    this.alarms = const [],
     this.tags = const [],
     this.children = const [],
     this.showEditModeSelection = false,
@@ -36,7 +36,7 @@ final class TaskNewState extends Equatable {
       isAllDay: task?.isAllDay ?? true,
       recurrenceRule: task?.recurrenceRule,
       priority: task?.priority ?? TaskPriority.none,
-      alarms: task?.alarms,
+      alarms: task?.alarms ?? const [],
       tags: task?.tags ?? const [],
       children: task?.children ?? const [],
     );
@@ -53,7 +53,7 @@ final class TaskNewState extends Equatable {
   final bool isAllDay;
   final RecurrenceRule? recurrenceRule;
   final TaskPriority priority;
-  final List<EventAlarm>? alarms;
+  final List<EventAlarm> alarms;
 
   final List<TaskEntity> children;
 

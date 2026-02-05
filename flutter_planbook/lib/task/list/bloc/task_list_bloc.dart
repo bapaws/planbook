@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
@@ -107,6 +109,13 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     );
     for (final activity in activities) {
       add(TaskListNoteCreated(activity: activity));
+
+      /// 取消任务的提醒
+      if (activity.taskId != null) {
+        unawaited(
+          AlarmNotificationService.instance.cancelForTask(activity.taskId!),
+        );
+      }
     }
     emit(state.copyWith(status: PageStatus.success));
   }
@@ -117,6 +126,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     await _tasksRepository.deleteTaskById(event.taskId);
     emit(state.copyWith(status: PageStatus.success));
+    unawaited(
+      AlarmNotificationService.instance.cancelForTask(event.taskId),
+    );
   }
 
   Future<void> _onNoteCreated(

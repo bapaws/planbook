@@ -24,6 +24,11 @@
   "no": "否",
   "today": "今天",
   "settings": "設定",
+  "notificationPermissionDeniedHint": "您可隨時在系統設定中開啟通知權限。",
+  "openSettings": "前往設定",
+  "taskReminderChannelName": "任務提醒",
+  "taskReminderChannelDescription": "任務開始前的提醒",
+  "iKnow": "我知道了",
   "unlockPro": "解鎖所有進階功能。",
   "freeTrial": "免費試用",
   "tryFree": "免費試用",
@@ -360,5 +365,10 @@
   "punctuationEnumSeparator": "、",
   "selectColor": "選擇顏色",
   "expiresAtDescription": "會員將於 {date} 到期。",
-  "unlockedPro": "已解鎖進階版"
+  "unlockedPro": "已解鎖進階版",
+  "noAlarm": "無提醒",
+  "dayEarly": "提前{count}天",
+  "weekEarly": "提前{count}周",
+  "onTheDay": "當天",
+  "invalidTime": "當前提醒時間無效"
 }

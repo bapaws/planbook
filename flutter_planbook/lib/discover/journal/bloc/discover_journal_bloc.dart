@@ -9,21 +9,14 @@ part 'discover_journal_state.dart';
 class DiscoverJournalBloc
     extends Bloc<DiscoverJournalEvent, DiscoverJournalState> {
   DiscoverJournalBloc({
-    required TasksRepository tasksRepository,
-    required NotesRepository notesRepository,
     required Jiffy now,
-  }) : _tasksRepository = tasksRepository,
-       _notesRepository = notesRepository,
-       super(
+  }) : super(
          DiscoverJournalState(date: now),
        ) {
     on<JournalHomeRequested>(_onRequested);
     on<JournalHomeYearChanged>(_onYearChanged);
     on<JournalHomeCalendarToggled>(_onCalendarToggled);
   }
-
-  final TasksRepository _tasksRepository;
-  final NotesRepository _notesRepository;
 
   Future<void> _onRequested(
     JournalHomeRequested event,

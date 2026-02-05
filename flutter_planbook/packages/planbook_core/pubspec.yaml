@@ -12,7 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^2.2.0
-  home_widget: ^0.8.0
+  home_widget:
+    path: ../home_widget
   intl: ^0.20.2
   jiffy: ^6.4.3
   permission_handler: ^12.0.1

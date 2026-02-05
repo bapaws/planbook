@@ -1,11 +1,12 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -125,10 +126,6 @@ class TaskNewBottomBar extends StatelessWidget {
                           : Colors.grey.shade400,
                     ),
                     onPressed: () async {
-                      if (!context.read<AppPurchasesBloc>().isPremium) {
-                        await context.router.push(const AppPurchasesRoute());
-                        return;
-                      }
                       final cubit = context.read<TaskNewCubit>();
                       final entity = await context.router.push(
                         TaskDurationRoute(
@@ -173,6 +170,54 @@ class TaskNewBottomBar extends StatelessWidget {
                   );
                 },
               ),
+              BlocSelector<TaskNewCubit, TaskNewState, List<EventAlarm>>(
+                selector: (state) => state.alarms,
+                builder: (context, alarms) {
+                  return Badge.count(
+                    isLabelVisible: alarms.isNotEmpty,
+                    count: alarms.length,
+                    backgroundColor: colorScheme.errorContainer,
+                    offset: const Offset(-3, 3),
+                    textColor: colorScheme.error,
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      minimumSize: const Size.square(kMinInteractiveDimension),
+                      child: Icon(
+                        FontAwesomeIcons.solidBell,
+                        color: alarms.isNotEmpty
+                            ? colorScheme.tertiary
+                            : Colors.grey.shade400,
+                      ),
+                      onPressed: () async {
+                        final cubit = context.read<TaskNewCubit>();
+                        if (cubit.state.startAt == null) {
+                          return;
+                        }
+                        final granted = await AlarmNotificationService.instance
+                            .requestPermissionIfNeeded();
+                        if (!context.mounted) return;
+                        if (granted == false) {
+                          await _showNotificationPermissionDeniedDialog(
+                            context,
+                          );
+                          return;
+                        }
+                        final alarms = await context.router.push(
+                          TaskAlarmRoute(
+                            initialAlarms: cubit.state.alarms,
+                            taskStartAt: cubit.state.startAt!,
+                            isAllDay: cubit.state.isAllDay,
+                          ),
+                        );
+                        if (alarms is! List<EventAlarm> || !context.mounted) {
+                          return;
+                        }
+                        cubit.onAlarmsChanged(alarms);
+                      },
+                    ),
+                  );
+                },
+              ),
             ],
             const Spacer(),
             BlocBuilder<TaskNewCubit, TaskNewState>(
@@ -199,6 +244,34 @@ class TaskNewBottomBar extends StatelessWidget {
           ].animate(interval: 50.ms).fade(duration: 250.ms),
         );
       },
+    );
+  }
+
+  Future<void> _showNotificationPermissionDeniedDialog(
+    BuildContext context,
+  ) async {
+    final l10n = context.l10n;
+    await showCupertinoDialog<void>(
+      context: context,
+      builder: (dialogContext) => CupertinoAlertDialog(
+        content: Text(l10n.notificationPermissionDeniedHint),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.iKnow),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.of(dialogContext).pop();
+              AppSettings.openAppSettings(
+                type: AppSettingsType.notification,
+              );
+            },
+            child: Text(l10n.openSettings),
+          ),
+        ],
+      ),
     );
   }
 }

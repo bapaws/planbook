@@ -24,6 +24,11 @@
   "no": "No",
   "today": "Today",
   "settings": "Settings",
+  "notificationPermissionDeniedHint": "You can enable notifications in system settings anytime.",
+  "openSettings": "Open Settings",
+  "taskReminderChannelName": "Task Reminder",
+  "taskReminderChannelDescription": "Reminders before task start",
+  "iKnow": "I Know",
   "unlockPro": "Unlock all premium features.",
   "freeTrial": "Free Trial",
   "tryFree": "Try Free",
@@ -630,5 +635,24 @@
       }
     }
   },
-  "unlockedPro": "Unlocked Pro"
+  "unlockedPro": "Unlocked Pro",
+  "noAlarm": "No Alarm",
+  "dayEarly": "{count} {count, plural, =1 {day} other {days}} early",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekEarly": "{count} {count, plural, =1 {week} other {weeks}} early",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onTheDay": "On the day",
+  "invalidTime": "Invalid time"
 }

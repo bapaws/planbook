@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
@@ -67,8 +69,8 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       'isAllDay': state.isAllDay,
       if (state.recurrenceRule != null)
         'recurrenceRule': state.recurrenceRule!.toJson(),
-      if (state.alarms != null && state.alarms!.isNotEmpty)
-        'alarms': state.alarms!.map((e) => e.toJson()).toList(),
+      if (state.alarms.isNotEmpty)
+        'alarms': state.alarms.map((e) => e.toJson()).toList(),
       if (state.tags.isNotEmpty)
         'tags': state.tags.map((e) => e.toJson()).toList(),
       if (state.children.isNotEmpty)
@@ -149,6 +151,10 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
     emit(state.copyWith(recurrenceRule: () => recurrenceRule));
   }
 
+  void onAlarmsChanged(List<EventAlarm> alarms) {
+    emit(state.copyWith(alarms: alarms));
+  }
+
   void onChildrenChanged(List<TaskEntity> children) {
     emit(state.copyWith(children: children));
   }
@@ -168,7 +174,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
         recurrenceRule: state.recurrenceRule,
         order: 0,
         isAllDay: state.isAllDay,
-        alarms: [],
+        alarms: state.alarms,
         createdAt: Jiffy.now(),
         layer: 0,
         childCount: 0,
@@ -181,6 +187,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       await clear();
       // clear() 只清除持久化存储，需要手动重置状态
       emit(const TaskNewState(status: PageStatus.success));
+      unawaited(AlarmNotificationService.instance.scheduleForTask(task));
       return;
     }
 
@@ -210,7 +217,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       endAt: state.endAt ?? state.startAt?.endOf(Unit.day),
       order: initialTask.order,
       isAllDay: state.isAllDay,
-      alarms: state.alarms ?? [],
+      alarms: state.alarms,
       parentId: initialTask.parentId,
       recurrenceRule: state.recurrenceRule,
       createdAt: initialTask.createdAt,
@@ -227,6 +234,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       children: state.children,
       occurrenceAt: initialTask.occurrence?.occurrenceAt,
     );
+    unawaited(AlarmNotificationService.instance.scheduleForTask(task));
     emit(state.copyWith(status: PageStatus.success));
   }
 }

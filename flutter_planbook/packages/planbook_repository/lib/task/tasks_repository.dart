@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/task/alarm_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/task/supabase_task_api.dart';
 import 'package:uuid/uuid.dart';
@@ -211,9 +212,11 @@ class TasksRepository {
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
     if (list.isEmpty) return;
 
+    final syncedTasks = <Task>[];
     await _db.transaction(() async {
       for (final item in list) {
         final task = Task.fromJson(item);
+        syncedTasks.add(task);
         await _db.into(_db.tasks).insertOnConflictUpdate(task);
 
         if (item['task_tags'] is List<dynamic>) {
@@ -242,6 +245,30 @@ class TasksRepository {
         }
       }
     });
+
+    // scheduleForTask 内部会先 cancelForTask(task.id) 再调度，不会重复创建
+    for (final task in syncedTasks) {
+      if (task.alarms.isEmpty) continue;
+      final startAt = task.startAt ?? task.dueAt;
+      if (startAt == null) continue;
+      unawaited(AlarmNotificationService.instance.scheduleForTask(task));
+    }
+  }
+
+  /// 滚动补 schedule：为所有带闹钟的重复任务重新调度，使预约窗口始终覆盖「从现在起」的未来一段时间。
+  /// 应在应用启动和从后台回到前台时调用。
+  Future<void> rescheduleAllRecurringAlarms() async {
+    final tasks = await _dbTaskApi.getRecurringTasksWithAlarms(userId: userId);
+    for (final task in tasks) {
+      try {
+        await AlarmNotificationService.instance.scheduleForTask(task);
+      } on Object catch (e) {
+        debugPrint(
+          'TasksRepository.rescheduleAllRecurringAlarms: '
+          'failed task=${task.id} $e',
+        );
+      }
+    }
   }
 
   Future<TaskEntity?> getTaskEntityById(

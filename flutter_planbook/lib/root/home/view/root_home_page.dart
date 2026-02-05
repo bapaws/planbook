@@ -10,7 +10,7 @@ import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
-import 'package:jiffy/jiffy.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight;
 
@@ -32,6 +32,15 @@ class RootHomePage extends StatelessWidget {
 
             /// Trigger app purchases requested to get store products
             context.read<AppPurchasesBloc>();
+
+            /// 注入通知渠道的国际化文案；进入主页后滚动补 schedule
+            AlarmNotificationService.instance.setChannelStrings(
+              name: l10n.taskReminderChannelName,
+              description: l10n.taskReminderChannelDescription,
+            );
+            Future.microtask(
+              context.read<TasksRepository>().rescheduleAllRecurringAlarms,
+            );
 
             return RootHomeBloc(
               tagsRepository: context.read(),
