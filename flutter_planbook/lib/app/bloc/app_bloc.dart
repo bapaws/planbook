@@ -5,9 +5,12 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
+import 'package:flutter_planbook/core/apk_download_service.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';
@@ -22,11 +25,13 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
     required UsersRepository usersRepository,
+    required SharedPreferences sp,
   }) : _settingsRepository = settingsRepository,
        _tagsRepository = tagsRepository,
        _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _usersRepository = usersRepository,
+       _sp = sp,
        super(
          const AppState(
            darkMode: DarkMode.light,
@@ -39,6 +44,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     on<AppDarkModeChanged>(_onDarkModeChanged);
     on<AppSeedColorChanged>(_onSeedColorChanged);
     on<AppBackgroundRequested>(_onBackgroundRequested);
+    on<AppApkVersionRequested>(_onApkVersionRequested);
+    on<AppApkDownloadRequested>(_onApkDownloadRequested);
+    on<AppApkDownloadProgressUpdated>(_onApkDownloadProgressUpdated);
   }
 
   final SettingsRepository _settingsRepository;
@@ -47,6 +55,16 @@ class AppBloc extends Bloc<AppEvent, AppState> {
   final NotesRepository _notesRepository;
 
   final UsersRepository _usersRepository;
+  final SharedPreferences _sp;
+
+  StreamSubscription<double>? _apkProgressSub;
+  AppLocalizations? _apkL10n;
+
+  @override
+  Future<void> close() async {
+    unawaited(_apkProgressSub?.cancel());
+    await super.close();
+  }
 
   Future<void> _onInitialized(
     AppInitialized event,
@@ -168,5 +186,105 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       _settingsRepository.onBackgroundAssetChange,
       onData: (background) => state.copyWith(background: background),
     );
+  }
+
+  Future<void> _onApkVersionRequested(
+    AppApkVersionRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    if (!AppChannel.isCloud) return;
+    if (kDebugMode) {
+      emit(state.copyWith(apkVersion: '2.5.1', apkHasNewVersion: true));
+      return;
+    }
+    final version = await ApkDownloadService.fetchVersion(_sp);
+    if (version == null) return;
+    final hasNew = await ApkDownloadService.hasNewVersion(version);
+    emit(state.copyWith(apkVersion: version, apkHasNewVersion: hasNew));
+  }
+
+  Future<void> _onApkDownloadRequested(
+    AppApkDownloadRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    if (!AppChannel.isCloud) return;
+    _apkL10n = event.l10n;
+
+    final version = state.apkVersion;
+    if (version == null || version.isEmpty) {
+      emit(
+        state.copyWith(
+          apkDownloadStatus: AppApkDownloadStatus.installError,
+          apkDownloadErrorMessage: event.l10n.apkDownloadNoVersion,
+        ),
+      );
+      return;
+    }
+    final hasNew = await ApkDownloadService.hasNewVersion(version);
+    if (!hasNew) {
+      emit(
+        state.copyWith(
+          apkDownloadStatus: AppApkDownloadStatus.installError,
+          apkDownloadErrorMessage: event.l10n.apkDownloadNotNewer,
+        ),
+      );
+      return;
+    }
+
+    emit(
+      state.copyWith(
+        apkDownloadStatus: AppApkDownloadStatus.downloading,
+        apkDownloadProgress: 0,
+        clearApkDownloadError: true,
+      ),
+    );
+
+    final enqueued = await ApkDownloadService.downloadApk(version, _sp);
+    if (!enqueued) {
+      emit(
+        state.copyWith(
+          apkDownloadStatus: AppApkDownloadStatus.installError,
+          apkDownloadErrorMessage: event.l10n.apkDownloadFailed,
+        ),
+      );
+      return;
+    }
+
+    unawaited(_apkProgressSub?.cancel());
+    _apkProgressSub = ApkDownloadService.progressStream.listen((p) {
+      add(AppApkDownloadProgressUpdated(p));
+    });
+  }
+
+  void _onApkDownloadProgressUpdated(
+    AppApkDownloadProgressUpdated event,
+    Emitter<AppState> emit,
+  ) {
+    if (!AppChannel.isCloud) return;
+    if (state.apkDownloadStatus != AppApkDownloadStatus.downloading) return;
+    final l10n = _apkL10n;
+
+    if (event.progress < 0) {
+      emit(
+        state.copyWith(
+          apkDownloadStatus: AppApkDownloadStatus.installError,
+          apkDownloadErrorMessage: l10n?.apkDownloadFailed ?? 'Download failed',
+        ),
+      );
+      _apkProgressSub?.cancel();
+      _apkProgressSub = null;
+      return;
+    }
+    emit(state.copyWith(apkDownloadProgress: event.progress));
+    if (event.progress >= 1) {
+      emit(
+        state.copyWith(
+          apkDownloadStatus: AppApkDownloadStatus.installSuccess,
+          apkDownloadProgress: 1,
+        ),
+      );
+      _apkProgressSub?.cancel();
+      _apkProgressSub = null;
+    }
   }
 }

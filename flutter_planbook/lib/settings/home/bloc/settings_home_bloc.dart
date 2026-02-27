@@ -1,9 +1,7 @@
 import 'package:bloc/bloc.dart';
-import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 
 part 'settings_home_event.dart';
 part 'settings_home_state.dart';
@@ -22,16 +20,10 @@ class SettingsHomeBloc extends Bloc<SettingsHomeEvent, SettingsHomeState> {
     SettingsHomeRequested event,
     Emitter<SettingsHomeState> emit,
   ) async {
-    final info = await Purchases.getCustomerInfo();
-    final entitlements = info.entitlements;
-    final activeEntitlement = entitlements.active.values.firstWhereOrNull(
-      (value) => value.isActive,
-    );
     emit(
       state.copyWith(
         status: PageStatus.loading,
         darkMode: _settingsRepository.getDarkMode(),
-        isPremium: activeEntitlement != null,
       ),
     );
   }

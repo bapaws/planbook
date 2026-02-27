@@ -122,10 +122,11 @@ Future<Widget> _initApp() async {
           create: (context) =>
               AppBloc(
                   settingsRepository: context.read(),
-                  notesRepository: context.read(),
                   tagsRepository: context.read(),
                   tasksRepository: context.read(),
+                  notesRepository: context.read(),
                   usersRepository: context.read(),
+                  sp: context.read(),
                 )
                 ..add(const AppInitialized())
                 ..add(const AppUserRequested()),

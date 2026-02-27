@@ -59,7 +59,7 @@ bool _shouldUseFilteringBinding() {
 }
 
 void main() async {
-  AppChannel.instance.type = AppChannelType.cn;
+  AppChannel.instance.type = AppChannelType.cloud;
 
   final WidgetsBinding widgetsBinding;
 

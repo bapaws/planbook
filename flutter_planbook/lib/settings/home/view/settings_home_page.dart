@@ -8,10 +8,12 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/bloc/settings_home_bloc.dart';
+import 'package:flutter_planbook/settings/home/view/settings_home_download_row.dart';
 import 'package:flutter_planbook/settings/home/view/settings_home_paywall.dart';
 import 'package:flutter_planbook/settings/home/view/settings_home_upgrade_button.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
@@ -31,9 +33,11 @@ class SettingsHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => SettingsHomeBloc(
-        settingsRepository: context.read(),
-      ),
+      create: (_) {
+        context.read<AppBloc>().add(const AppApkVersionRequested());
+        return SettingsHomeBloc(settingsRepository: context.read())
+          ..add(const SettingsHomeRequested());
+      },
       child: const _SettingsHomePage(),
     );
   }
@@ -146,6 +150,8 @@ class _SettingsHomePage extends StatelessWidget {
               ),
             ),
           ),
+          if (AppPurchases.instance.isAndroidChina)
+            const SettingsHomeDownloadRow(),
           SettingsSectionHeader(
             title: l10n.general,
           ),

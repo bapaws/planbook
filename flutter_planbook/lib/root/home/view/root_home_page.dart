@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
@@ -27,7 +29,9 @@ class RootHomePage extends StatelessWidget {
           lazy: false,
           create: (context) {
             /// Trigger app launched to create default tags and sample tasks
-            context.read<AppBloc>().add(AppLaunched(l10n: l10n));
+            context.read<AppBloc>()
+              ..add(AppLaunched(l10n: l10n))
+              ..add(const AppApkVersionRequested());
             FlutterNativeSplash.remove();
 
             /// Trigger app purchases requested to get store products
@@ -68,7 +72,45 @@ class RootHomePage extends StatelessWidget {
           create: (context) => RootDiscoverBloc(),
         ),
       ],
-      child: const _RootHomePage(),
+      child: BlocListener<AppBloc, AppState>(
+        listenWhen: (previous, current) =>
+            previous.apkHasNewVersion != current.apkHasNewVersion &&
+            current.apkHasNewVersion,
+        listener: (context, state) {
+          showApkDownloadDialog(context);
+        },
+        child: const _RootHomePage(),
+      ),
+    );
+  }
+
+  void showApkDownloadDialog(BuildContext context) {
+    if (!AppPurchases.instance.isAndroidChina) return;
+    final bloc = context.read<AppBloc>();
+    final newVersion = bloc.state.apkVersion;
+    if (newVersion == null) return;
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('新版本通知'),
+        content: Text('新版本 $newVersion 已发布，立即下载安装'),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text(context.l10n.cancel),
+          ),
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            onPressed: () {
+              bloc.add(AppApkDownloadRequested(l10n: context.l10n));
+              Navigator.of(context).pop();
+            },
+            child: const Text('立即下载'),
+          ),
+        ],
+      ),
     );
   }
 }

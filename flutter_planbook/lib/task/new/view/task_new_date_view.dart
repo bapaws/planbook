@@ -110,7 +110,10 @@ class _TaskNewDateViewState extends State<TaskNewDateView> {
     final colorScheme = Theme.of(context).colorScheme;
 
     return BlocListener<TaskNewCubit, TaskNewState>(
-      listenWhen: (previous, current) => previous.startAt != current.startAt,
+      listenWhen: (previous, current) =>
+          previous.startAt?.year != current.startAt?.year ||
+          previous.startAt?.month != current.startAt?.month ||
+          previous.startAt?.date != current.startAt?.date,
       listener: (context, state) {
         _onDateChanged(state.startAt);
       },

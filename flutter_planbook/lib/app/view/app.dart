@@ -7,6 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/core/apk_download_service.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -26,6 +29,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   void initState() {
+    AppPurchases.initialize(enableAlipay: AppChannel.isAndroidChina);
+
     final platformDispatcher = SchedulerBinding.instance.platformDispatcher
       ..onPlatformBrightnessChanged = _onPlatformBrightnessChanged;
     _brightness = platformDispatcher.platformBrightness;
@@ -34,7 +39,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     Intl.defaultLocale = Intl.canonicalizedLocale(Platform.localeName);
 
     WidgetsBinding.instance.addObserver(this);
+
     _setupMethodChannelListener();
+    ApkDownloadService.start(context.read());
 
     super.initState();
   }

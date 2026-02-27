@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 2.5.0+96
+version: 2.5.1+97
 publish_to: none
 
 environment:
@@ -12,6 +12,7 @@ dependencies:
   app_settings: ^7.0.0
   audioplayers: ^6.5.1
   auto_route: ^10.1.0+1
+  background_downloader: ^9.5.3
   bloc: ^9.0.0
   bloc_concurrency: ^0.3.0
   cached_network_image: ^3.4.1
@@ -57,6 +58,7 @@ dependencies:
   intl: ^0.20.2
   jiffy: ^6.3.1
   octo_image: ^2.1.0
+  open_filex: ^4.7.0
   package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5

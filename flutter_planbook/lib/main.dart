@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/bootstrap.dart';
-import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
 
 /// iPadOS 26 bug workaround: Drawer/Dialog/BottomSheet closes immediately after opening
 /// https://stackoverflow.com/questions/79816937
@@ -59,6 +59,8 @@ bool _shouldUseFilteringBinding() {
 }
 
 void main() async {
+  AppChannel.instance.type = AppChannelType.main;
+
   final WidgetsBinding widgetsBinding;
 
   if (_shouldUseFilteringBinding()) {
@@ -73,9 +75,6 @@ void main() async {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
     yield LicenseEntryWithLineBreaks(<String>['assets/google_fonts'], license);
   });
-
-  // 初始化支付方式检测器（默认版本不启用支付宝）
-  await AppPurchases.initialize();
 
   await bootstrap();
 }

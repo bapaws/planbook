@@ -14,6 +14,7 @@ import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/task/detail/bloc/task_detail_bloc.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_bottom_bar.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_date_view.dart';
+import 'package:flutter_planbook/task/detail/view/task_detail_new_subtask_button.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
@@ -136,7 +137,7 @@ class _TaskDetailPage extends StatelessWidget {
                         hintText: context.l10n.taskTitleHint,
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 16,
-                          vertical: 32,
+                          vertical: 24,
                         ),
                       ),
                       textInputAction: TextInputAction.done,
@@ -173,10 +174,11 @@ class _TaskDetailPage extends StatelessWidget {
                         },
                       ),
                     ),
-                  if (task.children.isNotEmpty)
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 32),
-                    ),
+                  const TaskDetailNewSubtaskButton(),
+                  // if (task.children.isNotEmpty)
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 24),
+                  ),
 
                   TaskDetailSliverTile(
                     onPressed: () {

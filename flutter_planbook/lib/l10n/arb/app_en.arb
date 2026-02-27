@@ -654,5 +654,16 @@
     }
   },
   "onTheDay": "On the day",
-  "invalidTime": "Invalid time"
+  "invalidTime": "Invalid time",
+  "apkDownloadUpdate": "Download New Version",
+  "apkDownloadUpdating": "Downloading...",
+  "apkDownloadNoVersion": "No version info, please refresh first.",
+  "apkDownloadNotNewer": "Current version is already up to date.",
+  "apkDownloadCanceled": "Download canceled.",
+  "apkDownloadPaused": "Download paused.",
+  "apkDownloadFailed": "Download failed.",
+  "apkDownloadNotFound": "Download resource not found.",
+  "apkDownloadWaitingRetry": "Waiting to retry.",
+  "apkDownloadIncomplete": "Download did not complete.",
+  "apkInstallFailed": "Installation failed."
 }

@@ -148,63 +148,81 @@ class _TaskDurationViewState extends State<TaskDurationView> {
             ],
           ),
         ),
-        Row(
-          children: [
-            const SizedBox(
-              width: 16,
-              height: kToolbarHeight,
-            ),
-            Text(
-              context.l10n.startTime,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const Spacer(),
-            AppDatePicker(
-              maximumDateTime: endAt.subtract(minutes: 1),
-              mode: isAllDay
-                  ? AppDatePickerMode.date
-                  : AppDatePickerMode.dateTime,
-              date: startAt,
-              onDateChanged: (date) {
-                startAt = date;
-              },
-            ),
-            const SizedBox(
-              width: 16,
-              height: kToolbarHeight,
-            ),
-          ],
+        AnimatedSwitcher(
+          duration: Durations.medium1,
+          transitionBuilder: (child, animation) => SizeTransition(
+            sizeFactor: animation,
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+          child: isAllDay
+              ? null
+              : Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: kToolbarHeight,
+                    ),
+                    Text(
+                      context.l10n.startTime,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const Spacer(),
+                    AppDatePicker(
+                      maximumDateTime: endAt.subtract(minutes: 1),
+                      mode: isAllDay
+                          ? AppDatePickerMode.date
+                          : AppDatePickerMode.dateTime,
+                      date: startAt,
+                      onDateChanged: (date) {
+                        startAt = date;
+                      },
+                    ),
+                    const SizedBox(
+                      width: 16,
+                      height: kToolbarHeight,
+                    ),
+                  ],
+                ),
         ),
-        Row(
-          children: [
-            const SizedBox(
-              width: 16,
-              height: kToolbarHeight,
-            ),
-            Text(
-              context.l10n.endTime,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-            const Spacer(),
-            AppDatePicker(
-              mode: isAllDay
-                  ? AppDatePickerMode.date
-                  : AppDatePickerMode.dateTime,
-              minimumDateTime: startAt.add(minutes: 1),
-              date: endAt,
-              onDateChanged: (date) {
-                endAt = date;
-              },
-            ),
-            const SizedBox(
-              width: 16,
-              height: kToolbarHeight,
-            ),
-          ],
+        AnimatedSwitcher(
+          duration: Durations.medium1,
+          transitionBuilder: (child, animation) => SizeTransition(
+            sizeFactor: animation,
+            child: FadeTransition(opacity: animation, child: child),
+          ),
+          child: isAllDay
+              ? null
+              : Row(
+                  children: [
+                    const SizedBox(
+                      width: 16,
+                      height: kToolbarHeight,
+                    ),
+                    Text(
+                      context.l10n.endTime,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const Spacer(),
+                    AppDatePicker(
+                      mode: isAllDay
+                          ? AppDatePickerMode.date
+                          : AppDatePickerMode.dateTime,
+                      minimumDateTime: startAt.add(minutes: 1),
+                      date: endAt,
+                      onDateChanged: (date) {
+                        endAt = date;
+                      },
+                    ),
+                    const SizedBox(
+                      width: 16,
+                      height: kToolbarHeight,
+                    ),
+                  ],
+                ),
         ),
         SizedBox(height: 16 + MediaQuery.of(context).padding.bottom),
       ],

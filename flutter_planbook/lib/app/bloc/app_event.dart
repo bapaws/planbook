@@ -46,3 +46,25 @@ final class AppSeedColorChanged extends AppEvent {
 final class AppBackgroundRequested extends AppEvent {
   const AppBackgroundRequested();
 }
+
+final class AppApkVersionRequested extends AppEvent {
+  const AppApkVersionRequested();
+}
+
+final class AppApkDownloadRequested extends AppEvent {
+  const AppApkDownloadRequested({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  List<Object?> get props => [l10n];
+}
+
+final class AppApkDownloadProgressUpdated extends AppEvent {
+  const AppApkDownloadProgressUpdated(this.progress);
+
+  final double progress;
+
+  @override
+  List<Object?> get props => [progress];
+}

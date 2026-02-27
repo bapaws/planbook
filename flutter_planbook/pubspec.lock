@@ -185,6 +185,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "10.2.6"
+  background_downloader:
+    dependency: "direct main"
+    description:
+      name: background_downloader
+      sha256: f15da01894a400103f4efc711d2d0782ad06c164f1a56a50735bd781d6fffc96
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "9.5.3"
   bloc:
     dependency: "direct main"
     description:
@@ -1315,6 +1323,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
+  open_filex:
+    dependency: "direct main"
+    description:
+      name: open_filex
+      sha256: "9976da61b6a72302cf3b1efbce259200cd40232643a467aac7370addf94d6900"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.7.0"
   os_detect:
     dependency: transitive
     description:

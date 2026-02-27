@@ -370,5 +370,16 @@
   "dayEarly": "提前{count}天",
   "weekEarly": "提前{count}周",
   "onTheDay": "当天",
-  "invalidTime": "当前提醒时间无效"
+  "invalidTime": "当前提醒时间无效",
+  "apkDownloadUpdate": "下载新版本",
+  "apkDownloadUpdating": "正在下载...",
+  "apkDownloadNoVersion": "暂无版本信息，请先刷新。",
+  "apkDownloadNotNewer": "当前已是最新版本。",
+  "apkDownloadCanceled": "下载已取消。",
+  "apkDownloadPaused": "下载已暂停。",
+  "apkDownloadFailed": "下载失败。",
+  "apkDownloadNotFound": "下载资源不存在。",
+  "apkDownloadWaitingRetry": "等待重试中。",
+  "apkDownloadIncomplete": "下载未完成。",
+  "apkInstallFailed": "安装失败。"
 }

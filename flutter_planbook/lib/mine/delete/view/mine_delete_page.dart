@@ -23,7 +23,9 @@ class MineDeletePage extends StatelessWidget {
       child: BlocListener<MineDeleteCubit, MineDeleteState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
-          if (state.status == PageStatus.success) {}
+          if (state.status == PageStatus.success) {
+            context.router.replaceAll([const SignHomeRoute()]);
+          }
         },
         child: _MineDeletePage(),
       ),
