@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_filex/open_filex.dart';
+import 'package:install_plugin_v3/install_plugin_v3.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -99,7 +99,7 @@ class ApkDownloadService {
     final completedVersion = sp.getString(_keyCompletedApkVersion);
     if (completedVersion == version && File(savePath).existsSync()) {
       _progressController.add(1);
-      unawaited(OpenFilex.open(savePath));
+      unawaited(_installApk(savePath));
       return true;
     }
     final task = DownloadTask(
@@ -149,13 +149,19 @@ class ApkDownloadService {
           _sp!.setString(_keyCompletedApkVersion, version);
         }
         _progressController.add(1);
-        update.task.filePath().then(OpenFilex.open);
+        update.task.filePath().then(_installApk);
       } else if (update.status == TaskStatus.failed ||
           update.status == TaskStatus.canceled ||
           update.status == TaskStatus.notFound) {
         _progressController.add(-1);
       }
     }
+  }
+
+  /// Android 使用 install_plugin（配合 FileProvider + REQUEST_INSTALL_PACKAGES）调起安装，避免“没有安装权限”。
+  static Future<void> _installApk(String path) async {
+    if (!AppChannel.isCloud) return;
+    await InstallPlugin.install(path);
   }
 
   /// 从 filename（如 planbook-2.5.2.apk）解析出版本号。

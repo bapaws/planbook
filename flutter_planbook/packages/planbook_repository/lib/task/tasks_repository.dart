@@ -411,6 +411,17 @@ class TasksRepository {
     await _dbTaskApi.deleteTaskById(taskId);
   }
 
+  /// 更新任务优先级（用于四象限视图拖动调整）
+  Future<void> updateTaskPriority(
+    TaskEntity entity,
+    TaskPriority newPriority,
+  ) async {
+    await update(
+      task: entity.task.copyWith(priority: Value(newPriority)),
+      tags: entity.tags,
+    );
+  }
+
   Stream<List<TaskEntity>> getCompletedTaskEntities({
     required Jiffy date,
     TaskPriority? priority,

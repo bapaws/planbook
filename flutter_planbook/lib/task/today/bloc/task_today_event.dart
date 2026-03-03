@@ -43,3 +43,16 @@ final class TaskTodaySummaryNoteRequested extends TaskTodayEvent {
   @override
   List<Object?> get props => [date];
 }
+
+final class TaskTodayNoteTaskAppended extends TaskTodayEvent {
+  const TaskTodayNoteTaskAppended({
+    required this.task,
+    required this.noteType,
+  });
+
+  final TaskEntity task;
+  final NoteType noteType;
+
+  @override
+  List<Object?> get props => [task, noteType];
+}

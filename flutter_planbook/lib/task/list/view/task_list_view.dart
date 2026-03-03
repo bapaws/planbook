@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -15,6 +17,7 @@ class TaskListView extends StatelessWidget {
     this.onTaskEdited,
     this.header,
     this.onTaskDelayed,
+    this.targetDay,
     super.key,
   });
 
@@ -28,6 +31,9 @@ class TaskListView extends StatelessWidget {
 
   final ValueChanged<TaskEntity>? onTaskDelayed;
 
+  /// 当前列表对应的日期；非 null 时支持将任务拖入/拖出以改期（天视图等）
+  final Jiffy? targetDay;
+
   @override
   Widget build(BuildContext context) {
     return TaskSliverList(
@@ -38,6 +44,7 @@ class TaskListView extends StatelessWidget {
       onTaskDeleted: onTaskDeleted,
       onTaskEdited: onTaskEdited,
       onTaskDelayed: onTaskDelayed,
+      targetDay: targetDay,
     );
   }
 }
@@ -51,6 +58,7 @@ class TaskSliverList extends StatelessWidget {
     this.onTaskDeleted,
     this.onTaskEdited,
     this.onTaskDelayed,
+    this.targetDay,
     super.key,
   });
 
@@ -62,6 +70,9 @@ class TaskSliverList extends StatelessWidget {
   final ValueChanged<TaskEntity>? onTaskDeleted;
   final ValueChanged<TaskEntity>? onTaskEdited;
   final ValueChanged<TaskEntity>? onTaskDelayed;
+
+  /// 当前列表对应的日期；非 null 时支持拖拽改期
+  final Jiffy? targetDay;
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +89,7 @@ class TaskSliverList extends StatelessWidget {
           itemBuilder: (context, index) {
             final task = tasks[index];
             final nextTask = index < tasks.length - 1 ? tasks[index + 1] : null;
-            return TaskListTile(
+            final tile = TaskListTile(
               key: ValueKey(task),
               task: task,
               titleTextStyle: Theme.of(context).textTheme.titleMedium,
@@ -130,6 +141,11 @@ class TaskSliverList extends StatelessWidget {
                   TaskListTaskExpanded(task: task),
                 );
               },
+            );
+            if (targetDay == null) return tile;
+            return TaskDropArea(
+              targetDay: targetDay,
+              child: TaskDraggable(task: task, child: tile),
             );
           },
         ),

@@ -75,6 +75,14 @@ class TaskTodayPage extends StatelessWidget {
                     _addDiscoverEvent(context, noteType);
                     _navigateToRootDiscover(context, noteType);
                   },
+                  onTaskDropped: (task) {
+                    context.read<TaskTodayBloc>().add(
+                          TaskTodayNoteTaskAppended(
+                            task: task,
+                            noteType: noteType,
+                          ),
+                        );
+                  },
                 );
               },
             ),
@@ -179,6 +187,7 @@ class _TaskTodayListPage extends StatelessWidget {
           builder: (context, state) => TaskListView(
             tasks: state.tasks,
             header: tag != null ? TaskListHeader(tag: tag) : null,
+            targetDay: state.date,
           ),
         ),
       ),

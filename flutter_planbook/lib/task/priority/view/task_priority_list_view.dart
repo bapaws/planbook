@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_to_priority.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_color_header.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_flag_header.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class TaskPriorityListView extends StatelessWidget {
@@ -48,78 +51,113 @@ class TaskPriorityListView extends StatelessWidget {
           },
         ),
         Expanded(
-          child: BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(
-            selector: (state) => state.tasks,
-            builder: (context, tasks) {
-              return ListView.builder(
-                padding: const EdgeInsets.only(
-                  right: 8,
-                ),
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  final task = tasks[index];
-                  final nextTask = index < tasks.length - 1
-                      ? tasks[index + 1]
-                      : null;
-                  return TaskListTile.priority(
-                    key: ValueKey(task.occurrence?.id ?? task.id),
-                    task: task,
-                    titleTextStyle: Theme.of(context).textTheme.bodyMedium,
-                    isExpanded: nextTask?.parentId == task.id,
-                    onPressed: (task) {
-                      if (onTaskPressed != null) {
-                        onTaskPressed!(task);
-                      } else {
+          child: TaskPriorityDropArea(
+            targetPriority: priority,
+            child: BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(
+              selector: (state) => state.tasks,
+              builder: (context, tasks) {
+                return ListView.builder(
+                  padding: const EdgeInsets.only(right: 8),
+                  itemCount: tasks.length,
+                  itemBuilder: (context, index) {
+                    final task = tasks[index];
+                    final nextTask = index < tasks.length - 1
+                        ? tasks[index + 1]
+                        : null;
+                    final tile = TaskListTile.priority(
+                      key: ValueKey(task.occurrence?.id ?? task.id),
+                      task: task,
+                      titleTextStyle: Theme.of(context).textTheme.bodyMedium,
+                      isExpanded: nextTask?.parentId == task.id,
+                      onPressed: (t) {
+                        if (onTaskPressed != null) {
+                          onTaskPressed!(t);
+                        } else {
+                          context.router.push(
+                            TaskDetailRoute(
+                              taskId: t.id,
+                              occurrenceAt: t.occurrence?.occurrenceAt,
+                            ),
+                          );
+                        }
+                      },
+                      onCompleted: (t) {
+                        if (onTaskCompleted != null) {
+                          onTaskCompleted!(t);
+                        } else {
+                          context.read<TaskListBloc>().add(
+                            TaskListCompleted(task: t),
+                          );
+                        }
+                      },
+                      onDeleted: (t) {
+                        if (onTaskDeleted != null) {
+                          onTaskDeleted!(t);
+                        } else {
+                          context.read<TaskListBloc>().add(
+                            TaskListDeleted(taskId: t.id),
+                          );
+                        }
+                      },
+                      onEdited: (t) {
                         context.router.push(
-                          TaskDetailRoute(
-                            taskId: task.id,
-                            occurrenceAt: task.occurrence?.occurrenceAt,
-                          ),
+                          TaskNewRoute(initialTask: t),
                         );
-                      }
-                    },
-                    onCompleted: (task) {
-                      if (onTaskCompleted != null) {
-                        onTaskCompleted!(task);
-                      } else {
+                      },
+                      onDelayed: (t) {
+                        if (onTaskDelayed != null) {
+                          onTaskDelayed!(t);
+                        } else {
+                          context.read<TaskListBloc>().add(
+                            TaskListTaskDelayed(task: t),
+                          );
+                        }
+                      },
+                      onExpanded: (t) {
                         context.read<TaskListBloc>().add(
-                          TaskListCompleted(task: task),
+                          TaskListTaskExpanded(task: t),
                         );
-                      }
-                    },
-                    onDeleted: (task) {
-                      if (onTaskDeleted != null) {
-                        onTaskDeleted!(task);
-                      } else {
-                        context.read<TaskListBloc>().add(
-                          TaskListDeleted(taskId: task.id),
-                        );
-                      }
-                    },
-                    onEdited: (task) {
-                      context.router.push(TaskNewRoute(initialTask: task));
-                    },
-                    onDelayed: (task) {
-                      if (onTaskDelayed != null) {
-                        onTaskDelayed!(task);
-                      } else {
-                        context.read<TaskListBloc>().add(
-                          TaskListTaskDelayed(task: task),
-                        );
-                      }
-                    },
-                    onExpanded: (task) {
-                      context.read<TaskListBloc>().add(
-                        TaskListTaskExpanded(task: task),
-                      );
-                    },
-                  );
-                },
-              );
-            },
+                      },
+                    );
+                    return TaskDraggable(
+                      task: task,
+                      feedbackBuilder: _buildDragFeedback,
+                      child: tile,
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDragFeedback(BuildContext context, TaskEntity task) {
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      color: Theme.of(context).colorScheme.surfaceContainerLowest,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width / 2,
+            height: 36,
+            child: TaskListTile.priority(task: task),
+          ),
+          const Positioned(
+            top: -8,
+            right: -8,
+            child: Icon(
+              FontAwesomeIcons.circlePlus,
+              size: 24,
+              color: Colors.green,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

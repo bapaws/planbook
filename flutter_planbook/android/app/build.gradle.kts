@@ -33,6 +33,18 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "channel"
+    productFlavors {
+        create("cloud") {
+            dimension = "channel"
+            // cloud 渠道保留 REQUEST_INSTALL_PACKAGES（自更新安装），不在此处声明，由 install_plugin 合并
+        }
+        create("store") {
+            dimension = "channel"
+            // store 渠道通过 src/store/AndroidManifest.xml 移除 REQUEST_INSTALL_PACKAGES
+        }
+    }
+
     signingConfigs {
         create("release") {
             val keyProperties = Properties()

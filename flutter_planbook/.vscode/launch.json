@@ -12,18 +12,18 @@
       "args": ["--target", "lib/main.dart"]
     },
     {
-      "name": "CN",
+      "name": "Store",
       "request": "launch",
       "type": "dart",
-      "program": "lib/main_cn.dart",
-      "args": ["--target", "lib/main_cn.dart"]
+      "program": "lib/main_store.dart",
+      "args": ["--target", "lib/main_store.dart","--flavor", "store"]
     },
     {
       "name": "Cloud",
       "request": "launch",
       "type": "dart",
       "program": "lib/main_cloud.dart",
-      "args": ["--target", "lib/main_cloud.dart"]
+      "args": ["--target", "lib/main_cloud.dart","--flavor", "cloud"]
     }
   ]
 }

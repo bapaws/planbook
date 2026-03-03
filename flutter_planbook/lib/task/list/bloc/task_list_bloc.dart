@@ -30,6 +30,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
     on<TaskListTaskDelayed>(_onTaskDelayed);
     on<TaskListTaskExpanded>(_onTaskExpanded);
+    on<TaskListPriorityChanged>(_onPriorityChanged);
   }
 
   final TasksRepository _tasksRepository;
@@ -174,21 +175,31 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
 
   /// 延迟任务到指定时间
   ///
+  /// delayTo 非 null 时使用该日期；否则按“已过期→明天、否则→今天”计算。
   /// 对于非重复任务：直接修改 dueAt/startAt/endAt 时间
   /// 对于重复任务：创建分离实例（仅延迟这一个实例）
   Future<void> _onTaskDelayed(
     TaskListTaskDelayed event,
     Emitter<TaskListState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
-
-    final endAt = event.task.occurrence?.endAt ?? event.task.endAt;
     Jiffy delayTo;
-    if (endAt != null && endAt.isBefore(Jiffy.now())) {
-      delayTo = Jiffy.now().add(days: 1);
+    if (event.delayTo != null) {
+      delayTo = event.delayTo!.startOf(Unit.day);
+      final taskDay =
+          (event.task.occurrenceAt ?? event.task.startAt ?? event.task.dueAt)
+              ?.startOf(Unit.day);
+      if (taskDay != null && taskDay.isSame(delayTo, unit: Unit.day)) {
+        return;
+      }
     } else {
-      delayTo = Jiffy.now();
+      final endAt = event.task.occurrence?.endAt ?? event.task.endAt;
+      if (endAt != null && endAt.isBefore(Jiffy.now())) {
+        delayTo = Jiffy.now().add(days: 1);
+      } else {
+        delayTo = Jiffy.now();
+      }
     }
+    emit(state.copyWith(status: PageStatus.loading));
     await _tasksRepository.delayTask(
       entity: event.task,
       delayTo: delayTo,
@@ -231,5 +242,18 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         ),
       );
     }
+  }
+
+  Future<void> _onPriorityChanged(
+    TaskListPriorityChanged event,
+    Emitter<TaskListState> emit,
+  ) async {
+    if (event.task.priority == event.targetPriority) return;
+    emit(state.copyWith(status: PageStatus.loading));
+    await _tasksRepository.updateTaskPriority(
+      event.task,
+      event.targetPriority,
+    );
+    emit(state.copyWith(status: PageStatus.success));
   }
 }

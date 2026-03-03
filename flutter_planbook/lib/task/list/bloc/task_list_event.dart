@@ -67,14 +67,16 @@ final class TaskListNoteCreated extends TaskListEvent {
 final class TaskListTaskDelayed extends TaskListEvent {
   const TaskListTaskDelayed({
     required this.task,
+    this.delayTo,
   });
 
   final TaskEntity task;
 
+  /// 指定延迟到的日期；为 null 时由 bloc 按“今天/明天”规则计算
+  final Jiffy? delayTo;
+
   @override
-  List<Object?> get props => [
-    task,
-  ];
+  List<Object?> get props => [task, delayTo];
 }
 
 final class TaskListTaskExpanded extends TaskListEvent {
@@ -84,4 +86,17 @@ final class TaskListTaskExpanded extends TaskListEvent {
 
   @override
   List<Object?> get props => [task];
+}
+
+final class TaskListPriorityChanged extends TaskListEvent {
+  const TaskListPriorityChanged({
+    required this.task,
+    required this.targetPriority,
+  });
+
+  final TaskEntity task;
+  final TaskPriority targetPriority;
+
+  @override
+  List<Object?> get props => [task, targetPriority];
 }
