@@ -204,7 +204,18 @@ class _TaskWeekPage extends StatelessWidget {
         final note = noteType.isFocus
             ? bloc.state.focusNote
             : bloc.state.summaryNote;
-        return TaskWeekFocusCell(note: note, noteType: noteType);
+        return TaskWeekFocusCell(
+          note: note,
+          noteType: noteType,
+          onTaskDropped: (task) {
+            context.read<TaskWeekBloc>().add(
+              TaskWeekNoteTaskAppended(
+                task: task,
+                noteType: noteType,
+              ),
+            );
+          },
+        );
       },
     );
   }

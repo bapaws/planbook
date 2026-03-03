@@ -116,4 +116,19 @@ enum NoteType {
     NoteType.yearlySummary => NoteType.yearlySummary,
     _ => throw UnimplementedError(),
   };
+
+  /// 按笔记类型将 [focusAt] 规范为存储用的基准时间
+  /// （日→当天 0 点，周→当周周一 0 点，月→当月 1 号 0 点，年→当年 1 月 1 日 0 点）
+  Jiffy normalizedFocusAt(Jiffy focusAt) {
+    return switch (this) {
+      NoteType.dailyFocus || NoteType.dailySummary => focusAt.startOf(Unit.day),
+      NoteType.weeklyFocus || NoteType.weeklySummary =>
+        focusAt.subtract(days: focusAt.dateTime.weekday - 1).startOf(Unit.day),
+      NoteType.monthlyFocus ||
+      NoteType.monthlySummary => focusAt.startOf(Unit.month),
+      NoteType.yearlyFocus ||
+      NoteType.yearlySummary => focusAt.startOf(Unit.year),
+      NoteType.journal => throw UnimplementedError(),
+    };
+  }
 }

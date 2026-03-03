@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -10,7 +12,9 @@ part 'task_month_state.dart';
 class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
   TaskMonthBloc({
     required NotesRepository notesRepository,
+    required AppLocalizations l10n,
   }) : _notesRepository = notesRepository,
+       _l10n = l10n,
        super(TaskMonthState(date: Jiffy.now())) {
     on<TaskMonthDateSelected>(_onDateSelected);
     on<TaskMonthFocusNoteRequested>(
@@ -22,9 +26,11 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
       transformer: restartable(),
     );
     on<TaskMonthCalendarToggled>(_onCalendarToggled);
+    on<TaskMonthNoteTaskAppended>(_onNoteTaskAppended);
   }
 
   final NotesRepository _notesRepository;
+  final AppLocalizations _l10n;
 
   Future<void> _onDateSelected(
     TaskMonthDateSelected event,
@@ -110,5 +116,23 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
     Emitter<TaskMonthState> emit,
   ) async {
     emit(state.copyWith(isCalendarExpanded: !state.isCalendarExpanded));
+  }
+
+  Future<void> _onNoteTaskAppended(
+    TaskMonthNoteTaskAppended event,
+    Emitter<TaskMonthState> emit,
+  ) async {
+    final currentNote = event.noteType.isFocus
+        ? state.focusNote
+        : state.summaryNote;
+    final title = event.noteType.noteTitle(state.date, _l10n);
+    final focusAt = event.noteType.normalizedFocusAt(state.date);
+    await _notesRepository.appendTaskLineToNote(
+      title: title,
+      focusAt: focusAt,
+      noteType: event.noteType,
+      task: event.task,
+      currentNote: currentNote,
+    );
   }
 }

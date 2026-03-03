@@ -10,66 +10,75 @@ import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
+import 'package:planbook_api/entity/task_entity.dart';
 
 class TaskWeekFocusCell extends StatelessWidget {
   const TaskWeekFocusCell({
     required this.note,
     required this.noteType,
+    this.onTaskDropped,
     super.key,
   });
 
   final Note? note;
   final NoteType noteType;
+  final ValueChanged<TaskEntity>? onTaskDropped;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Expanded(
-      child: ColoredBox(
-        color: theme.colorScheme.surface,
-        child: GestureDetector(
-          onTap: () {
-            context.router.push(
-              NoteNewTypeRoute(
-                initialNote: note,
-                type: noteType,
-                focusAt: note?.focusAt ?? Jiffy.now(),
-              ),
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 4),
-              TaskFocusHeaderView(
-                noteType: noteType,
-                tab: RootTaskTab.week,
-                onMindMapTapped: () {
-                  _addDiscoverEvent(context, noteType);
-                  _navigateToRootDiscover(context, noteType);
-                },
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      note?.content ?? noteType.getHintText(context.l10n),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: note == null
-                            ? theme.colorScheme.outlineVariant
-                            : theme.colorScheme.primary,
-                      ),
+    final child = ColoredBox(
+      color: theme.colorScheme.surface,
+      child: GestureDetector(
+        onTap: () {
+          context.router.push(
+            NoteNewTypeRoute(
+              initialNote: note,
+              type: noteType,
+              focusAt: note?.focusAt ?? Jiffy.now(),
+            ),
+          );
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 4),
+            TaskFocusHeaderView(
+              noteType: noteType,
+              tab: RootTaskTab.week,
+              onMindMapTapped: () {
+                _addDiscoverEvent(context, noteType);
+                _navigateToRootDiscover(context, noteType);
+              },
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    note?.content ?? noteType.getHintText(context.l10n),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: note == null
+                          ? theme.colorScheme.outlineVariant
+                          : theme.colorScheme.primary,
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+
+    if (onTaskDropped == null) return Expanded(child: child);
+    return Expanded(
+      child: DragTarget<TaskEntity>(
+        onAcceptWithDetails: (details) => onTaskDropped!(details.data),
+        builder: (context, candidateData, rejectedData) => child,
       ),
     );
   }

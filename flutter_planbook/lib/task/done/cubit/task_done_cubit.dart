@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
@@ -98,6 +100,11 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
       completedAt: completedAt,
       // 子任务与父任务的重复规则一致，直接使用传入的 occurrenceAt
       occurrenceAt: state.task.occurrence?.occurrenceAt,
+    );
+
+    /// 更新任务完成后，更新重点或总结
+    unawaited(
+      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
     );
     return activities;
   }

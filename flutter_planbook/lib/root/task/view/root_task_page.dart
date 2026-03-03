@@ -31,16 +31,19 @@ class RootTaskPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) => TaskWeekBloc(
             notesRepository: context.read(),
+            l10n: l10n,
           )..add(TaskWeekDateSelected(date: Jiffy.now())),
         ),
         BlocProvider(
           create: (context) => TaskMonthBloc(
             notesRepository: context.read(),
+            l10n: l10n,
           )..add(TaskMonthDateSelected(date: Jiffy.now())),
         ),
       ],

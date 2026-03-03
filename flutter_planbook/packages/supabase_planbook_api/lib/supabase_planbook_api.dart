@@ -2,5 +2,6 @@
 library;
 
 export 'note/supabase_note_api.dart';
+export 'note/supabase_note_task_api.dart';
 export 'tag/supabase_tag_api.dart';
 export 'task/supabase_task_api.dart';

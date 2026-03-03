@@ -160,6 +160,14 @@ class _TaskMonthPage extends StatelessWidget {
             _addDiscoverEvent(context, noteType);
             _navigateToRootDiscover(context, noteType);
           },
+          onTaskDropped: (task) {
+            context.read<TaskMonthBloc>().add(
+                  TaskMonthNoteTaskAppended(
+                    task: task,
+                    noteType: noteType,
+                  ),
+                );
+          },
         );
       },
     );

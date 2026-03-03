@@ -194,6 +194,11 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       task,
       occurrenceAt: state.task?.occurrence?.occurrenceAt,
     );
+
+    /// 更新任务完成后，更新重点或总结
+    unawaited(
+      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
+    );
     for (final activity in activities) {
       add(TaskDetailNoteCreated(activity: activity));
 

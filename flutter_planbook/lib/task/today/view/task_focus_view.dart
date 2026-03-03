@@ -40,6 +40,10 @@ class TaskFocusView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isEmpty = note?.content == null || note!.content!.isEmpty;
+    final noteContent = isEmpty
+        ? noteType.getHintText(context.l10n)
+        : note!.content!;
     final content = GestureDetector(
       key: ValueKey(noteType),
       onTap: onTap,
@@ -75,9 +79,9 @@ class TaskFocusView extends StatelessWidget {
                 key: ValueKey(noteType),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: Text(
-                  note?.content ?? noteType.getHintText(context.l10n),
+                  noteContent,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: note == null
+                    color: isEmpty
                         ? theme.colorScheme.outlineVariant
                         : theme.colorScheme.primary,
                   ),

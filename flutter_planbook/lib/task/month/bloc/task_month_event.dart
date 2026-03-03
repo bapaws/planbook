@@ -37,3 +37,16 @@ final class TaskMonthSummaryNoteRequested extends TaskMonthEvent {
 final class TaskMonthCalendarToggled extends TaskMonthEvent {
   const TaskMonthCalendarToggled();
 }
+
+final class TaskMonthNoteTaskAppended extends TaskMonthEvent {
+  const TaskMonthNoteTaskAppended({
+    required this.task,
+    required this.noteType,
+  });
+
+  final TaskEntity task;
+  final NoteType noteType;
+
+  @override
+  List<Object> get props => [task, noteType];
+}

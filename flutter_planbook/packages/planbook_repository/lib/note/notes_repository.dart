@@ -19,13 +19,18 @@ class NotesRepository {
   }) : _dbNoteApi = DatabaseNoteApi(db: db, tagApi: tagApi),
        _supabaseNoteApi = SupabaseNoteApi(sp: sp),
        _db = db,
-       _tagApi = tagApi;
+       _tagApi = tagApi,
+       _supabaseNoteTaskApi = SupabaseNoteTaskApi(),
+       _dbNoteTaskApi = DatabaseNoteTaskApi(db: db);
 
   final DatabaseNoteApi _dbNoteApi;
 
   final SupabaseNoteApi _supabaseNoteApi;
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
+
+  final SupabaseNoteTaskApi _supabaseNoteTaskApi;
+  final DatabaseNoteTaskApi _dbNoteTaskApi;
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
 
@@ -232,5 +237,72 @@ class NotesRepository {
         );
       }
     }
+  }
+
+  Future<void> appendTaskLineToNote({
+    required String title,
+    required Jiffy focusAt,
+    required NoteType noteType,
+    required TaskEntity task,
+    required Note? currentNote,
+  }) async {
+    final newLine = '${task.isCompleted ? '✅' : '❌'} ${task.title}';
+    final base = (currentNote?.content ?? '').trim();
+
+    final String newContent;
+    if (base.isEmpty) {
+      newContent = newLine;
+    } else {
+      final lines = base.split('\n').toList();
+      final taskTitle = task.title;
+
+      bool isSameTaskLine(String l) {
+        if (l.length < 2) return false;
+        final first = l[0];
+        if (first != '✅' && first != '❌') return false;
+        return l.substring(1).trimLeft() == taskTitle;
+      }
+
+      int? firstIdx;
+      final result = <String>[];
+      for (var i = 0; i < lines.length; i++) {
+        if (isSameTaskLine(lines[i])) {
+          firstIdx ??= result.length;
+          if (firstIdx == result.length) {
+            result.add(newLine);
+          }
+        } else {
+          result.add(lines[i]);
+        }
+      }
+      if (firstIdx != null) {
+        newContent = result.join('\n');
+      } else {
+        newContent = '$base\n$newLine';
+      }
+    }
+
+    if (currentNote == null) {
+      await create(
+        title: title,
+        content: newContent,
+        focusAt: focusAt,
+        type: noteType,
+      );
+    } else {
+      await update(
+        note: currentNote.copyWith(content: Value(newContent)),
+      );
+    }
+  }
+
+  Future<void> updateTypeNoteContentByTaskActivities(
+    List<TaskActivity> activities,
+  ) async {
+    final notes = await _dbNoteTaskApi.generateNoteContentByTaskActivities(
+      activities,
+    );
+    await _supabaseNoteTaskApi.updateTypeNoteContent(notes: notes);
+    await _dbNoteTaskApi.updateTypeNoteContent(notes);
   }
 }

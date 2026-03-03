@@ -108,6 +108,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       task,
       occurrenceAt: occurrenceAt,
     );
+
+    /// 更新任务完成后，更新重点或总结
+    unawaited(
+      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
+    );
     for (final activity in activities) {
       add(TaskListNoteCreated(activity: activity));
 
