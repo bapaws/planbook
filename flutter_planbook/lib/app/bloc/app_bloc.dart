@@ -115,7 +115,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       await _tasksRepository.createDefaultTasks(languageCode: languageCode);
       // await _notesRepository.createDefaultNotes(languageCode: languageCode);
     } else if (kDebugMode) {
-      const languageCode = 'zh';
+      // const languageCode = 'zh';
       // await _tagsRepository.createDefaultTags(languageCode: languageCode);
       // await _tasksRepository.createDefaultTasks(languageCode: languageCode);
       // await _notesRepository.createDefaultNotes(languageCode: languageCode);

@@ -3,7 +3,7 @@ enum AppChannelType {
   main,
 
   /// 国内版本应用市场
-  cn,
+  store,
 
   /// 自分发，腾讯云存储
   cloud,
@@ -25,7 +25,7 @@ class AppChannel {
   }
 
   static bool get isAndroidChina =>
-      instance.type == AppChannelType.cn ||
+      instance.type == AppChannelType.store ||
       instance.type == AppChannelType.cloud;
 
   static bool get isCloud => instance.type == AppChannelType.cloud;

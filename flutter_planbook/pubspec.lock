@@ -321,14 +321,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
-  carousel_slider:
-    dependency: "direct main"
-    description:
-      name: carousel_slider
-      sha256: bcc61735345c9ab5cb81073896579e735f81e35fd588907a393143ea986be8ff
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.1.1"
   change_app_package_name:
     dependency: "direct dev"
     description:
@@ -1147,14 +1139,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.5"
-  infinite_scroll_pagination:
-    dependency: "direct main"
-    description:
-      name: infinite_scroll_pagination
-      sha256: b0d28e37cd8f62490ff6aef63f9db93d4c78b7f11b7c6b26f33c69d8476fda78
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "5.1.1"
   install_plugin_v3:
     dependency: "direct main"
     description:
@@ -1331,14 +1315,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.1.0"
-  os_detect:
-    dependency: transitive
-    description:
-      name: os_detect
-      sha256: "7d87c0dd98c6faf110d5aa498e9a6df02ffce4bb78cc9cfc8ad02929be9bb71f"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.0.3"
   package_config:
     dependency: transitive
     description:
@@ -1805,14 +1781,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.2.12"
-  smooth_page_indicator:
-    dependency: "direct main"
-    description:
-      name: smooth_page_indicator
-      sha256: b21ebb8bc39cf72d11c7cfd809162a48c3800668ced1c9da3aade13a32cf6c1c
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "1.2.1"
   source_gen:
     dependency: transitive
     description:
@@ -2060,14 +2028,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.3.1"
-  upgrader:
-    dependency: "direct main"
-    description:
-      name: upgrader
-      sha256: "3fae4eb861c7e8567f91412d9ca4a287e024e58d6f79f98da79e3f6d78da74ba"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "12.5.0"
   url_launcher:
     dependency: "direct main"
     description:
@@ -2172,14 +2132,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.2.0"
-  version:
-    dependency: transitive
-    description:
-      name: version
-      sha256: "3d4140128e6ea10d83da32fef2fa4003fccbf6852217bb854845802f04191f94"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.0.2"
   very_good_analysis:
     dependency: "direct dev"
     description:

@@ -97,7 +97,6 @@ class TaskListTile extends StatefulWidget {
 
 class _TaskListTileState extends State<TaskListTile>
     with TickerProviderStateMixin<TaskListTile> {
-  final GlobalKey _tileKey = GlobalKey();
   late final SlidableController _slidableController = SlidableController(this);
 
   late TaskEntity _task;

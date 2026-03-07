@@ -218,7 +218,7 @@ class DatabaseTaskDelayApi {
     Jiffy? newDueAt;
 
     if (task.startAt != null) {
-      newStartAt = task.startAt;
+      newStartAt = task.startAt!.add(days: daysDiff);
     }
     if (task.endAt != null) {
       newEndAt = task.endAt!.add(days: daysDiff);
