@@ -131,15 +131,36 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
     );
   }
 
-  void onStartAtChanged(Jiffy? startAt) {
-    Jiffy? endAt;
-    if (startAt == null) {
-      endAt = null;
-    } else if (state.endAt != null && state.endAt!.isBefore(startAt)) {
-      endAt = state.isAllDay ? null : startAt.add(hours: 1);
-    } else {
-      endAt = state.endAt;
+  void onDueAtChanged(Jiffy? dueAt) {
+    if (dueAt == null) {
+      emit(state.copyWith(startAt: () => null, endAt: () => null));
+      return;
     }
+
+    if (state.startAt == null || state.endAt == null) {
+      emit(
+        state.copyWith(
+          startAt: () => dueAt,
+          endAt: () => dueAt.endOf(Unit.day),
+        ),
+      );
+      return;
+    }
+
+    final startAt = Jiffy.parseFromList([
+      dueAt.year,
+      dueAt.month,
+      dueAt.date,
+      state.startAt!.hour,
+      state.startAt!.minute,
+    ]);
+    final endAt = Jiffy.parseFromList([
+      dueAt.year,
+      dueAt.month,
+      dueAt.date,
+      state.endAt!.hour,
+      state.endAt!.minute,
+    ]);
     emit(state.copyWith(startAt: () => startAt, endAt: () => endAt));
   }
 

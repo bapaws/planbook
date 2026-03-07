@@ -246,7 +246,7 @@ class NotesRepository {
     required TaskEntity task,
     required Note? currentNote,
   }) async {
-    final newLine = '${task.isCompleted ? '✅' : '❌'} ${task.title}';
+    final newLine = '${task.isCompleted ? '✅' : '⭕️'} ${task.title}';
     final base = (currentNote?.content ?? '').trim();
 
     final String newContent;
@@ -259,7 +259,7 @@ class NotesRepository {
       bool isSameTaskLine(String l) {
         if (l.length < 2) return false;
         final first = l[0];
-        if (first != '✅' && first != '❌') return false;
+        if (first != '✅' && first != '⭕️') return false;
         return l.substring(1).trimLeft() == taskTitle;
       }
 

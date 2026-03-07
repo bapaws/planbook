@@ -257,7 +257,7 @@ class _TaskNewPageState extends State<_TaskNewPage> {
   }
 
   void _onDateChanged(BuildContext context, Jiffy? date) {
-    context.read<TaskNewCubit>().onStartAtChanged(date);
+    context.read<TaskNewCubit>().onDueAtChanged(date);
 
     context.read<TaskNewCubit>().onFocusChanged(
       TaskNewFocus.title,

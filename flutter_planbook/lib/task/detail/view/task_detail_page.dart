@@ -95,6 +95,19 @@ class _TaskDetailPage extends StatelessWidget {
           PullDownButton(
             itemBuilder: (context) => [
               PullDownMenuItem(
+                icon: FontAwesomeIcons.pencil,
+                title: context.l10n.edit,
+                onTap: () async {
+                  final bloc = context.read<TaskDetailBloc>();
+                  final task = bloc.state.task;
+                  if (task == null) return;
+                  await context.router.push(TaskNewRoute(initialTask: task));
+                  bloc
+                    ..add(const TaskDetailRequested())
+                    ..add(const TaskDetailNotesRequested());
+                },
+              ),
+              PullDownMenuItem(
                 icon: FontAwesomeIcons.trash,
                 title: context.l10n.delete,
                 isDestructive: true,

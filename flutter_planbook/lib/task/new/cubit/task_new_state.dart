@@ -28,6 +28,7 @@ final class TaskNewState extends Equatable {
   });
 
   factory TaskNewState.fromData({TaskEntity? task, Jiffy? dueAt}) {
+    print('fromData: ${task?.startAt}');
     return TaskNewState(
       initialTask: task,
       title: task?.title ?? '',

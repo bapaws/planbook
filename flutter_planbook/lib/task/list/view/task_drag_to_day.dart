@@ -115,7 +115,7 @@ class TaskDraggable extends StatelessWidget {
     final feedback =
         feedbackBuilder?.call(context, task) ??
         defaultDragFeedbackBuilder(context, task, colorScheme);
-    return Draggable<TaskEntity>(
+    return LongPressDraggable<TaskEntity>(
       data: task,
       feedback: feedback,
       childWhenDragging: Opacity(

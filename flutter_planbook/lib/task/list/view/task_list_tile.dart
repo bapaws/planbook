@@ -8,11 +8,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:planbook_repository/settings/settings_repository.dart';
-import 'package:pull_down_button/pull_down_button.dart';
 
 /// 统一的任务列表项组件
 ///
@@ -95,8 +95,10 @@ class TaskListTile extends StatefulWidget {
   State<TaskListTile> createState() => _TaskListTileState();
 }
 
-class _TaskListTileState extends State<TaskListTile> {
+class _TaskListTileState extends State<TaskListTile>
+    with TickerProviderStateMixin<TaskListTile> {
   final GlobalKey _tileKey = GlobalKey();
+  late final SlidableController _slidableController = SlidableController(this);
 
   late TaskEntity _task;
   set task(TaskEntity value) {
@@ -183,30 +185,81 @@ class _TaskListTileState extends State<TaskListTile> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = context.l10n;
     if (widget.onDeleted == null &&
         widget.onEdited == null &&
         widget.onDelayed == null) {
-      return _buildButton(context, null);
+      return _buildButton(context);
     }
-    return PullDownButton(
-      itemBuilder: (context) => _buildMenuItems(l10n),
-      buttonBuilder: _buildButton,
+    final theme = Theme.of(context);
+    return ClipRRect(
+      key: ValueKey(task.id),
+      child: Slidable(
+        controller: _slidableController,
+        key: ValueKey(task.id),
+        startActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.3,
+          children: [
+            SlidableAction(
+              onPressed: (context) {
+                context.router.push(TaskDoneRoute(task: _task));
+              },
+              backgroundColor: theme.colorScheme.primaryContainer,
+              foregroundColor: theme.colorScheme.primary,
+              icon: FontAwesomeIcons.listCheck,
+            ),
+          ],
+        ),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: _isOverdue ? 0.6 : 0.5,
+          children: [
+            SlidableAction(
+              onPressed: (context) {
+                widget.onEdited?.call(_task);
+              },
+              backgroundColor: theme.colorScheme.primaryContainer,
+              foregroundColor: theme.colorScheme.primary,
+              icon: FontAwesomeIcons.pencil,
+            ),
+            SlidableAction(
+              onPressed: (context) {
+                _showDeleteConfirmationDialog();
+              },
+              backgroundColor: theme.colorScheme.errorContainer,
+              foregroundColor: theme.colorScheme.error,
+              icon: FontAwesomeIcons.trash,
+            ),
+            if (_isOverdue)
+              SlidableAction(
+                onPressed: (context) {
+                  widget.onDelayed?.call(_task);
+                },
+                backgroundColor: theme.colorScheme.tertiaryContainer,
+                foregroundColor: theme.colorScheme.tertiary,
+                icon: FontAwesomeIcons.calendarDay,
+              ),
+          ],
+        ),
+        child: _buildButton(context),
+      ),
     );
   }
 
-  Widget _buildButton(BuildContext context, VoidCallback? showMenu) {
+  Widget _buildButton(BuildContext context) {
     final colorScheme = _task.priority.getColorScheme(context);
 
     final isEmptyChildren = _task.children.isEmpty;
-    return CupertinoButton(
-      key: _tileKey,
-      padding: EdgeInsets.zero,
-      minimumSize: minimumSize,
-      onLongPress: _task.parentId == null ? showMenu : null,
-      onPressed: widget.onPressed == null
+    return GestureDetector(
+      onTap: widget.onPressed == null
           ? null
-          : () => widget.onPressed!.call(_task),
+          : () {
+              if (_slidableController.direction.value != 0) {
+                _slidableController.close();
+                return;
+              }
+              widget.onPressed!.call(_task);
+            },
       child: Row(
         children: [
           if (_task.parentId != null) ...[
@@ -276,36 +329,11 @@ class _TaskListTileState extends State<TaskListTile> {
     );
   }
 
-  List<PullDownMenuEntry> _buildMenuItems(AppLocalizations l10n) {
-    return [
-      PullDownMenuItem(
-        icon: FontAwesomeIcons.solidCircleCheck,
-        title: _isCompleted ? l10n.uncompleteTask : l10n.completeTask,
-        onTap: () => context.router.push(TaskDoneRoute(task: _task)),
-      ),
-      const PullDownMenuDivider.large(),
-      if (_isOverdue)
-        PullDownMenuItem(
-          icon: FontAwesomeIcons.clock,
-          title: _isOverdueNow ? l10n.delayToTomorrow : l10n.delayToToday,
-          onTap: () => widget.onDelayed?.call(_task),
-        ),
-      PullDownMenuItem(
-        icon: FontAwesomeIcons.penToSquare,
-        title: l10n.edit,
-        onTap: () => widget.onEdited?.call(_task),
-      ),
-      const PullDownMenuDivider.large(),
-      PullDownMenuItem(
-        icon: FontAwesomeIcons.trash,
-        title: l10n.delete,
-        isDestructive: true,
-        onTap: () => widget.onDeleted?.call(_task),
-      ),
-    ];
-  }
-
   void _toggleCompleted() {
+    if (_slidableController.direction.value != 0) {
+      _slidableController.close();
+      return;
+    }
     if (widget.onCompleted == null) return;
 
     setState(() {
@@ -318,6 +346,10 @@ class _TaskListTileState extends State<TaskListTile> {
   }
 
   void _onExpanded() {
+    if (_slidableController.direction.value != 0) {
+      _slidableController.close();
+      return;
+    }
     widget.onExpanded?.call(_task);
   }
 
@@ -331,5 +363,29 @@ class _TaskListTileState extends State<TaskListTile> {
       final player = AudioPlayer();
       await player.play(AssetSource(sound));
     }
+  }
+
+  void _showDeleteConfirmationDialog() {
+    showCupertinoDialog<void>(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: Text(context.l10n.deleteTaskAlertTitle),
+        content: Text(context.l10n.deleteTaskAlertContent),
+        actions: [
+          CupertinoDialogAction(
+            child: Text(context.l10n.cancel),
+            onPressed: () => Navigator.pop(context),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: true,
+            child: Text(context.l10n.delete),
+            onPressed: () {
+              widget.onDeleted?.call(_task);
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -27,7 +27,7 @@ class DatabaseNoteTaskApi {
           await (db.select(db.notes)..where((t) {
                 var exp =
                     (t.content.like('%✅ ${task.title}%') |
-                        t.content.like('%❌ ${task.title}%')) &
+                        t.content.like('%⭕️ ${task.title}%')) &
                     t.deletedAt.isNull() &
                     t.focusAt.isNotNull();
                 if (date != null) {
@@ -67,7 +67,7 @@ class DatabaseNoteTaskApi {
       if (notes.isEmpty) continue;
       for (final note in notes) {
         final completedTaskContent = '✅ ${task.title}';
-        final uncompletedTaskContent = '❌ ${task.title}';
+        final uncompletedTaskContent = '⭕️ ${task.title}';
 
         final newTaskContent =
             activity.completedAt != null && activity.deletedAt == null

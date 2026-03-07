@@ -172,7 +172,7 @@ class AppActivityRepository {
   }
 
   Future<List<ActivityMessageEntity>> fetch({bool isNew = false}) async {
-    if (!await isReleaseVersion()) return [];
+    // if (!await isReleaseVersion()) return [];
 
     final isPremium = await AppPurchases.instance.isPremium;
 
@@ -211,7 +211,7 @@ class AppActivityRepository {
   }
 
   Future<List<ActivityMessageEntity>> fetchAll() async {
-    if (!await isReleaseVersion()) return [];
+    // if (!await isReleaseVersion()) return [];
 
     final isPremium = await AppPurchases.instance.isPremium;
 

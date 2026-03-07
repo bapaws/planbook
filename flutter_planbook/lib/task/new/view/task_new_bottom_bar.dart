@@ -127,6 +127,7 @@ class TaskNewBottomBar extends StatelessWidget {
                     ),
                     onPressed: () async {
                       final cubit = context.read<TaskNewCubit>();
+                      print('onPressed: ${cubit.state.startAt}');
                       final entity = await context.router.push(
                         TaskDurationRoute(
                           startAt: cubit.state.startAt,
