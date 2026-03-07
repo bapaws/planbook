@@ -34,6 +34,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     on<TaskDetailTagsChanged>(_onTagsChanged);
     on<TaskDetailRecurrenceRuleChanged>(_onRecurrenceRuleChanged);
     on<TaskDetailDurationChanged>(_onDurationChanged);
+    on<TaskDetailInboxDateChanged>(_onInboxDateChanged);
 
     on<TaskDetailCompleted>(_onCompleted);
     on<TaskDetailNoteCreated>(_onNoteCreated);
@@ -179,6 +180,18 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       isAllDay: event.entity?.isAllDay ?? true,
       startAt: Value(event.entity?.startAt),
       endAt: Value(event.entity?.endAt),
+    );
+    add(TaskDetailUpdated(task: updatedTask));
+  }
+
+  Future<void> _onInboxDateChanged(
+    TaskDetailInboxDateChanged event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    final updatedTask = state.task?.task.copyWith(
+      isAllDay: event.date != null,
+      startAt: Value(event.date?.startOf(Unit.day)),
+      endAt: Value(event.date?.endOf(Unit.day)),
     );
     add(TaskDetailUpdated(task: updatedTask));
   }

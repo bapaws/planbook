@@ -64,6 +64,15 @@ final class TaskDetailDurationChanged extends TaskDetailEvent {
   List<Object?> get props => [entity];
 }
 
+final class TaskDetailInboxDateChanged extends TaskDetailEvent {
+  const TaskDetailInboxDateChanged({this.date});
+
+  final Jiffy? date;
+
+  @override
+  List<Object?> get props => [date];
+}
+
 final class TaskDetailCompleted extends TaskDetailEvent {
   const TaskDetailCompleted({this.task});
 

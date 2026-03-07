@@ -63,9 +63,9 @@ class TaskListTile extends StatefulWidget {
     this.isExpanded = false,
     this.titleTextStyle,
     this.onExpanded,
+    this.onDelayed,
     super.key,
-  }) : onDelayed = null,
-       checkboxPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  }) : checkboxPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
        checkboxMinimumSize = 28,
        checkboxSize = 16;
 
@@ -229,7 +229,7 @@ class _TaskListTileState extends State<TaskListTile>
               foregroundColor: theme.colorScheme.error,
               icon: FontAwesomeIcons.trash,
             ),
-            if (_isOverdue)
+            if (_isOverdue && widget.onDelayed != null)
               SlidableAction(
                 onPressed: (context) {
                   widget.onDelayed?.call(_task);

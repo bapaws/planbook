@@ -68,14 +68,18 @@ class _TaskDurationPageState extends State<TaskDurationPage> {
               leading: CupertinoButton(
                 alignment: Alignment.centerLeft,
                 onPressed: () {
+                  final now = Jiffy.now();
+                  final startAt = now.startOf(Unit.day);
+                  final endAt = now.endOf(Unit.day);
                   context.router.maybePop(
                     TaskDurationEntity(
-                      startAt: _entity.startAt,
+                      startAt: startAt,
+                      endAt: endAt,
                       isAllDay: true,
                     ),
                   );
                 },
-                child: Text(context.l10n.thatDay),
+                child: Text(context.l10n.today),
               ),
               actions: [
                 CupertinoButton(

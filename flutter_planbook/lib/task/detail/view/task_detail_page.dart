@@ -192,21 +192,21 @@ class _TaskDetailPage extends StatelessWidget {
                   const SliverToBoxAdapter(
                     child: SizedBox(height: 24),
                   ),
-
-                  TaskDetailSliverTile(
-                    onPressed: () {
-                      _onDateTap(context, task);
-                    },
-                    leading: AppIcon(
-                      FontAwesomeIcons.calendarDay,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      foregroundColor: theme.colorScheme.primary,
+                  if (task.startAt != null && task.endAt != null)
+                    TaskDetailSliverTile(
+                      onPressed: () {
+                        _onDateTap(context, task);
+                      },
+                      leading: AppIcon(
+                        FontAwesomeIcons.calendarDay,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        foregroundColor: theme.colorScheme.primary,
+                      ),
+                      title: context.l10n.allDay,
+                      trailing: Text(
+                        task.isAllDay ? context.l10n.yes : context.l10n.no,
+                      ),
                     ),
-                    title: context.l10n.allDay,
-                    trailing: Text(
-                      task.isAllDay ? context.l10n.yes : context.l10n.no,
-                    ),
-                  ),
                   if (task.startAt != null &&
                       task.endAt != null &&
                       (!task.isAllDay ||
@@ -244,7 +244,7 @@ class _TaskDetailPage extends StatelessWidget {
                       formattedDate:
                           task.occurrenceAt?.yMMMEd ?? context.l10n.inbox,
                       onPressed: () {
-                        _onDateTap(context, task);
+                        _onInboxDateTap(context, task);
                       },
                     ),
                   ],
@@ -425,6 +425,19 @@ class _TaskDetailPage extends StatelessWidget {
     }
     context.read<TaskDetailBloc>().add(
       TaskDetailDurationChanged(entity: entity),
+    );
+  }
+
+  void _onInboxDateTap(BuildContext context, TaskEntity task) {
+    context.router.push(
+      TaskDatePickerRoute(
+        date: task.occurrenceAt ?? Jiffy.now(),
+        onDateChanged: (date) {
+          context.read<TaskDetailBloc>().add(
+            TaskDetailInboxDateChanged(date: date),
+          );
+        },
+      ),
     );
   }
 }
