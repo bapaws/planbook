@@ -4,6 +4,8 @@ import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:uuid/uuid.dart';
@@ -176,6 +178,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
     );
+
+    /// 延迟 1 秒后请求评论
+    Future.delayed(const Duration(seconds: 1), _requestReview);
   }
 
   /// 延迟任务到指定时间
@@ -260,5 +265,13 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       event.targetPriority,
     );
     emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _requestReview() async {
+    if (kDebugMode) return;
+    final inAppReview = InAppReview.instance;
+    if (await inAppReview.isAvailable()) {
+      await inAppReview.requestReview();
+    }
   }
 }
