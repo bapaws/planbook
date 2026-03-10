@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 2.6.0+100
+version: 2.6.1+103
 publish_to: none
 
 environment:
@@ -24,6 +24,7 @@ dependencies:
   database_planbook_api:
     path: packages/database_planbook_api
   device_info_plus: ^12.2.0
+  dismissible_page: ^1.0.2
   drift: ^2.26.1
   drift_flutter: ^0.2.4
   email_validator: ^3.0.0

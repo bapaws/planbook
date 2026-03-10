@@ -78,20 +78,20 @@ class JournalDailyBloc extends Bloc<JournalDailyEvent, JournalDailyState> {
             priority: priority,
           ),
       ]),
-      onData: (counts) => state.copyWith(
-        plannedTasksCount: counts[0],
-        uncompletedTasksCount: counts[1],
-        completedTasksCount: counts[2],
-        completedInboxTasksCount: counts[2] - (counts[0] - counts[1]),
-        completedTaskPriorityCounts: Map.fromEntries(
-          TaskPriority.values.reversed.map(
-            (priority) => MapEntry(
-              priority,
-              counts[3 + priority.index],
-            ),
-          ),
-        ),
-      ),
+      onData: (counts) {
+        final completedTaskPriorityCounts = <TaskPriority, int>{};
+        for (var i = 0; i < TaskPriority.values.length; i++) {
+          final priority = TaskPriority.values.reversed.elementAt(i);
+          completedTaskPriorityCounts[priority] = counts[3 + i];
+        }
+        return state.copyWith(
+          plannedTasksCount: counts[0],
+          uncompletedTasksCount: counts[1],
+          completedTasksCount: counts[2],
+          completedInboxTasksCount: counts[2] - (counts[0] - counts[1]),
+          completedTaskPriorityCounts: completedTaskPriorityCounts,
+        );
+      },
     );
   }
 

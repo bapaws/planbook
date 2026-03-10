@@ -215,7 +215,7 @@ CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profile
 -- ============================================
 -- 用于存储应用内购买商品信息，完全对应 RevenueCat SDK 中的 StoreProduct
 CREATE TABLE IF NOT EXISTS planbook.store_products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     -- 产品标识符（唯一，如：com.bapaws.planbook.monthly）
     identifier TEXT NOT NULL UNIQUE,
     -- 平台（ios, android, all）

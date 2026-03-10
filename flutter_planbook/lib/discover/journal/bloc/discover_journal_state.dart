@@ -1,8 +1,14 @@
 part of 'discover_journal_bloc.dart';
 
+enum DiscoverJournalViewType {
+  flip,
+  horizontal,
+}
+
 final class DiscoverJournalState extends Equatable {
   const DiscoverJournalState({
     required this.date,
+    this.viewType = DiscoverJournalViewType.flip,
     this.status = PageStatus.initial,
     this.isCalendarExpanded = false,
     this.autoPlayFrom,
@@ -12,6 +18,8 @@ final class DiscoverJournalState extends Equatable {
   final PageStatus status;
 
   final Jiffy date;
+
+  final DiscoverJournalViewType viewType;
 
   final Jiffy? autoPlayFrom;
   final Jiffy? autoPlayTo;
@@ -27,6 +35,7 @@ final class DiscoverJournalState extends Equatable {
   @override
   List<Object?> get props => [
     status,
+    viewType,
     isCalendarExpanded,
     date,
     autoPlayFrom,
@@ -35,6 +44,7 @@ final class DiscoverJournalState extends Equatable {
 
   DiscoverJournalState copyWith({
     PageStatus? status,
+    DiscoverJournalViewType? viewType,
     bool? isCalendarExpanded,
     Jiffy? date,
     Jiffy? autoPlayFrom,
@@ -42,6 +52,7 @@ final class DiscoverJournalState extends Equatable {
   }) {
     return DiscoverJournalState(
       status: status ?? this.status,
+      viewType: viewType ?? this.viewType,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
       date: date ?? this.date,
       autoPlayFrom: autoPlayFrom ?? this.autoPlayFrom,

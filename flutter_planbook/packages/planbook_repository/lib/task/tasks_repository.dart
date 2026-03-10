@@ -525,7 +525,7 @@ class TasksRepository {
       final map = json as Map<String, dynamic>;
       final taskMap = map['task'] as Map<String, dynamic>;
       var task = Task.fromJson(taskMap).copyWith(
-        id: kDebugMode ? null : uuid.v4(),
+        id: uuid.v4(),
       );
       final startOfMonth = Jiffy.now().startOf(Unit.month);
       final diff = startOfMonth

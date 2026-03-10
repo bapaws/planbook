@@ -161,5 +161,18 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: AppActivityListRoute.page),
 
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
+
+    // CustomRoute<void>(
+    //   page: DiscoverJournalFullRoute.page,
+    //   customRouteBuilder: <T>(context, child, page) {
+    //     return TransparentRoute<T>(
+    //       settings: page,
+    //       builder: (context) => child,
+    //       transitionDuration: Durations.medium2,
+    //       reverseTransitionDuration: Durations.medium2,
+    //       backgroundColor: Colors.transparent,
+    //     );
+    //   },
+    // ),
   ];
 }

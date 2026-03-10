@@ -27,8 +27,8 @@ enum AppProFeatures {
   };
 
   int get basicTotal => switch (this) {
-    task => 200,
-    note => 200,
+    task => 99,
+    note => 99,
     tag => 3,
     _ => 0,
   };
@@ -39,9 +39,9 @@ enum AppProFeatures {
   };
 
   String getBasicText(BuildContext context) => switch (this) {
-    task => '100',
+    task => '99',
     tag => '3',
-    note => '200',
+    note => '99',
     // desktopWidget => context.l10n.basic,
     subTask => '✅',
     theme => context.l10n.basic,

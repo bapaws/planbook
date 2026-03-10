@@ -14,8 +14,8 @@ final class JournalHomeRequested extends DiscoverJournalEvent {
   List<Object> get props => [];
 }
 
-final class JournalHomeYearChanged extends DiscoverJournalEvent {
-  const JournalHomeYearChanged({required this.date});
+final class DiscoverJournalDateChanged extends DiscoverJournalEvent {
+  const DiscoverJournalDateChanged({required this.date});
 
   final Jiffy date;
 
@@ -28,4 +28,13 @@ final class JournalHomeCalendarToggled extends DiscoverJournalEvent {
 
   @override
   List<Object> get props => [];
+}
+
+final class JournalHomeViewTypeChanged extends DiscoverJournalEvent {
+  const JournalHomeViewTypeChanged({required this.viewType});
+
+  final DiscoverJournalViewType viewType;
+
+  @override
+  List<Object> get props => [viewType];
 }

@@ -14,8 +14,10 @@ class DiscoverJournalBloc
          DiscoverJournalState(date: now),
        ) {
     on<JournalHomeRequested>(_onRequested);
-    on<JournalHomeYearChanged>(_onYearChanged);
+    on<DiscoverJournalDateChanged>(_onDateChanged);
+
     on<JournalHomeCalendarToggled>(_onCalendarToggled);
+    on<JournalHomeViewTypeChanged>(_onViewTypeChanged);
   }
 
   Future<void> _onRequested(
@@ -26,12 +28,11 @@ class DiscoverJournalBloc
     emit(state.copyWith(status: PageStatus.success));
   }
 
-  Future<void> _onYearChanged(
-    JournalHomeYearChanged event,
+  Future<void> _onDateChanged(
+    DiscoverJournalDateChanged event,
     Emitter<DiscoverJournalState> emit,
   ) async {
-    final startOfYear = event.date.startOf(Unit.year);
-    emit(state.copyWith(date: startOfYear));
+    emit(state.copyWith(date: event.date));
   }
 
   Future<void> _onCalendarToggled(
@@ -39,5 +40,12 @@ class DiscoverJournalBloc
     Emitter<DiscoverJournalState> emit,
   ) async {
     emit(state.copyWith(isCalendarExpanded: !state.isCalendarExpanded));
+  }
+
+  Future<void> _onViewTypeChanged(
+    JournalHomeViewTypeChanged event,
+    Emitter<DiscoverJournalState> emit,
+  ) async {
+    emit(state.copyWith(viewType: event.viewType));
   }
 }

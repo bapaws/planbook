@@ -100,7 +100,7 @@ class _RootDiscoverPage extends StatelessWidget {
                   isCalendarExpanded: state.isCalendarExpanded,
                   onDateSelected: (date) =>
                       context.read<DiscoverJournalBloc>().add(
-                        JournalHomeYearChanged(date: date),
+                        DiscoverJournalDateChanged(date: date),
                       ),
                   onCalendarToggled: () =>
                       context.read<DiscoverJournalBloc>().add(
@@ -141,7 +141,46 @@ class _RootDiscoverPage extends StatelessWidget {
           },
         ),
         actions: [
-          if (tab == RootDiscoverTab.journal)
+          if (tab == RootDiscoverTab.journal) ...[
+            BlocSelector<
+              DiscoverJournalBloc,
+              DiscoverJournalState,
+              DiscoverJournalViewType
+            >(
+              selector: (state) => state.viewType,
+              builder: (context, viewType) {
+                return CupertinoButton(
+                  child: Icon(
+                    switch (viewType) {
+                      DiscoverJournalViewType.flip => FontAwesomeIcons.book,
+                      DiscoverJournalViewType.horizontal =>
+                        FontAwesomeIcons.bookOpen,
+                    },
+                  ),
+                  onPressed: () {
+                    // final date = context.read<DiscoverJournalBloc>().state.date;
+                    // context.router.push(
+                    //   DiscoverJournalFullRoute(
+                    //     date: date,
+                    //   ),
+                    // );
+                    final currentViewType = context
+                        .read<DiscoverJournalBloc>()
+                        .state
+                        .viewType;
+                    final viewType = switch (currentViewType) {
+                      DiscoverJournalViewType.flip =>
+                        DiscoverJournalViewType.horizontal,
+                      DiscoverJournalViewType.horizontal =>
+                        DiscoverJournalViewType.flip,
+                    };
+                    context.read<DiscoverJournalBloc>().add(
+                      JournalHomeViewTypeChanged(viewType: viewType),
+                    );
+                  },
+                );
+              },
+            ),
             PullDownButton(
               itemBuilder: (context) => switch (tab) {
                 RootDiscoverTab.journal => [
@@ -176,6 +215,7 @@ class _RootDiscoverPage extends StatelessWidget {
                 child: const Icon(FontAwesomeIcons.ellipsis),
               ),
             ),
+          ],
         ],
       ),
       body: child,
