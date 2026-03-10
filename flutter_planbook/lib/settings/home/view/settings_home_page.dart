@@ -93,60 +93,67 @@ class _SettingsHomePage extends StatelessWidget {
               ),
               child: BlocSelector<AppBloc, AppState, UserEntity?>(
                 selector: (state) => state.user,
-                builder: (context, user) => Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            blurRadius: 4,
+                builder: (context, user) {
+                  final isLifetime =
+                      user?.profile?.productId?.toLowerCase().contains(
+                        'lifetime',
+                      ) ??
+                      false;
+                  return Row(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        clipBehavior: Clip.hardEdge,
+                        child: user?.avatar == null
+                            ? SvgPicture.asset(
+                                'assets/images/logo.svg',
+                                width: 40,
+                                height: 40,
+                              )
+                            : AppNetworkImage(
+                                url: user?.avatar,
+                                bucket: ResBucket.userAvatars,
+                                width: 40,
+                                height: 40,
+                              ),
+                      ),
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            user?.displayName ?? context.l10n.notLoggedIn,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                            ),
                           ),
+                          if (!isLifetime && user?.profile?.expiresAt != null)
+                            _buildExpiresAt(context, user!.profile!.expiresAt!),
                         ],
                       ),
-                      clipBehavior: Clip.hardEdge,
-                      child: user?.avatar == null
-                          ? SvgPicture.asset(
-                              'assets/images/logo.svg',
-                              width: 40,
-                              height: 40,
-                            )
-                          : AppNetworkImage(
-                              url: user?.avatar,
-                              bucket: ResBucket.userAvatars,
-                              width: 40,
-                              height: 40,
-                            ),
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user?.displayName ?? context.l10n.notLoggedIn,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                      const Spacer(),
+                      BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
+                        selector: (state) => state.isPremium,
+                        builder: (context, isPremium) => AppProButton(
+                          isPremium: isPremium,
+                          style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                           ),
                         ),
-                        if (user?.profile?.expiresAt != null)
-                          _buildExpiresAt(context, user!.profile!.expiresAt!),
-                      ],
-                    ),
-                    const Spacer(),
-                    BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
-                      selector: (state) => state.isPremium,
-                      builder: (context, isPremium) => AppProButton(
-                        isPremium: isPremium,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
                       ),
-                    ),
-                    const CupertinoListTileChevron(),
-                  ],
-                ),
+                      const CupertinoListTileChevron(),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -303,18 +310,23 @@ class _SettingsHomePage extends StatelessWidget {
     final theme = Theme.of(context);
     final date = Jiffy.parseFromDateTime(expiresAt);
     final formattedDate = date.yMMMd;
-    final text = context.l10n.expiresAtDescription(formattedDate);
-    final parts = text.split(formattedDate);
     final diff = expiresAt.difference(DateTime.now()).inDays;
+    final isExpired = expiresAt.isBefore(DateTime.now());
+
+    final text = isExpired
+        ? context.l10n.expiredAtDescription(formattedDate)
+        : context.l10n.expiresAtDescription(formattedDate);
+    final parts = text.split(formattedDate);
     return DefaultTextStyle(
       style: theme.textTheme.labelSmall!.copyWith(
         color: theme.colorScheme.outline,
       ),
       child: Row(
         children: [
-          Text(
-            parts[0],
-          ),
+          if (parts.isNotEmpty && parts[0].isNotEmpty)
+            Text(
+              parts[0],
+            ),
           Text(
             formattedDate,
             style: theme.textTheme.labelSmall?.copyWith(
@@ -324,9 +336,10 @@ class _SettingsHomePage extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          Text(
-            parts[1],
-          ),
+          if (parts.length > 1 && parts[1].isNotEmpty)
+            Text(
+              parts[1],
+            ),
         ],
       ),
     );

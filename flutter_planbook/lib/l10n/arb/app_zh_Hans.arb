@@ -365,6 +365,7 @@
   "punctuationEnumSeparator": "、",
   "selectColor": "选择颜色",
   "expiresAtDescription": "会员将于 {date} 到期。",
+  "expiredAtDescription": "会员已于 {date} 过期。",
   "unlockedPro": "已解锁高级版",
   "noAlarm": "无提醒",
   "dayEarly": "提前{count}天",

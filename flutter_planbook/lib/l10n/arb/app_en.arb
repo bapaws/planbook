@@ -635,6 +635,15 @@
       }
     }
   },
+  "expiredAtDescription": "Expired on {date}.",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "unlockedPro": "Unlocked Pro",
   "noAlarm": "No Alarm",
   "dayEarly": "{count} {count, plural, =1 {day} other {days}} early",
