@@ -1,0 +1,5 @@
+What's New:
+- Supports daily, weekly and monthly task dragging
+- Support dragging tasks to focus and summarizing associations
+- Supports left and right swiping for tasks
+- Fix some issues

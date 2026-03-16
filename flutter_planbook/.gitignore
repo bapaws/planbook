@@ -115,3 +115,7 @@ app.*.map.json
 
 # Generated l10n files
 lib/l10n/gen/
+
+# Fastlane related
+ios/fastlane/screenshots/
+android/fastlane/metadata/**/*.png
