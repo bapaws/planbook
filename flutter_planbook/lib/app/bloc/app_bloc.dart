@@ -108,8 +108,12 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     AppLaunched event,
     Emitter<AppState> emit,
   ) async {
+    final isFirstLaunch = _usersRepository.isFirstLaunch;
+    await _usersRepository.updateUserProfile(
+      lastLaunchAppAt: DateTime.now(),
+    );
     // Create default tags and sample tasks on first launch
-    if (_usersRepository.isFirstLaunch) {
+    if (isFirstLaunch) {
       final languageCode = event.l10n.localeName.split('_').first;
       await _tagsRepository.createDefaultTags(languageCode: languageCode);
       await _tasksRepository.createDefaultTasks(languageCode: languageCode);
@@ -120,12 +124,6 @@ class AppBloc extends Bloc<AppEvent, AppState> {
       // await _tasksRepository.createDefaultTasks(languageCode: languageCode);
       // await _notesRepository.createDefaultNotes(languageCode: languageCode);
     }
-
-    unawaited(
-      _usersRepository.updateUserProfile(
-        lastLaunchAppAt: DateTime.now(),
-      ),
-    );
   }
 
   Future<void> _onUserProfileRequested(
