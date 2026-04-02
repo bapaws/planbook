@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
@@ -67,14 +68,14 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     emit(state.copyWith(status: PageStatus.loading));
     final storeProducts = (await AppPurchases.instance.getStoreProducts())
         .sorted((a, b) => a.price.compareTo(b.price));
-    // if (kDebugMode) {
-    //   emit(
-    //     state.copyWith(
-    //       activeProductIdentifier: 'lifetime',
-    //     ),
-    //   );
-    //   return;
-    // }
+    if (kDebugMode) {
+      emit(
+        state.copyWith(
+          activeProductId: 'lifetime',
+        ),
+      );
+      return;
+    }
 
     final selectedStoreProduct = storeProducts.isEmpty
         ? null

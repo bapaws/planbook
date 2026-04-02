@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/assets/assets_repository.dart';
+import 'package:planbook_repository/assets/supa_storage_image_provider.dart';
 
 class AppNetworkImage extends StatelessWidget {
   const AppNetworkImage({
@@ -59,33 +59,31 @@ class AppNetworkImage extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) => errorWidget,
       );
     } else {
-      image = CachedNetworkImage(
-        imageUrl: url!,
-        width: width,
-        height: height,
-        fit: fit,
-        placeholder: (context, url) => errorWidget,
-        errorWidget: (context, url, error) => FutureBuilder(
-          future: context.read<AssetsRepository>().downloadImage(url),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Image.memory(
-                snapshot.data!,
-                width: width,
-                height: height,
-                fit: fit,
-              );
-            }
-            return Image.file(
-              File(url),
-              width: width,
-              height: height,
-              fit: fit,
-              errorBuilder: (context, error, stackTrace) => errorWidget,
-            );
-          },
-        ),
-      );
+      final repo = context.read<AssetsRepository>();
+
+      // These URLs usually need authenticated access to Supabase storage.
+      // Use SupaStorageImageProvider directly, instead of "network fetch
+      // -> error -> downloadImage()" fallback.
+      if (url!.contains(AssetsRepository.host)) {
+        image = Image(
+          image: SupaStorageImageProvider(url: url!, repository: repo),
+          width: width,
+          height: height,
+          fit: fit,
+          loadingBuilder: (context, child, progress) =>
+              progress == null ? child : errorWidget,
+          errorBuilder: (context, error, stackTrace) => errorWidget,
+        );
+      } else {
+        image = CachedNetworkImage(
+          imageUrl: url!,
+          width: width,
+          height: height,
+          fit: fit,
+          placeholder: (context, url) => errorWidget,
+          errorWidget: (context, url, error) => errorWidget,
+        );
+      }
     }
 
     return Hero(tag: url!, child: image);

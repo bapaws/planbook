@@ -43,8 +43,8 @@ class AssetsRepository {
 
   final AppDatabase _db;
 
-  static const _host = 'https://supa.res.bapaws.top';
-  static const _folder = 'planbook';
+  static const host = 'https://supa.res.bapaws.top';
+  static const folder = 'planbook';
 
   String? get userId => _supabase?.auth.currentUser?.id;
 
@@ -84,7 +84,7 @@ class AssetsRepository {
         url.lastIndexOf(bucketName) + bucketName.length + 1,
       );
     }
-    return p.join(userId ?? _folder, url);
+    return p.join(userId ?? folder, url);
   }
 
   Future<void> removeImages(List<String> urls, ResBucket bucket) async {
@@ -108,7 +108,7 @@ class AssetsRepository {
       bucket,
       '${const Uuid().v4()}.${path.split('.').last}',
     );
-    final url = '$_host/${bucket.name}/$fileName';
+    final url = '$host/${bucket.name}/$fileName';
 
     final file = File(path);
 

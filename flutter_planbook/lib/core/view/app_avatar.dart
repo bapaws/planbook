@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -51,33 +49,27 @@ class AppAvatar extends StatelessWidget {
         errorBuilder: (context, error, stackTrace) => errorWidget,
       );
     } else {
-      image = CachedNetworkImage(
-        imageUrl: url!,
-        width: radius * 2,
-        height: radius * 2,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => errorWidget,
-        errorWidget: (context, url, error) => FutureBuilder(
-          future: context.read<AssetsRepository>().downloadImage(url),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return Image.memory(
-                snapshot.data!,
-                width: radius * 2,
-                height: radius * 2,
-                fit: BoxFit.cover,
-              );
-            }
-            return Image.file(
-              File(url),
-              width: radius * 2,
-              height: radius * 2,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => errorWidget,
-            );
-          },
-        ),
-      );
+      final repo = context.read<AssetsRepository>();
+      if (url!.contains(AssetsRepository.host)) {
+        image = Image(
+          image: SupaStorageImageProvider(url: url!, repository: repo),
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, progress) =>
+              progress == null ? child : errorWidget,
+          errorBuilder: (context, error, stackTrace) => errorWidget,
+        );
+      } else {
+        image = CachedNetworkImage(
+          imageUrl: url!,
+          width: radius * 2,
+          height: radius * 2,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => errorWidget,
+          errorWidget: (context, url, error) => errorWidget,
+        );
+      }
     }
 
     return GestureDetector(

@@ -191,10 +191,10 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     Emitter<AppState> emit,
   ) async {
     if (!AppChannel.isCloud) return;
-    if (kDebugMode) {
-      emit(state.copyWith(apkVersion: '2.5.1', apkHasNewVersion: true));
-      return;
-    }
+    // if (kDebugMode) {
+    //   emit(state.copyWith(apkVersion: '2.5.1', apkHasNewVersion: true));
+    //   return;
+    // }
     final version = await ApkDownloadService.fetchVersion(_sp);
     if (version == null) return;
     final hasNew = await ApkDownloadService.hasNewVersion(version);
