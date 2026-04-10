@@ -1,17 +1,12 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
-import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
-import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
-import 'package:planbook_core/app/app_image_saver.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -73,39 +68,21 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
       pageHeight = kDiscoverJournalDailyPageHeight * scale;
     }
 
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<RootHomeBloc, RootHomeState>(
-          listenWhen: (previous, current) =>
-              previous.downloadJournalDayCount !=
-              current.downloadJournalDayCount,
-          listener: (context, state) {
-            _timer?.cancel();
-            _timer = null;
+    return BlocListener<RootDiscoverBloc, RootDiscoverState>(
+      listenWhen: (previous, current) =>
+          previous.autoPlayCount != current.autoPlayCount,
+      listener: (context, state) async {
+        final result = await context.router.push<Map<String, dynamic>>(
+          const DiscoverJournalPlayRoute(),
+        );
+        if (result == null) return;
 
-            final year = context.read<DiscoverJournalBloc>().state.year;
-            final startOfYear = Jiffy.parseFromList([year]);
-            final date = startOfYear.add(days: _controller.value);
-            _capture(context, date);
-          },
-        ),
-        BlocListener<RootDiscoverBloc, RootDiscoverState>(
-          listenWhen: (previous, current) =>
-              previous.autoPlayCount != current.autoPlayCount,
-          listener: (context, state) async {
-            final result = await context.router.push<Map<String, dynamic>>(
-              const DiscoverJournalPlayRoute(),
-            );
-            if (result == null) return;
-
-            final from = result['from'];
-            final to = result['to'];
-            if (from != null && from is Jiffy && to != null && to is Jiffy) {
-              await _play(from: from, to: to);
-            }
-          },
-        ),
-      ],
+        final from = result['from'];
+        final to = result['to'];
+        if (from != null && from is Jiffy && to != null && to is Jiffy) {
+          await _play(from: from, to: to);
+        }
+      },
       child: BlocConsumer<DiscoverJournalBloc, DiscoverJournalState>(
         listenWhen: (previous, current) =>
             previous.date.year != current.date.year,
@@ -124,16 +101,18 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
             width: pageWidth + 32,
             height: pageHeight + 32,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            // clipBehavior: Clip.hardEdge,
             child: FittedBox(
               child: FlipPageView(
-                // key: ValueKey(state.year),
-                itemsCount: state.days,
+                itemsCount: state.days * 2,
                 controller: _controller,
                 spacing: 1,
+                borderRadius: BorderRadius.circular(16),
                 itemBuilder: (context, index) {
-                  final date = startOfYear.add(days: index);
-                  return JournalDailyPage(date: date);
+                  final date = startOfYear.add(days: index ~/ 2);
+                  if (index.isOdd) {
+                    return JournalDailyLeftPage(date: date);
+                  }
+                  return JournalDailyRightPage(date: date);
                 },
               ),
             ),
@@ -141,56 +120,6 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
         },
       ),
     );
-  }
-
-  Future<void> _capture(BuildContext context, Jiffy date) async {
-    await EasyLoading.show();
-    if (!context.mounted) return;
-
-    try {
-      // 使用 controller 截图
-      final image = await _controller.captureToImage(
-        pixelRatio: MediaQuery.of(context).devicePixelRatio,
-      );
-
-      if (!context.mounted) return;
-      if (image == null) {
-        await EasyLoading.showError(context.l10n.saveFailed);
-        return;
-      }
-
-      // 将 ui.Image 转换为 PNG 字节数据
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (!context.mounted) return;
-      if (byteData == null) {
-        await EasyLoading.showError(context.l10n.saveFailed);
-        return;
-      }
-
-      final imageBytes = byteData.buffer.asUint8List();
-
-      final dateStr =
-          '${date.year}-'
-          '${date.month.toString().padLeft(2, '0')}-'
-          '${date.date.toString().padLeft(2, '0')}';
-      final result = await AppImageSaver.saveImage(
-        imageBytes,
-        fileName: 'Journal_$dateStr',
-      );
-      await EasyLoading.dismiss();
-      if (!context.mounted) return;
-
-      if (result.isSuccess) {
-        await EasyLoading.showSuccess(context.l10n.saveSuccess);
-      } else {
-        await EasyLoading.showError(context.l10n.saveFailed);
-      }
-    } on Exception catch (_) {
-      await EasyLoading.dismiss();
-
-      if (!context.mounted) return;
-      await EasyLoading.showError(context.l10n.saveFailed);
-    }
   }
 
   Future<void> _play({

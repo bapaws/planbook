@@ -163,20 +163,17 @@ class _DiscoverJournalHorizontalViewState
                 itemBuilder: (context, index) {
                   final date = startOfYear.add(days: index ~/ 2);
                   return FittedBox(
-                    child: ClipRect(
-                      child: Align(
-                        alignment: index.isEven
-                            ? Alignment.centerLeft
-                            : Alignment.centerRight,
-                        widthFactor: 0.5,
-                        child: RepaintBoundary(
-                          key: _boundaryKeyForIndex(index),
-                          child: JournalDailyPage(
-                            date: date,
-                            key: ValueKey(index),
-                          ),
-                        ),
-                      ),
+                    child: RepaintBoundary(
+                      key: _boundaryKeyForIndex(index),
+                      child: index.isEven
+                          ? JournalDailyLeftPage(
+                              date: date,
+                              key: ValueKey(index),
+                            )
+                          : JournalDailyRightPage(
+                              date: date,
+                              key: ValueKey(index),
+                            ),
                     ),
                   );
                 },

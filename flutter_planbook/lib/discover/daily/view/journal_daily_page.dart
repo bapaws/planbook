@@ -4,6 +4,7 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:flutter_planbook/discover/daily/bloc/journal_daily_bloc.dart';
+import 'package:flutter_planbook/discover/daily/journal_daily_bloc_manager.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_data_view.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_date_view.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_focus_view.dart';
@@ -13,6 +14,9 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 const double kDiscoverJournalDailyPageWidth = 210 * 2 * 2.5;
 const double kDiscoverJournalDailyPageHeight = 297 * 2.5;
+
+const double _halfPageWidth = kDiscoverJournalDailyPageWidth / 2;
+const double _spacing = 16;
 
 @RoutePage()
 class JournalDailyPage extends StatelessWidget {
@@ -29,33 +33,75 @@ class JournalDailyPage extends StatelessWidget {
         notesRepository: context.read(),
         tasksRepository: context.read(),
       )..add(const JournalDailyRequested()),
-      child: const _JournalDailyPage(),
+      child: const _JournalDailyFullPage(),
     );
   }
 }
 
-class _JournalDailyPage extends StatelessWidget {
-  const _JournalDailyPage();
+/// Left half page; requires `JournalDailyBlocManager` from
+/// `RepositoryProvider` above (journal tab).
+class JournalDailyLeftPage extends StatelessWidget {
+  const JournalDailyLeftPage({
+    required this.date,
+    super.key,
+  });
+
+  final Jiffy date;
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<JournalDailyBlocManager>().blocForDay(date: date);
+    return BlocProvider.value(
+      value: bloc,
+      child: const _JournalDailyHalfPage(
+        child: _JournalDailyLeftContent(),
+      ),
+    );
+  }
+}
+
+/// Right half page; shares the same bloc as `JournalDailyLeftPage` for the
+/// same calendar `date` when using `JournalDailyBlocManager`.
+class JournalDailyRightPage extends StatelessWidget {
+  const JournalDailyRightPage({
+    required this.date,
+    super.key,
+  });
+
+  final Jiffy date;
+
+  @override
+  Widget build(BuildContext context) {
+    final bloc = context.read<JournalDailyBlocManager>().blocForDay(date: date);
+    return BlocProvider.value(
+      value: bloc,
+      child: const _JournalDailyHalfPage(
+        isLeft: false,
+        child: _JournalDailyRightContent(),
+      ),
+    );
+  }
+}
+
+class _JournalDailyFullPage extends StatelessWidget {
+  const _JournalDailyFullPage();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final date = context.read<JournalDailyBloc>().date;
-    const spacing = 16.0;
-    const pageWidth = kDiscoverJournalDailyPageWidth / 2;
     return BlocSelector<AppBloc, AppState, AppBackgroundEntity?>(
       selector: (state) => state.background,
       builder: (context, background) {
         return Container(
           width: kDiscoverJournalDailyPageWidth,
           height: kDiscoverJournalDailyPageHeight,
-          padding: const EdgeInsets.all(spacing),
+          padding: const EdgeInsets.all(_spacing),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: theme.colorScheme.surfaceContainerHighest,
             ),
+            borderRadius: BorderRadius.circular(24),
             image: DecorationImage(
               image: AssetImage(
                 theme.brightness == Brightness.light
@@ -68,80 +114,153 @@ class _JournalDailyPage extends StatelessWidget {
               repeat: ImageRepeat.repeat,
             ),
           ),
-          child: Row(
+          child: const Row(
             children: [
-              SizedBox(
-                width: ((pageWidth - spacing * 3) / 2).floorToDouble(),
-                child: Column(
-                  children: [
-                    JournalDailyDateView(date: date),
-                    const SizedBox(height: spacing),
-                    const JournalDailyDataView(),
-                    // const SizedBox(height: spacing * 2),
-                    const Spacer(),
-                    Flexible(
-                      child:
-                          BlocSelector<
-                            JournalDailyBloc,
-                            JournalDailyState,
-                            Note?
-                          >(
-                            selector: (state) => state.focusNote,
-                            builder: (context, focusNote) =>
-                                JournalDailyFocusView(
-                                  note: focusNote,
-                                  noteType: NoteType.dailyFocus,
-                                  colorScheme: context.yellowColorScheme,
-                                ),
-                          ),
-                    ),
-                    const SizedBox(height: spacing),
-                    Flexible(
-                      child:
-                          BlocSelector<
-                            JournalDailyBloc,
-                            JournalDailyState,
-                            Note?
-                          >(
-                            selector: (state) => state.summaryNote,
-                            builder: (context, focusNote) =>
-                                JournalDailyFocusView(
-                                  note: focusNote,
-                                  noteType: NoteType.dailySummary,
-                                  colorScheme: context.blueColorScheme,
-                                ),
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: spacing),
-              SizedBox(
-                width: ((pageWidth - spacing * 3) / 2).floorToDouble(),
-                height: kDiscoverJournalDailyPageHeight - 32,
-                child: const JournalDailyTimelineView(),
-              ),
-              const SizedBox(width: spacing * 2 - 2),
-              SizedBox(
-                width: pageWidth - spacing * 2,
-                height: kDiscoverJournalDailyPageHeight - 32,
-                child:
-                    BlocSelector<
-                      JournalDailyBloc,
-                      JournalDailyState,
-                      List<NoteEntity>
-                    >(
-                      selector: (state) => state.writtenNotes,
-                      builder: (context, notes) => JournalDailyNoteGridView(
-                        notes: notes,
-                        width: pageWidth - spacing * 2,
-                      ),
-                    ),
-              ),
+              _JournalDailyLeftContent(),
+              SizedBox(width: _spacing * 2 - 2),
+              _JournalDailyRightContent(),
             ],
           ),
         );
       },
+    );
+  }
+}
+
+class _JournalDailyHalfPage extends StatelessWidget {
+  const _JournalDailyHalfPage({required this.child, this.isLeft = true});
+
+  final Widget child;
+  final bool isLeft;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BlocSelector<AppBloc, AppState, AppBackgroundEntity?>(
+      selector: (state) => state.background,
+      builder: (context, background) {
+        return Container(
+          width: _halfPageWidth,
+          height: kDiscoverJournalDailyPageHeight,
+          padding: const EdgeInsets.all(_spacing),
+          clipBehavior: Clip.hardEdge,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerLowest,
+            border: Border(
+              left: isLeft
+                  ? BorderSide(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                    )
+                  : BorderSide.none,
+              right: isLeft
+                  ? BorderSide.none
+                  : BorderSide(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                    ),
+              bottom: BorderSide(
+                color: theme.colorScheme.surfaceContainerHighest,
+              ),
+              top: BorderSide(
+                color: theme.colorScheme.surfaceContainerHighest,
+              ),
+            ),
+            borderRadius: isLeft
+                ? const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    bottomLeft: Radius.circular(24),
+                  )
+                : const BorderRadius.only(
+                    topRight: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
+            image: DecorationImage(
+              image: AssetImage(
+                theme.brightness == Brightness.light
+                    ? background?.bookLightAsset ??
+                          'assets/tiles/bg_dot_light.png'
+                    : background?.bookDarkAsset ??
+                          'assets/tiles/bg_dot_dark.png',
+              ),
+              scale: 3,
+              repeat: ImageRepeat.repeat,
+            ),
+          ),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
+class _JournalDailyLeftContent extends StatelessWidget {
+  const _JournalDailyLeftContent();
+
+  @override
+  Widget build(BuildContext context) {
+    final date = context.read<JournalDailyBloc>().date;
+    final colWidth = ((_halfPageWidth - _spacing * 3) / 2).floorToDouble();
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: colWidth,
+          child: Column(
+            children: [
+              JournalDailyDateView(date: date),
+              const SizedBox(height: _spacing),
+              const JournalDailyDataView(),
+              const Spacer(),
+              Flexible(
+                child: BlocSelector<JournalDailyBloc, JournalDailyState, Note?>(
+                  selector: (state) => state.focusNote,
+                  builder: (context, focusNote) => JournalDailyFocusView(
+                    note: focusNote,
+                    noteType: NoteType.dailyFocus,
+                    colorScheme: context.yellowColorScheme,
+                  ),
+                ),
+              ),
+              const SizedBox(height: _spacing),
+              Flexible(
+                child: BlocSelector<JournalDailyBloc, JournalDailyState, Note?>(
+                  selector: (state) => state.summaryNote,
+                  builder: (context, focusNote) => JournalDailyFocusView(
+                    note: focusNote,
+                    noteType: NoteType.dailySummary,
+                    colorScheme: context.blueColorScheme,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: _spacing),
+        SizedBox(
+          width: colWidth,
+          height: kDiscoverJournalDailyPageHeight - 32,
+          child: const JournalDailyTimelineView(),
+        ),
+      ],
+    );
+  }
+}
+
+class _JournalDailyRightContent extends StatelessWidget {
+  const _JournalDailyRightContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: _halfPageWidth - _spacing * 2,
+      height: kDiscoverJournalDailyPageHeight - 32,
+      child:
+          BlocSelector<JournalDailyBloc, JournalDailyState, List<NoteEntity>>(
+            selector: (state) => state.writtenNotes,
+            builder: (context, notes) => JournalDailyNoteGridView(
+              notes: notes,
+              width: _halfPageWidth - _spacing * 2,
+            ),
+          ),
     );
   }
 }

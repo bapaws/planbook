@@ -1,39 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/discover/daily/journal_daily_bloc_manager.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_date_change_view.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_flip_view.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_horizontal_view.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
-class DiscoverJournalPage extends StatefulWidget {
+class DiscoverJournalPage extends StatelessWidget {
   const DiscoverJournalPage({super.key});
 
   @override
-  State<DiscoverJournalPage> createState() => _DiscoverJournalPageState();
-}
-
-class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
-  late final FlipPageController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final now = Jiffy.now();
-    final startOfYear = now.startOf(Unit.year);
-    final page = now.diff(startOfYear, unit: Unit.day).toInt();
-    _controller = FlipPageController(initialPage: page);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final query = MediaQuery.of(context);
     return Column(
       children: [
@@ -77,32 +60,95 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
           },
         ),
         const Spacer(),
-        AnimatedSwitcher(
-          duration: Durations.medium1,
-          child:
-              BlocSelector<
-                DiscoverJournalBloc,
-                DiscoverJournalState,
-                DiscoverJournalViewType
-              >(
-                selector: (state) => state.viewType,
-                builder: (context, viewType) => switch (viewType) {
-                  DiscoverJournalViewType.flip => DiscoverJournalFlipView(
-                    controller: _controller,
-                  ),
-                  DiscoverJournalViewType.horizontal =>
-                    DiscoverJournalHorizontalView(
-                      initialDate: context
-                          .read<DiscoverJournalBloc>()
-                          .state
-                          .date,
-                    ),
-                },
+        BlocSelector<DiscoverJournalBloc, DiscoverJournalState, int>(
+          selector: (state) => state.year,
+          builder: (context, year) {
+            return RepositoryProvider<JournalDailyBlocManager>(
+              key: ValueKey(year),
+              create: (context) => JournalDailyBlocManager(
+                notesRepository: context.read(),
+                tasksRepository: context.read(),
               ),
+              dispose: (manager) => manager.dispose(),
+              child: const _DiscoverJournalContent(),
+            );
+          },
         ),
         const Spacer(flex: 3),
         SizedBox(height: query.padding.bottom + kRootBottomBarHeight),
       ],
+    );
+  }
+}
+
+/// Main reading area on the discover-journal tab: owns `FlipPageController`,
+/// warms nearby daily blocs, and switches flip / horizontal layouts.
+class _DiscoverJournalContent extends StatefulWidget {
+  const _DiscoverJournalContent();
+
+  @override
+  State<_DiscoverJournalContent> createState() =>
+      _DiscoverJournalContentState();
+}
+
+class _DiscoverJournalContentState extends State<_DiscoverJournalContent> {
+  late final FlipPageController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    final journalDate = context.read<DiscoverJournalBloc>().state.date;
+    final startOfYear = journalDate.startOf(Unit.year);
+    final page = journalDate.diff(startOfYear, unit: Unit.day).toInt();
+    _controller = FlipPageController(initialPage: page);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _prefetch());
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _prefetch() {
+    if (!mounted) return;
+    final journal = context.read<DiscoverJournalBloc>().state;
+    context.read<JournalDailyBlocManager>().prefetchDaysAround(
+      centerDate: journal.date,
+      dayCount: journal.days,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<DiscoverJournalBloc, DiscoverJournalState>(
+      listenWhen: (previous, current) => previous.date != current.date,
+      listener: (context, state) {
+        WidgetsBinding.instance.addPostFrameCallback((_) => _prefetch());
+      },
+      child: BlocSelector<
+        DiscoverJournalBloc,
+        DiscoverJournalState,
+        DiscoverJournalViewType
+      >(
+        selector: (state) => state.viewType,
+        builder: (context, viewType) {
+          return AnimatedSwitcher(
+            duration: Durations.medium1,
+            child: switch (viewType) {
+              DiscoverJournalViewType.flip => DiscoverJournalFlipView(
+                controller: _controller,
+              ),
+              DiscoverJournalViewType.horizontal =>
+                DiscoverJournalHorizontalView(
+                  initialDate:
+                      context.read<DiscoverJournalBloc>().state.date,
+                ),
+            },
+          );
+        },
+      ),
     );
   }
 }
