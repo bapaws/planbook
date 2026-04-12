@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
@@ -9,6 +9,161 @@ import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+
+/// 日记封面
+class _JournalCover extends StatelessWidget {
+  const _JournalCover({required this.year});
+
+  final int year;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    const w = kDiscoverJournalDailyPageWidth / 2;
+    const h = kDiscoverJournalDailyPageHeight;
+
+    return SizedBox(
+      width: w,
+      height: h,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.horizontal(
+            right: Radius.circular(16),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.lerp(cs.primaryContainer, cs.surface, 0.35)!,
+              cs.surfaceContainerHigh,
+            ],
+          ),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cs.shadow.withValues(alpha: 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '$year',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.displaySmall?.copyWith(
+                    color: cs.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  '日记',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 28),
+                Text(
+                  '往左滑打开',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: cs.onSurfaceVariant.withValues(alpha: 0.85),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 日记封底
+class _JournalBackCover extends StatelessWidget {
+  const _JournalBackCover({required this.year});
+
+  final int year;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    const w = kDiscoverJournalDailyPageWidth / 2;
+    const h = kDiscoverJournalDailyPageHeight;
+
+    return SizedBox(
+      width: w,
+      height: h,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.horizontal(
+            left: Radius.circular(16),
+          ),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              cs.surfaceContainerHigh,
+              Color.lerp(cs.primaryContainer, cs.surface, 0.35)!,
+            ],
+          ),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.6),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: cs.shadow.withValues(alpha: 0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.auto_stories,
+                  size: 48,
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  '$year',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: cs.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '记录每一天',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class DiscoverJournalFlipView extends StatefulWidget {
   const DiscoverJournalFlipView({required this.controller, super.key});
@@ -39,11 +194,14 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
   void _onFlipPageChanged() {
     final index = _controller.value;
+    // 封面索引为 -1，不触发日期变化
+    if (!_controller.isContentPage(index)) return;
+
     final bloc = context.read<DiscoverJournalBloc>();
     final startOfYear = bloc.state.date.startOf(
       Unit.year,
     );
-    final date = startOfYear.add(days: index);
+    final date = startOfYear.add(days: index.left ~/ 2);
     bloc.add(DiscoverJournalDateChanged(date: date));
   }
 
@@ -92,7 +250,8 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
           final startOfYear = state.date.startOf(Unit.year);
           final page = state.date.diff(startOfYear, unit: Unit.day).toInt();
-          _controller.jumpToPage(page);
+          // 跳转到对应的内容页（索引从 0 开始）
+          _controller.jumpToPage(FlipPageIndex.fromLeft(page));
         },
         buildWhen: (previous, current) => previous.year != current.year,
         builder: (context, state) {
@@ -105,11 +264,18 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
               child: FlipPageView(
                 itemsCount: state.days * 2,
                 controller: _controller,
+                pageSize: const Size(
+                  kDiscoverJournalDailyPageWidth / 2,
+                  kDiscoverJournalDailyPageHeight,
+                ),
                 spacing: 1,
                 borderRadius: BorderRadius.circular(16),
+                coverBuilder: (context) => _JournalCover(year: state.year),
+                backCoverBuilder: (context) =>
+                    _JournalBackCover(year: state.year),
                 itemBuilder: (context, index) {
                   final date = startOfYear.add(days: index ~/ 2);
-                  if (index.isOdd) {
+                  if (index.isEven) {
                     return JournalDailyLeftPage(date: date);
                   }
                   return JournalDailyRightPage(date: date);
@@ -129,7 +295,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
     final startOfYear = from.startOf(Unit.year);
     final fromPage = from.diff(startOfYear, unit: Unit.day).toInt();
     final toPage = to.diff(startOfYear, unit: Unit.day).toInt();
-    await _controller.animateToPage(fromPage);
+    await _controller.animateToPage(FlipPageIndex.fromLeft(fromPage));
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -139,7 +305,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
         timer.cancel();
         return;
       }
-      _controller.animateToPage(page);
+      _controller.animateToPage(FlipPageIndex.fromLeft(page));
     });
   }
 }

@@ -51,7 +51,7 @@ class JournalDailyBlocManager {
       date: calendarDate,
       notesRepository: _notesRepository,
       tasksRepository: _tasksRepository,
-    )..add(const JournalDailyRequested());
+    );
     _blocs[key] = bloc;
     _evictLruWhileAbove(_maxCachedBlocs);
     return bloc;

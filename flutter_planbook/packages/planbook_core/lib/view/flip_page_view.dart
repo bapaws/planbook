@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,71 @@ enum FlipPageDirection {
   final int value;
 }
 
+@immutable
+final class FlipPageIndex {
+  const FlipPageIndex({required this.left, required this.right});
+  factory FlipPageIndex.fromLeft(int index) {
+    return FlipPageIndex(left: index, right: index + 1);
+  }
+  factory FlipPageIndex.fromRight(int index) {
+    return FlipPageIndex(left: index - 1, right: index);
+  }
+  final int left;
+  final int right;
+
+  static const zero = FlipPageIndex(left: 0, right: 0);
+
+  FlipPageIndex get next => FlipPageIndex(left: left + 2, right: right + 2);
+  FlipPageIndex get previous => FlipPageIndex(left: left - 2, right: right - 2);
+
+  FlipPageIndex clamp(FlipPageIndex min, FlipPageIndex max) {
+    return FlipPageIndex(
+      left: left.clamp(min.left, max.left),
+      right: right.clamp(min.right, max.right),
+    );
+  }
+
+  FlipPageIndex operator +(FlipPageIndex other) {
+    return FlipPageIndex(left: left + other.left, right: right + other.right);
+  }
+
+  FlipPageIndex operator -(FlipPageIndex other) {
+    return FlipPageIndex(left: left - other.left, right: right - other.right);
+  }
+
+  bool operator <(FlipPageIndex other) {
+    return left < other.left && right < other.right;
+  }
+
+  bool operator >(FlipPageIndex other) {
+    return left > other.left && right > other.right;
+  }
+
+  bool operator <=(FlipPageIndex other) {
+    return left <= other.left && right <= other.right;
+  }
+
+  bool operator >=(FlipPageIndex other) {
+    return left >= other.left && right >= other.right;
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is FlipPageIndex) {
+      return left == other.left && right == other.right;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => left.hashCode ^ right.hashCode;
+
+  @override
+  String toString() {
+    return 'FlipPageIndex(left: $left, right: $right)';
+  }
+}
+
 /// A controller for [FlipPageView] that allows programmatic control
 /// of the current spread (page pair) being displayed.
 ///
@@ -21,15 +87,15 @@ enum FlipPageDirection {
 /// Unlike [PageController], this controller holds a direct reference
 /// to the [FlipPageView]'s state, eliminating the need for multiple
 /// callback layers.
-class FlipPageController extends ValueNotifier<int> {
-  FlipPageController({int initialPage = 0})
-    : assert(
-        initialPage >= 0,
-        'initialPage must be greater than or equal to 0',
-      ),
-      super(initialPage);
+class FlipPageController extends ValueNotifier<FlipPageIndex> {
+  FlipPageController({
+    FlipPageIndex initialPage = FlipPageIndex.zero,
+  }) : super(initialPage);
 
   _FlipPageViewState? _state;
+
+  FlipPageIndex get minIndex => _state?.minIndex ?? FlipPageIndex.zero;
+  FlipPageIndex get maxIndex => _state?.maxIndex ?? FlipPageIndex.zero;
 
   bool get hasClients => _state != null;
 
@@ -42,9 +108,30 @@ class FlipPageController extends ValueNotifier<int> {
     _state = null;
   }
 
+  /// 判断页码是否有效
+  bool isPageValid(FlipPageIndex page) {
+    return page >= minIndex && page <= maxIndex;
+  }
+
+  /// 判断页码是否为封面
+  bool isCoverPage(FlipPageIndex page) {
+    return page == minIndex;
+  }
+
+  /// 判断页码是否为封底
+  bool isBackCoverPage(FlipPageIndex page) {
+    return page == maxIndex;
+  }
+
+  /// 判断页码是否为内容页
+  bool isContentPage(FlipPageIndex page) {
+    return page > minIndex && page < maxIndex;
+  }
+
   /// Animates the [FlipPageView] to the given spread [page].
+  /// [page] 可以是 -1（封面）、0 到 spreadCount-1（内容页）、spreadCount（封底）
   Future<void> animateToPage(
-    int page, {
+    FlipPageIndex page, {
     Duration duration = const Duration(milliseconds: 250),
     Curve curve = Curves.easeInOut,
   }) {
@@ -53,7 +140,7 @@ class FlipPageController extends ValueNotifier<int> {
   }
 
   /// Jumps the [FlipPageView] to the given spread [page] without animation.
-  void jumpToPage(int page) {
+  void jumpToPage(FlipPageIndex page) {
     _state?._jumpToPage(page);
   }
 
@@ -63,8 +150,7 @@ class FlipPageController extends ValueNotifier<int> {
     Curve curve = Curves.easeInOut,
   }) {
     if (_state == null) return Future.value();
-    final sc = _state!._spreadCount;
-    final next = (value + 1) % sc;
+    final next = value.next.clamp(minIndex, maxIndex);
     return animateToPage(next, duration: duration, curve: curve);
   }
 
@@ -74,8 +160,7 @@ class FlipPageController extends ValueNotifier<int> {
     Curve curve = Curves.easeInOut,
   }) {
     if (_state == null) return Future.value();
-    final sc = _state!._spreadCount;
-    final prev = (value - 1 + sc) % sc;
+    final prev = value.previous.clamp(minIndex, maxIndex);
     return animateToPage(prev, duration: duration, curve: curve);
   }
 
@@ -102,11 +187,17 @@ class FlipPageController extends ValueNotifier<int> {
 ///
 /// [itemsCount] is the total number of individual pages (should be even).
 /// The number of spreads equals `itemsCount ~/ 2`.
+///
+/// [coverBuilder] 封面构建器，当在第一页往右滑时显示
+/// [backCoverBuilder] 封底构建器，当在最后一页往左滑时显示
 class FlipPageView extends StatefulWidget {
   const FlipPageView({
     required this.itemBuilder,
     required this.itemsCount,
     required this.controller,
+    required this.pageSize,
+    required this.coverBuilder,
+    required this.backCoverBuilder,
     this.spacing,
     this.borderRadius,
     super.key,
@@ -123,6 +214,15 @@ class FlipPageView extends StatefulWidget {
   /// right pages get rounded top-right and bottom-right corners.
   final BorderRadius? borderRadius;
 
+  /// 封面构建器，当在第一页往右滑时显示
+  final WidgetBuilder coverBuilder;
+
+  /// 封底构建器，当在最后一页往左滑时显示
+  final WidgetBuilder backCoverBuilder;
+
+  /// 页面尺寸
+  final Size pageSize;
+
   @override
   State<FlipPageView> createState() => _FlipPageViewState();
 }
@@ -131,28 +231,29 @@ class _FlipPageViewState extends State<FlipPageView>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  int? _beforeDragIndex;
+  FlipPageIndex? _beforeDragIndex;
   double? _dragStartX;
   double _dragProgress = 0;
   double _leftAngle = -_defaultAngle;
   double _rightAngle = _defaultAngle;
   bool _isAnimating = false;
+  late double _leftWidth = widget.controller.value == minIndex
+      ? widget.pageSize.width * 0.5
+      : 0;
 
   static const _perspective = 0.0002;
   static const _zeroAngle = 0.0001;
   static const double _defaultAngle = math.pi / 6.5;
   static const double _maxAngle = math.pi / 2;
 
-  int get _spreadCount => widget.itemsCount ~/ 2;
-
-  int get _currentIndex => widget.controller.value;
-  set _currentIndex(int value) {
+  /// 当前 spread 索引，-1 表示封面，_spreadCount 表示封底，0 到 _spreadCount-1 表示内容页
+  FlipPageIndex get _currentIndex => widget.controller.value;
+  set _currentIndex(FlipPageIndex value) {
     widget.controller.value = value;
   }
 
-  int _leftPageOf(int spread) => 2 * spread + 1;
-  int _rightPageOf(int spread) => 2 * spread;
-  int _wrapSpread(int s) => (s % _spreadCount + _spreadCount) % _spreadCount;
+  FlipPageIndex get minIndex => FlipPageIndex.fromLeft(-2);
+  FlipPageIndex get maxIndex => FlipPageIndex.fromLeft(widget.itemsCount);
 
   Widget _clipLeft(Widget child) {
     final br = widget.borderRadius;
@@ -198,18 +299,48 @@ class _FlipPageViewState extends State<FlipPageView>
     }
   }
 
+  void _updateLeftWidth(FlipPageIndex targetIndex, double progress) {
+    if (targetIndex == minIndex) {
+      if (progress > -0.5 && progress <= 0) {
+        _leftWidth = widget.pageSize.width * (0.5 - progress);
+      } else if (progress > 0.5 && progress < 1) {
+        _leftWidth = widget.pageSize.width * (1 - progress + 0.5);
+      } else {
+        _leftWidth = widget.pageSize.width * 0.5;
+      }
+    } else if (targetIndex == maxIndex) {
+      if (progress < -0.5) {
+        _leftWidth = widget.pageSize.width * (-progress - 0.5);
+      } else if (progress < 0.5 && progress >= 0) {
+        _leftWidth = widget.pageSize.width * (0.5 - progress);
+      } else {
+        _leftWidth = 0;
+      }
+    } else {
+      _leftWidth = 0;
+    }
+  }
+
   void _onProgressUpdate(double progress) {
     _updateAngles(progress);
 
-    final sc = _spreadCount;
+    // 计算目标索引
+    FlipPageIndex targetIndex;
     if (progress > 0.5) {
-      _currentIndex = (_beforeDragIndex! - 1 + sc) % sc;
+      // 往右翻页（显示左边的内容）
+      targetIndex = _beforeDragIndex!.previous;
     } else if (progress < -0.5) {
-      _currentIndex = (_beforeDragIndex! + 1) % sc;
+      // 往左翻页（显示右边的内容）
+      targetIndex = _beforeDragIndex!.next;
     } else {
-      _currentIndex = _beforeDragIndex!;
+      targetIndex = _beforeDragIndex!;
     }
+    targetIndex = targetIndex.clamp(minIndex, maxIndex);
 
+    _updateLeftWidth(targetIndex, progress);
+
+    // 应用边界限制
+    _currentIndex = targetIndex;
     _dragProgress = progress;
     setState(() {});
   }
@@ -228,7 +359,17 @@ class _FlipPageViewState extends State<FlipPageView>
 
     final dragDistance = details.globalPosition.dx - _dragStartX!;
     final screenWidth = MediaQuery.of(context).size.width;
-    final progress = (dragDistance / (screenWidth * 0.5)).clamp(-1.0, 1.0);
+    var progress = (dragDistance / (screenWidth * 0.5)).clamp(-1.0, 1.0);
+
+    // 如果已经在最左边（封面或第一页），不能再往右翻
+    if (_beforeDragIndex! == minIndex && progress > 0) {
+      progress = 0.0;
+    }
+    // 如果已经在最右边（封底或最后一页），不能再往左翻
+    if (_beforeDragIndex! == maxIndex && progress < 0) {
+      progress = 0.0;
+    }
+
     _onProgressUpdate(progress);
   }
 
@@ -309,7 +450,7 @@ class _FlipPageViewState extends State<FlipPageView>
   }
 
   Future<void> _animateToTargetPage(
-    int targetPage,
+    FlipPageIndex targetPage,
     FlipPageDirection direction, {
     required Duration duration,
     Curve curve = Curves.easeInOut,
@@ -339,6 +480,7 @@ class _FlipPageViewState extends State<FlipPageView>
         _currentIndex = targetPage;
       }
 
+      _updateLeftWidth(_currentIndex, progress);
       _dragProgress = progress;
       setState(() {});
     }
@@ -350,60 +492,72 @@ class _FlipPageViewState extends State<FlipPageView>
     _currentIndex = targetPage;
     _leftAngle = -_defaultAngle;
     _rightAngle = _defaultAngle;
+    _updateLeftWidth(targetPage, 0);
     _dragProgress = 0;
     _dragStartX = null;
     _beforeDragIndex = null;
   }
 
   Future<void> _animateToPage(
-    int page, {
+    FlipPageIndex page, {
     required Duration duration,
     Curve curve = Curves.easeInOut,
   }) async {
     if (_isAnimating) return;
-    final sc = _spreadCount;
-    if (page < 0 || page >= sc) return;
+
+    if (!widget.controller.isPageValid(page)) return;
     if (page == _currentIndex) return;
 
     _isAnimating = true;
 
     final startIndex = _currentIndex;
-    final distance = (page - startIndex).abs() % sc;
-    final direction =
-        page > startIndex ? FlipPageDirection.right : FlipPageDirection.left;
+    final distance = (page - startIndex).left.abs();
+    final direction = page.left > startIndex.left
+        ? FlipPageDirection.right
+        : FlipPageDirection.left;
 
-    const maxAnimatedPages = 5;
-    final animatedPageCount = math.min(distance, maxAnimatedPages);
-    final singlePageDuration = Duration(
-      milliseconds: duration.inMilliseconds ~/ animatedPageCount,
-    );
-    final stepSize =
-        distance > maxAnimatedPages ? distance / maxAnimatedPages : 1;
+    // const maxAnimatedPages = 5;
+    // final animatedPageCount = math.min(distance, maxAnimatedPages);
+    // final singlePageDuration = Duration(
+    //   milliseconds: duration.inMilliseconds ~/ animatedPageCount,
+    // );
+    // final stepSize = distance > maxAnimatedPages
+    //     ? distance / maxAnimatedPages
+    //     : 1;
 
-    final pages = List.generate(
-      animatedPageCount,
-      (index) =>
-          (startIndex + ((index + 1) * stepSize).round() * direction.value) %
-          sc,
+    // final pages = List.generate(
+    //   animatedPageCount,
+    //   (index) {
+    //     final delta = ((index + 1) * stepSize).round() * direction.value;
+    //     return FlipPageIndex(
+    //       left: startIndex.left + delta,
+    //       right: startIndex.right + delta,
+    //     );
+    //   },
+    // );
+    // for (final p in pages) {
+    //   await _animateToTargetPage(
+    //     p,
+    //     direction,
+    //     duration: singlePageDuration,
+    //     curve: curve,
+    //   );
+    // }
+    // _currentIndex = page;
+    await _animateToTargetPage(
+      page,
+      direction,
+      duration: duration,
+      curve: curve,
     );
-    for (final p in pages) {
-      await _animateToTargetPage(
-        p,
-        direction,
-        duration: singlePageDuration,
-        curve: curve,
-      );
-    }
-    _currentIndex = page;
 
     _resetDragState();
     widget.controller._notifyPageChanged();
     setState(() {});
   }
 
-  void _jumpToPage(int page) {
-    final sc = _spreadCount;
-    if (page < 0 || page >= sc) return;
+  void _jumpToPage(FlipPageIndex page) {
+    if (!widget.controller.isPageValid(page)) return;
     if (page == _currentIndex) return;
 
     _currentIndex = page;
@@ -415,140 +569,179 @@ class _FlipPageViewState extends State<FlipPageView>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final s = _currentIndex;
-
     return GestureDetector(
       onHorizontalDragStart: _onHorizontalDragStart,
       onHorizontalDragUpdate: _onHorizontalDragUpdate,
       onHorizontalDragEnd: _onHorizontalDragEnd,
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.surfaceContainerHighest,
-              blurRadius: 20,
-              offset: const Offset(0, 20),
-            ),
-          ],
-        ),
+      behavior: HitTestBehavior.opaque,
+      child: SizedBox(
+        width: widget.pageSize.width * 2 + 2,
+        height: widget.pageSize.height,
+        // decoration: BoxDecoration(
+        //   boxShadow: [
+        //     BoxShadow(
+        //       color: theme.colorScheme.surfaceContainerHighest,
+        //       blurRadius: 20,
+        //       offset: const Offset(0, 20),
+        //     ),
+        //   ],
+        // ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              decoration: const BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 20,
-                    offset: Offset(10, 0),
-                  ),
-                ],
+            SizedBox(width: _leftWidth, height: widget.pageSize.height),
+            if (_currentIndex.left != minIndex.left)
+              _buildLeftPage(_currentIndex.left),
+            if (widget.spacing != null)
+              Container(
+                width: widget.spacing,
+                color: theme.colorScheme.surfaceContainerHighest,
               ),
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  if ((_dragProgress > 0 && _dragProgress < 0.5) ||
-                      (_dragProgress < -0.5))
-                    Transform(
-                      key: ValueKey(_leftPageOf(_wrapSpread(s - 2))),
-                      alignment: Alignment.centerRight,
-                      transform: Matrix4.identity()
-                        ..setEntry(3, 2, _perspective)
-                        ..rotateY(_zeroAngle),
-                      child: _clipLeft(
-                        widget.itemBuilder(
-                          context,
-                          _leftPageOf(_wrapSpread(s - 2)),
-                        ),
-                      ),
-                    ),
-                  Transform(
-                    key: ValueKey(_leftPageOf(_wrapSpread(s - 1))),
-                    alignment: Alignment.centerRight,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, _perspective)
-                      ..rotateY(
-                        _dragProgress > 0 && _dragProgress < 0.5
-                            ? _zeroAngle - _dragProgress * 2 * _defaultAngle
-                            : (_dragProgress < -0.5
-                                  ? _zeroAngle -
-                                        (1 + _dragProgress) * 2 * _defaultAngle
-                                  : _zeroAngle),
-                      ),
-                    child: _clipLeft(
-                      widget.itemBuilder(
-                        context,
-                        _leftPageOf(_wrapSpread(s - 1)),
-                      ),
-                    ),
-                  ),
-                  Transform(
-                    key: ValueKey(_leftPageOf(s)),
-                    alignment: Alignment.centerRight,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, _perspective)
-                      ..rotateY(_leftAngle),
-                    child: _clipLeft(
-                      widget.itemBuilder(context, _leftPageOf(s)),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            if (widget.spacing != null) SizedBox(width: widget.spacing),
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                if ((_dragProgress < 0 && _dragProgress > -0.5) ||
-                    (_dragProgress > 0.5 && _dragProgress < 1))
-                  Transform(
-                    key: ValueKey(_rightPageOf(_wrapSpread(s + 2))),
-                    alignment: Alignment.centerLeft,
-                    transform: Matrix4.identity()
-                      ..setEntry(3, 2, _perspective)
-                      ..rotateY(_zeroAngle),
-                    child: _clipRight(
-                      widget.itemBuilder(
-                        context,
-                        _rightPageOf(_wrapSpread(s + 2)),
-                      ),
-                    ),
-                  ),
-                Transform(
-                  key: ValueKey(_rightPageOf(_wrapSpread(s + 1))),
-                  alignment: Alignment.centerLeft,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, _perspective)
-                    ..rotateY(
-                      _dragProgress > 0.5
-                          ? _zeroAngle + (1 - _dragProgress) * 2 * _defaultAngle
-                          : ((_dragProgress < 0 && _dragProgress > -0.5)
-                                ? _zeroAngle -
-                                      _dragProgress * 2 * _defaultAngle
-                                : _zeroAngle),
-                    ),
-                  child: _clipRight(
-                    widget.itemBuilder(
-                      context,
-                      _rightPageOf(_wrapSpread(s + 1)),
-                    ),
-                  ),
-                ),
-                Transform(
-                  key: ValueKey(_rightPageOf(s)),
-                  alignment: Alignment.centerLeft,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, _perspective)
-                    ..rotateY(_rightAngle),
-                  child: _clipRight(
-                    widget.itemBuilder(context, _rightPageOf(s)),
-                  ),
-                ),
-              ],
-            ),
+            if (_currentIndex.right != maxIndex.right)
+              _buildRightPage(_currentIndex.right),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildLeftPage(int index) {
+    final children = <Widget>[];
+    const bottomAngle = _zeroAngle;
+    final middleAngle = _dragProgress > 0 && _dragProgress < 0.5
+        ? _zeroAngle - _dragProgress * 2 * _defaultAngle
+        : (_dragProgress < -0.5
+              ? _zeroAngle - (1 + _dragProgress) * 2 * _defaultAngle
+              : _zeroAngle);
+    print(index);
+    children.add(
+      Transform(
+        key: const ValueKey('cover_left'),
+        alignment: Alignment.centerRight,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, _perspective)
+          ..rotateY(
+            index == 0
+                ? _leftAngle
+                : index == 2
+                ? middleAngle
+                : bottomAngle,
+          )
+          ..scaleByDouble(1.02, 1, 1, 1),
+        child: _clipLeft(widget.coverBuilder(context)),
+      ),
+    );
+
+    // 封面或前一页
+    final bottomIndex = index - 4;
+    if (bottomIndex > minIndex.left &&
+        ((_dragProgress > 0 && _dragProgress < 0.5) ||
+            (_dragProgress < -0.5))) {
+      children.add(
+        Transform(
+          key: ValueKey(bottomIndex),
+          alignment: Alignment.centerRight,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, _perspective)
+            ..rotateY(bottomAngle),
+          child: _clipLeft(widget.itemBuilder(context, bottomIndex)),
+        ),
+      );
+    }
+
+    final middleIndex = index - 2;
+    if (middleIndex > minIndex.left) {
+      children.add(
+        Transform(
+          key: ValueKey(middleIndex),
+          alignment: Alignment.centerRight,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, _perspective)
+            ..rotateY(middleAngle),
+          child: _clipLeft(widget.itemBuilder(context, middleIndex)),
+        ),
+      );
+    }
+
+    children.add(
+      Transform(
+        key: ValueKey(
+          index,
+        ),
+        alignment: Alignment.centerRight,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, _perspective)
+          ..rotateY(_leftAngle),
+        child: _clipLeft(
+          index == maxIndex.left
+              ? widget.backCoverBuilder(context)
+              : widget.itemBuilder(context, index),
+        ),
+      ),
+    );
+
+    return Stack(clipBehavior: Clip.none, children: children);
+  }
+
+  Widget _buildRightPage(int index) {
+    final children = <Widget>[];
+    // 封底或后一页
+    final bottomIndex = index + 4;
+    if (bottomIndex < maxIndex.right &&
+        ((_dragProgress < 0 && _dragProgress > -0.5) ||
+            (_dragProgress > 0.5 && _dragProgress < 1))) {
+      children.add(
+        Transform(
+          key: ValueKey(bottomIndex),
+          alignment: Alignment.centerLeft,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, _perspective)
+            ..rotateY(_zeroAngle),
+          child: _clipRight(widget.itemBuilder(context, bottomIndex)),
+        ),
+      );
+    }
+    // 当前翻动的右页
+    final middleIndex = index + 2;
+    if (middleIndex < maxIndex.right) {
+      children.add(
+        Transform(
+          key: ValueKey(middleIndex),
+          alignment: Alignment.centerLeft,
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, _perspective)
+            ..rotateY(
+              _dragProgress > 0.5
+                  ? _zeroAngle + (1 - _dragProgress) * 2 * _defaultAngle
+                  : ((_dragProgress < 0 && _dragProgress > -0.5)
+                        ? _zeroAngle - _dragProgress * 2 * _defaultAngle
+                        : _zeroAngle),
+            ),
+          child: _clipRight(widget.itemBuilder(context, middleIndex)),
+        ),
+      );
+    }
+
+    /// 当前右页
+    final transform = Matrix4.identity()
+      ..setEntry(3, 2, _perspective)
+      ..rotateY(_rightAngle);
+    children.add(
+      Transform(
+        key: ValueKey(index == maxIndex.right ? 'backcover_right' : index),
+        alignment: Alignment.centerLeft,
+        transform: transform,
+        child: _clipRight(
+          index == minIndex.right
+              ? widget.coverBuilder(context)
+              : widget.itemBuilder(context, index),
+        ),
+      ),
+    );
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: children,
     );
   }
 }

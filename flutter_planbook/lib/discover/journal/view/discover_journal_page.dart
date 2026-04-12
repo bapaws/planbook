@@ -97,12 +97,22 @@ class _DiscoverJournalContentState extends State<_DiscoverJournalContent> {
   @override
   void initState() {
     super.initState();
-    final journalDate = context.read<DiscoverJournalBloc>().state.date;
-    final startOfYear = journalDate.startOf(Unit.year);
-    final page = journalDate.diff(startOfYear, unit: Unit.day).toInt();
-    _controller = FlipPageController(initialPage: page);
+    // 初始页面设为 -1，显示封面
+    _controller = FlipPageController(
+      initialPage: FlipPageIndex.fromLeft(-2),
+    );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _prefetch());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _prefetch();
+
+      // Future.delayed(const Duration(milliseconds: 800), () {
+      //   if (!mounted) return;
+      //   final journalDate = context.read<DiscoverJournalBloc>().state.date;
+      //   final startOfYear = journalDate.startOf(Unit.year);
+      //   final page = journalDate.diff(startOfYear, unit: Unit.day).toInt();
+      //   _controller.animateToPage(FlipPageIndex.fromLeft(page));
+      // });
+    });
   }
 
   @override
@@ -127,28 +137,31 @@ class _DiscoverJournalContentState extends State<_DiscoverJournalContent> {
       listener: (context, state) {
         WidgetsBinding.instance.addPostFrameCallback((_) => _prefetch());
       },
-      child: BlocSelector<
-        DiscoverJournalBloc,
-        DiscoverJournalState,
-        DiscoverJournalViewType
-      >(
-        selector: (state) => state.viewType,
-        builder: (context, viewType) {
-          return AnimatedSwitcher(
-            duration: Durations.medium1,
-            child: switch (viewType) {
-              DiscoverJournalViewType.flip => DiscoverJournalFlipView(
-                controller: _controller,
-              ),
-              DiscoverJournalViewType.horizontal =>
-                DiscoverJournalHorizontalView(
-                  initialDate:
-                      context.read<DiscoverJournalBloc>().state.date,
-                ),
+      child:
+          BlocSelector<
+            DiscoverJournalBloc,
+            DiscoverJournalState,
+            DiscoverJournalViewType
+          >(
+            selector: (state) => state.viewType,
+            builder: (context, viewType) {
+              return AnimatedSwitcher(
+                duration: Durations.medium1,
+                child: switch (viewType) {
+                  DiscoverJournalViewType.flip => DiscoverJournalFlipView(
+                    controller: _controller,
+                  ),
+                  DiscoverJournalViewType.horizontal =>
+                    DiscoverJournalHorizontalView(
+                      initialDate: context
+                          .read<DiscoverJournalBloc>()
+                          .state
+                          .date,
+                    ),
+                },
+              );
             },
-          );
-        },
-      ),
+          ),
     );
   }
 }
