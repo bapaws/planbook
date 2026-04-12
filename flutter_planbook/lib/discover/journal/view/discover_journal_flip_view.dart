@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,7 @@ class _JournalCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    const w = kDiscoverJournalDailyPageWidth / 2;
+    const w = kDiscoverJournalDailyPageWidth;
     const h = kDiscoverJournalDailyPageHeight;
 
     return SizedBox(
@@ -99,7 +100,7 @@ class _JournalBackCover extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    const w = kDiscoverJournalDailyPageWidth / 2;
+    const w = kDiscoverJournalDailyPageWidth;
     const h = kDiscoverJournalDailyPageHeight;
 
     return SizedBox(
@@ -179,6 +180,9 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
   FlipPageController get _controller => widget.controller;
   Timer? _timer;
 
+  /// 记录最近一次放大的方向，用于反向动画时正确插值 alignment
+  Alignment _enlargedAlignment = Alignment.centerLeft;
+
   @override
   void initState() {
     super.initState();
@@ -194,10 +198,17 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
   void _onFlipPageChanged() {
     final index = _controller.value;
+    final bloc = context.read<DiscoverJournalBloc>();
+    if (_controller.isCoverPage(index) || _controller.isBackCoverPage(index)) {
+      bloc
+        ..add(const JournalHomeLeftEnlargedToggled(isEnlarged: false))
+        ..add(const JournalHomeRightEnlargedToggled(isEnlarged: false));
+      return;
+    }
+
     // 封面索引为 -1，不触发日期变化
     if (!_controller.isContentPage(index)) return;
 
-    final bloc = context.read<DiscoverJournalBloc>();
     final startOfYear = bloc.state.date.startOf(
       Unit.year,
     );
@@ -209,22 +220,17 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
   Widget build(BuildContext context) {
     final query = MediaQuery.of(context);
     final screenSize = MediaQuery.of(context).size;
-    final isLandscape = screenSize.width > screenSize.height;
-    var scale = 1.0;
-    var pageWidth = screenSize.width - 32;
-    var pageHeight =
-        screenSize.height - query.padding.vertical - kRootBottomBarHeight;
-    if (isLandscape) {
-      pageHeight =
-          (screenSize.height - query.padding.vertical - kRootBottomBarHeight) *
-          0.6;
-      scale = pageHeight / kDiscoverJournalDailyPageHeight;
-      pageWidth = kDiscoverJournalDailyPageWidth * scale;
-    } else {
-      pageWidth = screenSize.width - query.padding.horizontal - 32;
-      scale = pageWidth / kDiscoverJournalDailyPageWidth;
-      pageHeight = kDiscoverJournalDailyPageHeight * scale;
-    }
+    final pageWidth = screenSize.width - query.padding.horizontal - 32;
+    final pageHeight = min(
+      screenSize.height -
+          query.padding.vertical -
+          kRootBottomBarHeight -
+          kToolbarHeight * 5,
+      pageWidth /
+              kDiscoverJournalDailyPageWidth *
+              kDiscoverJournalDailyPageHeight -
+          32,
+    );
 
     return BlocListener<RootDiscoverBloc, RootDiscoverState>(
       listenWhen: (previous, current) =>
@@ -253,33 +259,79 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
           // 跳转到对应的内容页（索引从 0 开始）
           _controller.jumpToPage(FlipPageIndex.fromLeft(page));
         },
-        buildWhen: (previous, current) => previous.year != current.year,
+        buildWhen: (previous, current) =>
+            previous.year != current.year ||
+            previous.isLeftEnlarged != current.isLeftEnlarged ||
+            previous.isRightEnlarged != current.isRightEnlarged,
         builder: (context, state) {
           final startOfYear = state.date.startOf(Unit.year);
+          final isEnlarged = state.isLeftEnlarged || state.isRightEnlarged;
+
+          if (state.isLeftEnlarged) {
+            _enlargedAlignment = Alignment.centerLeft;
+          } else if (state.isRightEnlarged) {
+            _enlargedAlignment = Alignment.centerRight;
+          }
+
+          // fitHeight / contain 的缩放比
+          final containerW = pageWidth + 8;
+          const bookW = kDiscoverJournalDailyPageWidth * 2 + 3.0;
+          final enlargedRatio =
+              (pageHeight / kDiscoverJournalDailyPageHeight) /
+              (containerW / bookW);
+
           return Container(
             width: pageWidth + 32,
-            height: pageHeight + 32,
+            height: pageHeight,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: FittedBox(
-              child: FlipPageView(
-                itemsCount: state.days * 2,
-                controller: _controller,
-                pageSize: const Size(
-                  kDiscoverJournalDailyPageWidth / 2,
-                  kDiscoverJournalDailyPageHeight,
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(
+                end: isEnlarged ? 1.0 : 0.0,
+              ),
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              builder: (context, t, child) {
+                return Transform.scale(
+                  scale: 1.0 + (enlargedRatio - 1.0) * t,
+                  alignment: Alignment.lerp(
+                    Alignment.center,
+                    _enlargedAlignment,
+                    t,
+                  ),
+                  child: child,
+                );
+              },
+              child: FittedBox(
+                child: FlipPageView(
+                  itemsCount: state.days * 2,
+                  controller: _controller,
+                  pageSize: const Size(
+                    kDiscoverJournalDailyPageWidth,
+                    kDiscoverJournalDailyPageHeight,
+                  ),
+                  spacing: 1,
+                  borderRadius: BorderRadius.circular(16),
+                  coverBuilder: (context) => _JournalCover(year: state.year),
+                  backCoverBuilder: (context) =>
+                      _JournalBackCover(year: state.year),
+                  itemBuilder: (context, index) {
+                    final date = startOfYear.add(days: index ~/ 2);
+                    if (index.isEven) {
+                      return JournalDailyLeftPage(date: date);
+                    }
+                    return JournalDailyRightPage(date: date);
+                  },
+                  onLeftDoubleTap: (index) {
+                    context.read<DiscoverJournalBloc>().add(
+                      const JournalHomeLeftEnlargedToggled(),
+                    );
+                  },
+                  onRightDoubleTap: (index) {
+                    context.read<DiscoverJournalBloc>().add(
+                      const JournalHomeRightEnlargedToggled(),
+                    );
+                  },
                 ),
-                spacing: 1,
-                borderRadius: BorderRadius.circular(16),
-                coverBuilder: (context) => _JournalCover(year: state.year),
-                backCoverBuilder: (context) =>
-                    _JournalBackCover(year: state.year),
-                itemBuilder: (context, index) {
-                  final date = startOfYear.add(days: index ~/ 2);
-                  if (index.isEven) {
-                    return JournalDailyLeftPage(date: date);
-                  }
-                  return JournalDailyRightPage(date: date);
-                },
               ),
             ),
           );

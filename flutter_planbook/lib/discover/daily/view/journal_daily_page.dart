@@ -12,10 +12,9 @@ import 'package:flutter_planbook/discover/daily/view/journal_daily_note_grid_vie
 import 'package:flutter_planbook/discover/daily/view/journal_daily_timeline_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
-const double kDiscoverJournalDailyPageWidth = 210 * 2 * 2.5;
+const double kDiscoverJournalDailyPageWidth = 210 * 2.5;
 const double kDiscoverJournalDailyPageHeight = 297 * 2.5;
 
-const double _halfPageWidth = kDiscoverJournalDailyPageWidth / 2;
 const double _spacing = 16;
 
 @RoutePage()
@@ -93,7 +92,7 @@ class _JournalDailyFullPage extends StatelessWidget {
       selector: (state) => state.background,
       builder: (context, background) {
         return Container(
-          width: kDiscoverJournalDailyPageWidth,
+          width: kDiscoverJournalDailyPageWidth * 2,
           height: kDiscoverJournalDailyPageHeight,
           padding: const EdgeInsets.all(_spacing),
           decoration: BoxDecoration(
@@ -140,39 +139,39 @@ class _JournalDailyHalfPage extends StatelessWidget {
       selector: (state) => state.background,
       builder: (context, background) {
         return Container(
-          width: _halfPageWidth,
+          width: kDiscoverJournalDailyPageWidth,
           height: kDiscoverJournalDailyPageHeight,
           padding: const EdgeInsets.all(_spacing),
-          clipBehavior: Clip.hardEdge,
+          // clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
-            border: Border(
-              left: isLeft
-                  ? BorderSide(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                    )
-                  : BorderSide.none,
-              right: isLeft
-                  ? BorderSide.none
-                  : BorderSide(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                    ),
-              bottom: BorderSide(
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
-              top: BorderSide(
-                color: theme.colorScheme.surfaceContainerHighest,
-              ),
-            ),
-            borderRadius: isLeft
-                ? const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    bottomLeft: Radius.circular(24),
-                  )
-                : const BorderRadius.only(
-                    topRight: Radius.circular(24),
-                    bottomRight: Radius.circular(24),
-                  ),
+            // color: theme.colorScheme.surfaceContainerLowest,
+            // border: Border(
+            //   left: isLeft
+            //       ? BorderSide(
+            //           color: theme.colorScheme.surfaceContainerHighest,
+            //         )
+            //       : BorderSide.none,
+            //   right: isLeft
+            //       ? BorderSide.none
+            //       : BorderSide(
+            //           color: theme.colorScheme.surfaceContainerHighest,
+            //         ),
+            //   bottom: BorderSide(
+            //     color: theme.colorScheme.surfaceContainerHighest,
+            //   ),
+            //   top: BorderSide(
+            //     color: theme.colorScheme.surfaceContainerHighest,
+            //   ),
+            // ),
+            // borderRadius: isLeft
+            //     ? const BorderRadius.only(
+            //         topLeft: Radius.circular(24),
+            //         bottomLeft: Radius.circular(24),
+            //       )
+            //     : const BorderRadius.only(
+            //         topRight: Radius.circular(24),
+            //         bottomRight: Radius.circular(24),
+            //       ),
             image: DecorationImage(
               image: AssetImage(
                 theme.brightness == Brightness.light
@@ -198,7 +197,8 @@ class _JournalDailyLeftContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date = context.read<JournalDailyBloc>().date;
-    final colWidth = ((_halfPageWidth - _spacing * 3) / 2).floorToDouble();
+    final colWidth = ((kDiscoverJournalDailyPageWidth - _spacing * 3) / 2)
+        .floorToDouble();
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -251,14 +251,14 @@ class _JournalDailyRightContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: _halfPageWidth - _spacing * 2,
+      width: kDiscoverJournalDailyPageWidth - _spacing * 2,
       height: kDiscoverJournalDailyPageHeight - 32,
       child:
           BlocSelector<JournalDailyBloc, JournalDailyState, List<NoteEntity>>(
             selector: (state) => state.writtenNotes,
             builder: (context, notes) => JournalDailyNoteGridView(
               notes: notes,
-              width: _halfPageWidth - _spacing * 2,
+              width: kDiscoverJournalDailyPageWidth - _spacing * 2,
             ),
           ),
     );

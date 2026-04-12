@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_planbook/discover/daily/journal_daily_bloc_manager.dart'
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_date_change_view.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_flip_view.dart';
-import 'package:flutter_planbook/discover/journal/view/discover_journal_horizontal_view.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
@@ -105,14 +106,43 @@ class _DiscoverJournalContentState extends State<_DiscoverJournalContent> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prefetch();
 
-      // Future.delayed(const Duration(milliseconds: 800), () {
-      //   if (!mounted) return;
-      //   final journalDate = context.read<DiscoverJournalBloc>().state.date;
-      //   final startOfYear = journalDate.startOf(Unit.year);
-      //   final page = journalDate.diff(startOfYear, unit: Unit.day).toInt();
-      //   _controller.animateToPage(FlipPageIndex.fromLeft(page));
-      // });
+      Future.delayed(const Duration(milliseconds: 150), () {
+        if (!mounted) return;
+        final journalDate = context.read<DiscoverJournalBloc>().state.date;
+        final startOfYear = journalDate.startOf(Unit.year);
+        final page = journalDate.diff(startOfYear, unit: Unit.day).toInt();
+        _controller.animateToPage(FlipPageIndex.fromLeft(page * 2));
+      });
     });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _maybeShowFlipGestureHint(),
+    );
+  }
+
+  /// 首次进入日志翻页模式时提示手势；关闭对话框后写入本地标记。
+  Future<void> _maybeShowFlipGestureHint() async {
+    await Future<void>.delayed(const Duration(milliseconds: 450));
+    if (!mounted) return;
+    final settings = context.read<SettingsRepository>();
+    if (settings.getDiscoverJournalFlipGestureHintShown()) return;
+    final l10n = context.l10n;
+    await showCupertinoDialog<void>(
+      context: context,
+      builder: (dialogContext) => CupertinoAlertDialog(
+        title: Text(l10n.discoverJournalFlipGestureHintTitle),
+        content: SingleChildScrollView(
+          child: Text(l10n.discoverJournalFlipGestureHintMessage),
+        ),
+        actions: [
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(l10n.iKnow),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    await settings.setDiscoverJournalFlipGestureHintShown(shown: true);
   }
 
   @override
@@ -137,31 +167,9 @@ class _DiscoverJournalContentState extends State<_DiscoverJournalContent> {
       listener: (context, state) {
         WidgetsBinding.instance.addPostFrameCallback((_) => _prefetch());
       },
-      child:
-          BlocSelector<
-            DiscoverJournalBloc,
-            DiscoverJournalState,
-            DiscoverJournalViewType
-          >(
-            selector: (state) => state.viewType,
-            builder: (context, viewType) {
-              return AnimatedSwitcher(
-                duration: Durations.medium1,
-                child: switch (viewType) {
-                  DiscoverJournalViewType.flip => DiscoverJournalFlipView(
-                    controller: _controller,
-                  ),
-                  DiscoverJournalViewType.horizontal =>
-                    DiscoverJournalHorizontalView(
-                      initialDate: context
-                          .read<DiscoverJournalBloc>()
-                          .state
-                          .date,
-                    ),
-                },
-              );
-            },
-          ),
+      child: DiscoverJournalFlipView(
+        controller: _controller,
+      ),
     );
   }
 }

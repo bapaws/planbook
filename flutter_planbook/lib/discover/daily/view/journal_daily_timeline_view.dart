@@ -203,7 +203,7 @@ class _TimelineNoteImages extends StatelessWidget {
   Widget _buildGridLayout(List<String> display, int more) {
     const spacing = 4.0;
     final tileSize =
-        (((kDiscoverJournalDailyPageWidth / 2 - 16 * 3) / 2 -
+        (((kDiscoverJournalDailyPageWidth - 16 * 3) / 2 -
                     kJournalDailyTimelineTimeWidth -
                     spacing * 2) /
                 3)

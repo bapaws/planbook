@@ -17,7 +17,9 @@ class DiscoverJournalBloc
     on<DiscoverJournalDateChanged>(_onDateChanged);
 
     on<JournalHomeCalendarToggled>(_onCalendarToggled);
-    on<JournalHomeViewTypeChanged>(_onViewTypeChanged);
+
+    on<JournalHomeLeftEnlargedToggled>(_onLeftEnlargedToggled);
+    on<JournalHomeRightEnlargedToggled>(_onRightEnlargedToggled);
   }
 
   Future<void> _onRequested(
@@ -42,10 +44,27 @@ class DiscoverJournalBloc
     emit(state.copyWith(isCalendarExpanded: !state.isCalendarExpanded));
   }
 
-  Future<void> _onViewTypeChanged(
-    JournalHomeViewTypeChanged event,
+  Future<void> _onLeftEnlargedToggled(
+    JournalHomeLeftEnlargedToggled event,
     Emitter<DiscoverJournalState> emit,
   ) async {
-    emit(state.copyWith(viewType: event.viewType));
+    emit(
+      state.copyWith(
+        isLeftEnlarged: event.isEnlarged ?? !state.isLeftEnlarged,
+        isRightEnlarged: false,
+      ),
+    );
+  }
+
+  Future<void> _onRightEnlargedToggled(
+    JournalHomeRightEnlargedToggled event,
+    Emitter<DiscoverJournalState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        isRightEnlarged: event.isEnlarged ?? !state.isRightEnlarged,
+        isLeftEnlarged: false,
+      ),
+    );
   }
 }

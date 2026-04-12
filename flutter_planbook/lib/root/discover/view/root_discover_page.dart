@@ -141,81 +141,61 @@ class _RootDiscoverPage extends StatelessWidget {
           },
         ),
         actions: [
-          if (tab == RootDiscoverTab.journal) ...[
-            BlocSelector<
-              DiscoverJournalBloc,
-              DiscoverJournalState,
-              DiscoverJournalViewType
-            >(
-              selector: (state) => state.viewType,
-              builder: (context, viewType) {
-                return CupertinoButton(
-                  child: Icon(
-                    switch (viewType) {
-                      DiscoverJournalViewType.flip => FontAwesomeIcons.book,
-                      DiscoverJournalViewType.horizontal =>
-                        FontAwesomeIcons.bookOpen,
-                    },
-                  ),
-                  onPressed: () {
-                    // final date = context.read<DiscoverJournalBloc>().state.date;
-                    // context.router.push(
-                    //   DiscoverJournalFullRoute(
-                    //     date: date,
-                    //   ),
-                    // );
-                    final currentViewType = context
-                        .read<DiscoverJournalBloc>()
-                        .state
-                        .viewType;
-                    final viewType = switch (currentViewType) {
-                      DiscoverJournalViewType.flip =>
-                        DiscoverJournalViewType.horizontal,
-                      DiscoverJournalViewType.horizontal =>
-                        DiscoverJournalViewType.flip,
-                    };
-                    context.read<DiscoverJournalBloc>().add(
-                      JournalHomeViewTypeChanged(viewType: viewType),
+          PullDownButton(
+            itemBuilder: (context) => switch (tab) {
+              RootDiscoverTab.journal => [
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.play,
+                  title: context.l10n.autoPlay,
+                  onTap: () {
+                    context.read<RootDiscoverBloc>().add(
+                      const RootDiscoverAutoPlay(),
                     );
                   },
-                );
-              },
+                ),
+                const PullDownMenuDivider.large(),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.magnifyingGlass,
+                  title: context.l10n.journalEnlargeLeftPage,
+                  subtitle: context.l10n.journalEnlargeLeftPageSubtitle,
+                  onTap: () {
+                    context.read<DiscoverJournalBloc>().add(
+                      const JournalHomeLeftEnlargedToggled(),
+                    );
+                  },
+                ),
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.magnifyingGlass,
+                  title: context.l10n.journalEnlargeRightPage,
+                  subtitle: context.l10n.journalEnlargeRightPageSubtitle,
+                  onTap: () {
+                    context.read<DiscoverJournalBloc>().add(
+                      const JournalHomeRightEnlargedToggled(),
+                    );
+                  },
+                ),
+              ],
+              RootDiscoverTab.focusMindMap ||
+              RootDiscoverTab.summaryMindMap => [
+                PullDownMenuItem(
+                  icon: FontAwesomeIcons.calendarMinus,
+                  title: context.l10n.thisWeek,
+                  onTap: () {
+                    context.read<DiscoverFocusBloc>().add(
+                      DiscoverFocusRequested(date: Jiffy.now()),
+                    );
+                    // context.read<DiscoverFocusBloc>().add(
+                    //   const DiscoverFocusAllNodesExpanded(),
+                    // );
+                  },
+                ),
+              ],
+            },
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              onPressed: showMenu,
+              child: const Icon(FontAwesomeIcons.ellipsis),
             ),
-            PullDownButton(
-              itemBuilder: (context) => switch (tab) {
-                RootDiscoverTab.journal => [
-                  PullDownMenuItem(
-                    icon: FontAwesomeIcons.play,
-                    title: context.l10n.autoPlay,
-                    onTap: () {
-                      context.read<RootDiscoverBloc>().add(
-                        const RootDiscoverAutoPlay(),
-                      );
-                    },
-                  ),
-                ],
-                RootDiscoverTab.focusMindMap ||
-                RootDiscoverTab.summaryMindMap => [
-                  PullDownMenuItem(
-                    icon: FontAwesomeIcons.calendarMinus,
-                    title: context.l10n.thisWeek,
-                    onTap: () {
-                      context.read<DiscoverFocusBloc>().add(
-                        DiscoverFocusRequested(date: Jiffy.now()),
-                      );
-                      // context.read<DiscoverFocusBloc>().add(
-                      //   const DiscoverFocusAllNodesExpanded(),
-                      // );
-                    },
-                  ),
-                ],
-              },
-              buttonBuilder: (context, showMenu) => CupertinoButton(
-                onPressed: showMenu,
-                child: const Icon(FontAwesomeIcons.ellipsis),
-              ),
-            ),
-          ],
+          ),
         ],
       ),
       body: child,

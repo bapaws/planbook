@@ -30,11 +30,20 @@ final class JournalHomeCalendarToggled extends DiscoverJournalEvent {
   List<Object> get props => [];
 }
 
-final class JournalHomeViewTypeChanged extends DiscoverJournalEvent {
-  const JournalHomeViewTypeChanged({required this.viewType});
+final class JournalHomeLeftEnlargedToggled extends DiscoverJournalEvent {
+  const JournalHomeLeftEnlargedToggled({this.isEnlarged});
 
-  final DiscoverJournalViewType viewType;
+  final bool? isEnlarged;
 
   @override
-  List<Object> get props => [viewType];
+  List<Object> get props => [isEnlarged ?? false];
+}
+
+final class JournalHomeRightEnlargedToggled extends DiscoverJournalEvent {
+  const JournalHomeRightEnlargedToggled({this.isEnlarged});
+
+  final bool? isEnlarged;
+
+  @override
+  List<Object> get props => [isEnlarged ?? false];
 }

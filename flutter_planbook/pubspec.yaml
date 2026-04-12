@@ -62,6 +62,7 @@ dependencies:
   package_info_plus: ^8.3.0
   path: ^1.9.1
   path_provider: ^2.1.5
+  pdf: ^3.11.3
   photo_view: ^0.15.0
   planbook_api:
     path: packages/planbook_api

@@ -2,10 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/model/app_color_schemes.dart';
-import 'package:flutter_planbook/core/view/app_empty_note_view.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_header.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_note_view.dart';
-import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_pinned_layout.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -28,9 +26,9 @@ class JournalDailyNoteGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (notes.isEmpty) {
-      return const AppEmptyNoteView(top: kDiscoverJournalDailyPageHeight / 5);
-    }
+    // if (notes.isEmpty) {
+    //   return const AppEmptyNoteView(top: kDiscoverJournalDailyPageHeight / 5);
+    // }
 
     // 1~4 篇时使用"贴在页面"定制布局
     if (notes.length <= 4) {

@@ -326,6 +326,12 @@
   "thisMonth": "本月",
   "thisYear": "今年",
   "autoPlay": "自动播放",
+  "journalEnlargeLeftPage": "放大左页",
+  "journalEnlargeLeftPageSubtitle": "双击左页放大",
+  "journalEnlargeRightPage": "放大右页",
+  "journalEnlargeRightPageSubtitle": "双击右页放大",
+  "discoverJournalFlipGestureHintTitle": "翻页手势",
+  "discoverJournalFlipGestureHintMessage": "👆 点击左页/右页 翻到上一页/下一页\n👆👆 双击任一页 放大查看\n👈 左滑翻到下一页\n👉 右滑翻到上一页",
   "startPlaying": "开始播放",
   "everyInterval": "每 {interval} {unit}",
   "recurrenceWithEndDate": "{frequency}，{date} 结束",
@@ -382,5 +388,37 @@
   "apkDownloadNotFound": "下载资源不存在。",
   "apkDownloadWaitingRetry": "等待重试中。",
   "apkDownloadIncomplete": "下载未完成。",
-  "apkInstallFailed": "安装失败。"
+  "apkInstallFailed": "安装失败。",
+  "journalExportTitle": "导出日记 PDF",
+  "journalExportStartDate": "开始日期",
+  "journalExportEndDate": "结束日期",
+  "journalExportQuickRanges": "快捷范围",
+  "journalExportExportPdf": "导出 PDF",
+  "journalExportExporting": "正在导出…",
+  "journalExportSuccess": "PDF 已生成，可通过分享保存。",
+  "journalExportFailed": "导出 PDF 失败。",
+  "journalExportFormatImages": "图片",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "保存图片",
+  "journalExportSaveCurrentPage": "保存当前页",
+  "journalExportFreeUserHint": "免费版仅支持将当前预览的半页保存为一张图片。升级会员后可导出 PDF，或将所选日期范围内全部页面批量保存为图片。",
+  "journalExportSavingImages": "正在保存图片（{current} / {total}）…",
+  "@journalExportSavingImages": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "已保存 {count} 张图片到相册。",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

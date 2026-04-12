@@ -162,6 +162,8 @@ class AppRouter extends RootStackRouter {
 
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
 
+    AutoRoute(page: JournalExportRoute.page),
+
     // CustomRoute<void>(
     //   page: DiscoverJournalFullRoute.page,
     //   customRouteBuilder: <T>(context, child, page) {

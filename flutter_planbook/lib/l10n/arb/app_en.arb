@@ -451,6 +451,30 @@
   "thisMonth": "This Month",
   "thisYear": "This Year",
   "autoPlay": "Auto Play",
+  "journalEnlargeLeftPage": "Enlarge left page",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
+  "journalEnlargeLeftPageSubtitle": "Double-tap the left page to zoom",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
+  "journalEnlargeRightPage": "Enlarge right page",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
+  "journalEnlargeRightPageSubtitle": "Double-tap the right page to zoom",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
+  "discoverJournalFlipGestureHintTitle": "Flip gestures",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
+  "discoverJournalFlipGestureHintMessage": "👆 Tap the left/right page for previous/next page\n👆👆 Double-tap any page to zoom\n👈 Swipe left for next page\n👉 Swipe right for previous page",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
   "startPlaying": "Start Playing",
   "everyInterval": "Every {interval} {unit}",
   "@everyInterval": {
@@ -674,5 +698,38 @@
   "apkDownloadNotFound": "Download resource not found.",
   "apkDownloadWaitingRetry": "Waiting to retry.",
   "apkDownloadIncomplete": "Download did not complete.",
-  "apkInstallFailed": "Installation failed."
+  "apkInstallFailed": "Installation failed.",
+  "journalExportTitle": "Export journal PDF",
+  "journalExportStartDate": "Start date",
+  "journalExportEndDate": "End date",
+  "journalExportQuickRanges": "Quick ranges",
+  "journalExportExportPdf": "Export PDF",
+  "journalExportExporting": "Exporting…",
+  "journalExportSuccess": "PDF is ready to share.",
+  "journalExportFailed": "Could not export PDF.",
+  "journalExportFormatImages": "Images",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "Save images",
+  "journalExportSaveCurrentPage": "Save current page",
+  "journalExportFreeUserHint": "On the free plan you can save only the half-page currently on screen. Upgrade to export a PDF or save every page in your date range as images.",
+  "journalExportSavingImages": "Saving images ({current} / {total})…",
+  "@journalExportSavingImages": {
+    "description": "Batch image export progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "Saved {count} images to gallery.",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

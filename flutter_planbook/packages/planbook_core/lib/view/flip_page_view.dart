@@ -200,6 +200,10 @@ class FlipPageView extends StatefulWidget {
     required this.backCoverBuilder,
     this.spacing,
     this.borderRadius,
+    this.onLeftTap,
+    this.onRightTap,
+    this.onLeftDoubleTap,
+    this.onRightDoubleTap,
     super.key,
   });
 
@@ -222,6 +226,11 @@ class FlipPageView extends StatefulWidget {
 
   /// 页面尺寸
   final Size pageSize;
+
+  final ValueChanged<int>? onLeftTap;
+  final ValueChanged<int>? onRightTap;
+  final ValueChanged<int>? onLeftDoubleTap;
+  final ValueChanged<int>? onRightDoubleTap;
 
   @override
   State<FlipPageView> createState() => _FlipPageViewState();
@@ -256,25 +265,41 @@ class _FlipPageViewState extends State<FlipPageView>
   FlipPageIndex get maxIndex => FlipPageIndex.fromLeft(widget.itemsCount);
 
   Widget _clipLeft(Widget child) {
-    final br = widget.borderRadius;
-    if (br == null) return ClipRect(child: child);
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topLeft: br.topLeft,
-        bottomLeft: br.bottomLeft,
+    final theme = Theme.of(context);
+    final br = widget.borderRadius ?? BorderRadius.circular(24);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topLeft: br.topLeft,
+          bottomLeft: br.bottomLeft,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.surfaceContainerHighest,
+          strokeAlign: BorderSide.strokeAlignOutside,
+          width: 2,
+        ),
       ),
+      clipBehavior: Clip.hardEdge,
       child: child,
     );
   }
 
   Widget _clipRight(Widget child) {
-    final br = widget.borderRadius;
-    if (br == null) return ClipRect(child: child);
-    return ClipRRect(
-      borderRadius: BorderRadius.only(
-        topRight: br.topRight,
-        bottomRight: br.bottomRight,
+    final theme = Theme.of(context);
+    final br = widget.borderRadius ?? BorderRadius.circular(24);
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.only(
+          topRight: br.topRight,
+          bottomRight: br.bottomRight,
+        ),
+        border: Border.all(
+          color: theme.colorScheme.surfaceContainerHighest,
+          strokeAlign: BorderSide.strokeAlignOutside,
+          width: 2,
+        ),
       ),
+      clipBehavior: Clip.hardEdge,
       child: child,
     );
   }
@@ -511,39 +536,10 @@ class _FlipPageViewState extends State<FlipPageView>
     _isAnimating = true;
 
     final startIndex = _currentIndex;
-    final distance = (page - startIndex).left.abs();
     final direction = page.left > startIndex.left
         ? FlipPageDirection.right
         : FlipPageDirection.left;
 
-    // const maxAnimatedPages = 5;
-    // final animatedPageCount = math.min(distance, maxAnimatedPages);
-    // final singlePageDuration = Duration(
-    //   milliseconds: duration.inMilliseconds ~/ animatedPageCount,
-    // );
-    // final stepSize = distance > maxAnimatedPages
-    //     ? distance / maxAnimatedPages
-    //     : 1;
-
-    // final pages = List.generate(
-    //   animatedPageCount,
-    //   (index) {
-    //     final delta = ((index + 1) * stepSize).round() * direction.value;
-    //     return FlipPageIndex(
-    //       left: startIndex.left + delta,
-    //       right: startIndex.right + delta,
-    //     );
-    //   },
-    // );
-    // for (final p in pages) {
-    //   await _animateToTargetPage(
-    //     p,
-    //     direction,
-    //     duration: singlePageDuration,
-    //     curve: curve,
-    //   );
-    // }
-    // _currentIndex = page;
     await _animateToTargetPage(
       page,
       direction,
@@ -575,19 +571,9 @@ class _FlipPageViewState extends State<FlipPageView>
       onHorizontalDragEnd: _onHorizontalDragEnd,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
-        width: widget.pageSize.width * 2 + 2,
+        width: widget.pageSize.width * 2 + 2 + (widget.spacing ?? 0),
         height: widget.pageSize.height,
-        // decoration: BoxDecoration(
-        //   boxShadow: [
-        //     BoxShadow(
-        //       color: theme.colorScheme.surfaceContainerHighest,
-        //       blurRadius: 20,
-        //       offset: const Offset(0, 20),
-        //     ),
-        //   ],
-        // ),
         child: Row(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SizedBox(width: _leftWidth, height: widget.pageSize.height),
             if (_currentIndex.left != minIndex.left)
@@ -613,30 +599,10 @@ class _FlipPageViewState extends State<FlipPageView>
         : (_dragProgress < -0.5
               ? _zeroAngle - (1 + _dragProgress) * 2 * _defaultAngle
               : _zeroAngle);
-    print(index);
-    children.add(
-      Transform(
-        key: const ValueKey('cover_left'),
-        alignment: Alignment.centerRight,
-        transform: Matrix4.identity()
-          ..setEntry(3, 2, _perspective)
-          ..rotateY(
-            index == 0
-                ? _leftAngle
-                : index == 2
-                ? middleAngle
-                : bottomAngle,
-          )
-          ..scaleByDouble(1.02, 1, 1, 1),
-        child: _clipLeft(widget.coverBuilder(context)),
-      ),
-    );
 
     // 封面或前一页
     final bottomIndex = index - 4;
-    if (bottomIndex > minIndex.left &&
-        ((_dragProgress > 0 && _dragProgress < 0.5) ||
-            (_dragProgress < -0.5))) {
+    if (bottomIndex > minIndex.left) {
       children.add(
         Transform(
           key: ValueKey(bottomIndex),
@@ -680,7 +646,21 @@ class _FlipPageViewState extends State<FlipPageView>
       ),
     );
 
-    return Stack(clipBehavior: Clip.none, children: children);
+    return GestureDetector(
+      onTap: () {
+        if (widget.onLeftTap == null) {
+          widget.controller.animateToPage(
+            FlipPageIndex.fromLeft(index).previous,
+          );
+        } else {
+          widget.onLeftTap?.call(index);
+        }
+      },
+      onDoubleTap: () {
+        widget.onLeftDoubleTap?.call(index);
+      },
+      child: Stack(clipBehavior: Clip.none, children: children),
+    );
   }
 
   Widget _buildRightPage(int index) {
@@ -739,9 +719,21 @@ class _FlipPageViewState extends State<FlipPageView>
       ),
     );
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: children,
+    return GestureDetector(
+      onTap: () {
+        if (widget.onRightTap == null) {
+          widget.controller.animateToPage(FlipPageIndex.fromRight(index).next);
+        } else {
+          widget.onRightTap?.call(index);
+        }
+      },
+      onDoubleTap: () {
+        widget.onRightDoubleTap?.call(index);
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: children,
+      ),
     );
   }
 }

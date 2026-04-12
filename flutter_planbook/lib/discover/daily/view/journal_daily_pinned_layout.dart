@@ -36,8 +36,6 @@ class JournalDailyPinnedLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    assert(notes.isNotEmpty && notes.length <= 4, '仅支持 1~4 张笔记');
-
     final pinkColorScheme = context.pinkColorScheme;
     return Column(
       children: [
@@ -55,9 +53,10 @@ class JournalDailyPinnedLayout extends StatelessWidget {
           badgeTextColor: pinkColorScheme.onSecondaryContainer,
         ),
         const SizedBox(height: 12),
-        Expanded(
-          child: _buildLayout(notes),
-        ),
+        if (notes.isNotEmpty)
+          Expanded(
+            child: _buildLayout(notes),
+          ),
       ],
     );
   }

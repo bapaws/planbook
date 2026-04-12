@@ -74,6 +74,11 @@ class SettingsRepository {
       '__settings_task_completed_sound_key__';
   static const kSettingsBackgroundAsset = '__settings_background_asset_key__';
 
+  /// 发现页日志「翻页手势」首次提示是否已展示
+  @visibleForTesting
+  static const kDiscoverJournalFlipGestureHintShownKey =
+      '__discover_journal_flip_gesture_hint_shown__';
+
   Future<void> _init() async {
     final styleData = await AppHomeWidget.getWidgetData<String?>(
       kSettingsTaskPriorityStyleKey,
@@ -265,5 +270,15 @@ class SettingsRepository {
       jsonEncode(asset.toJson()),
     );
     _onBackgroundAssetChangeController.add(asset);
+  }
+
+  bool getDiscoverJournalFlipGestureHintShown() {
+    return _sp.getBool(kDiscoverJournalFlipGestureHintShownKey) ?? false;
+  }
+
+  Future<void> setDiscoverJournalFlipGestureHintShown({
+    required bool shown,
+  }) async {
+    await _sp.setBool(kDiscoverJournalFlipGestureHintShownKey, shown);
   }
 }

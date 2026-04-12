@@ -1,25 +1,19 @@
 part of 'discover_journal_bloc.dart';
 
-enum DiscoverJournalViewType {
-  flip,
-  horizontal,
-}
-
 final class DiscoverJournalState extends Equatable {
   const DiscoverJournalState({
     required this.date,
-    this.viewType = DiscoverJournalViewType.flip,
     this.status = PageStatus.initial,
     this.isCalendarExpanded = false,
     this.autoPlayFrom,
     this.autoPlayTo,
+    this.isLeftEnlarged = false,
+    this.isRightEnlarged = false,
   });
 
   final PageStatus status;
 
   final Jiffy date;
-
-  final DiscoverJournalViewType viewType;
 
   final Jiffy? autoPlayFrom;
   final Jiffy? autoPlayTo;
@@ -31,32 +25,37 @@ final class DiscoverJournalState extends Equatable {
   }
 
   final bool isCalendarExpanded;
+  final bool isLeftEnlarged;
+  final bool isRightEnlarged;
 
   @override
   List<Object?> get props => [
     status,
-    viewType,
     isCalendarExpanded,
     date,
     autoPlayFrom,
     autoPlayTo,
+    isLeftEnlarged,
+    isRightEnlarged,
   ];
 
   DiscoverJournalState copyWith({
     PageStatus? status,
-    DiscoverJournalViewType? viewType,
     bool? isCalendarExpanded,
     Jiffy? date,
     Jiffy? autoPlayFrom,
     Jiffy? autoPlayTo,
+    bool? isLeftEnlarged,
+    bool? isRightEnlarged,
   }) {
     return DiscoverJournalState(
       status: status ?? this.status,
-      viewType: viewType ?? this.viewType,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
       date: date ?? this.date,
       autoPlayFrom: autoPlayFrom ?? this.autoPlayFrom,
       autoPlayTo: autoPlayTo ?? this.autoPlayTo,
+      isLeftEnlarged: isLeftEnlarged ?? this.isLeftEnlarged,
+      isRightEnlarged: isRightEnlarged ?? this.isRightEnlarged,
     );
   }
 }
