@@ -11,6 +11,7 @@ class AppPageScaffold extends StatelessWidget {
     double? height,
     BoxConstraints? constraints,
     this.borderRadius,
+    this.padding,
     super.key,
     this.clipBehavior = Clip.none,
   }) : constraints = (width != null || height != null)
@@ -23,6 +24,7 @@ class AppPageScaffold extends StatelessWidget {
   final Clip clipBehavior;
 
   final BorderRadiusGeometry? borderRadius;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +50,7 @@ class AppPageScaffold extends StatelessWidget {
             ),
             borderRadius: borderRadius,
           ),
+          padding: padding,
           child: child,
         );
       },

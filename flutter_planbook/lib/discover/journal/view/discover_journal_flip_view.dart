@@ -220,12 +220,15 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
   Widget build(BuildContext context) {
     final query = MediaQuery.of(context);
     final screenSize = MediaQuery.of(context).size;
+    final isLandscape = screenSize.width > screenSize.height;
     final pageWidth = screenSize.width - query.padding.horizontal - 32;
     final pageHeight = min(
       screenSize.height -
           query.padding.vertical -
+          kToolbarHeight -
           kRootBottomBarHeight -
-          kToolbarHeight * 5,
+          16 -
+          kMinInteractiveDimension * 3,
       pageWidth /
               kDiscoverJournalDailyPageWidth *
               kDiscoverJournalDailyPageHeight -
@@ -276,9 +279,10 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
           // fitHeight / contain 的缩放比
           final containerW = pageWidth + 8;
           const bookW = kDiscoverJournalDailyPageWidth * 2 + 3.0;
-          final enlargedRatio =
-              (pageHeight / kDiscoverJournalDailyPageHeight) /
-              (containerW / bookW);
+          final enlargedRatio = isLandscape
+              ? 1
+              : (pageHeight / kDiscoverJournalDailyPageHeight) /
+                    (containerW / bookW);
 
           return Container(
             width: pageWidth + 32,

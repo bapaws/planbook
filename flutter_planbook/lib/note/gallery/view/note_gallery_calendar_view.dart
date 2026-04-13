@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class NoteGalleryCalendarView extends StatefulWidget {
@@ -60,8 +61,8 @@ class _NoteGalleryCalendarViewState extends State<NoteGalleryCalendarView> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      height: 160,
+    return AppPageScaffold(
+      height: 218,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: _buildPicker(
         controller: _yearController,

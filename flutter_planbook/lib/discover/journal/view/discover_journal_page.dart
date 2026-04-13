@@ -19,8 +19,44 @@ class DiscoverJournalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final query = MediaQuery.of(context);
-    return Column(
+    return Stack(
       children: [
+        Column(
+          children: [
+            BlocSelector<DiscoverJournalBloc, DiscoverJournalState, Jiffy>(
+              selector: (state) => state.date,
+              builder: (context, date) {
+                return DiscoverJournalDateChangeView(
+                  date: date,
+                  onDateChanged: (date) {
+                    context.read<DiscoverJournalBloc>().add(
+                      DiscoverJournalDateChanged(date: date),
+                    );
+                  },
+                );
+              },
+            ),
+            const Spacer(),
+            BlocSelector<DiscoverJournalBloc, DiscoverJournalState, int>(
+              selector: (state) => state.year,
+              builder: (context, year) {
+                return RepositoryProvider<JournalDailyBlocManager>(
+                  key: ValueKey(year),
+                  create: (context) => JournalDailyBlocManager(
+                    notesRepository: context.read(),
+                    tasksRepository: context.read(),
+                  ),
+                  dispose: (manager) => manager.dispose(),
+                  child: const _DiscoverJournalContent(),
+                );
+              },
+            ),
+            const Spacer(),
+            SizedBox(
+              height: query.padding.bottom + kRootBottomBarHeight + 16,
+            ),
+          ],
+        ),
         BlocSelector<DiscoverJournalBloc, DiscoverJournalState, bool>(
           selector: (state) => state.isCalendarExpanded,
           builder: (context, isCalendarExpanded) {
@@ -46,37 +82,6 @@ class DiscoverJournalPage extends StatelessWidget {
             );
           },
         ),
-        const Spacer(),
-        BlocSelector<DiscoverJournalBloc, DiscoverJournalState, Jiffy>(
-          selector: (state) => state.date,
-          builder: (context, date) {
-            return DiscoverJournalDateChangeView(
-              date: date,
-              onDateChanged: (date) {
-                context.read<DiscoverJournalBloc>().add(
-                  DiscoverJournalDateChanged(date: date),
-                );
-              },
-            );
-          },
-        ),
-        const Spacer(),
-        BlocSelector<DiscoverJournalBloc, DiscoverJournalState, int>(
-          selector: (state) => state.year,
-          builder: (context, year) {
-            return RepositoryProvider<JournalDailyBlocManager>(
-              key: ValueKey(year),
-              create: (context) => JournalDailyBlocManager(
-                notesRepository: context.read(),
-                tasksRepository: context.read(),
-              ),
-              dispose: (manager) => manager.dispose(),
-              child: const _DiscoverJournalContent(),
-            );
-          },
-        ),
-        const Spacer(flex: 3),
-        SizedBox(height: query.padding.bottom + kRootBottomBarHeight),
       ],
     );
   }

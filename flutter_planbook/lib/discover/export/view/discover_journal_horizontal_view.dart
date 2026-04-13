@@ -117,6 +117,10 @@ class _DiscoverJournalHorizontalViewState
     if (c == null || !c.hasClients) return key;
     final current = c.page?.round() ?? 0;
     for (final i in _boundaryKeys.keys.toList()) {
+      // 正在构建的 index 不得在此轮回收：动画过程中 current 可能尚未到达该页，
+      // 否则会刚 putIfAbsent 就被移除，_capturePagePng 用 map 查不到 boundary，
+      // 表现为左半页保存失败、只剩右半页等现象。
+      if (i == index) continue;
       if ((i - current).abs() > _boundaryKeyWindow) _boundaryKeys.remove(i);
     }
     return key;

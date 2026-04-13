@@ -188,17 +188,23 @@ class _JournalExportScaffold extends StatelessWidget {
           range.endDate.diff(range.startDate, unit: Unit.day).toInt() + 1;
       final total = days * 2;
 
-      await EasyLoading.show(
+      await EasyLoading.showProgress(
+        0,
         status: l10n.journalExportSavingImages(0, total),
       );
-      if (!context.mounted) return;
+      if (!context.mounted) {
+        await EasyLoading.dismiss();
+        return;
+      }
       try {
         final saved = await exportController.exportJournalImagesBatch(
           context: context,
           start: range.startDate,
           end: range.endDate,
           onProgress: (current, tot) {
-            EasyLoading.show(
+            // 使用 showProgress 同步更新，避免多次未 await 的 show 与 dismiss 竞态导致遮罩残留
+            EasyLoading.showProgress(
+              tot > 0 ? current / tot : 0,
               status: l10n.journalExportSavingImages(current, tot),
             );
           },
