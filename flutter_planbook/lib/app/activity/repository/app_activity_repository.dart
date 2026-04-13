@@ -184,7 +184,7 @@ class AppActivityRepository {
 
     final now = DateTime.now();
     final activities = _items.where((item) {
-      // if (item.languageCode != _languageCode) return false;
+      if (item.languageCode != _languageCode) return false;
       if (item.isNotPro == isPremium) return false;
 
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;
