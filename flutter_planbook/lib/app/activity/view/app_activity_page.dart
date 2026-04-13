@@ -214,15 +214,32 @@ class _AppActivityPageState extends State<AppActivityPage> {
                               ),
                             ),
                             onTapLink: (text, href, title) async {
-                              if (text == 'Bapaws') {
+                              if (href == null) return;
+                              if (href.startsWith('weixin://')) {
+                                final code = href.split('://').last;
                                 await Clipboard.setData(
-                                  ClipboardData(text: text),
+                                  ClipboardData(text: code),
                                 );
                                 await launchUrl(Uri.parse('weixin://'));
+                                return;
                               }
-                              if (href != null) {
-                                await launchUrl(Uri.parse(href));
+                              await launchUrl(Uri.parse(href));
+                            },
+                            sizedImageBuilder: (config) {
+                              final uriString = config.uri.toString();
+                              if (uriString.startsWith('assets/')) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    uriString,
+                                    fit: BoxFit.contain,
+                                  ),
+                                );
                               }
+                              return Image.network(
+                                uriString,
+                                fit: BoxFit.contain,
+                              );
                             },
                           ),
                         ],

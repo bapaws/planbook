@@ -31,7 +31,7 @@ class JournalDailyPage extends StatelessWidget {
         date: date,
         notesRepository: context.read(),
         tasksRepository: context.read(),
-      )..add(const JournalDailyRequested()),
+      )..requestAll(),
       child: const _JournalDailyFullPage(),
     );
   }

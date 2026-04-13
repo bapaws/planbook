@@ -227,6 +227,7 @@ class _TaskWeekPage extends StatelessWidget {
       requestEvent: () => TaskListDayAllRequested(
         date: day,
         isCompleted: context.read<RootTaskBloc>().isCompleted,
+        selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
       ),
       child: TaskWeekCell(
         title: day.E,

@@ -86,58 +86,76 @@ class RootTaskDrawer extends StatelessWidget {
                           ),
                         ),
                         const Spacer(),
-                        PullDownButton(
-                          itemBuilder: (context) => [
-                            PullDownMenuItem(
-                              icon: FontAwesomeIcons.plus,
-                              title: context.l10n.addTag,
-                              onTap: () {
-                                _onAddTagTapped(context);
-                              },
-                            ),
-                          ],
-                          buttonBuilder: (context, showMenu) => CupertinoButton(
-                            padding: EdgeInsets.zero,
-                            sizeStyle: CupertinoButtonSize.small,
-                            onPressed: showMenu,
-                            child: const Icon(FontAwesomeIcons.ellipsis),
+                        BlocSelector<RootTaskBloc, RootTaskState, bool>(
+                          selector: (state) => state.hasTagFilter,
+                          builder: (context, hasFilter) => PullDownButton(
+                            itemBuilder: (context) => [
+                              PullDownMenuItem(
+                                icon: FontAwesomeIcons.plus,
+                                title: context.l10n.addTag,
+                                onTap: () {
+                                  _onAddTagTapped(context);
+                                },
+                              ),
+                              if (hasFilter) ...[
+                                const PullDownMenuDivider.large(),
+                                PullDownMenuItem(
+                                  icon: FontAwesomeIcons.filterCircleXmark,
+                                  title: context.l10n.clear,
+                                  onTap: () {
+                                    context.read<RootTaskBloc>().add(
+                                      const RootTaskTagsClearedAll(),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ],
+                            buttonBuilder: (context, showMenu) =>
+                                CupertinoButton(
+                                  padding: EdgeInsets.zero,
+                                  sizeStyle: CupertinoButtonSize.small,
+                                  onPressed: showMenu,
+                                  child: const Icon(FontAwesomeIcons.ellipsis),
+                                ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                BlocBuilder<RootHomeBloc, RootHomeState>(
+                BlocBuilder<RootTaskBloc, RootTaskState>(
                   buildWhen: (previous, current) =>
-                      previous.tags != current.tags,
-                  builder: (context, state) => SliverList.builder(
-                    itemCount: state.tags.length,
-                    itemBuilder: (context, index) {
-                      final tag = state.tags[index];
-                      return TagListTile(
-                        tag: tag,
-                        onSelected: () {
-                          context.read<RootTaskBloc>().add(
-                            RootTaskTagSelected(tag: tag),
+                      previous.selectedTagIds != current.selectedTagIds,
+                  builder: (context, rootTaskState) {
+                    final selectedTagIds = rootTaskState.selectedTagIds;
+                    return BlocBuilder<RootHomeBloc, RootHomeState>(
+                      buildWhen: (previous, current) =>
+                          previous.tags != current.tags,
+                      builder: (context, state) => SliverList.builder(
+                        itemCount: state.tags.length,
+                        itemBuilder: (context, index) {
+                          final tag = state.tags[index];
+                          return TagListTile(
+                            tag: tag,
+                            isSelected: selectedTagIds.contains(tag.id),
+                            onSelected: () {
+                              context.read<RootTaskBloc>().add(
+                                RootTaskTagToggled(tagId: tag.id),
+                              );
+                            },
+                            onDeleted: () {
+                              context.read<RootHomeBloc>().add(
+                                RootHomeTagDeleted(tagId: tag.id),
+                              );
+                            },
+                            onEdited: () {
+                              context.router.push(TagNewRoute(initialTag: tag));
+                            },
                           );
-                          // context.tabsRouter.setActiveIndex(
-                          //   RootTaskTab.tag.index,
-                          // );
-                          Scaffold.of(context).closeDrawer();
                         },
-                        onDeleted: () {
-                          context.read<RootHomeBloc>().add(
-                            RootHomeTagDeleted(tagId: tag.id),
-                          );
-                          Scaffold.of(context).closeDrawer();
-                        },
-                        onEdited: () {
-                          context.router.push(TagNewRoute(initialTag: tag));
-                          Scaffold.of(context).closeDrawer();
-                        },
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  },
                 ),
                 SliverToBoxAdapter(
                   child: SizedBox(

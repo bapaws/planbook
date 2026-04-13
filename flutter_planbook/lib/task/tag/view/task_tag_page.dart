@@ -39,11 +39,10 @@ class TaskTagPage extends StatelessWidget {
   Widget _buildTaskList(BuildContext context, TaskListMode mode) {
     return TaskListBlocProvider(
       mode: mode,
-      tagId: context.read<RootTaskBloc>().state.tag?.id,
       requestEvent: () => TaskListRequested(
         date: Jiffy.now(),
-        tagId: context.read<RootTaskBloc>().state.tag?.id,
         isCompleted: context.read<RootTaskBloc>().isCompleted,
+        selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
       ),
       child: BlocBuilder<TaskListBloc, TaskListState>(
         builder: (context, state) => TaskListView(

@@ -55,11 +55,6 @@ class FeedbackPage extends StatelessWidget {
             ),
             onPressed: () {},
           ),
-          Divider(
-            indent: 56,
-            height: 1,
-            color: theme.colorScheme.surfaceContainerHighest,
-          ),
           SettingsRow(
             leading: const Icon(
               Icons.wechat,
@@ -74,7 +69,7 @@ class FeedbackPage extends StatelessWidget {
             trailing: Row(
               children: [
                 Text(
-                  'Bapaws',
+                  'MC Studio',
                   style: theme.textTheme.bodyLarge?.copyWith(
                     color: theme.colorScheme.outline,
                   ),
@@ -85,7 +80,9 @@ class FeedbackPage extends StatelessWidget {
             onPressed: () async {
               if (!kDebugMode && !await canLaunchUrlString('weixin://')) return;
 
-              await Clipboard.setData(const ClipboardData(text: 'Bapaws'));
+              await Clipboard.setData(
+                const ClipboardData(text: 'MC_AI_Studio'),
+              );
               if (!context.mounted) return;
 
               await Fluttertoast.showToast(
@@ -94,10 +91,29 @@ class FeedbackPage extends StatelessWidget {
               );
             },
           ),
-          Divider(
-            indent: 56,
-            height: 1,
-            color: theme.colorScheme.surfaceContainerHighest,
+          FutureBuilder(
+            future: canLaunchUrlString('weixin://'),
+            builder: (context, snapshot) {
+              return Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  alignment: Alignment.center,
+                  constraints: const BoxConstraints(maxWidth: 280),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/images/wx_qr.png',
+                      width: 280,
+                      // height: 280,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
           // SettingsRow(
           //   leading: const Icon(

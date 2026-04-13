@@ -32,10 +32,10 @@ class AppNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconSize = min(width ?? 22, height ?? 22) / 4;
     final errorWidget = ColoredBox(
-      color: Colors.grey.shade100,
+      color: Theme.of(context).colorScheme.surface,
       child: SizedBox(
-        width: width,
-        height: height,
+        width: width ?? height ?? 56,
+        height: height ?? width ?? 56,
         child: Icon(
           placeholderIcon ?? FontAwesomeIcons.image,
           color:

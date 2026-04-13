@@ -42,7 +42,7 @@ class JournalDailyBlocManager {
     final calendarDate = startOfYear.add(days: key);
 
     final existing = _blocs.remove(key);
-    if (existing != null) {
+    if (existing != null && !existing.isClosed) {
       _blocs[key] = existing;
       return existing;
     }
@@ -51,7 +51,7 @@ class JournalDailyBlocManager {
       date: calendarDate,
       notesRepository: _notesRepository,
       tasksRepository: _tasksRepository,
-    );
+    )..requestAll();
     _blocs[key] = bloc;
     _evictLruWhileAbove(_maxCachedBlocs);
     return bloc;

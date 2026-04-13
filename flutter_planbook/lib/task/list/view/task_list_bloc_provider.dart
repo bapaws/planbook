@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
-import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:planbook_api/database/task_priority.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -13,13 +12,11 @@ class TaskListBlocProvider extends StatelessWidget {
   const TaskListBlocProvider({
     required this.child,
     required this.requestEvent,
-    this.tagId,
     this.mode = TaskListMode.today,
     this.priority,
     super.key,
   });
 
-  final String? tagId;
   final TaskListMode mode;
   final TaskPriority? priority;
   final Widget child;
@@ -39,7 +36,8 @@ class TaskListBlocProvider extends StatelessWidget {
         listeners: [
           BlocListener<RootTaskBloc, RootTaskState>(
             listenWhen: (previous, current) =>
-                previous.showCompleted != current.showCompleted,
+                previous.showCompleted != current.showCompleted ||
+                previous.selectedTagIds != current.selectedTagIds,
             listener: (context, state) {
               final event = requestEvent();
               context.read<TaskListBloc>().add(event);
@@ -70,17 +68,6 @@ class TaskListBlocProvider extends StatelessWidget {
               }
             },
           ),
-
-          if (tagId != null)
-            BlocListener<RootTaskBloc, RootTaskState>(
-              listenWhen: (previous, current) => previous.tag != current.tag,
-              listener: (context, state) {
-                if (context.tabsRouter.activeIndex == RootTaskTab.tag.index) {
-                  final event = requestEvent();
-                  context.read<TaskListBloc>().add(event);
-                }
-              },
-            ),
         ],
         child: child,
       ),

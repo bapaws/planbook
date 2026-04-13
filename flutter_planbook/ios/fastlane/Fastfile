@@ -17,9 +17,16 @@ default_platform(:ios)
 
 platform :ios do
   desc "Push a new release build to the App Store"
+
+  lane :beta do
+    increment_build_number(xcodeproj: "Runner.xcodeproj")
+    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    upload_to_testflight(api_key_path: "./fastlane/AuthKey.json")
+  end
+
   lane :release do
     increment_build_number(xcodeproj: "Runner.xcodeproj")
     build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
-    upload_to_app_store
+    upload_to_app_store(api_key_path: "./fastlane/AuthKey.json")
   end
 end

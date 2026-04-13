@@ -18,7 +18,8 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   }) : _tasksRepository = tasksRepository,
        _settingsRepository = settingsRepository,
        super(const RootTaskState()) {
-    on<RootTaskTagSelected>(_onTagSelected);
+    on<RootTaskTagToggled>(_onTagToggled);
+    on<RootTaskTagsClearedAll>(_onTagsClearedAll);
 
     on<RootTaskCountRequested>(_onCountRequested);
     on<RootTaskTaskCountRequested>(
@@ -49,9 +50,6 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
       viewType: RootTaskViewType.values.byName(json['viewType'] as String),
-      tag: json['tag'] != null
-          ? TagEntity.fromJson(json['tag'] as Map<String, dynamic>)
-          : null,
       showCompleted: json['showCompleted'] as bool,
       tabFocusNoteTypes: json['tabFocusNoteTypes'] == null
           ? const {
@@ -76,7 +74,6 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       'status': state.status.name,
       'viewType': state.viewType.name,
       'showCompleted': state.showCompleted,
-      'tag': state.tag?.toJson(),
       'tabFocusNoteTypes': jsonEncode(
         state.tabFocusNoteTypes.map(
           (key, value) => MapEntry(key.name, value?.name),
@@ -85,11 +82,24 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     };
   }
 
-  Future<void> _onTagSelected(
-    RootTaskTagSelected event,
+  Future<void> _onTagToggled(
+    RootTaskTagToggled event,
     Emitter<RootTaskState> emit,
   ) async {
-    emit(state.copyWith(tag: event.tag));
+    final selectedTagIds = {...state.selectedTagIds};
+    if (selectedTagIds.contains(event.tagId)) {
+      selectedTagIds.remove(event.tagId);
+    } else {
+      selectedTagIds.add(event.tagId);
+    }
+    emit(state.copyWith(selectedTagIds: selectedTagIds));
+  }
+
+  Future<void> _onTagsClearedAll(
+    RootTaskTagsClearedAll event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(state.copyWith(selectedTagIds: {}));
   }
 
   Future<void> _onCountRequested(

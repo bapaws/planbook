@@ -56,13 +56,15 @@ class _TaskInboxPage extends StatelessWidget {
             : BlocBuilder<RootTaskBloc, RootTaskState>(
                 buildWhen: (previous, current) =>
                     previous.viewType != current.viewType ||
-                    previous.priorityStyle != current.priorityStyle,
+                    previous.priorityStyle != current.priorityStyle ||
+                    previous.selectedTagIds != current.selectedTagIds,
                 builder: (context, state) => switch (state.viewType) {
                   RootTaskViewType.list => const _TaskInboxListPage(),
                   RootTaskViewType.priority => TaskPriorityPage(
                     style: state.priorityStyle,
                     mode: TaskListMode.inbox,
                     isCompleted: context.read<RootTaskBloc>().isCompleted,
+                    selectedTagIds: state.selectedTagIds,
                   ),
                 },
               ),
@@ -76,22 +78,35 @@ class _TaskInboxListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
-      selector: (state) => state.topLevelTags,
-      builder: (context, tags) => CustomScrollView(
-        slivers: [
-          _buildTaskList(context),
-          for (final tag in tags) _buildTaskList(context, tag: tag),
-          SliverToBoxAdapter(
-            child: SizedBox(
-              height:
-                  16 +
-                  kRootBottomBarHeight +
-                  MediaQuery.of(context).padding.bottom,
-            ),
-          ),
-        ],
-      ),
+    return BlocSelector<RootTaskBloc, RootTaskState, Set<String>>(
+      selector: (state) => state.selectedTagIds,
+      builder: (context, selectedTagIds) {
+        return BlocSelector<RootHomeBloc, RootHomeState, List<TagEntity>>(
+          selector: (state) => state.topLevelTags,
+          builder: (context, tags) {
+            final filteredTags = selectedTagIds.isEmpty
+                ? tags
+                : tags
+                    .where((t) => selectedTagIds.contains(t.id))
+                    .toList();
+            return CustomScrollView(
+              slivers: [
+                if (selectedTagIds.isEmpty) _buildTaskList(context),
+                for (final tag in filteredTags)
+                  _buildTaskList(context, tag: tag),
+                SliverToBoxAdapter(
+                  child: SizedBox(
+                    height:
+                        16 +
+                        kRootBottomBarHeight +
+                        MediaQuery.of(context).padding.bottom,
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 

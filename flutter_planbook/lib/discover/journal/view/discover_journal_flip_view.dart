@@ -349,14 +349,14 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
     required Jiffy to,
   }) async {
     final startOfYear = from.startOf(Unit.year);
-    final fromPage = from.diff(startOfYear, unit: Unit.day).toInt();
-    final toPage = to.diff(startOfYear, unit: Unit.day).toInt();
+    final fromPage = from.diff(startOfYear, unit: Unit.day).toInt() * 2;
+    final toPage = to.diff(startOfYear, unit: Unit.day).toInt() * 2;
     await _controller.animateToPage(FlipPageIndex.fromLeft(fromPage));
 
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!context.mounted) return;
-      final page = fromPage + timer.tick;
+      final page = fromPage + timer.tick * 2;
       if (page > toPage) {
         timer.cancel();
         return;

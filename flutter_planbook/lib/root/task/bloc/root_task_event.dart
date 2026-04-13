@@ -7,13 +7,19 @@ sealed class RootTaskEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class RootTaskTagSelected extends RootTaskEvent {
-  const RootTaskTagSelected({required this.tag});
+/// 切换单个标签的选中状态（多选）
+final class RootTaskTagToggled extends RootTaskEvent {
+  const RootTaskTagToggled({required this.tagId});
 
-  final TagEntity tag;
+  final String tagId;
 
   @override
-  List<Object?> get props => [tag];
+  List<Object?> get props => [tagId];
+}
+
+/// 清除所有标签筛选（显示全部数据）
+final class RootTaskTagsClearedAll extends RootTaskEvent {
+  const RootTaskTagsClearedAll();
 }
 
 final class RootTaskCountRequested extends RootTaskEvent {

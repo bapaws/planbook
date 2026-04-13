@@ -179,6 +179,7 @@ class _TaskMonthPage extends StatelessWidget {
       requestEvent: () => TaskListDayAllRequested(
         date: day,
         isCompleted: context.read<RootTaskBloc>().isCompleted,
+        selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
       ),
       child: TaskMonthCell(day: day),
     );

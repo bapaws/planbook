@@ -12,14 +12,16 @@ final class TaskListRequested extends TaskListEvent {
     this.date,
     this.tagId,
     this.isCompleted,
+    this.selectedTagIds = const {},
   });
 
   final Jiffy? date;
   final String? tagId;
   final bool? isCompleted;
+  final Set<String> selectedTagIds;
 
   @override
-  List<Object?> get props => [date, tagId, isCompleted];
+  List<Object?> get props => [date, tagId, isCompleted, selectedTagIds];
 }
 
 final class TaskListDayAllRequested extends TaskListEvent {
@@ -27,14 +29,16 @@ final class TaskListDayAllRequested extends TaskListEvent {
     this.date,
     this.tagId,
     this.isCompleted,
+    this.selectedTagIds = const {},
   });
 
   final Jiffy? date;
   final String? tagId;
   final bool? isCompleted;
+  final Set<String> selectedTagIds;
 
   @override
-  List<Object?> get props => [date, tagId, isCompleted];
+  List<Object?> get props => [date, tagId, isCompleted, selectedTagIds];
 }
 
 final class TaskListCompleted extends TaskListEvent {

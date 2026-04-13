@@ -8,10 +8,8 @@ import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
-import 'package:flutter_planbook/app/view/app_tag_icon.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/root/task/view/root_task_drawer.dart';
@@ -63,7 +61,6 @@ class RootTaskPage extends StatelessWidget {
             TaskTodayRoute(),
             TaskWeekRoute(),
             TaskMonthRoute(),
-            TaskTagRoute(),
           ],
           builder: (context, child, controller) => _RootTaskPage(child: child),
         ),
@@ -129,21 +126,6 @@ class _RootTaskPage extends StatelessWidget {
             RootTaskTab.overdue => Text(context.l10n.overdue),
             RootTaskTab.week => const RootTaskWeekTitleView(),
             RootTaskTab.month => const RootTaskMonthTitleView(),
-            RootTaskTab.tag =>
-              BlocSelector<RootTaskBloc, RootTaskState, TagEntity?>(
-                selector: (state) =>
-                    state.tag ??
-                    context.read<RootHomeBloc>().state.topLevelTags.firstOrNull,
-                builder: (context, tag) => tag == null
-                    ? const SizedBox.shrink()
-                    : Row(
-                        children: [
-                          AppTagIcon.fromTagEntity(tag),
-                          const SizedBox(width: 4),
-                          Text(tag.fullName),
-                        ],
-                      ),
-              ),
           },
         ),
         actions: [

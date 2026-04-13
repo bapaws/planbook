@@ -10,7 +10,7 @@ final class RootTaskState extends Equatable {
     this.status = PageStatus.initial,
     this.viewType = RootTaskViewType.list,
     this.showCompleted = false,
-    this.tag,
+    this.selectedTagIds = const {},
     this.taskCounts = const {},
     this.dailyTaskCounts = const {},
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
@@ -28,7 +28,9 @@ final class RootTaskState extends Equatable {
 
   final TaskPriorityStyle priorityStyle;
 
-  final TagEntity? tag;
+  /// 当前选中的标签 ID 集合，用于筛选任务
+  /// 为空时显示全部数据，非空时只显示包含选中标签的数据
+  final Set<String> selectedTagIds;
 
   final Map<TaskListMode, int> taskCounts;
 
@@ -38,12 +40,14 @@ final class RootTaskState extends Equatable {
 
   bool? get isCompleted => showCompleted ? null : false;
 
+  bool get hasTagFilter => selectedTagIds.isNotEmpty;
+
   @override
   List<Object?> get props => [
     status,
     viewType,
     showCompleted,
-    tag,
+    selectedTagIds,
     taskCounts,
     dailyTaskCounts,
     priorityStyle,
@@ -54,7 +58,7 @@ final class RootTaskState extends Equatable {
     PageStatus? status,
     RootTaskViewType? viewType,
     bool? showCompleted,
-    TagEntity? tag,
+    Set<String>? selectedTagIds,
     Map<TaskListMode, int>? taskCounts,
     Map<int, int>? dailyTaskCounts,
     TaskPriorityStyle? priorityStyle,
@@ -64,7 +68,7 @@ final class RootTaskState extends Equatable {
       status: status ?? this.status,
       viewType: viewType ?? this.viewType,
       showCompleted: showCompleted ?? this.showCompleted,
-      tag: tag ?? this.tag,
+      selectedTagIds: selectedTagIds ?? this.selectedTagIds,
       taskCounts: taskCounts ?? this.taskCounts,
       dailyTaskCounts: dailyTaskCounts ?? this.dailyTaskCounts,
       priorityStyle: priorityStyle ?? this.priorityStyle,

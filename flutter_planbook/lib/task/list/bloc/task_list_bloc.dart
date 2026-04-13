@@ -42,10 +42,13 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   final TaskListMode _mode;
   final TaskPriority? priority;
 
+  Set<String> _selectedTagIds = {};
+
   Future<void> _onRequested(
     TaskListRequested event,
     Emitter<TaskListState> emit,
   ) async {
+    _selectedTagIds = event.selectedTagIds;
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
     final stream = _tasksRepository.getTaskEntities(
@@ -61,6 +64,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListDayAllRequested event,
     Emitter<TaskListState> emit,
   ) async {
+    _selectedTagIds = event.selectedTagIds;
     final date = event.date ?? state.date ?? Jiffy.now();
     emit(state.copyWith(status: PageStatus.loading, date: date));
     final stream = _tasksRepository.getAllTodayTaskEntities(
@@ -74,8 +78,13 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   }
 
   TaskListState _onTasksDataChanged(List<TaskEntity> tasks) {
+    final filteredTasks = _selectedTagIds.isEmpty
+        ? tasks
+        : tasks.where((task) =>
+            task.tags.any((tag) => _selectedTagIds.contains(tag.id)),
+          ).toList();
     final displayedTasks = <TaskEntity>[];
-    for (final task in tasks) {
+    for (final task in filteredTasks) {
       if (state.expandedTaskIds.contains(task.id)) {
         displayedTasks
           ..add(task)
@@ -87,7 +96,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     return state.copyWith(
       status: PageStatus.success,
       tasks: displayedTasks,
-      uncompletedTaskCount: tasks.where((task) => !task.isCompleted).length,
+      uncompletedTaskCount:
+          filteredTasks.where((task) => !task.isCompleted).length,
     );
   }
 

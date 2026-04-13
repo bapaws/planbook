@@ -88,9 +88,12 @@ class AppActivityRepository {
   2. 点击私信页面，将「**你的评分与评论**」页面的截图发送给账户。
   3. 我们将在 24 小时内，私信会员兑换码。\n\n
 🟢微信
-  1. 添加「**计划本**」客服账户：[**Bapaws**](weixin://)。
+  1. 添加「**计划本**」客服账户：[**MC Studio**](weixin://MC_AI_Studio)。
   2. 将「**你的评分与评论**」页面的截图发送给客服账户。
   3. 将在 24 小时内，发送会员兑换码。
+
+![MC Studio](assets/images/wx_qr.png)
+
 **👉由于会员码的限制，只能在 App Store 兑换一次。**
 ''',
       // endAt: DateTime(2025, 12, 31),
@@ -114,7 +117,7 @@ class AppActivityRepository {
 1. 点击「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」，打开 App Store。
 2. 给「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」一个五🌟好评，也可以同时写下使用体验。
 
-如果只参加月会员活动，请按照领取方式，将「**你的评分与评论**」页面的截图发送给「**计划本**」客服账户：[**Bapaws**](weixin://) 或 [**MC Studio**](xhsdiscover://user/6481492100000000120342c4)。
+如果只参加月会员活动，请按照领取方式，将「**你的评分与评论**」页面的截图发送给「**计划本**」客服账户：[**MC Studio**](weixin://MC_AI_Studio) 或 [**MC Studio**](xhsdiscover://user/6481492100000000120342c4)。
 我们将在 24 小时内，发送会员兑换码。
 
 
@@ -155,9 +158,12 @@ class AppActivityRepository {
   3. 我们将在 24 小时内，私信会员兑换码。
 
 ### 🟢微信
-  1. 微信添加「**计划本**」客服账户：[**Bapaws**](weixin://)。
+  1. 微信添加「**计划本**」客服账户：[**MC Studio**](weixin://MC_AI_Studio)。
   2. 将您的评论截图和笔记链接分享给客服的微信账户。
   3. 将在 24 小时内，发送会员兑换码。
+
+![MC Studio](assets/images/wx_qr.png)
+
 **👉由于会员码的限制，只能在 App Store 兑换一次。**
 ''',
     ),
@@ -178,7 +184,7 @@ class AppActivityRepository {
 
     final now = DateTime.now();
     final activities = _items.where((item) {
-      if (item.languageCode != _languageCode) return false;
+      // if (item.languageCode != _languageCode) return false;
       if (item.isNotPro == isPremium) return false;
 
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;

@@ -7,10 +7,6 @@ sealed class JournalDailyEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class JournalDailyRequested extends JournalDailyEvent {
-  const JournalDailyRequested();
-}
-
 final class JournalDailyPlannedTasksRequested extends JournalDailyEvent {
   const JournalDailyPlannedTasksRequested();
 }

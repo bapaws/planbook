@@ -15,7 +15,6 @@ class JournalDailyBloc extends Bloc<JournalDailyEvent, JournalDailyState> {
   }) : _notesRepository = notesRepository,
        _tasksRepository = tasksRepository,
        super(const JournalDailyState()) {
-    on<JournalDailyRequested>(_onRequested);
     on<JournalDailyPlannedTasksRequested>(_onPlannedTasksRequested);
     on<JournalDailyTasksRequested>(_onTasksRequested);
     on<JournalDailyNotesRequested>(_onNotesRequested);
@@ -31,10 +30,9 @@ class JournalDailyBloc extends Bloc<JournalDailyEvent, JournalDailyState> {
   final NotesRepository _notesRepository;
   final TasksRepository _tasksRepository;
 
-  Future<void> _onRequested(
-    JournalDailyRequested event,
-    Emitter<JournalDailyState> emit,
-  ) async {
+  /// 同步将所有子事件入队，用于 bloc 创建后立即调用。
+  /// 所有 add 在同一同步调用栈内完成，避免 handler 内 add 被 close 竞态。
+  void requestAll() {
     add(const JournalDailyPlannedTasksRequested());
     // add(const JournalDailyTasksRequested());
     add(const JournalDailyNotesRequested());
