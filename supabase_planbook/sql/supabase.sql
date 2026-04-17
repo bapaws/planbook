@@ -216,6 +216,10 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
     product_id TEXT REFERENCES planbook.store_products(id),
     -- 订阅到期时间（如果是订阅类商品）
     expires_at TIMESTAMPTZ
+
+
+    -- 按年份的封面设置：JSON 对象，key 为年份字符串（如 "2026"），value 为封面地址（远端 URL 或 App 内置资源路径等）
+    cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb,
 );
 
 -- UserProfiles 表索引

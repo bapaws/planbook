@@ -93,3 +93,17 @@ WHERE alipay_out_trade_no IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_user_profiles_alipay_trade_no
 ON planbook.user_profiles(alipay_trade_no)
 WHERE alipay_trade_no IS NOT NULL;
+
+-- 迁移 v4: user_profiles 增加 cover_by_year（按年份的封面地址映射）
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'planbook'
+        AND table_name = 'user_profiles'
+        AND column_name = 'cover_by_year'
+    ) THEN
+        ALTER TABLE planbook.user_profiles
+        ADD COLUMN cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb;
+    END IF;
+END $$;
