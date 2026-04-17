@@ -25,6 +25,7 @@ final class FlipPageIndex {
   final int right;
 
   static const zero = FlipPageIndex(left: 0, right: 0);
+  static const cover = FlipPageIndex(left: -2, right: -1);
 
   FlipPageIndex get next => FlipPageIndex(left: left + 2, right: right + 2);
   FlipPageIndex get previous => FlipPageIndex(left: left - 2, right: right - 2);
@@ -104,8 +105,10 @@ class FlipPageController extends ValueNotifier<FlipPageIndex> {
     _state = state;
   }
 
-  void _detach() {
-    _state = null;
+  void _detach(_FlipPageViewState state) {
+    if (_state == state) {
+      _state = null;
+    }
   }
 
   /// 判断页码是否有效
@@ -134,13 +137,14 @@ class FlipPageController extends ValueNotifier<FlipPageIndex> {
     FlipPageIndex page, {
     Duration duration = const Duration(milliseconds: 250),
     Curve curve = Curves.easeInOut,
-  }) {
-    return _state?._animateToPage(page, duration: duration, curve: curve) ??
-        Future.value();
+  }) async {
+    if (value == page) return;
+    await _state?._animateToPage(page, duration: duration, curve: curve);
   }
 
   /// Jumps the [FlipPageView] to the given spread [page] without animation.
   void jumpToPage(FlipPageIndex page) {
+    if (value == page) return;
     _state?._jumpToPage(page);
   }
 
@@ -462,14 +466,14 @@ class _FlipPageViewState extends State<FlipPageView>
   void didUpdateWidget(covariant FlipPageView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller._detach();
+      oldWidget.controller._detach(this);
       widget.controller._attach(this);
     }
   }
 
   @override
   void dispose() {
-    widget.controller._detach();
+    widget.controller._detach(this);
     _controller.dispose();
     super.dispose();
   }

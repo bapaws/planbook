@@ -12,6 +12,7 @@ import 'package:flutter_planbook/app/activity/repository/app_store_repository.da
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app.dart';
+import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -104,6 +105,12 @@ Future<Widget> _initApp() async {
           sp: sp,
         ),
       ),
+      RepositoryProvider(
+        create: (context) => DiscoverCoverRepository(
+          supabase: AppSupabase.client,
+          assetsRepository: assetsRepository,
+        ),
+      ),
     ],
     child: MultiBlocProvider(
       providers: [
@@ -154,7 +161,9 @@ Future<void> _initPurchases() async {
     // if (buildingForAmazon) {
     //   // use your preferred way to determine if this build is for Amazon store
     //   // checkout our MagicWeather sample for a suggestion
-    //   configuration = AmazonConfiguration(<revenuecat_project_amazon_api_key>);
+    //   configuration = AmazonConfiguration(
+    //     <revenuecat_project_amazon_api_key>,
+    //   );
     // }
   } else if (Platform.isIOS) {
     configuration = PurchasesConfiguration('appl_aNYCwAWkYYxFFPdqMBTWIXzIzko')

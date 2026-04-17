@@ -1,0 +1,740 @@
+{
+  "@@locale": "de",
+  "appName": "Planbook",
+  "slogen": "Planen, Aufgaben, Notizen, alles in einem 👌",
+  "noteSlogen": "Schreibe die Kapitel deines Lebens.",
+  "taskSlogen": "Erst erledigen, dann perfektionieren.",
+  "list": "Liste",
+  "save": "Speichern",
+  "confirm": "Bestätigen",
+  "close": "Schließen",
+  "back": "Zurück",
+  "share": "Teilen",
+  "add": "Hinzufügen",
+  "edit": "Bearbeiten",
+  "delete": "Löschen",
+  "clear": "Leeren",
+  "all": "Alle",
+  "copy": "Kopieren",
+  "paste": "Einfügen",
+  "cancel": "Abbrechen",
+  "refresh": "Aktualisieren",
+  "noData": "Keine Daten",
+  "yes": "Ja",
+  "no": "Nein",
+  "today": "Heute",
+  "settings": "Einstellungen",
+  "notificationPermissionDeniedHint": "Du kannst Benachrichtigungen jederzeit in den Systemeinstellungen aktivieren.",
+  "openSettings": "Einstellungen öffnen",
+  "taskReminderChannelName": "Aufgabenerinnerung",
+  "taskReminderChannelDescription": "Erinnerungen vor Aufgabenbeginn",
+  "iKnow": "Verstanden",
+  "unlockPro": "Alle Premium-Funktionen freischalten.",
+  "freeTrial": "Kostenlos testen",
+  "tryFree": "Kostenlos testen",
+  "general": "Allgemein",
+  "data": "Daten",
+  "iCloud": "iCloud",
+  "manual": "Manuell",
+  "limitedTimeFree": "Kostenlos testen",
+  "appearance": "Darstellung",
+  "modeAuto": "Geräteeinstellung verwenden",
+  "icon": "Symbol",
+  "appIcon": "App-Symbol",
+  "lightClassic": "Klassisch Hell",
+  "darkClassic": "Klassisch Dunkel",
+  "colorThemes": "Farbthemen",
+  "defaults": "Standard",
+  "classic": "Klassisch",
+  "seedColor": "Primärfarbe",
+  "yellow": "Gelb",
+  "green": "Grün",
+  "blue": "Blau",
+  "red": "Rot",
+  "pink": "Pink",
+  "purple": "Lila",
+  "orange": "Orange",
+  "teal": "Türkis",
+  "indigo": "Indigo",
+  "deepPurple": "Dunkellila",
+  "lightBlue": "Hellblau",
+  "cyan": "Cyan",
+  "lightGreen": "Hellgrün",
+  "lime": "Limette",
+  "amber": "Bernstein",
+  "deepOrange": "Dunkelorange",
+  "brown": "Braun",
+  "darkMode": "Dunkelmodus",
+  "lightMode": "Hellmodus",
+  "dark": "Dunkel",
+  "light": "Hell",
+  "other": "Sonstiges",
+  "activities": "Aktivitäten",
+  "rate": "App bewerten",
+  "upgrade": "Upgrade",
+  "feedback": "Feedback",
+  "about": "Über",
+  "help": "Hilfezentrum",
+  "helpUrl": "https://malachite-aster-f7a.notion.site/1a018752b1d28086a748cc007acfd7ba",
+  "privacy": "Datenschutzerklärung",
+  "terms": "Nutzungsbedingungen",
+  "photos": "Fotos",
+  "gallery": "Galerie",
+  "camera": "Kamera",
+  "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
+  "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
+  "weChatCopied": "Die WeChat-ID wurde kopiert. Öffne WeChat, um sie hinzuzufügen.",
+  "importantUrgent": "Wichtig & Dringend",
+  "importantNotUrgent": "Wichtig & Nicht dringend",
+  "urgentUnimportant": "Dringend & Unwichtig",
+  "notUrgentUnimportant": "Nicht dringend & Unwichtig",
+  "narrowWeek": "W",
+  "timeline": "Zeitleiste",
+  "planbook": "Planbook",
+  "note": "Notiz",
+  "notes": "Notizen",
+  "day": "Tag",
+  "week": "Woche",
+  "month": "Monat",
+  "year": "Jahr",
+  "weekOfYear": "W{week}",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "task": "Aufgabe",
+  "morning": "Morgen",
+  "afternoon": "Nachmittag",
+  "evening": "Abend",
+  "deleteTaskAlertTitle": "Aufgabe löschen?",
+  "deleteTaskAlertContent": "Möchtest du diese Aufgabe wirklich löschen? Unteraufgaben und verknüpfte Notizen werden ebenfalls gelöscht.",
+  "plan": "Plan",
+  "to": "bis",
+  "tomorrow": "Morgen",
+  "yesterday": "Gestern",
+  "upgradePro": "Auf Planbook Premium upgraden",
+  "taskTitleHint": "Was muss erledigt werden?",
+  "startTime": "Startzeit",
+  "endTime": "Endzeit",
+  "startDate": "Startdatum",
+  "endDate": "Enddatum",
+  "duration": "Dauer",
+  "allDay": "Ganztägig",
+  "thatDay": "An diesem Tag",
+  "otherDate": "Anderes Datum",
+  "inbox": "Posteingang",
+  "overdue": "Überfällig",
+  "delayToToday": "Auf heute verschieben",
+  "delayToTomorrow": "Auf morgen verschieben",
+  "addTag": "Tag hinzufügen",
+  "tags": "Tags",
+  "tag": "Tag",
+  "updateTag": "Tag aktualisieren",
+  "tagNameHint": "Tag-Namen eingeben",
+  "parentTag": "Übergeordnetes Tag",
+  "parentTagHint": "Übergeordnetes Tag auswählen",
+  "newNote": "Neue Notiz",
+  "editNote": "Notiz bearbeiten",
+  "noteTitleHint": "Notiztitel eingeben",
+  "noteContentHint": "Notizinhalt eingeben",
+  "selectTags": "Tags auswählen",
+  "notLoggedIn": "Nicht angemeldet",
+  "joinedDaysAgo": "Vor {days} Tagen beigetreten",
+  "@joinedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "Fertig",
+  "uncompleteTask": "Rückgängig",
+  "completeTask": "Erledigen",
+  "alreadyDone": "Bereits erledigt",
+  "unselectAll": "Auswahl aufheben",
+  "selectAll": "Alle auswählen",
+  "work": "Arbeit",
+  "study": "Lernen",
+  "life": "Leben",
+  "showAndHide": "Anzeigen und ausblenden",
+  "showCompleted": "Erledigte anzeigen",
+  "hideCompleted": "Erledigte ausblenden",
+  "showFocusNote": "Fokus/Zusammenfassung anzeigen",
+  "hideFocusNote": "Fokus/Zusammenfassung ausblenden",
+  "priority": "Priorität",
+  "selectViewType": "Ansicht auswählen",
+  "quadrant": "Quadrant",
+  "date": "Datum",
+  "selectDate": "Datum auswählen",
+  "night": "Nacht",
+  "cover": "Cover",
+  "getPro": "Premium holen",
+  "supportUsFullPrice": "Zum vollen Preis unterstützen",
+  "restore": "Wiederherstellen",
+  "aboutSubscription": "ℹ️ Infos zum Abo: Wenn du das fortlaufende Abo ab jetzt nicht kündigst, bleibt der Preis auch bei neuen Funktionen unverändert.",
+  "savePercent": "{percent}% sparen",
+  "@savePercent": {
+    "description": "Save Percent",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "total": "Gesamt",
+  "completed": "Erledigt",
+  "completionRate": "Erledigungsrate",
+  "words": "Wörter",
+  "time": "Zeit",
+  "deleteNote": "Notiz löschen",
+  "deleteNoteContent": "Möchtest du diese Notiz wirklich löschen?",
+  "durationSeconds": "{count} {count, plural, =1 {Sekunde} other {Sekunden}}",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "durationMinutes": "{count} {count, plural, =1 {Minute} other {Minuten}}",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationHours": "{count} {count, plural, =1 {Stunde} other {Stunden}}",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "everyDay": "Tag",
+  "everyWeek": "Woche",
+  "everyMonth": "Monat",
+  "everyYear": "Jahr",
+  "every": "Jede",
+  "ends": "Endet",
+  "repeat": "Wiederholen",
+  "noRepeat": "Keine Wiederholung",
+  "endlessly": "Endlos",
+  "endByDate": "Ende nach Datum",
+  "endByCount": "Ende nach Anzahl",
+  "endsOn": "Endet am {date}",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "endsIn": "Endet nach {count} Malen",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "loginOrRegister": "Anmelden oder registrieren",
+  "password": "Passwort",
+  "phoneNumber": "Telefonnummer",
+  "phoneNumberOrEmail": "Telefonnummer oder E-Mail",
+  "verificationCode": "Bestätigungscode",
+  "sendCode": "Code senden",
+  "alreadyHaveAccount": "Du hast bereits ein Konto?",
+  "welcomeBack": "Willkommen zurück",
+  "welcome": "Willkommen",
+  "welcomeToPlanbook": "Willkommen bei Planbook",
+  "welcomeToPlanbookDescription": "Planbook ist eine Aufgabenverwaltungs-App, die dir hilft, deine Aufgaben und Pläne zu organisieren.",
+  "signIn": "Anmelden",
+  "sendResetLink": "Link zum Zurücksetzen senden",
+  "resetPassword": "Passwort zurücksetzen",
+  "resetPasswordDescription": "Gib deine E-Mail ein, um dein Passwort zurückzusetzen.",
+  "confirmPassword": "Passwort bestätigen",
+  "agreeToTerms": "Ich stimme den Bedingungen zu",
+  "signUp": "Registrieren",
+  "backToSignIn": "Zurück zur Anmeldung",
+  "name": "Name",
+  "email": "E-Mail",
+  "signInHere": "Hier anmelden",
+  "refuse": "Ablehnen",
+  "agreeToConditions": "Bedingungen zustimmen",
+  "welcomeDescription": "Willkommen bei Planbook",
+  "useCodeLogin": "Mit Code anmelden",
+  "readAndAgree": "Ich habe gelesen und stimme zu:",
+  "termsOfUse": "Nutzungsbedingungen",
+  "and": "und",
+  "privacyPolicy": "Datenschutzerklärung",
+  "passwordNotMatch": "Passwörter stimmen nicht überein",
+  "passwordInvalid": "Ungültiges Passwort",
+  "passwordMessage": "Bitte gib ein Passwort mit mindestens 8 Zeichen aus Buchstaben und Zahlen ein",
+  "changePassword": "Passwort ändern",
+  "comfirmPassword": "Passwort bestätigen",
+  "changePhone": "Telefonnummer ändern",
+  "phoneNumberMessage": "Bitte gib eine Telefonnummer ein",
+  "phoneNumberMessageInvalid": "Bitte gib eine gültige Telefonnummer ein",
+  "phoneNumberOrEmailMessage": "Bitte gib eine Telefonnummer oder E-Mail ein",
+  "phoneNumberOrEmailMessageInvalid": "Bitte gib eine gültige Telefonnummer oder E-Mail ein",
+  "codeSentSuccess": "Code erfolgreich gesendet",
+  "changeEmail": "E-Mail ändern",
+  "emailMessage": "Bitte gib eine E-Mail ein",
+  "emailMessageInvalid": "Bitte gib eine gültige E-Mail ein",
+  "emailSameAsCurrent": "Die E-Mail darf nicht mit der aktuellen E-Mail identisch sein",
+  "verificationCodeMessage": "Bitte gib einen Bestätigungscode ein",
+  "verificationCodeMessageInvalid": "Bitte gib einen gültigen Bestätigungscode ein",
+  "phoneNumberSameAsCurrent": "Die Telefonnummer darf nicht mit der aktuellen Telefonnummer identisch sein",
+  "nickname": "Spitzname",
+  "logout": "Abmelden",
+  "deleteAccount": "Konto löschen",
+  "gender": "Geschlecht",
+  "birthday": "Geburtstag",
+  "bind": "Verknüpfen",
+  "deleteAccountWarning": "‼️ Möchtest du dein Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "deleteAccountHint": "Gib zur Bestätigung den Text 'Delete Account' ein",
+  "male": "Männlich",
+  "female": "Weiblich",
+  "secret": "Geheim",
+  "proFeatures": "Pro-Funktionen",
+  "basic": "Basis",
+  "pro": "Pro",
+  "unlimited": "Unbegrenzt",
+  "image": "Bild",
+  "subtask": "Unteraufgabe",
+  "subtasks": "Unteraufgaben",
+  "taskNote": "Aufgabennotiz",
+  "subtaskNote": "Unteraufgabennotiz",
+  "statistics": "Statistiken",
+  "desktopWidget": "Desktop-Widget",
+  "theme": "Thema",
+  "more": "Mehr",
+  "futureFeatures": "Kommende Funktionen",
+  "noteRules": "Notizregeln",
+  "noteRuleDescription": "Regeln zum Erstellen von Notizen nach Abschluss einer Aufgabe.",
+  "none": "Keine",
+  "noneDescription": "Keine Aktion nach Abschluss der Aufgabe.",
+  "create": "Erstellen",
+  "createDescription": "Eine Notiz erstellen.",
+  "editDescription": "Den Notizeditor öffnen.",
+  "createAndEdit": "Erstellen & Bearbeiten",
+  "createAndEditDescription": "Eine Notiz erstellen und den Notizeditor öffnen.",
+  "completedAt": "Erledigt am",
+  "priorityHeaderStyle": "Stil der Prioritätsüberschrift",
+  "solidColorBackground": "Einfarbiger Hintergrund",
+  "numberIcon": "Zahlensymbol",
+  "completedSound": "Erledigt-Sound",
+  "background": "Hintergrund",
+  "dot": "Punkt",
+  "grid": "Raster",
+  "saveSuccess": "Erfolgreich gespeichert",
+  "saveFailed": "Speichern fehlgeschlagen",
+  "noteFocus": "Fokus",
+  "noteSummary": "Zusammenfassung",
+  "dailyFocus": "Fokus",
+  "dailySummary": "Zusammenfassung",
+  "weeklyFocus": "Fokus",
+  "weeklySummary": "Zusammenfassung",
+  "monthlyFocus": "Fokus",
+  "monthlySummary": "Zusammenfassung",
+  "yearlyFocus": "Fokus",
+  "yearlySummary": "Zusammenfassung",
+  "dailyFocusTitle": "Fokus für {date}",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "dailySummaryTitle": "Zusammenfassung für {date}",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "Fokus für Woche {week}",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "Zusammenfassung für Woche {week}",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "Fokus für {month}",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "Zusammenfassung für {month}",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "Fokus für {year}",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "Zusammenfassung für {year}",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "journal": "Journal",
+  "thinkAboutWeeklyFocus": "Worauf möchtest du dich diese Woche konzentrieren?",
+  "thinkAboutWeeklySummary": "Was hast du diese Woche erreicht?",
+  "thinkAboutDailyFocus": "Worauf möchtest du dich heute konzentrieren?",
+  "thinkAboutDailySummary": "Was hast du heute gelernt?",
+  "thinkAboutMonthlyFocus": "Worauf möchtest du dich diesen Monat konzentrieren?",
+  "thinkAboutMonthlySummary": "Welche Ziele hast du diesen Monat erreicht?",
+  "thinkAboutYearlyFocus": "Worauf möchtest du dich dieses Jahr konzentrieren?",
+  "thinkAboutYearlySummary": "Welche Ziele hast du dieses Jahr erreicht?",
+  "thisWeek": "Diese Woche",
+  "lastWeek": "Letzte Woche",
+  "thisMonth": "Diesen Monat",
+  "thisYear": "Dieses Jahr",
+  "autoPlay": "Automatisch abspielen",
+  "journalEnlargeLeftPage": "Linke Seite vergrößern",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
+  "journalEnlargeLeftPageSubtitle": "Doppeltippe auf die linke Seite zum Vergrößern",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
+  "journalEnlargeRightPage": "Rechte Seite vergrößern",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
+  "journalEnlargeRightPageSubtitle": "Doppeltippe auf die rechte Seite zum Vergrößern",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
+  "discoverJournalFlipGestureHintTitle": "Blättergesten",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
+  "discoverJournalFlipGestureHintMessage": "👆 Tippe auf die linke/rechte Seite für die vorherige/nächste Seite\n👆👆 Doppeltippe auf eine beliebige Seite zum Vergrößern\n👈 Wische nach links für die nächste Seite\n👉 Wische nach rechts für die vorherige Seite",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
+  "startPlaying": "Wiedergabe starten",
+  "everyInterval": "Alle {interval} {unit}",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
+  "recurrenceWithEndDate": "{frequency}, endet am {date}",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
+  "recurrenceWithEndCount": "{frequency}, endet nach {count} Malen",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "editModeSelection": "Bearbeitungsmodus auswählen",
+  "allEvents": "Alle Ereignisse",
+  "thisAndFutureEvents": "Dieses und zukünftige Ereignisse",
+  "thisEventOnly": "Nur dieses Ereignis",
+  "recurringTaskCannotChangeDate": "Das Datum wiederkehrender Aufgaben kann nicht geändert werden",
+  "incompleteSubtasksCount": "{count, plural, =1 {1 Unteraufgabe} other {{count} Unteraufgaben}}",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "overdueDays": "{count} Tage überfällig",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "rewardActivities": "Belohnungsaktivitäten",
+  "receiveWay": "Empfangsart",
+  "notShowAgain": "Nicht erneut anzeigen",
+  "activityDetails": "Aktionsdetails",
+  "focusMindMap": "Fokus-Mindmap",
+  "summaryMindMap": "Zusammenfassungs-Mindmap",
+  "dailyDescriptionPlannedTasks": "Heute {count} {count, plural, =1 {Aufgabe} other {Aufgaben}} geplant.",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNoPlannedTasks": "Heute keine geplanten Aufgaben.",
+  "dailyDescriptionNoTasks": "Heute keine Aufgaben erledigt.",
+  "dailyDescriptionTasksCompleted": "{completed} {completed, plural, =1 {Aufgabe} other {Aufgaben}} erledigt",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromPlan": "{count} aus dem Plan",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromInbox": "{count} aus dem Posteingang",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionPriorityBreakdown": "Prioritätenübersicht: {breakdown}.",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionImportantUrgentCount": "{count} wichtig & dringend",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionImportantNotUrgentCount": "{count} wichtig",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionUrgentNotImportantCount": "{count} dringend",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotUrgentNotImportantCount": "{count} normal",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotesWritten": "Heute {count} {count, plural, =1 {Notiz} other {Notizen}} mit insgesamt {words} {words, plural, =1 {Wort} other {Wörtern}} geschrieben.",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionTagsInvolved": "Verwendete Tags: {tags}.",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionNoNotesWritten": "Heute keine Notizen geschrieben.",
+  "dailyData": "Tagesdaten",
+  "priorityDistribution": "Prioritätenverteilung:",
+  "punctuationOpenParen": " (",
+  "punctuationCloseParen": ").",
+  "punctuationPeriod": ".",
+  "punctuationListSeparator": ", ",
+  "punctuationEnumSeparator": ", ",
+  "selectColor": "Farbe auswählen",
+  "expiresAtDescription": "Läuft am {date} ab.",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "expiredAtDescription": "Am {date} abgelaufen.",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "unlockedPro": "Pro freigeschaltet",
+  "noAlarm": "Kein Alarm",
+  "dayEarly": "{count} {count, plural, =1 {Tag} other {Tage}} vorher",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekEarly": "{count} {count, plural, =1 {Woche} other {Wochen}} vorher",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onTheDay": "Am selben Tag",
+  "invalidTime": "Ungültige Uhrzeit",
+  "apkDownloadUpdate": "Neue Version herunterladen",
+  "apkDownloadUpdating": "Wird heruntergeladen...",
+  "apkDownloadNoVersion": "Keine Versionsinfos verfügbar, bitte zuerst aktualisieren.",
+  "apkDownloadNotNewer": "Die aktuelle Version ist bereits auf dem neuesten Stand.",
+  "apkDownloadCanceled": "Download abgebrochen.",
+  "apkDownloadPaused": "Download pausiert.",
+  "apkDownloadFailed": "Download fehlgeschlagen.",
+  "apkDownloadNotFound": "Download-Ressource nicht gefunden.",
+  "apkDownloadWaitingRetry": "Warten auf erneuten Versuch.",
+  "apkDownloadIncomplete": "Download wurde nicht abgeschlossen.",
+  "apkInstallFailed": "Installation fehlgeschlagen.",
+  "journalExportTitle": "Journal-PDF exportieren",
+  "journalExportStartDate": "Startdatum",
+  "journalExportEndDate": "Enddatum",
+  "journalExportQuickRanges": "Schnellbereiche",
+  "journalExportExportPdf": "PDF exportieren",
+  "journalExportExporting": "Exportieren…",
+  "journalExportSuccess": "PDF ist bereit zum Teilen.",
+  "journalExportFailed": "PDF konnte nicht exportiert werden.",
+  "journalExportFormatImages": "Bilder",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "Bilder speichern",
+  "journalExportSaveCurrentPage": "Aktuelle Seite speichern",
+  "journalExportFreeUserHint": "Im kostenlosen Tarif kannst du nur die aktuell sichtbare halbe Seite speichern. Upgrade, um ein PDF zu exportieren oder alle Seiten im Datumsbereich als Bilder zu speichern.",
+  "journalExportSavingImages": "Bilder werden gespeichert ({current} / {total})…",
+  "@journalExportSavingImages": {
+    "description": "Batch image export progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "{count} Bilder in der Galerie gespeichert.",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalSetYearCover": "Jahrescover",
+  "@journalSetYearCover": {
+    "description": "Discover journal menu: set yearly cover"
+  }
+}

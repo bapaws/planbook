@@ -11,6 +11,7 @@ import 'package:flutter_planbook/discover/daily/journal_daily_bloc_manager.dart'
 import 'package:flutter_planbook/discover/export/bloc/journal_export_bloc.dart';
 import 'package:flutter_planbook/discover/export/view/discover_journal_horizontal_view.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
+import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:share_plus/share_plus.dart';
@@ -44,7 +45,10 @@ class _JournalExportNestedProviders extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => DiscoverJournalBloc(now: start),
+          create: (context) => DiscoverJournalBloc(
+            now: start,
+            usersRepository: context.read(),
+          )..add(DiscoverJournalRequested(year: start.year)),
         ),
         RepositoryProvider(
           create: (context) => JournalDailyBlocManager(
@@ -114,7 +118,9 @@ class _JournalExportControllerScopeState
       listener: (context, state) {
         final s = state as JournalExportReady;
         context.read<DiscoverJournalBloc>().add(
-          DiscoverJournalDateChanged(date: s.startDate),
+          DiscoverJournalDateChanged(
+            date: JournalDate.fromJiffy(s.startDate),
+          ),
         );
         _prefetchRange(context, s);
       },

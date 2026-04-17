@@ -1,0 +1,4 @@
+Novedades:
+- Compatible con doble toque para ampliar el diario
+- Compatible con arrastrar tareas para asociarlas con enfoques y resúmenes
+- Se corrigieron algunos problemas

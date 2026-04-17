@@ -98,6 +98,15 @@
   "month": "月",
   "year": "年",
   "weekOfYear": "第{week}周",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
   "task": "任务",
   "morning": "上午",
   "afternoon": "下午",
@@ -129,7 +138,6 @@
   "tagNameHint": "输入标签名称",
   "parentTag": "上级标签",
   "parentTagHint": "选择上级标签",
-  "focus": "专注",
   "newNote": "新建笔记",
   "editNote": "编辑笔记",
   "noteTitleHint": "输入笔记标题",
@@ -187,8 +195,35 @@
   "deleteNote": "删除笔记",
   "deleteNoteContent": "确定要删除此笔记吗？",
   "durationSeconds": "{count} 秒",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "durationMinutes": "{count} 分钟",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "durationHours": "{count} 小时",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
   "everyDay": "天",
   "everyWeek": "周",
   "everyMonth": "月",
@@ -201,7 +236,25 @@
   "endByDate": "结束日期",
   "endByCount": "结束次数",
   "endsOn": "结束于 {date}",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "endsIn": "结束于 {count} 次",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "loginOrRegister": "登录或注册",
   "password": "密码",
   "phoneNumber": "手机号",
@@ -242,6 +295,7 @@
   "phoneNumberMessageInvalid": "请输入有效的手机号",
   "phoneNumberOrEmailMessage": "请输入手机号或邮箱",
   "phoneNumberOrEmailMessageInvalid": "请输入有效的手机号或邮箱",
+  "codeSentSuccess": "验证码已发送",
   "changeEmail": "更改邮箱",
   "emailMessage": "请输入邮箱",
   "emailMessageInvalid": "请输入有效的邮箱",
@@ -249,7 +303,6 @@
   "verificationCodeMessage": "请输入验证码",
   "verificationCodeMessageInvalid": "请输入有效的验证码",
   "phoneNumberSameAsCurrent": "手机号不能与当前手机号相同",
-  "codeSentSuccess": "验证码已发送",
   "nickname": "昵称",
   "logout": "退出登录",
   "deleteAccount": "删除账号",
@@ -304,14 +357,86 @@
   "monthlySummary": "本月总结",
   "yearlyFocus": "每年重点",
   "yearlySummary": "每年总结",
-  "weeklyFocusTitle": "第{week}周重点",
-  "weeklySummaryTitle": "第{week}周总结",
-  "monthlyFocusTitle": "{month}重点",
-  "monthlySummaryTitle": "{month}总结",
-  "yearlyFocusTitle": "{year}重点",
-  "yearlySummaryTitle": "{year}总结",
   "dailyFocusTitle": "{date}重点",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
   "dailySummaryTitle": "{date}总结",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "第{week}周重点",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "第{week}周总结",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "{month}重点",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "{month}总结",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "{year}重点",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "{year}总结",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
   "journal": "日志",
   "thinkAboutWeeklyFocus": "本周最想完成什么？",
   "thinkAboutWeeklySummary": "本周有哪些收获？",
@@ -327,40 +452,196 @@
   "thisYear": "今年",
   "autoPlay": "自动播放",
   "journalEnlargeLeftPage": "放大左页",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
   "journalEnlargeLeftPageSubtitle": "双击左页放大",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
   "journalEnlargeRightPage": "放大右页",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
   "journalEnlargeRightPageSubtitle": "双击右页放大",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
   "discoverJournalFlipGestureHintTitle": "翻页手势",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
   "discoverJournalFlipGestureHintMessage": "👆 点击左页/右页 翻到上一页/下一页\n👆👆 双击任一页 放大查看\n👈 左滑翻到下一页\n👉 右滑翻到上一页",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
   "startPlaying": "开始播放",
   "everyInterval": "每 {interval} {unit}",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
   "recurrenceWithEndDate": "{frequency}，{date} 结束",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
   "recurrenceWithEndCount": "{frequency}，{count} 次后结束",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "editModeSelection": "编辑模式选择",
   "allEvents": "所有事件",
   "thisAndFutureEvents": "此事件及未来事件",
   "thisEventOnly": "此事件",
   "recurringTaskCannotChangeDate": "重复任务不可改变日期",
   "incompleteSubtasksCount": "{count} 个子任务",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "overdueDays": "已逾期 {count} 天",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "rewardActivities": "奖励活动",
   "receiveWay": "领取方式",
   "notShowAgain": "不再显示",
+  "activityDetails": "活动详情",
   "focusMindMap": "重点图谱",
   "summaryMindMap": "总结图谱",
   "dailyDescriptionPlannedTasks": "今天计划了 {count} 项任务。",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNoPlannedTasks": "今天没有计划任务。",
   "dailyDescriptionNoTasks": "今天暂无已完成的任务。",
   "dailyDescriptionTasksCompleted": "完成了 {completed} 项任务",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionCompletedFromPlan": "计划中 {count} 项",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionCompletedFromInbox": "收集箱中 {count} 项",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionPriorityBreakdown": "按优先级分布：{breakdown}。",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
   "dailyDescriptionImportantUrgentCount": "{count} 项重要且紧急",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionImportantNotUrgentCount": "{count} 项重要",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionUrgentNotImportantCount": "{count} 项紧急",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNotUrgentNotImportantCount": "{count} 项普通",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNotesWritten": "今天写了 {count} 篇日记，共 {words} 字。",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionTagsInvolved": "涉及标签：{tags}。",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "dailyDescriptionNoNotesWritten": "今天还没有写日记。",
   "dailyData": "今日数据",
   "priorityDistribution": "优先级分布：",
@@ -371,11 +652,41 @@
   "punctuationEnumSeparator": "、",
   "selectColor": "选择颜色",
   "expiresAtDescription": "会员将于 {date} 到期。",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "expiredAtDescription": "会员已于 {date} 过期。",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "unlockedPro": "已解锁高级版",
   "noAlarm": "无提醒",
   "dayEarly": "提前{count}天",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "weekEarly": "提前{count}周",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "onTheDay": "当天",
   "invalidTime": "当前提醒时间无效",
   "apkDownloadUpdate": "下载新版本",
@@ -420,5 +731,9 @@
         "type": "int"
       }
     }
+  },
+  "journalSetYearCover": "年度封面",
+  "@journalSetYearCover": {
+    "description": "发现页日志菜单：设置年度封面"
   }
 }

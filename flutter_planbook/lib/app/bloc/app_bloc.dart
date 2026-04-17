@@ -111,6 +111,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     final isFirstLaunch = _usersRepository.isFirstLaunch;
     await _usersRepository.updateUserProfile(
       lastLaunchAppAt: DateTime.now(),
+      launchCount: (_usersRepository.userProfile?.launchCount ?? 0) + 1,
     );
     // Create default tags and sample tasks on first launch
     if (isFirstLaunch) {

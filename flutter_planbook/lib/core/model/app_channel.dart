@@ -24,6 +24,8 @@ class AppChannel {
     instance._type = type;
   }
 
+  static bool get isMain => instance.type == AppChannelType.main;
+
   static bool get isAndroidChina =>
       instance.type == AppChannelType.store ||
       instance.type == AppChannelType.cloud;

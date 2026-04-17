@@ -1,1 +1,1 @@
-timeline,goal,day,gtd,time,things,note,list,okr,ddl,focus,track,workflow,progress,weekly,reminder,x
+todo,diary,habit,reminder,focus,goals,routine,timeline,gtd,checklist,productivity,taskmanager

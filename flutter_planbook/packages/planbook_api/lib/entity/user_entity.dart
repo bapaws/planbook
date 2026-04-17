@@ -23,8 +23,16 @@ enum AiFrequency {
   }
 }
 
-int getRewardDiamonds(int level) {
-  return level * (level % 10 == 0 ? 2 : 1);
+/// 解析 `user_profiles.cover_by_year`（JSON 对象：年份字符串 -> 封面地址）
+Map<String, String> _coverByYearFromDynamic(Object? raw) {
+  if (raw == null) return const {};
+  if (raw is! Map) return const {};
+  final result = <String, String>{};
+  raw.cast<dynamic, dynamic>().forEach((k, v) {
+    if (v == null) return;
+    result[k.toString()] = v is String ? v : v.toString();
+  });
+  return result;
 }
 
 class UserProfileEntity extends Equatable {
@@ -39,6 +47,7 @@ class UserProfileEntity extends Equatable {
     this.birthday,
     this.lastLaunchAppAt,
     this.launchCount = 0,
+    this.coverByYear = const {},
     this.productId,
     this.expiresAt,
     this.alipayOutTradeNo,
@@ -73,6 +82,7 @@ class UserProfileEntity extends Equatable {
           ? DateTime.parse(map['last_launch_app_at'] as String)
           : null,
       launchCount: map['launch_count'] as int? ?? 0,
+      coverByYear: _coverByYearFromDynamic(map['cover_by_year']),
       productId: map['product_id'] as String?,
       expiresAt: map['expires_at'] != null
           ? DateTime.parse(map['expires_at'] as String)
@@ -92,6 +102,9 @@ class UserProfileEntity extends Equatable {
   final DateTime? birthday;
   final DateTime? lastLaunchAppAt;
   final int launchCount;
+
+  /// 按年份的日记封面配置（key：年份如 `"2026"`，value：远端 URL 或 App 内置路径）
+  final Map<String, String> coverByYear;
 
   final String? productId;
   final DateTime? expiresAt;
@@ -114,6 +127,7 @@ class UserProfileEntity extends Equatable {
     birthday,
     lastLaunchAppAt,
     launchCount,
+    coverByYear,
     productId,
     expiresAt,
     alipayOutTradeNo,
@@ -131,6 +145,7 @@ class UserProfileEntity extends Equatable {
     DateTime? birthday,
     DateTime? lastLaunchAppAt,
     int? launchCount,
+    Map<String, String>? coverByYear,
     String? productId,
     DateTime? expiresAt,
     String? alipayOutTradeNo,
@@ -147,6 +162,7 @@ class UserProfileEntity extends Equatable {
       birthday: birthday ?? this.birthday,
       lastLaunchAppAt: lastLaunchAppAt ?? this.lastLaunchAppAt,
       launchCount: launchCount ?? this.launchCount,
+      coverByYear: coverByYear ?? this.coverByYear,
       productId: productId ?? this.productId,
       expiresAt: expiresAt ?? this.expiresAt,
       alipayOutTradeNo: alipayOutTradeNo ?? this.alipayOutTradeNo,
@@ -167,6 +183,7 @@ class UserProfileEntity extends Equatable {
       if (lastLaunchAppAt != null)
         'last_launch_app_at': lastLaunchAppAt?.toIso8601String(),
       'launch_count': launchCount,
+      'cover_by_year': coverByYear,
       if (productId != null) 'product_id': productId,
       if (expiresAt != null) 'expires_at': expiresAt?.toIso8601String(),
       if (alipayOutTradeNo != null) 'alipay_out_trade_no': alipayOutTradeNo,
@@ -175,40 +192,6 @@ class UserProfileEntity extends Equatable {
   }
 
   String toJson() => json.encode(toMap());
-
-  // levelValue = (((level - 1) + ... + 1) * 5)
-  // int get currentLevel {
-  //   if (levelValue == 0) {
-  //     return 1; // 0 篇笔记也对应 1 级
-  //   } else {
-  //     final level = ((1 + sqrt(1 + 8 * levelValue / 5.0)) / 2).floor();
-  //     return level;
-  //   }
-  // }
-
-  // /// 计算升级到下一级需要的 levelValue
-  // int get nextLevelRequiredValue {
-  //   final nextLevel = currentLevel + 1;
-  //   return ((nextLevel * (nextLevel - 1)) / 2 * 5).ceil();
-  // }
-
-  // /// 计算当前等级进度百分比 (0.0 - 1.0)
-  // double get levelProgress {
-  //   final level = currentLevel;
-  //   final currentLevelValue = (level * (level - 1)) / 2 * 5;
-  //   final nextLevelValue = nextLevelRequiredValue;
-
-  //   if (nextLevelValue == currentLevelValue) return 1;
-
-  //   final progress =
-  //       (levelValue - currentLevelValue) / (nextLevelValue - currentLevelValue);
-  //   return progress.clamp(0.0, 1.0);
-  // }
-
-  // /// 计算距离下一级还需要多少 levelValue
-  // int get remainingValueForNextLevel {
-  //   return nextLevelRequiredValue - levelValue;
-  // }
 }
 
 class UserEntity extends Equatable {
@@ -246,7 +229,8 @@ class UserEntity extends Equatable {
       // 其他长度的手机号：显示前3位和后3位
       final visibleEnd = phone.length > 6 ? 3 : phone.length - 3;
       final maskLength = phone.length - 3 - visibleEnd;
-      return '${phone.substring(0, 3)}${'*' * maskLength}${phone.substring(phone.length - visibleEnd)}';
+      return '${phone.substring(0, 3)}${'*' * maskLength}'
+          '${phone.substring(phone.length - visibleEnd)}';
     }
   }
 

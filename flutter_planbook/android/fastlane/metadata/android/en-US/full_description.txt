@@ -1,36 +1,30 @@
-First complete, then perfect.
-Planbook is a productivity app that seamlessly integrates task management, note-taking, and journaling. Manage your time scientifically and document your life elegantly.
+Planbook brings tasks, notes, and journal entries together in one focused planner. Capture ideas quickly, stay on top of priorities, and review your progress without switching between apps.
 
-【Smart & Simple | Intelligent Classification】
-● Eisenhower Matrix (4-quadrant) for prioritizing tasks
-● Multi-level tag system for flexible organization
-● Inbox captures ideas instantly—never miss a to-do
-● Recurring tasks help build lasting habits
+Plan smarter
+● Prioritize with the Eisenhower Matrix
+● Capture tasks instantly in Inbox
+● Build routines with recurring tasks
+● Organize work and life with nested tags
 
-【Complete & Comprehensive | Full Task Details】
-● View all task attributes at a glance: time, priority, tags
-● Break down big goals with subtasks
-● Auto-link notes when completing tasks for easy review
-● Image attachments for richer information
+Stay clear and in control
+● View task time, priority, and tags at a glance
+● Break large goals into subtasks
+● Link notes to tasks for easier review
+● Add image attachments when you need more context
 
-【Clear & Organized | Timeline View】
-● Day/Week/Month calendar perspectives
-● Timeline displays your entire day's tasks and notes
-● Morning, afternoon, and evening segments
+See the whole day
+● Browse day, week, and month views
+● Keep tasks and notes on a single timeline
+● Structure mornings, afternoons, and evenings clearly
 
-【Quick Search | Hierarchical Tags】
-● Multi-level tag hierarchy for notes and tasks
-● Filter by Work, Study, Life with one tap
-● Show or hide completed tasks
+Reflect and grow
+● Review your day and track progress over time
+● Turn notes into a personal timeline of work and life
 
-【Journal | Flip Through Your Fulfilling Life】
-● Daily reviews to track your growth
-● Task completion statistics to see your progress
-● Note timeline—pen the chapters of your life
+Download Planbook and build a more organized routine.
 
-Download Planbook today and start a new chapter of organized, productive living!
 Terms of Service: https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb
 Privacy Policy: https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg
- 
-If you have any suggestions, welcome to chat with us.
+
+Feedback is welcome.
 E-mail: dev@bapaws.com

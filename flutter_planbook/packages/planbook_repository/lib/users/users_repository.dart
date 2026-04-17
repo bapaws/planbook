@@ -372,4 +372,36 @@ class UsersRepository {
         })
         .eq('id', entity.id);
   }
+
+  /// 合并写入某年的日记封面路径（`user_profiles.cover_by_year`）
+  Future<void> updateJournalCoverForYear({
+    required int year,
+    required String coverPath,
+  }) async {
+    if (_supabase?.auth.currentUser == null) {
+      throw StateError('用户未登录，无法保存年度封面');
+    }
+    var entity = userProfile;
+    entity ??= await getUserProfile(force: true);
+    if (entity == null) {
+      throw StateError('用户资料未就绪，无法保存年度封面');
+    }
+    final yearKey = '$year';
+    final merged = Map<String, String>.from(entity.coverByYear)
+      ..[yearKey] = coverPath;
+    final now = DateTime.now().toUtc();
+    final newEntity = entity.copyWith(
+      coverByYear: merged,
+      updatedAt: now,
+    );
+    unawaited(_sp.setString(kUserProfile, newEntity.toJson()));
+    _onUserProfileChangeController.add(newEntity);
+    await _supabase
+        ?.from('user_profiles')
+        .update({
+          'cover_by_year': merged,
+          'updated_at': now.toIso8601String(),
+        })
+        .eq('id', entity.id);
+  }
 }

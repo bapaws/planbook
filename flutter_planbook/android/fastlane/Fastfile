@@ -15,24 +15,115 @@
 
 default_platform(:android)
 
+# Ruby often prefers IPv6 for *.googleapis.com; a broken IPv6 path causes
+# OpenSSL::SSL::SSLError "unexpected eof while reading" during OAuth / Play API.
+# Resolving to an IPv4 address here keeps TLS SNI/verification intact (Net::HTTP
+# still uses the original hostname on the SSL socket).
+module PlayStoreGoogleIpv4Tcp
+  class << self
+    def apply!
+      return if @applied
+      @applied = true
+
+      require "socket"
+
+      TCPSocket.prepend(Module.new do
+        def initialize(*args, **kwargs)
+          if args.first.is_a?(String)
+            args = [PlayStoreGoogleIpv4Tcp.ipv4_host(args.first), *args.drop(1)]
+          end
+          super(*args, **kwargs)
+        end
+      end)
+    end
+
+    def google_host?(host)
+      host.end_with?(".google.com") || host == "google.com" ||
+        host.end_with?(".googleapis.com") || host == "googleapis.com" ||
+        host.end_with?(".gstatic.com") || host == "gstatic.com" ||
+        host.end_with?(".googleusercontent.com")
+    end
+
+    def ipv4_host(host)
+      return host if host.match?(/\A\d{1,3}(?:\.\d{1,3}){3}\z/)
+      return host unless google_host?(host)
+
+      infos = Socket.getaddrinfo(host, nil, Socket::AF_INET, Socket::SOCK_STREAM, Socket::IPPROTO_TCP)
+      infos.first&.dig(3) || host
+    rescue StandardError
+      host
+    end
+  end
+end
+
+PlayStoreGoogleIpv4Tcp.apply!
+
+def flutter_project_root
+  File.expand_path("../..", __dir__)
+end
+
+def release_aab
+  File.join(flutter_project_root, "build/app/outputs/bundle/storeRelease/app-store-release.aab")
+end
+
+# Bumps pubspec `version: x.y.z+N` → N+1 (Android versionCode & iOS build from Flutter).
+# Set SKIP_FLUTTER_BUILD_BUMP=1 to leave pubspec unchanged (e.g. retry upload).
+def increment_flutter_build_number!
+  return if ENV["SKIP_FLUTTER_BUILD_BUMP"] == "1"
+
+  path = File.join(flutter_project_root, "pubspec.yaml")
+  UI.user_error!("Missing #{path}") unless File.file?(path)
+
+  content = File.read(path, encoding: "UTF-8")
+  bumped = nil
+
+  # Do not use /m with .+ here: "." would match newlines and swallow the rest of the file.
+  new_content = content.sub(/^(version:\s*)(\S+)(\s*(?:#.*)?)$/) do
+    prefix = Regexp.last_match(1)
+    raw = Regexp.last_match(2)
+    suffix = Regexp.last_match(3)
+    unless raw =~ /^(.+)\+(\d+)$/
+      UI.user_error!(
+        "pubspec version must include +build (e.g. 1.0.1+1). Got: #{raw.inspect}"
+      )
+    end
+    name = Regexp.last_match(1)
+    code = Regexp.last_match(2).to_i
+    bumped = "#{name}+#{code + 1}"
+    "#{prefix}#{bumped}#{suffix}"
+  end
+
+  UI.user_error!("No version: line found in pubspec.yaml") if bumped.nil?
+
+  File.write(path, new_content)
+  UI.success("pubspec → #{bumped}")
+end
+
+def build_release_appbundle
+  increment_flutter_build_number!
+  Dir.chdir(flutter_project_root) do
+    sh("flutter", "build", "appbundle", "--release", "--flavor", "store")
+  end
+end
+
 platform :android do
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Build release AAB and upload to Play internal testing"
   lane :beta do
-    gradle(task: "clean assembleRelease")
-    crashlytics
-  
-    # sh "your_script.sh"
-    # You can also use other beta testing services here
+    # build_release_appbundle
+    upload_to_play_store(
+      track: "internal",
+      aab: release_aab
+    )
   end
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
+    build_release_appbundle
+    upload_to_play_store(aab: release_aab)
   end
 end

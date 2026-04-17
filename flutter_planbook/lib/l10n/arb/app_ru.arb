@@ -1,0 +1,740 @@
+{
+  "@@locale": "ru",
+  "appName": "Planbook",
+  "slogen": "План, задача, заметка - все в одном 👌",
+  "noteSlogen": "Пишите главы своей жизни.",
+  "taskSlogen": "Сначала завершить, потом улучшить.",
+  "list": "Список",
+  "save": "Сохранить",
+  "confirm": "Подтвердить",
+  "close": "Закрыть",
+  "back": "Назад",
+  "share": "Поделиться",
+  "add": "Добавить",
+  "edit": "Редактировать",
+  "delete": "Удалить",
+  "clear": "Очистить",
+  "all": "Все",
+  "copy": "Копировать",
+  "paste": "Вставить",
+  "cancel": "Отмена",
+  "refresh": "Обновить",
+  "noData": "Нет данных",
+  "yes": "Да",
+  "no": "Нет",
+  "today": "Сегодня",
+  "settings": "Настройки",
+  "notificationPermissionDeniedHint": "Вы можете в любой момент включить уведомления в системных настройках.",
+  "openSettings": "Открыть настройки",
+  "taskReminderChannelName": "Напоминания о задачах",
+  "taskReminderChannelDescription": "Напоминания перед началом задачи",
+  "iKnow": "Понятно",
+  "unlockPro": "Откройте все премиум-возможности.",
+  "freeTrial": "Бесплатный пробный период",
+  "tryFree": "Попробовать бесплатно",
+  "general": "Общие",
+  "data": "Данные",
+  "iCloud": "iCloud",
+  "manual": "Вручную",
+  "limitedTimeFree": "Бесплатный пробный период",
+  "appearance": "Внешний вид",
+  "modeAuto": "Как на устройстве",
+  "icon": "Иконка",
+  "appIcon": "Иконка приложения",
+  "lightClassic": "Классическая светлая",
+  "darkClassic": "Классическая темная",
+  "colorThemes": "Цветовые темы",
+  "defaults": "По умолчанию",
+  "classic": "Классика",
+  "seedColor": "Основной цвет",
+  "yellow": "Желтый",
+  "green": "Зеленый",
+  "blue": "Синий",
+  "red": "Красный",
+  "pink": "Розовый",
+  "purple": "Фиолетовый",
+  "orange": "Оранжевый",
+  "teal": "Бирюзовый",
+  "indigo": "Индиго",
+  "deepPurple": "Темно-фиолетовый",
+  "lightBlue": "Голубой",
+  "cyan": "Циан",
+  "lightGreen": "Светло-зеленый",
+  "lime": "Лаймовый",
+  "amber": "Янтарный",
+  "deepOrange": "Темно-оранжевый",
+  "brown": "Коричневый",
+  "darkMode": "Темная тема",
+  "lightMode": "Светлая тема",
+  "dark": "Темный",
+  "light": "Светлый",
+  "other": "Другое",
+  "activities": "Активности",
+  "rate": "Оценить приложение",
+  "upgrade": "Обновить",
+  "feedback": "Обратная связь",
+  "about": "О приложении",
+  "help": "Центр помощи",
+  "helpUrl": "https://malachite-aster-f7a.notion.site/1a018752b1d28086a748cc007acfd7ba",
+  "privacy": "Политика конфиденциальности",
+  "terms": "Условия использования",
+  "photos": "Фото",
+  "gallery": "Галерея",
+  "camera": "Камера",
+  "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
+  "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
+  "weChatCopied": "ID WeChat скопирован. Перейдите в WeChat, чтобы добавить его.",
+  "importantUrgent": "Важно и срочно",
+  "importantNotUrgent": "Важно и не срочно",
+  "urgentUnimportant": "Срочно и не важно",
+  "notUrgentUnimportant": "Не срочно и не важно",
+  "narrowWeek": "Н",
+  "timeline": "Таймлайн",
+  "planbook": "Planbook",
+  "note": "Заметка",
+  "notes": "Заметки",
+  "day": "День",
+  "week": "Неделя",
+  "month": "Месяц",
+  "year": "Год",
+  "weekOfYear": "Н{week}",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "task": "Задача",
+  "morning": "Утро",
+  "afternoon": "День",
+  "evening": "Вечер",
+  "deleteTaskAlertTitle": "Удалить задачу?",
+  "deleteTaskAlertContent": "Вы уверены, что хотите удалить эту задачу? Подзадачи и связанные заметки тоже будут удалены.",
+  "plan": "План",
+  "to": "до",
+  "tomorrow": "Завтра",
+  "yesterday": "Вчера",
+  "upgradePro": "Обновиться до Planbook Premium",
+  "taskTitleHint": "Что нужно сделать?",
+  "startTime": "Время начала",
+  "endTime": "Время окончания",
+  "startDate": "Дата начала",
+  "endDate": "Дата окончания",
+  "duration": "Длительность",
+  "allDay": "Весь день",
+  "thatDay": "В этот день",
+  "otherDate": "Другая дата",
+  "inbox": "Входящие",
+  "overdue": "Просрочено",
+  "delayToToday": "Перенести на сегодня",
+  "delayToTomorrow": "Перенести на завтра",
+  "addTag": "Добавить тег",
+  "tags": "Теги",
+  "tag": "Тег",
+  "updateTag": "Обновить тег",
+  "tagNameHint": "Введите название тега",
+  "parentTag": "Родительский тег",
+  "parentTagHint": "Выберите родительский тег",
+  "newNote": "Новая заметка",
+  "editNote": "Редактировать заметку",
+  "noteTitleHint": "Введите заголовок заметки",
+  "noteContentHint": "Введите текст заметки",
+  "selectTags": "Выбрать теги",
+  "notLoggedIn": "Не выполнен вход",
+  "joinedDaysAgo": "С нами {days} дн. назад",
+  "@joinedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "Готово",
+  "uncompleteTask": "Отменить",
+  "completeTask": "Завершить",
+  "alreadyDone": "Уже выполнено",
+  "unselectAll": "Снять выбор",
+  "selectAll": "Выбрать все",
+  "work": "Работа",
+  "study": "Учеба",
+  "life": "Жизнь",
+  "showAndHide": "Показать и скрыть",
+  "showCompleted": "Показать выполненные",
+  "hideCompleted": "Скрыть выполненные",
+  "showFocusNote": "Показать фокус/итоги",
+  "hideFocusNote": "Скрыть фокус/итоги",
+  "priority": "Приоритет",
+  "selectViewType": "Выбрать вид",
+  "quadrant": "Квадрант",
+  "date": "Дата",
+  "selectDate": "Выбрать дату",
+  "night": "Ночь",
+  "cover": "Обложка",
+  "getPro": "Получить Premium",
+  "supportUsFullPrice": "Поддержать нас по полной цене",
+  "restore": "Восстановить",
+  "aboutSubscription": "ℹ️ О подписке: мы обещаем не повышать цену действующей подписки после оформления, даже если будут добавляться новые функции.",
+  "savePercent": "Сэкономьте {percent}%",
+  "@savePercent": {
+    "description": "Save Percent",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "total": "Всего",
+  "completed": "Выполнено",
+  "completionRate": "Процент выполнения",
+  "words": "Слова",
+  "time": "Время",
+  "deleteNote": "Удалить заметку",
+  "deleteNoteContent": "Вы уверены, что хотите удалить эту заметку?",
+  "durationSeconds": "{count} {count, plural, =1 {секунда} other {секунд}}",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "durationMinutes": "{count} {count, plural, =1 {минута} other {минут}}",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationHours": "{count} {count, plural, =1 {час} other {часов}}",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "everyDay": "День",
+  "everyWeek": "Неделя",
+  "everyMonth": "Месяц",
+  "everyYear": "Год",
+  "every": "Каждый",
+  "ends": "Заканчивается",
+  "repeat": "Повтор",
+  "noRepeat": "Без повтора",
+  "endlessly": "Бесконечно",
+  "endByDate": "До даты",
+  "endByCount": "По количеству",
+  "endsOn": "Заканчивается {date}",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "endsIn": "Заканчивается через {count} раз",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "loginOrRegister": "Войти или зарегистрироваться",
+  "password": "Пароль",
+  "phoneNumber": "Номер телефона",
+  "phoneNumberOrEmail": "Номер телефона или email",
+  "verificationCode": "Код подтверждения",
+  "sendCode": "Отправить код",
+  "alreadyHaveAccount": "Уже есть аккаунт?",
+  "welcomeBack": "С возвращением",
+  "welcome": "Добро пожаловать",
+  "welcomeToPlanbook": "Добро пожаловать в Planbook",
+  "welcomeToPlanbookDescription": "Planbook - приложение для управления задачами, которое помогает организовать ваши задачи и планы.",
+  "signIn": "Войти",
+  "sendResetLink": "Отправить ссылку для сброса",
+  "resetPassword": "Сброс пароля",
+  "resetPasswordDescription": "Введите email, чтобы сбросить пароль.",
+  "confirmPassword": "Подтвердите пароль",
+  "agreeToTerms": "Я согласен с условиями",
+  "signUp": "Регистрация",
+  "backToSignIn": "Назад ко входу",
+  "name": "Имя",
+  "email": "Email",
+  "signInHere": "Войти здесь",
+  "refuse": "Отказаться",
+  "agreeToConditions": "Согласиться с условиями",
+  "welcomeDescription": "Добро пожаловать в Planbook",
+  "useCodeLogin": "Войти по коду",
+  "readAndAgree": "Прочитать и согласиться с",
+  "termsOfUse": "Условиями использования",
+  "and": "и",
+  "privacyPolicy": "Политикой конфиденциальности",
+  "passwordNotMatch": "Пароли не совпадают",
+  "passwordInvalid": "Некорректный пароль",
+  "passwordMessage": "Введите пароль не короче 8 символов, содержащий буквы и цифры",
+  "changePassword": "Изменить пароль",
+  "comfirmPassword": "Подтвердить пароль",
+  "changePhone": "Изменить телефон",
+  "phoneNumberMessage": "Введите номер телефона",
+  "phoneNumberMessageInvalid": "Введите корректный номер телефона",
+  "phoneNumberOrEmailMessage": "Введите номер телефона или email",
+  "phoneNumberOrEmailMessageInvalid": "Введите корректный номер телефона или email",
+  "codeSentSuccess": "Код успешно отправлен",
+  "changeEmail": "Изменить email",
+  "emailMessage": "Введите email",
+  "emailMessageInvalid": "Введите корректный email",
+  "emailSameAsCurrent": "Email не может совпадать с текущим",
+  "verificationCodeMessage": "Введите код подтверждения",
+  "verificationCodeMessageInvalid": "Введите корректный код подтверждения",
+  "phoneNumberSameAsCurrent": "Номер телефона не может совпадать с текущим",
+  "nickname": "Никнейм",
+  "logout": "Выйти",
+  "deleteAccount": "Удалить аккаунт",
+  "gender": "Пол",
+  "birthday": "Дата рождения",
+  "bind": "Привязать",
+  "deleteAccountWarning": "‼️ Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.",
+  "deleteAccountHint": "Введите текст 'Delete Account', чтобы подтвердить удаление",
+  "male": "Мужской",
+  "female": "Женский",
+  "secret": "Скрыто",
+  "proFeatures": "Premium-функции",
+  "basic": "Базовый",
+  "pro": "Pro",
+  "unlimited": "Без ограничений",
+  "image": "Изображение",
+  "subtask": "Подзадача",
+  "subtasks": "Подзадачи",
+  "taskNote": "Заметка к задаче",
+  "subtaskNote": "Заметка к подзадаче",
+  "statistics": "Статистика",
+  "desktopWidget": "Виджет рабочего стола",
+  "theme": "Тема",
+  "more": "Еще",
+  "futureFeatures": "Будущие функции",
+  "noteRules": "Правила заметок",
+  "noteRuleDescription": "Правила создания заметок при завершении задачи.",
+  "none": "Нет",
+  "noneDescription": "Ничего не делать при завершении задачи.",
+  "create": "Создать",
+  "createDescription": "Создать заметку.",
+  "editDescription": "Открыть редактор заметки.",
+  "createAndEdit": "Создать и редактировать",
+  "createAndEditDescription": "Создать заметку и открыть редактор.",
+  "completedAt": "Выполнено в",
+  "priorityHeaderStyle": "Стиль заголовка приоритета",
+  "solidColorBackground": "Однотонный фон",
+  "numberIcon": "Иконка с номером",
+  "completedSound": "Звук выполнения",
+  "background": "Фон",
+  "dot": "Точка",
+  "grid": "Сетка",
+  "saveSuccess": "Успешно сохранено",
+  "saveFailed": "Не удалось сохранить",
+  "noteFocus": "Фокус",
+  "noteSummary": "Итоги",
+  "dailyFocus": "Фокус",
+  "dailySummary": "Итоги",
+  "weeklyFocus": "Фокус",
+  "weeklySummary": "Итоги",
+  "monthlyFocus": "Фокус",
+  "monthlySummary": "Итоги",
+  "yearlyFocus": "Фокус",
+  "yearlySummary": "Итоги",
+  "dailyFocusTitle": "Фокус на {date}",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "dailySummaryTitle": "Итоги за {date}",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "Фокус на неделю {week}",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "Итоги недели {week}",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "Фокус на {month}",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "Итоги за {month}",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "Фокус на {year}",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "Итоги за {year}",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "journal": "Журнал",
+  "thinkAboutWeeklyFocus": "На чем вы хотите сосредоточиться на этой неделе?",
+  "thinkAboutWeeklySummary": "Чего вы достигли на этой неделе?",
+  "thinkAboutDailyFocus": "На чем вы хотите сосредоточиться сегодня?",
+  "thinkAboutDailySummary": "Чему вы научились сегодня?",
+  "thinkAboutMonthlyFocus": "На чем вы хотите сосредоточиться в этом месяце?",
+  "thinkAboutMonthlySummary": "Каких целей вы достигли в этом месяце?",
+  "thinkAboutYearlyFocus": "На чем вы хотите сосредоточиться в этом году?",
+  "thinkAboutYearlySummary": "Каких целей вы достигли в этом году?",
+  "thisWeek": "Эта неделя",
+  "lastWeek": "Прошлая неделя",
+  "thisMonth": "Этот месяц",
+  "thisYear": "Этот год",
+  "autoPlay": "Автовоспроизведение",
+  "journalEnlargeLeftPage": "Увеличить левую страницу",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
+  "journalEnlargeLeftPageSubtitle": "Дважды нажмите на левую страницу, чтобы увеличить",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
+  "journalEnlargeRightPage": "Увеличить правую страницу",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
+  "journalEnlargeRightPageSubtitle": "Дважды нажмите на правую страницу, чтобы увеличить",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
+  "discoverJournalFlipGestureHintTitle": "Жесты перелистывания",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
+  "discoverJournalFlipGestureHintMessage": "👆 Нажмите на левую/правую страницу для перехода к предыдущей/следующей странице\n👆👆 Дважды нажмите на любую страницу, чтобы увеличить\n👈 Свайп влево - следующая страница\n👉 Свайп вправо - предыдущая страница",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
+  "startPlaying": "Начать воспроизведение",
+  "everyInterval": "Каждые {interval} {unit}",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
+  "recurrenceWithEndDate": "{frequency}, до {date}",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
+  "recurrenceWithEndCount": "{frequency}, заканчивается через {count} раз",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "editModeSelection": "Выбор режима редактирования",
+  "allEvents": "Все события",
+  "thisAndFutureEvents": "Это и будущие события",
+  "thisEventOnly": "Только это событие",
+  "recurringTaskCannotChangeDate": "Нельзя изменить дату повторяющейся задачи",
+  "incompleteSubtasksCount": "{count, plural, =1 {1 подзадача} other {{count} подзадач}}",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "overdueDays": "Просрочено на {count} дн.",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "rewardActivities": "Поощрительные активности",
+  "receiveWay": "Способ получения",
+  "notShowAgain": "Больше не показывать",
+  "activityDetails": "Детали активности",
+  "focusMindMap": "Интеллект-карта фокуса",
+  "summaryMindMap": "Интеллект-карта итогов",
+  "dailyDescriptionPlannedTasks": "Сегодня запланировано {count} {count, plural, =1 {задача} other {задач}}.",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNoPlannedTasks": "На сегодня задач не запланировано.",
+  "dailyDescriptionNoTasks": "Сегодня нет завершенных задач.",
+  "dailyDescriptionTasksCompleted": "Выполнено {completed} {completed, plural, =1 {задача} other {задач}}",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromPlan": "{count} из плана",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromInbox": "{count} из входящих",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionPriorityBreakdown": "Распределение по приоритету: {breakdown}.",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionImportantUrgentCount": "{count} важных и срочных",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionImportantNotUrgentCount": "{count} важных",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionUrgentNotImportantCount": "{count} срочных",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotUrgentNotImportantCount": "{count} обычных",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotesWritten": "Сегодня написано {count} {count, plural, =1 {заметка} other {заметок}}, всего {words} {words, plural, =1 {слово} other {слов}}.",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionTagsInvolved": "Использованные теги: {tags}.",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionNoNotesWritten": "Сегодня заметок не было.",
+  "dailyData": "Данные за день",
+  "priorityDistribution": "Распределение приоритетов:",
+  "punctuationOpenParen": " (",
+  "punctuationCloseParen": ").",
+  "punctuationPeriod": ".",
+  "punctuationListSeparator": ", ",
+  "punctuationEnumSeparator": ", ",
+  "selectColor": "Выбрать цвет",
+  "expiresAtDescription": "Истекает {date}.",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "expiredAtDescription": "Истекло {date}.",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "unlockedPro": "Pro разблокирован",
+  "noAlarm": "Без напоминания",
+  "dayEarly": "За {count} {count, plural, =1 {день} other {дней}}",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekEarly": "За {count} {count, plural, =1 {неделю} other {недель}}",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onTheDay": "В этот день",
+  "invalidTime": "Некорректное время",
+  "apkDownloadUpdate": "Скачать новую версию",
+  "apkDownloadUpdating": "Загрузка...",
+  "apkDownloadNoVersion": "Нет информации о версии, сначала обновите.",
+  "apkDownloadNotNewer": "Текущая версия уже актуальна.",
+  "apkDownloadCanceled": "Загрузка отменена.",
+  "apkDownloadPaused": "Загрузка приостановлена.",
+  "apkDownloadFailed": "Не удалось загрузить.",
+  "apkDownloadNotFound": "Ресурс для загрузки не найден.",
+  "apkDownloadWaitingRetry": "Ожидание повторной попытки.",
+  "apkDownloadIncomplete": "Загрузка не завершена.",
+  "apkInstallFailed": "Не удалось установить.",
+  "journalExportTitle": "Экспорт журнала в PDF",
+  "journalExportStartDate": "Дата начала",
+  "journalExportEndDate": "Дата окончания",
+  "journalExportQuickRanges": "Быстрые диапазоны",
+  "journalExportExportPdf": "Экспорт PDF",
+  "journalExportExporting": "Экспорт…",
+  "journalExportSuccess": "PDF готов к отправке.",
+  "journalExportFailed": "Не удалось экспортировать PDF.",
+  "journalExportFormatImages": "Изображения",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "Сохранить изображения",
+  "journalExportSaveCurrentPage": "Сохранить текущую страницу",
+  "journalExportFreeUserHint": "На бесплатном плане можно сохранить только половину страницы, которая сейчас на экране. Обновитесь, чтобы экспортировать PDF или сохранить все страницы выбранного диапазона как изображения.",
+  "journalExportSavingImages": "Сохранение изображений ({current} / {total})…",
+  "@journalExportSavingImages": {
+    "description": "Batch image export progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "Сохранено {count} изображений в галерею.",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalSetYearCover": "Обложка года",
+  "@journalSetYearCover": {
+    "description": "Discover journal menu: set yearly cover"
+  }
+}

@@ -1,0 +1,4 @@
+Nouveautés :
+- Prise en charge du double toucher pour zoomer dans le journal
+- Prise en charge du glisser-déposer des tâches vers les associations de focus et de synthèse
+- Correction de quelques problèmes

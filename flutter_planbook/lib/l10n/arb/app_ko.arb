@@ -1,0 +1,740 @@
+{
+  "@@locale": "ko",
+  "appName": "Planbook",
+  "slogen": "계획, 작업, 노트, 올인원 👌",
+  "noteSlogen": "삶의 장을 써 내려가세요.",
+  "taskSlogen": "먼저 끝내고, 그다음 완벽하게.",
+  "list": "목록",
+  "save": "저장",
+  "confirm": "확인",
+  "close": "닫기",
+  "back": "뒤로",
+  "share": "공유",
+  "add": "추가",
+  "edit": "편집",
+  "delete": "삭제",
+  "clear": "지우기",
+  "all": "전체",
+  "copy": "복사",
+  "paste": "붙여넣기",
+  "cancel": "취소",
+  "refresh": "새로고침",
+  "noData": "데이터 없음",
+  "yes": "예",
+  "no": "아니요",
+  "today": "오늘",
+  "settings": "설정",
+  "notificationPermissionDeniedHint": "언제든지 시스템 설정에서 알림을 켤 수 있습니다.",
+  "openSettings": "설정 열기",
+  "taskReminderChannelName": "작업 알림",
+  "taskReminderChannelDescription": "작업 시작 전 알림",
+  "iKnow": "알겠어요",
+  "unlockPro": "모든 프리미엄 기능 잠금 해제",
+  "freeTrial": "무료 체험",
+  "tryFree": "무료로 사용해보기",
+  "general": "일반",
+  "data": "데이터",
+  "iCloud": "iCloud",
+  "manual": "수동",
+  "limitedTimeFree": "무료 체험",
+  "appearance": "모양",
+  "modeAuto": "기기 설정 사용",
+  "icon": "아이콘",
+  "appIcon": "앱 아이콘",
+  "lightClassic": "클래식 라이트",
+  "darkClassic": "클래식 다크",
+  "colorThemes": "컬러 테마",
+  "defaults": "기본값",
+  "classic": "클래식",
+  "seedColor": "기본 색상",
+  "yellow": "노랑",
+  "green": "초록",
+  "blue": "파랑",
+  "red": "빨강",
+  "pink": "분홍",
+  "purple": "보라",
+  "orange": "주황",
+  "teal": "청록",
+  "indigo": "인디고",
+  "deepPurple": "진한 보라",
+  "lightBlue": "하늘색",
+  "cyan": "시안",
+  "lightGreen": "연두",
+  "lime": "라임",
+  "amber": "앰버",
+  "deepOrange": "진한 주황",
+  "brown": "갈색",
+  "darkMode": "다크 모드",
+  "lightMode": "라이트 모드",
+  "dark": "다크",
+  "light": "라이트",
+  "other": "기타",
+  "activities": "활동",
+  "rate": "앱 평가하기",
+  "upgrade": "업그레이드",
+  "feedback": "피드백",
+  "about": "정보",
+  "help": "도움말 센터",
+  "helpUrl": "https://malachite-aster-f7a.notion.site/1a018752b1d28086a748cc007acfd7ba",
+  "privacy": "개인정보 처리방침",
+  "terms": "이용 약관",
+  "photos": "사진",
+  "gallery": "갤러리",
+  "camera": "카메라",
+  "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
+  "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
+  "weChatCopied": "WeChat ID가 복사되었습니다. WeChat에서 추가하세요.",
+  "importantUrgent": "중요하고 긴급함",
+  "importantNotUrgent": "중요하지만 긴급하지 않음",
+  "urgentUnimportant": "긴급하지만 중요하지 않음",
+  "notUrgentUnimportant": "긴급하지도 중요하지도 않음",
+  "narrowWeek": "주",
+  "timeline": "타임라인",
+  "planbook": "Planbook",
+  "note": "노트",
+  "notes": "노트",
+  "day": "일",
+  "week": "주",
+  "month": "월",
+  "year": "년",
+  "weekOfYear": "{week}주차",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "task": "작업",
+  "morning": "아침",
+  "afternoon": "오후",
+  "evening": "저녁",
+  "deleteTaskAlertTitle": "작업을 삭제할까요?",
+  "deleteTaskAlertContent": "이 작업을 삭제하시겠어요? 하위 작업과 관련 노트도 함께 삭제됩니다.",
+  "plan": "계획",
+  "to": "부터",
+  "tomorrow": "내일",
+  "yesterday": "어제",
+  "upgradePro": "Planbook Premium으로 업그레이드",
+  "taskTitleHint": "무엇을 해야 하나요?",
+  "startTime": "시작 시간",
+  "endTime": "종료 시간",
+  "startDate": "시작 날짜",
+  "endDate": "종료 날짜",
+  "duration": "기간",
+  "allDay": "하루 종일",
+  "thatDay": "당일",
+  "otherDate": "다른 날짜",
+  "inbox": "수신함",
+  "overdue": "기한 지남",
+  "delayToToday": "오늘로 미루기",
+  "delayToTomorrow": "내일로 미루기",
+  "addTag": "태그 추가",
+  "tags": "태그",
+  "tag": "태그",
+  "updateTag": "태그 수정",
+  "tagNameHint": "태그 이름 입력",
+  "parentTag": "상위 태그",
+  "parentTagHint": "상위 태그 선택",
+  "newNote": "새 노트",
+  "editNote": "노트 편집",
+  "noteTitleHint": "노트 제목 입력",
+  "noteContentHint": "노트 내용 입력",
+  "selectTags": "태그 선택",
+  "notLoggedIn": "로그인되지 않음",
+  "joinedDaysAgo": "{days}일 전에 가입함",
+  "@joinedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "완료",
+  "uncompleteTask": "실행 취소",
+  "completeTask": "완료 처리",
+  "alreadyDone": "이미 완료됨",
+  "unselectAll": "전체 선택 해제",
+  "selectAll": "전체 선택",
+  "work": "업무",
+  "study": "공부",
+  "life": "생활",
+  "showAndHide": "표시 및 숨기기",
+  "showCompleted": "완료 항목 보기",
+  "hideCompleted": "완료 항목 숨기기",
+  "showFocusNote": "포커스/요약 보기",
+  "hideFocusNote": "포커스/요약 숨기기",
+  "priority": "우선순위",
+  "selectViewType": "보기 유형 선택",
+  "quadrant": "사분면",
+  "date": "날짜",
+  "selectDate": "날짜 선택",
+  "night": "밤",
+  "cover": "표지",
+  "getPro": "프리미엄 이용하기",
+  "supportUsFullPrice": "정가로 응원하기",
+  "restore": "복원",
+  "aboutSubscription": "ℹ️ 구독 안내: 지금 이후로 연속 구독을 취소하지 않으면, 기능이 추가되어도 가격은 인상되지 않습니다.",
+  "savePercent": "{percent}% 절약",
+  "@savePercent": {
+    "description": "Save Percent",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "total": "전체",
+  "completed": "완료됨",
+  "completionRate": "완료율",
+  "words": "단어",
+  "time": "시간",
+  "deleteNote": "노트 삭제",
+  "deleteNoteContent": "이 노트를 삭제하시겠어요?",
+  "durationSeconds": "{count}{count, plural, =1 {초} other {초}}",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "durationMinutes": "{count}{count, plural, =1 {분} other {분}}",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationHours": "{count}{count, plural, =1 {시간} other {시간}}",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "everyDay": "일",
+  "everyWeek": "주",
+  "everyMonth": "월",
+  "everyYear": "년",
+  "every": "매",
+  "ends": "종료",
+  "repeat": "반복",
+  "noRepeat": "반복 안 함",
+  "endlessly": "계속",
+  "endByDate": "날짜로 종료",
+  "endByCount": "횟수로 종료",
+  "endsOn": "{date}에 종료",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "endsIn": "{count}회 후 종료",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "loginOrRegister": "로그인 또는 가입",
+  "password": "비밀번호",
+  "phoneNumber": "전화번호",
+  "phoneNumberOrEmail": "전화번호 또는 이메일",
+  "verificationCode": "인증 코드",
+  "sendCode": "코드 보내기",
+  "alreadyHaveAccount": "이미 계정이 있나요?",
+  "welcomeBack": "다시 오신 것을 환영합니다",
+  "welcome": "환영합니다",
+  "welcomeToPlanbook": "Planbook에 오신 것을 환영합니다",
+  "welcomeToPlanbookDescription": "Planbook은 작업과 계획을 관리할 수 있도록 도와주는 작업 관리 앱입니다.",
+  "signIn": "로그인",
+  "sendResetLink": "재설정 링크 보내기",
+  "resetPassword": "비밀번호 재설정",
+  "resetPasswordDescription": "비밀번호를 재설정하려면 이메일을 입력하세요.",
+  "confirmPassword": "비밀번호 확인",
+  "agreeToTerms": "이용 약관에 동의합니다",
+  "signUp": "회원가입",
+  "backToSignIn": "로그인으로 돌아가기",
+  "name": "이름",
+  "email": "이메일",
+  "signInHere": "여기서 로그인",
+  "refuse": "거부",
+  "agreeToConditions": "조건에 동의",
+  "welcomeDescription": "Planbook에 오신 것을 환영합니다",
+  "useCodeLogin": "코드로 로그인",
+  "readAndAgree": "읽고 동의합니다:",
+  "termsOfUse": "이용 약관",
+  "and": "및",
+  "privacyPolicy": "개인정보 처리방침",
+  "passwordNotMatch": "비밀번호가 일치하지 않습니다",
+  "passwordInvalid": "비밀번호가 올바르지 않습니다",
+  "passwordMessage": "비밀번호를 입력하세요. 최소 8자 이상이며 숫자와 문자를 포함해야 합니다",
+  "changePassword": "비밀번호 변경",
+  "comfirmPassword": "비밀번호 확인",
+  "changePhone": "전화번호 변경",
+  "phoneNumberMessage": "전화번호를 입력하세요",
+  "phoneNumberMessageInvalid": "유효한 전화번호를 입력하세요",
+  "phoneNumberOrEmailMessage": "전화번호 또는 이메일을 입력하세요",
+  "phoneNumberOrEmailMessageInvalid": "유효한 전화번호 또는 이메일을 입력하세요",
+  "codeSentSuccess": "코드가 전송되었습니다",
+  "changeEmail": "이메일 변경",
+  "emailMessage": "이메일을 입력하세요",
+  "emailMessageInvalid": "유효한 이메일을 입력하세요",
+  "emailSameAsCurrent": "현재 이메일과 동일할 수 없습니다",
+  "verificationCodeMessage": "인증 코드를 입력하세요",
+  "verificationCodeMessageInvalid": "유효한 인증 코드를 입력하세요",
+  "phoneNumberSameAsCurrent": "현재 전화번호와 동일할 수 없습니다",
+  "nickname": "닉네임",
+  "logout": "로그아웃",
+  "deleteAccount": "계정 삭제",
+  "gender": "성별",
+  "birthday": "생일",
+  "bind": "연결",
+  "deleteAccountWarning": "‼️ 정말로 계정을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.",
+  "deleteAccountHint": "삭제를 확인하려면 'Delete Account'를 입력하세요",
+  "male": "남성",
+  "female": "여성",
+  "secret": "비공개",
+  "proFeatures": "프로 기능",
+  "basic": "기본",
+  "pro": "프로",
+  "unlimited": "무제한",
+  "image": "이미지",
+  "subtask": "하위 작업",
+  "subtasks": "하위 작업",
+  "taskNote": "작업 노트",
+  "subtaskNote": "하위 작업 노트",
+  "statistics": "통계",
+  "desktopWidget": "홈 화면 위젯",
+  "theme": "테마",
+  "more": "더보기",
+  "futureFeatures": "예정 기능",
+  "noteRules": "노트 규칙",
+  "noteRuleDescription": "작업 완료 시 노트 생성 규칙입니다.",
+  "none": "없음",
+  "noneDescription": "작업이 완료되어도 아무 작업도 하지 않습니다.",
+  "create": "생성",
+  "createDescription": "노트를 생성합니다.",
+  "editDescription": "노트 편집기를 엽니다.",
+  "createAndEdit": "생성 후 편집",
+  "createAndEditDescription": "노트를 생성하고 편집기를 엽니다.",
+  "completedAt": "완료 시각",
+  "priorityHeaderStyle": "우선순위 헤더 스타일",
+  "solidColorBackground": "단색 배경",
+  "numberIcon": "숫자 아이콘",
+  "completedSound": "완료 사운드",
+  "background": "배경",
+  "dot": "점",
+  "grid": "격자",
+  "saveSuccess": "저장 완료",
+  "saveFailed": "저장 실패",
+  "noteFocus": "포커스",
+  "noteSummary": "요약",
+  "dailyFocus": "포커스",
+  "dailySummary": "요약",
+  "weeklyFocus": "포커스",
+  "weeklySummary": "요약",
+  "monthlyFocus": "포커스",
+  "monthlySummary": "요약",
+  "yearlyFocus": "포커스",
+  "yearlySummary": "요약",
+  "dailyFocusTitle": "{date}의 포커스",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "dailySummaryTitle": "{date}의 요약",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "{week}주차 포커스",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "{week}주차 요약",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "{month} 포커스",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "{month} 요약",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "{year} 포커스",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "{year} 요약",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "journal": "저널",
+  "thinkAboutWeeklyFocus": "이번 주에 무엇에 집중하고 싶나요?",
+  "thinkAboutWeeklySummary": "이번 주에 무엇을 이뤘나요?",
+  "thinkAboutDailyFocus": "오늘 무엇에 집중하고 싶나요?",
+  "thinkAboutDailySummary": "오늘 무엇을 배웠나요?",
+  "thinkAboutMonthlyFocus": "이번 달에 무엇에 집중하고 싶나요?",
+  "thinkAboutMonthlySummary": "이번 달에 어떤 목표를 이뤘나요?",
+  "thinkAboutYearlyFocus": "올해 무엇에 집중하고 싶나요?",
+  "thinkAboutYearlySummary": "올해 어떤 목표를 이뤘나요?",
+  "thisWeek": "이번 주",
+  "lastWeek": "지난주",
+  "thisMonth": "이번 달",
+  "thisYear": "올해",
+  "autoPlay": "자동 재생",
+  "journalEnlargeLeftPage": "왼쪽 페이지 확대",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
+  "journalEnlargeLeftPageSubtitle": "왼쪽 페이지를 두 번 탭해 확대",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
+  "journalEnlargeRightPage": "오른쪽 페이지 확대",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
+  "journalEnlargeRightPageSubtitle": "오른쪽 페이지를 두 번 탭해 확대",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
+  "discoverJournalFlipGestureHintTitle": "페이지 넘김 제스처",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
+  "discoverJournalFlipGestureHintMessage": "👆 왼쪽/오른쪽 페이지를 탭하면 이전/다음 페이지로 이동\n👆👆 아무 페이지나 두 번 탭하면 확대\n👈 왼쪽으로 스와이프하면 다음 페이지\n👉 오른쪽으로 스와이프하면 이전 페이지",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
+  "startPlaying": "재생 시작",
+  "everyInterval": "{interval}{unit}마다",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
+  "recurrenceWithEndDate": "{frequency}, {date}에 종료",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
+  "recurrenceWithEndCount": "{frequency}, {count}회 후 종료",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "editModeSelection": "편집 모드 선택",
+  "allEvents": "모든 이벤트",
+  "thisAndFutureEvents": "이 이벤트와 이후 이벤트",
+  "thisEventOnly": "이 이벤트만",
+  "recurringTaskCannotChangeDate": "반복 작업은 날짜를 변경할 수 없습니다",
+  "incompleteSubtasksCount": "{count, plural, =1 {하위 작업 1개} other {하위 작업 {count}개}}",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "overdueDays": "{count}일 기한 지남",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "rewardActivities": "보상 활동",
+  "receiveWay": "수령 방법",
+  "notShowAgain": "다시 표시 안 함",
+  "activityDetails": "활동 상세",
+  "focusMindMap": "포커스 마인드맵",
+  "summaryMindMap": "요약 마인드맵",
+  "dailyDescriptionPlannedTasks": "오늘 계획된 작업 {count}{count, plural, =1 {개} other {개}}.",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNoPlannedTasks": "오늘 계획된 작업이 없습니다.",
+  "dailyDescriptionNoTasks": "오늘 완료한 작업이 없습니다.",
+  "dailyDescriptionTasksCompleted": "{completed}{completed, plural, =1 {개 작업 완료} other {개 작업 완료}}",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromPlan": "계획에서 {count}개",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromInbox": "수신함에서 {count}개",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionPriorityBreakdown": "우선순위 분포: {breakdown}.",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionImportantUrgentCount": "중요하고 긴급함 {count}개",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionImportantNotUrgentCount": "중요함 {count}개",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionUrgentNotImportantCount": "긴급함 {count}개",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotUrgentNotImportantCount": "보통 {count}개",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotesWritten": "오늘 노트 {count}{count, plural, =1 {개} other {개}}를 작성했고, 총 {words}{words, plural, =1 {단어} other {단어}}입니다.",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionTagsInvolved": "관련 태그: {tags}.",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionNoNotesWritten": "오늘 작성한 노트가 없습니다.",
+  "dailyData": "일간 데이터",
+  "priorityDistribution": "우선순위 분포:",
+  "punctuationOpenParen": " (",
+  "punctuationCloseParen": ").",
+  "punctuationPeriod": ".",
+  "punctuationListSeparator": ", ",
+  "punctuationEnumSeparator": ", ",
+  "selectColor": "색상 선택",
+  "expiresAtDescription": "{date}에 만료됩니다.",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "expiredAtDescription": "{date}에 만료되었습니다.",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "unlockedPro": "프로 잠금 해제됨",
+  "noAlarm": "알람 없음",
+  "dayEarly": "{count}{count, plural, =1 {일 전} other {일 전}}",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekEarly": "{count}{count, plural, =1 {주 전} other {주 전}}",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onTheDay": "당일",
+  "invalidTime": "잘못된 시간",
+  "apkDownloadUpdate": "새 버전 다운로드",
+  "apkDownloadUpdating": "다운로드 중...",
+  "apkDownloadNoVersion": "버전 정보가 없습니다. 먼저 새로고침하세요.",
+  "apkDownloadNotNewer": "현재 버전이 이미 최신입니다.",
+  "apkDownloadCanceled": "다운로드가 취소되었습니다.",
+  "apkDownloadPaused": "다운로드가 일시중지되었습니다.",
+  "apkDownloadFailed": "다운로드에 실패했습니다.",
+  "apkDownloadNotFound": "다운로드 리소스를 찾을 수 없습니다.",
+  "apkDownloadWaitingRetry": "재시도 대기 중입니다.",
+  "apkDownloadIncomplete": "다운로드가 완료되지 않았습니다.",
+  "apkInstallFailed": "설치에 실패했습니다.",
+  "journalExportTitle": "저널 PDF 내보내기",
+  "journalExportStartDate": "시작 날짜",
+  "journalExportEndDate": "종료 날짜",
+  "journalExportQuickRanges": "빠른 범위",
+  "journalExportExportPdf": "PDF 내보내기",
+  "journalExportExporting": "내보내는 중…",
+  "journalExportSuccess": "PDF가 공유할 준비가 되었습니다.",
+  "journalExportFailed": "PDF를 내보낼 수 없습니다.",
+  "journalExportFormatImages": "이미지",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "이미지 저장",
+  "journalExportSaveCurrentPage": "현재 페이지 저장",
+  "journalExportFreeUserHint": "무료 플랜에서는 현재 화면에 보이는 반 페이지까지만 저장할 수 있습니다. 업그레이드하면 PDF로 내보내거나 선택한 날짜 범위의 모든 페이지를 이미지로 저장할 수 있습니다.",
+  "journalExportSavingImages": "이미지 저장 중 ({current} / {total})…",
+  "@journalExportSavingImages": {
+    "description": "Batch image export progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "이미지 {count}개를 갤러리에 저장했습니다.",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalSetYearCover": "연간 표지",
+  "@journalSetYearCover": {
+    "description": "Discover journal menu: set yearly cover"
+  }
+}

@@ -1,0 +1,7 @@
+Novità di questa versione:
+- Supporto al doppio tocco per ingrandire il diario
+- Risolti alcuni problemi
+
+Aggiornamenti recenti:
+- Supporto al trascinamento delle attività nelle viste giorno, settimana e mese
+- Supporto al trascinamento delle attività per collegarle a focus e riepiloghi

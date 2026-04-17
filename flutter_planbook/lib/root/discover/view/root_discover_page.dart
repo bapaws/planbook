@@ -1,15 +1,20 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
+import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
 import 'package:flutter_planbook/discover/summary/bloc/discover_summary_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/discover/model/root_discover_tab.dart';
 import 'package:flutter_planbook/root/discover/view/root_discover_drawer.dart';
+import 'package:flutter_planbook/root/discover/view/root_discover_journal_title_view.dart';
 import 'package:flutter_planbook/root/note/view/root_note_gallery_title_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
@@ -24,9 +29,16 @@ class RootDiscoverPage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => DiscoverJournalBloc(
-            now: Jiffy.now(),
-          ),
+          create: (context) {
+            /// Show app activity alert
+            showAppActivityAlert(context);
+
+            final now = Jiffy.now();
+            return DiscoverJournalBloc(
+              now: now,
+              usersRepository: context.read(),
+            )..add(DiscoverJournalRequested(year: now.year));
+          },
         ),
         BlocProvider(
           create: (context) {
@@ -65,6 +77,19 @@ class RootDiscoverPage extends StatelessWidget {
       ),
     );
   }
+
+  void showAppActivityAlert(BuildContext context) {
+    if (!AppChannel.isMain) return;
+    final bloc = context.read<AppActivityBloc>();
+    if (bloc.state.activities.isEmpty) return;
+    if (!bloc.state.isReleasedVersion) return;
+
+    final activity = bloc.state.activities.firstWhereOrNull(
+      (activity) => activity.isNew,
+    );
+    if (activity == null) return;
+    context.router.push(AppActivityAlertRoute(activity: activity));
+  }
 }
 
 class _RootDiscoverPage extends StatelessWidget {
@@ -95,16 +120,18 @@ class _RootDiscoverPage extends StatelessWidget {
           child: switch (tab) {
             RootDiscoverTab.journal =>
               BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
-                builder: (context, state) => RootNoteGalleryTitleView(
-                  date: state.date,
+                builder: (context, state) => RootDiscoverJournalTitleView(
+                  date: state.date.date,
                   isCalendarExpanded: state.isCalendarExpanded,
                   onDateSelected: (date) =>
                       context.read<DiscoverJournalBloc>().add(
-                        DiscoverJournalDateChanged(date: date),
+                        DiscoverJournalDateChanged(
+                          date: JournalDate.fromJiffy(date),
+                        ),
                       ),
                   onCalendarToggled: () =>
                       context.read<DiscoverJournalBloc>().add(
-                        const JournalHomeCalendarToggled(),
+                        const DiscoverJournalCalendarToggled(),
                       ),
                 ),
               ),
@@ -155,12 +182,28 @@ class _RootDiscoverPage extends StatelessWidget {
                 ),
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
+                  icon: FontAwesomeIcons.bookOpen,
+                  title: context.l10n.journalSetYearCover,
+                  onTap: () {
+                    final journalState = context
+                        .read<DiscoverJournalBloc>()
+                        .state;
+                    context.router.push(
+                      DiscoverJournalCoverRoute(
+                        year: journalState.date.year,
+                        currentCoverImage: journalState.coverBackgroundImage,
+                      ),
+                    );
+                  },
+                ),
+                const PullDownMenuDivider.large(),
+                PullDownMenuItem(
                   icon: FontAwesomeIcons.magnifyingGlass,
                   title: context.l10n.journalEnlargeLeftPage,
                   subtitle: context.l10n.journalEnlargeLeftPageSubtitle,
                   onTap: () {
                     context.read<DiscoverJournalBloc>().add(
-                      const JournalHomeLeftEnlargedToggled(),
+                      const DiscoverJournalLeftEnlargedToggled(),
                     );
                   },
                 ),
@@ -170,7 +213,7 @@ class _RootDiscoverPage extends StatelessWidget {
                   subtitle: context.l10n.journalEnlargeRightPageSubtitle,
                   onTap: () {
                     context.read<DiscoverJournalBloc>().add(
-                      const JournalHomeRightEnlargedToggled(),
+                      const DiscoverJournalRightEnlargedToggled(),
                     );
                   },
                 ),

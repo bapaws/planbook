@@ -22,6 +22,10 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
     AppActivityRequested event,
     Emitter<AppActivityState> emit,
   ) async {
+    final isReleasedVersion = await _appActivityRepository.appStoreRepository
+        .isReleaseVersion();
+    emit(state.copyWith(isReleasedVersion: isReleasedVersion));
+
     await emit.forEach(
       _appActivityRepository.onActivityChange,
       onData: (activities) => state.copyWith(activities: activities),

@@ -108,37 +108,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
                       color: widget.dateColor ?? colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(8),
                       onPressed: () {
-                        final renderBox =
-                            context.findRenderObject() as RenderBox?;
-                        showCupertinoCalendarPicker(
+                        showAppDatePicker(
                           context,
-                          widgetRenderBox: renderBox,
-                          minimumDateTime:
-                              widget.minimumDateTime?.dateTime ??
-                              DateTime(1970),
-                          initialDateTime: selectedDate.dateTime,
-                          maximumDateTime:
-                              widget.maximumDateTime?.dateTime ??
-                              DateTime(2500, 12, 31),
-                          mainColor: colorScheme.primary,
-                          firstDayOfWeekIndex:
-                              switch (selectedDate.startOfWeek) {
-                                StartOfWeek.monday => DateTime.monday,
-                                StartOfWeek.saturday => DateTime.saturday,
-                                StartOfWeek.sunday => DateTime.sunday,
-                              },
-                          timeLabel: context.l10n.time,
-                          onDateTimeChanged: (dateTime) {
-                            widget.onDateChanged?.call(
-                              Jiffy.parseFromList([
-                                dateTime.year,
-                                dateTime.month,
-                                dateTime.day,
-                                selectedDate.hour,
-                                selectedDate.minute,
-                              ]),
-                            );
-                          },
+                          minimumDate: widget.minimumDateTime,
+                          maximumDate: widget.maximumDateTime,
+                          initialDate: selectedDate,
+                          onDateChanged: widget.onDateChanged,
                         );
                       },
                       child: Text(
@@ -184,35 +159,12 @@ class _AppDatePickerState extends State<AppDatePicker> {
                       color: widget.timeColor ?? colorScheme.tertiaryContainer,
                       borderRadius: BorderRadius.circular(8),
                       onPressed: () {
-                        final renderBox =
-                            context.findRenderObject() as RenderBox?;
-                        showCupertinoTimePicker(
+                        showAppTimePicker(
                           context,
-                          widgetRenderBox: renderBox,
-                          minimumTime: widget.minimumDateTime?.dateTime != null
-                              ? TimeOfDay.fromDateTime(
-                                  widget.minimumDateTime!.dateTime,
-                                )
-                              : null,
-                          maximumTime: widget.maximumDateTime?.dateTime != null
-                              ? TimeOfDay.fromDateTime(
-                                  widget.maximumDateTime!.dateTime,
-                                )
-                              : null,
-                          initialTime: TimeOfDay.fromDateTime(
-                            selectedDate.dateTime,
-                          ),
-                          onTimeChanged: (time) {
-                            widget.onDateChanged?.call(
-                              Jiffy.parseFromList([
-                                selectedDate.year,
-                                selectedDate.month,
-                                selectedDate.date,
-                                time.hour,
-                                time.minute,
-                              ]),
-                            );
-                          },
+                          minimumTime: widget.minimumDateTime,
+                          maximumTime: widget.maximumDateTime,
+                          initialTime: selectedDate,
+                          onTimeChanged: widget.onDateChanged,
                         );
                       },
                       child: Text(
@@ -231,4 +183,81 @@ class _AppDatePickerState extends State<AppDatePicker> {
       ],
     );
   }
+}
+
+void showAppDatePicker(
+  BuildContext context, {
+  required ValueChanged<Jiffy>? onDateChanged,
+  Jiffy? minimumDate,
+  Jiffy? maximumDate,
+  Jiffy? initialDate,
+}) {
+  final renderBox = context.findRenderObject() as RenderBox?;
+  final colorScheme = Theme.of(context).colorScheme;
+  final initialDateTime = initialDate ?? Jiffy.now();
+  showCupertinoCalendarPicker(
+    context,
+    widgetRenderBox: renderBox,
+    minimumDateTime: minimumDate?.dateTime ?? DateTime(1970),
+    initialDateTime: initialDateTime.dateTime,
+    maximumDateTime: maximumDate?.dateTime ?? DateTime(2500, 12, 31),
+    mainColor: colorScheme.primary,
+    firstDayOfWeekIndex: switch (initialDateTime.startOfWeek) {
+      StartOfWeek.monday => DateTime.monday,
+      StartOfWeek.saturday => DateTime.saturday,
+      StartOfWeek.sunday => DateTime.sunday,
+    },
+    timeLabel: context.l10n.time,
+    dismissBehavior: CalendarDismissBehavior.onOusideTapOrDateSelect,
+    onDateSelected: (dateTime) {
+      onDateChanged?.call(
+        Jiffy.parseFromList([
+          dateTime.year,
+          dateTime.month,
+          dateTime.day,
+          initialDateTime.hour,
+          initialDateTime.minute,
+        ]),
+      );
+    },
+  );
+}
+
+void showAppTimePicker(
+  BuildContext context, {
+  required Jiffy? minimumTime,
+  required Jiffy? maximumTime,
+  required Jiffy? initialTime,
+  required ValueChanged<Jiffy>? onTimeChanged,
+}) {
+  final renderBox = context.findRenderObject() as RenderBox?;
+  final initialDateTime = initialTime ?? Jiffy.now();
+  showCupertinoTimePicker(
+    context,
+    widgetRenderBox: renderBox,
+    minimumTime: minimumTime?.dateTime != null
+        ? TimeOfDay.fromDateTime(
+            minimumTime!.dateTime,
+          )
+        : null,
+    maximumTime: maximumTime?.dateTime != null
+        ? TimeOfDay.fromDateTime(
+            maximumTime!.dateTime,
+          )
+        : null,
+    initialTime: TimeOfDay.fromDateTime(
+      initialDateTime.dateTime,
+    ),
+    onTimeChanged: (time) {
+      onTimeChanged?.call(
+        Jiffy.parseFromList([
+          initialDateTime.year,
+          initialDateTime.month,
+          initialDateTime.date,
+          time.hour,
+          time.minute,
+        ]),
+      );
+    },
+  );
 }

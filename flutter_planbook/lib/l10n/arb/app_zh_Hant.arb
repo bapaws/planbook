@@ -42,7 +42,7 @@
   "icon": "圖示",
   "appIcon": "應用程式圖示",
   "lightClassic": "經典淺色",
-  "darkClassic": "經典深色",  
+  "darkClassic": "經典深色",
   "colorThemes": "顏色主題",
   "defaults": "預設",
   "classic": "經典",
@@ -98,6 +98,15 @@
   "month": "月",
   "year": "年",
   "weekOfYear": "第{week}週",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
   "task": "任務",
   "morning": "上午",
   "afternoon": "下午",
@@ -129,7 +138,6 @@
   "tagNameHint": "輸入標籤名稱",
   "parentTag": "父標籤",
   "parentTagHint": "選擇父標籤",
-  "focus": "專注",
   "newNote": "新增筆記",
   "editNote": "編輯筆記",
   "noteTitleHint": "輸入筆記標題",
@@ -187,8 +195,35 @@
   "deleteNote": "刪除筆記",
   "deleteNoteContent": "確定要刪除此筆記嗎？",
   "durationSeconds": "{count} 秒",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
   "durationMinutes": "{count} 分鐘",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "durationHours": "{count} 小時",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
   "everyDay": "天",
   "everyWeek": "週",
   "everyMonth": "月",
@@ -201,7 +236,25 @@
   "endByDate": "結束日期",
   "endByCount": "結束次數",
   "endsOn": "結束於 {date}",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "endsIn": "結束於 {count} 次",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "loginOrRegister": "登入或註冊",
   "password": "密碼",
   "phoneNumber": "電話號碼",
@@ -271,8 +324,8 @@
   "taskNote": "任務筆記",
   "subtaskNote": "子任務筆記",
   "statistics": "統計",
-  "theme": "主題",
   "desktopWidget": "桌面小工具",
+  "theme": "主題",
   "more": "更多",
   "futureFeatures": "未來功能",
   "noteRules": "筆記規則",
@@ -304,14 +357,86 @@
   "monthlySummary": "本月總結",
   "yearlyFocus": "每年重點",
   "yearlySummary": "每年總結",
-  "weeklyFocusTitle": "第{week}週重點",
-  "weeklySummaryTitle": "第{week}週總結",
-  "monthlyFocusTitle": "{month}重點",
-  "monthlySummaryTitle": "{month}總結",
-  "yearlyFocusTitle": "{year}重點",
-  "yearlySummaryTitle": "{year}總結",
   "dailyFocusTitle": "{date}重點",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
   "dailySummaryTitle": "{date}總結",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "第{week}週重點",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "第{week}週總結",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "{month}重點",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "{month}總結",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "{year}重點",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "{year}總結",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
   "journal": "日誌",
   "thinkAboutWeeklyFocus": "本週最想完成什麼？",
   "thinkAboutWeeklySummary": "本週有哪些收穫？",
@@ -327,40 +452,196 @@
   "thisYear": "今年",
   "autoPlay": "自動播放",
   "journalEnlargeLeftPage": "放大左頁",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
   "journalEnlargeLeftPageSubtitle": "雙擊左頁放大",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
   "journalEnlargeRightPage": "放大右頁",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
   "journalEnlargeRightPageSubtitle": "雙擊右頁放大",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
   "discoverJournalFlipGestureHintTitle": "翻頁手勢",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
   "discoverJournalFlipGestureHintMessage": "👆 點擊左頁/右頁 翻到上一頁/下一頁\n👆👆 雙擊任一頁 放大查看\n👈 左滑翻到下一頁\n👉 右滑翻到上一頁",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
   "startPlaying": "開始播放",
   "everyInterval": "每 {interval} {unit}",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
   "recurrenceWithEndDate": "{frequency}，{date} 結束",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
   "recurrenceWithEndCount": "{frequency}，{count} 次後結束",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "editModeSelection": "編輯模式選擇",
   "allEvents": "所有事件",
   "thisAndFutureEvents": "此事件及未來事件",
   "thisEventOnly": "此事件",
   "recurringTaskCannotChangeDate": "重複任務不可改變日期",
   "incompleteSubtasksCount": "{count} 個子任務",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "overdueDays": "已逾期 {count} 天",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
   "rewardActivities": "獎勵活動",
   "receiveWay": "領取方式",
   "notShowAgain": "不再顯示",
+  "activityDetails": "活動詳情",
   "focusMindMap": "重點圖譜",
   "summaryMindMap": "總結圖譜",
   "dailyDescriptionPlannedTasks": "今天計劃了 {count} 項任務。",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNoPlannedTasks": "今天沒有計劃任務。",
   "dailyDescriptionNoTasks": "今天暫無已完成的任務。",
   "dailyDescriptionTasksCompleted": "完成了 {completed} 項任務",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionCompletedFromPlan": "計劃中 {count} 項",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionCompletedFromInbox": "收集箱中 {count} 項",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionPriorityBreakdown": "按優先順序分佈：{breakdown}。",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
   "dailyDescriptionImportantUrgentCount": "{count} 項重要且緊急",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionImportantNotUrgentCount": "{count} 項重要",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionUrgentNotImportantCount": "{count} 項緊急",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNotUrgentNotImportantCount": "{count} 項普通",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionNotesWritten": "今天寫了 {count} 篇日記，共 {words} 字。",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
   "dailyDescriptionTagsInvolved": "涉及標籤：{tags}。",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
   "dailyDescriptionNoNotesWritten": "今天還沒有寫日記。",
   "dailyData": "今日數據",
   "priorityDistribution": "優先順序分佈：",
@@ -371,11 +652,41 @@
   "punctuationEnumSeparator": "、",
   "selectColor": "選擇顏色",
   "expiresAtDescription": "會員將於 {date} 到期。",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "expiredAtDescription": "會員已於 {date} 過期。",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
   "unlockedPro": "已解鎖進階版",
   "noAlarm": "無提醒",
   "dayEarly": "提前{count}天",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "weekEarly": "提前{count}周",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "onTheDay": "當天",
   "invalidTime": "當前提醒時間無效",
   "apkDownloadUpdate": "下載新版本",
@@ -420,5 +731,9 @@
         "type": "int"
       }
     }
+  },
+  "journalSetYearCover": "年度封面",
+  "@journalSetYearCover": {
+    "description": "探索頁日誌選單：設定年度封面"
   }
 }

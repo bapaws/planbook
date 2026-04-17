@@ -9,7 +9,7 @@ import 'package:planbook_repository/assets/assets_repository.dart';
 /// [AssetsRepository.downloadImage], instead of relying on public HTTP access.
 @immutable
 class SupaStorageImageProvider extends ImageProvider<SupaStorageImageProvider> {
-  SupaStorageImageProvider({
+  const SupaStorageImageProvider({
     required this.url,
     required this.repository,
   });

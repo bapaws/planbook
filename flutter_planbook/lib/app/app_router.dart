@@ -107,6 +107,7 @@ class AppRouter extends RootStackRouter {
         ),
       ],
     ),
+    AutoRoute(page: DiscoverJournalCoverRoute.page),
 
     // AutoRoute(page: TaskNewRoute.page),
     _buildModalBottomSheetRoute(TaskNewChildRoute.page),
@@ -159,6 +160,17 @@ class AppRouter extends RootStackRouter {
 
     AutoRoute(page: AppActivityRoute.page),
     AutoRoute(page: AppActivityListRoute.page),
+    CustomRoute<void>(
+      page: AppActivityAlertRoute.page,
+      customRouteBuilder: <T>(context, child, page) {
+        return DialogRoute<T>(
+          context: context,
+          settings: page,
+          builder: (context) => child,
+          barrierColor: Colors.black.withValues(alpha: 0.4),
+        );
+      },
+    ),
 
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
 

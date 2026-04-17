@@ -94,7 +94,7 @@
   "note": "Note",
   "notes": "Notes",
   "day": "Day",
-  "week": "Week", 
+  "week": "Week",
   "month": "Month",
   "year": "Year",
   "weekOfYear": "W{week}",
@@ -546,6 +546,7 @@
   "rewardActivities": "Reward Activities",
   "receiveWay": "Receive Way",
   "notShowAgain": "Not Show Again",
+  "activityDetails": "Activity Details",
   "focusMindMap": "Focus Mind Map",
   "summaryMindMap": "Summary Mind Map",
   "dailyDescriptionPlannedTasks": "Planned {count} {count, plural, =1 {task} other {tasks}} today.",
@@ -731,5 +732,9 @@
         "type": "int"
       }
     }
+  },
+  "journalSetYearCover": "Year cover",
+  "@journalSetYearCover": {
+    "description": "Discover journal menu: set yearly cover"
   }
 }

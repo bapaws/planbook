@@ -1,0 +1,740 @@
+{
+  "@@locale": "ja",
+  "appName": "Planbook",
+  "slogen": "計画、タスク、ノート、これひとつで 👌",
+  "noteSlogen": "人生の章を書き留めよう。",
+  "taskSlogen": "まず終わらせて、そのあと磨こう。",
+  "list": "リスト",
+  "save": "保存",
+  "confirm": "確認",
+  "close": "閉じる",
+  "back": "戻る",
+  "share": "共有",
+  "add": "追加",
+  "edit": "編集",
+  "delete": "削除",
+  "clear": "クリア",
+  "all": "すべて",
+  "copy": "コピー",
+  "paste": "貼り付け",
+  "cancel": "キャンセル",
+  "refresh": "更新",
+  "noData": "データなし",
+  "yes": "はい",
+  "no": "いいえ",
+  "today": "今日",
+  "settings": "設定",
+  "notificationPermissionDeniedHint": "通知はいつでもシステム設定で有効にできます。",
+  "openSettings": "設定を開く",
+  "taskReminderChannelName": "タスク通知",
+  "taskReminderChannelDescription": "タスク開始前のリマインダー",
+  "iKnow": "わかりました",
+  "unlockPro": "すべてのプレミアム機能を解放。",
+  "freeTrial": "無料体験",
+  "tryFree": "無料で試す",
+  "general": "一般",
+  "data": "データ",
+  "iCloud": "iCloud",
+  "manual": "手動",
+  "limitedTimeFree": "無料体験",
+  "appearance": "外観",
+  "modeAuto": "デバイス設定に従う",
+  "icon": "アイコン",
+  "appIcon": "アプリアイコン",
+  "lightClassic": "クラシックライト",
+  "darkClassic": "クラシックダーク",
+  "colorThemes": "カラーテーマ",
+  "defaults": "デフォルト",
+  "classic": "クラシック",
+  "seedColor": "メインカラー",
+  "yellow": "イエロー",
+  "green": "グリーン",
+  "blue": "ブルー",
+  "red": "レッド",
+  "pink": "ピンク",
+  "purple": "パープル",
+  "orange": "オレンジ",
+  "teal": "ティール",
+  "indigo": "インディゴ",
+  "deepPurple": "ディープパープル",
+  "lightBlue": "ライトブルー",
+  "cyan": "シアン",
+  "lightGreen": "ライトグリーン",
+  "lime": "ライム",
+  "amber": "アンバー",
+  "deepOrange": "ディープオレンジ",
+  "brown": "ブラウン",
+  "darkMode": "ダークモード",
+  "lightMode": "ライトモード",
+  "dark": "ダーク",
+  "light": "ライト",
+  "other": "その他",
+  "activities": "アクティビティ",
+  "rate": "アプリを評価",
+  "upgrade": "アップグレード",
+  "feedback": "フィードバック",
+  "about": "このアプリについて",
+  "help": "ヘルプセンター",
+  "helpUrl": "https://malachite-aster-f7a.notion.site/1a018752b1d28086a748cc007acfd7ba",
+  "privacy": "プライバシーポリシー",
+  "terms": "利用規約",
+  "photos": "写真",
+  "gallery": "ギャラリー",
+  "camera": "カメラ",
+  "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
+  "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
+  "weChatCopied": "WeChat ID をコピーしました。WeChat で追加してください。",
+  "importantUrgent": "重要かつ緊急",
+  "importantNotUrgent": "重要だが緊急ではない",
+  "urgentUnimportant": "緊急だが重要ではない",
+  "notUrgentUnimportant": "緊急でも重要でもない",
+  "narrowWeek": "週",
+  "timeline": "タイムライン",
+  "planbook": "Planbook",
+  "note": "ノート",
+  "notes": "ノート",
+  "day": "日",
+  "week": "週",
+  "month": "月",
+  "year": "年",
+  "weekOfYear": "{week}週",
+  "@weekOfYear": {
+    "description": "Week of Year",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "task": "タスク",
+  "morning": "朝",
+  "afternoon": "午後",
+  "evening": "夜",
+  "deleteTaskAlertTitle": "タスクを削除しますか？",
+  "deleteTaskAlertContent": "このタスクを削除してもよろしいですか？ サブタスクと関連ノートも削除されます。",
+  "plan": "予定",
+  "to": "〜",
+  "tomorrow": "明日",
+  "yesterday": "昨日",
+  "upgradePro": "Planbook プレミアムにアップグレード",
+  "taskTitleHint": "やることを入力",
+  "startTime": "開始時刻",
+  "endTime": "終了時刻",
+  "startDate": "開始日",
+  "endDate": "終了日",
+  "duration": "所要時間",
+  "allDay": "終日",
+  "thatDay": "当日",
+  "otherDate": "別の日付",
+  "inbox": "受信トレイ",
+  "overdue": "期限切れ",
+  "delayToToday": "今日に延期",
+  "delayToTomorrow": "明日に延期",
+  "addTag": "タグを追加",
+  "tags": "タグ",
+  "tag": "タグ",
+  "updateTag": "タグを更新",
+  "tagNameHint": "タグ名を入力",
+  "parentTag": "親タグ",
+  "parentTagHint": "親タグを選択",
+  "newNote": "新規ノート",
+  "editNote": "ノートを編集",
+  "noteTitleHint": "ノートのタイトルを入力",
+  "noteContentHint": "ノートの内容を入力",
+  "selectTags": "タグを選択",
+  "notLoggedIn": "未ログイン",
+  "joinedDaysAgo": "{days}日前に参加",
+  "@joinedDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "done": "完了",
+  "uncompleteTask": "未完了に戻す",
+  "completeTask": "完了にする",
+  "alreadyDone": "すでに完了",
+  "unselectAll": "すべて解除",
+  "selectAll": "すべて選択",
+  "work": "仕事",
+  "study": "勉強",
+  "life": "生活",
+  "showAndHide": "表示設定",
+  "showCompleted": "完了済みを表示",
+  "hideCompleted": "完了済みを非表示",
+  "showFocusNote": "フォーカス/サマリーを表示",
+  "hideFocusNote": "フォーカス/サマリーを非表示",
+  "priority": "優先度",
+  "selectViewType": "表示形式を選択",
+  "quadrant": "象限",
+  "date": "日付",
+  "selectDate": "日付を選択",
+  "night": "深夜",
+  "cover": "表紙",
+  "getPro": "プレミアムを利用",
+  "supportUsFullPrice": "定価で応援する",
+  "restore": "復元",
+  "aboutSubscription": "ℹ️ サブスクリプションについて: 今後も継続課金を解約しないことを約束していただければ、機能が増えても価格は上がりません。",
+  "savePercent": "{percent}%お得",
+  "@savePercent": {
+    "description": "Save Percent",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "50"
+      }
+    }
+  },
+  "total": "合計",
+  "completed": "完了済み",
+  "completionRate": "完了率",
+  "words": "文字数",
+  "time": "時間",
+  "deleteNote": "ノートを削除",
+  "deleteNoteContent": "このノートを削除してもよろしいですか？",
+  "durationSeconds": "{count} {count, plural, =1 {秒} other {秒}}",
+  "@durationSeconds": {
+    "description": "Duration in seconds",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "30"
+      }
+    }
+  },
+  "durationMinutes": "{count} {count, plural, =1 {分} other {分}}",
+  "@durationMinutes": {
+    "description": "Duration in minutes",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "durationHours": "{count} {count, plural, =1 {時間} other {時間}}",
+  "@durationHours": {
+    "description": "Duration in hours",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "everyDay": "日",
+  "everyWeek": "週",
+  "everyMonth": "月",
+  "everyYear": "年",
+  "every": "毎",
+  "ends": "終了",
+  "repeat": "繰り返し",
+  "noRepeat": "繰り返さない",
+  "endlessly": "無期限",
+  "endByDate": "日付で終了",
+  "endByCount": "回数で終了",
+  "endsOn": "{date}に終了",
+  "@endsOn": {
+    "description": "Ends On",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "endsIn": "{count}回で終了",
+  "@endsIn": {
+    "description": "Ends In",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "loginOrRegister": "ログインまたは登録",
+  "password": "パスワード",
+  "phoneNumber": "電話番号",
+  "phoneNumberOrEmail": "電話番号またはメール",
+  "verificationCode": "認証コード",
+  "sendCode": "コードを送信",
+  "alreadyHaveAccount": "すでにアカウントをお持ちですか？",
+  "welcomeBack": "おかえりなさい",
+  "welcome": "ようこそ",
+  "welcomeToPlanbook": "Planbook へようこそ",
+  "welcomeToPlanbookDescription": "Planbook は、タスクと予定を管理できるタスク管理アプリです。",
+  "signIn": "サインイン",
+  "sendResetLink": "リセットリンクを送信",
+  "resetPassword": "パスワードをリセット",
+  "resetPasswordDescription": "パスワードをリセットするにはメールアドレスを入力してください。",
+  "confirmPassword": "パスワードを確認",
+  "agreeToTerms": "利用規約に同意します",
+  "signUp": "新規登録",
+  "backToSignIn": "サインインに戻る",
+  "name": "名前",
+  "email": "メール",
+  "signInHere": "こちらからサインイン",
+  "refuse": "拒否",
+  "agreeToConditions": "同意する",
+  "welcomeDescription": "Planbook へようこそ",
+  "useCodeLogin": "コードでログイン",
+  "readAndAgree": "以下を読み、同意します",
+  "termsOfUse": "利用規約",
+  "and": "および",
+  "privacyPolicy": "プライバシーポリシー",
+  "passwordNotMatch": "パスワードが一致しません",
+  "passwordInvalid": "無効なパスワードです",
+  "passwordMessage": "英字と数字を含む8文字以上のパスワードを入力してください",
+  "changePassword": "パスワードを変更",
+  "comfirmPassword": "パスワードを確認",
+  "changePhone": "電話番号を変更",
+  "phoneNumberMessage": "電話番号を入力してください",
+  "phoneNumberMessageInvalid": "有効な電話番号を入力してください",
+  "phoneNumberOrEmailMessage": "電話番号またはメールアドレスを入力してください",
+  "phoneNumberOrEmailMessageInvalid": "有効な電話番号またはメールアドレスを入力してください",
+  "codeSentSuccess": "コードを送信しました",
+  "changeEmail": "メールアドレスを変更",
+  "emailMessage": "メールアドレスを入力してください",
+  "emailMessageInvalid": "有効なメールアドレスを入力してください",
+  "emailSameAsCurrent": "現在のメールアドレスと同じものは使用できません",
+  "verificationCodeMessage": "認証コードを入力してください",
+  "verificationCodeMessageInvalid": "有効な認証コードを入力してください",
+  "phoneNumberSameAsCurrent": "現在の電話番号と同じものは使用できません",
+  "nickname": "ニックネーム",
+  "logout": "ログアウト",
+  "deleteAccount": "アカウントを削除",
+  "gender": "性別",
+  "birthday": "誕生日",
+  "bind": "連携",
+  "deleteAccountWarning": "‼️ 本当にアカウントを削除しますか？ この操作は元に戻せません。",
+  "deleteAccountHint": "削除を確認するには「Delete Account」と入力してください",
+  "male": "男性",
+  "female": "女性",
+  "secret": "非公開",
+  "proFeatures": "Pro 機能",
+  "basic": "基本",
+  "pro": "Pro",
+  "unlimited": "無制限",
+  "image": "画像",
+  "subtask": "サブタスク",
+  "subtasks": "サブタスク",
+  "taskNote": "タスクノート",
+  "subtaskNote": "サブタスクノート",
+  "statistics": "統計",
+  "desktopWidget": "ホーム画面ウィジェット",
+  "theme": "テーマ",
+  "more": "もっと見る",
+  "futureFeatures": "今後の機能",
+  "noteRules": "ノートルール",
+  "noteRuleDescription": "タスク完了時のノート作成ルール。",
+  "none": "なし",
+  "noneDescription": "タスク完了時に何もしません。",
+  "create": "作成",
+  "createDescription": "ノートを作成します。",
+  "editDescription": "ノートエディターを開きます。",
+  "createAndEdit": "作成して編集",
+  "createAndEditDescription": "ノートを作成してエディターを開きます。",
+  "completedAt": "完了日時",
+  "priorityHeaderStyle": "優先度ヘッダースタイル",
+  "solidColorBackground": "単色背景",
+  "numberIcon": "数字アイコン",
+  "completedSound": "完了音",
+  "background": "背景",
+  "dot": "ドット",
+  "grid": "グリッド",
+  "saveSuccess": "保存しました",
+  "saveFailed": "保存に失敗しました",
+  "noteFocus": "フォーカス",
+  "noteSummary": "サマリー",
+  "dailyFocus": "フォーカス",
+  "dailySummary": "サマリー",
+  "weeklyFocus": "フォーカス",
+  "weeklySummary": "サマリー",
+  "monthlyFocus": "フォーカス",
+  "monthlySummary": "サマリー",
+  "yearlyFocus": "フォーカス",
+  "yearlySummary": "サマリー",
+  "dailyFocusTitle": "{date}のフォーカス",
+  "@dailyFocusTitle": {
+    "description": "Daily Focus Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "dailySummaryTitle": "{date}のサマリー",
+  "@dailySummaryTitle": {
+    "description": "Daily Summary Title",
+    "placeholders": {
+      "date": {
+        "type": "DateTime",
+        "format": "MMMd"
+      }
+    }
+  },
+  "weeklyFocusTitle": "{week}週のフォーカス",
+  "@weeklyFocusTitle": {
+    "description": "Weekly Focus Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "weeklySummaryTitle": "{week}週のサマリー",
+  "@weeklySummaryTitle": {
+    "description": "Weekly Summary Title",
+    "placeholders": {
+      "week": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "monthlyFocusTitle": "{month}のフォーカス",
+  "@monthlyFocusTitle": {
+    "description": "Monthly Focus Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "monthlySummaryTitle": "{month}のサマリー",
+  "@monthlySummaryTitle": {
+    "description": "Monthly Summary Title",
+    "placeholders": {
+      "month": {
+        "type": "String",
+        "example": "January"
+      }
+    }
+  },
+  "yearlyFocusTitle": "{year}のフォーカス",
+  "@yearlyFocusTitle": {
+    "description": "Yearly Focus Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "yearlySummaryTitle": "{year}のサマリー",
+  "@yearlySummaryTitle": {
+    "description": "Yearly Summary Title",
+    "placeholders": {
+      "year": {
+        "type": "String",
+        "example": "2025"
+      }
+    }
+  },
+  "journal": "ジャーナル",
+  "thinkAboutWeeklyFocus": "今週、何に集中したいですか？",
+  "thinkAboutWeeklySummary": "今週、何を達成しましたか？",
+  "thinkAboutDailyFocus": "今日、何に集中したいですか？",
+  "thinkAboutDailySummary": "今日、何を学びましたか？",
+  "thinkAboutMonthlyFocus": "今月、何に集中したいですか？",
+  "thinkAboutMonthlySummary": "今月、どんな目標を達成しましたか？",
+  "thinkAboutYearlyFocus": "今年、何に集中したいですか？",
+  "thinkAboutYearlySummary": "今年、どんな目標を達成しましたか？",
+  "thisWeek": "今週",
+  "lastWeek": "先週",
+  "thisMonth": "今月",
+  "thisYear": "今年",
+  "autoPlay": "自動再生",
+  "journalEnlargeLeftPage": "左ページを拡大",
+  "@journalEnlargeLeftPage": {
+    "description": "Discover journal menu: zoom left page"
+  },
+  "journalEnlargeLeftPageSubtitle": "左ページをダブルタップして拡大",
+  "@journalEnlargeLeftPageSubtitle": {
+    "description": "Discover journal menu subtitle for left page zoom"
+  },
+  "journalEnlargeRightPage": "右ページを拡大",
+  "@journalEnlargeRightPage": {
+    "description": "Discover journal menu: zoom right page"
+  },
+  "journalEnlargeRightPageSubtitle": "右ページをダブルタップして拡大",
+  "@journalEnlargeRightPageSubtitle": {
+    "description": "Discover journal menu subtitle for right page zoom"
+  },
+  "discoverJournalFlipGestureHintTitle": "ページ操作",
+  "@discoverJournalFlipGestureHintTitle": {
+    "description": "Title for first-time flip mode gesture hint on Discover journal"
+  },
+  "discoverJournalFlipGestureHintMessage": "👆 左右のページをタップすると前後のページへ移動\n👆👆 任意のページをダブルタップで拡大\n👈 左にスワイプで次のページ\n👉 右にスワイプで前のページ",
+  "@discoverJournalFlipGestureHintMessage": {
+    "description": "First-time hint for flip journal: tap, double-tap, swipe"
+  },
+  "startPlaying": "再生を開始",
+  "everyInterval": "{interval}{unit}ごと",
+  "@everyInterval": {
+    "description": "Recurrence interval description",
+    "placeholders": {
+      "interval": {
+        "type": "int",
+        "example": "1"
+      },
+      "unit": {
+        "type": "String",
+        "example": "Day"
+      }
+    }
+  },
+  "recurrenceWithEndDate": "{frequency}、{date}に終了",
+  "@recurrenceWithEndDate": {
+    "description": "Recurrence rule description with end date",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "date": {
+        "type": "String",
+        "example": "2025/1/1"
+      }
+    }
+  },
+  "recurrenceWithEndCount": "{frequency}、{count}回で終了",
+  "@recurrenceWithEndCount": {
+    "description": "Recurrence rule description with end count",
+    "placeholders": {
+      "frequency": {
+        "type": "String",
+        "example": "Every 1 Day"
+      },
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "editModeSelection": "編集範囲を選択",
+  "allEvents": "すべての予定",
+  "thisAndFutureEvents": "今回以降の予定",
+  "thisEventOnly": "今回のみ",
+  "recurringTaskCannotChangeDate": "繰り返しタスクの日付は変更できません",
+  "incompleteSubtasksCount": "{count, plural, =1 {1 個のサブタスク} other {{count} 個のサブタスク}}",
+  "@incompleteSubtasksCount": {
+    "description": "Incomplete Subtasks Count",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "overdueDays": "{count}日超過",
+  "@overdueDays": {
+    "description": "Overdue Days",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "rewardActivities": "ごほうびアクティビティ",
+  "receiveWay": "受け取り方法",
+  "notShowAgain": "今後表示しない",
+  "activityDetails": "活動詳細",
+  "focusMindMap": "フォーカスマインドマップ",
+  "summaryMindMap": "サマリーマインドマップ",
+  "dailyDescriptionPlannedTasks": "今日は {count} 件の {count, plural, =1 {予定タスク} other {予定タスク}} があります。",
+  "@dailyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNoPlannedTasks": "今日は予定されたタスクがありません。",
+  "dailyDescriptionNoTasks": "今日は完了したタスクがありません。",
+  "dailyDescriptionTasksCompleted": "{completed} 件の {completed, plural, =1 {タスク} other {タスク}} を完了",
+  "@dailyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromPlan": "予定から {count} 件",
+  "@dailyDescriptionCompletedFromPlan": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionCompletedFromInbox": "受信トレイから {count} 件",
+  "@dailyDescriptionCompletedFromInbox": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionPriorityBreakdown": "優先度の内訳: {breakdown}。",
+  "@dailyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionImportantUrgentCount": "{count} 件の重要かつ緊急",
+  "@dailyDescriptionImportantUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionImportantNotUrgentCount": "{count} 件の重要",
+  "@dailyDescriptionImportantNotUrgentCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionUrgentNotImportantCount": "{count} 件の緊急",
+  "@dailyDescriptionUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotUrgentNotImportantCount": "{count} 件の通常",
+  "@dailyDescriptionNotUrgentNotImportantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionNotesWritten": "今日は {count} 件の {count, plural, =1 {ノート} other {ノート}} を書き、合計 {words} {words, plural, =1 {文字} other {文字}} でした。",
+  "@dailyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionTagsInvolved": "関連タグ: {tags}。",
+  "@dailyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  },
+  "dailyDescriptionNoNotesWritten": "今日はノートが書かれていません。",
+  "dailyData": "日次データ",
+  "priorityDistribution": "優先度分布:",
+  "punctuationOpenParen": " (",
+  "punctuationCloseParen": ").",
+  "punctuationPeriod": ".",
+  "punctuationListSeparator": ", ",
+  "punctuationEnumSeparator": ", ",
+  "selectColor": "色を選択",
+  "expiresAtDescription": "有効期限は {date} です。",
+  "@expiresAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "expiredAtDescription": "{date} に期限切れになりました。",
+  "@expiredAtDescription": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jan 1, 2025"
+      }
+    }
+  },
+  "unlockedPro": "Pro を利用中",
+  "noAlarm": "アラームなし",
+  "dayEarly": "{count} {count, plural, =1 {日前} other {日前}}",
+  "@dayEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekEarly": "{count} {count, plural, =1 {週間前} other {週間前}}",
+  "@weekEarly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onTheDay": "当日",
+  "invalidTime": "無効な時刻",
+  "apkDownloadUpdate": "新しいバージョンをダウンロード",
+  "apkDownloadUpdating": "ダウンロード中...",
+  "apkDownloadNoVersion": "バージョン情報がありません。先に更新してください。",
+  "apkDownloadNotNewer": "現在のバージョンはすでに最新です。",
+  "apkDownloadCanceled": "ダウンロードをキャンセルしました。",
+  "apkDownloadPaused": "ダウンロードを一時停止しました。",
+  "apkDownloadFailed": "ダウンロードに失敗しました。",
+  "apkDownloadNotFound": "ダウンロードリソースが見つかりません。",
+  "apkDownloadWaitingRetry": "再試行を待っています。",
+  "apkDownloadIncomplete": "ダウンロードが完了しませんでした。",
+  "apkInstallFailed": "インストールに失敗しました。",
+  "journalExportTitle": "ジャーナル PDF を書き出す",
+  "journalExportStartDate": "開始日",
+  "journalExportEndDate": "終了日",
+  "journalExportQuickRanges": "クイック範囲",
+  "journalExportExportPdf": "PDF を書き出す",
+  "journalExportExporting": "書き出し中…",
+  "journalExportSuccess": "PDF を共有できる状態になりました。",
+  "journalExportFailed": "PDF を書き出せませんでした。",
+  "journalExportFormatImages": "画像",
+  "journalExportFormatPdf": "PDF",
+  "journalExportExportImages": "画像を保存",
+  "journalExportSaveCurrentPage": "現在のページを保存",
+  "journalExportFreeUserHint": "無料プランでは、画面に表示中の半ページのみ保存できます。PDF の書き出しや、指定した期間の全ページを画像で保存するにはアップグレードしてください。",
+  "journalExportSavingImages": "画像を保存中 ({current} / {total})…",
+  "@journalExportSavingImages": {
+    "description": "Batch image export progress",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "journalExportImagesSaved": "{count} 枚の画像をギャラリーに保存しました。",
+  "@journalExportImagesSaved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "journalSetYearCover": "年間表紙",
+  "@journalSetYearCover": {
+    "description": "Discover journal menu: set yearly cover"
+  }
+}

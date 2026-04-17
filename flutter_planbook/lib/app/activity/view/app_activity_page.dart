@@ -6,6 +6,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
@@ -34,6 +35,29 @@ class _AppActivityPageState extends State<AppActivityPage> {
   final ScreenshotController _screenshotController = ScreenshotController();
 
   bool _isTitleVisible = false;
+
+  Future<void> _openMarkdownLink(String? text, String? href) async {
+    if (href == null) return;
+    if (href.startsWith('weixin://')) {
+      final code = href.split('://').last;
+      await Clipboard.setData(ClipboardData(text: code));
+      await launchUrl(Uri.parse('weixin://'));
+      return;
+    }
+
+    final uri = Uri.tryParse(href);
+    if (uri == null) return;
+
+    if (uri.scheme == 'mailto') {
+      final mailtoUri = await mailtoWithAppInfo(uri);
+      if (!mounted) return;
+      await launchUrl(mailtoUri);
+      return;
+    }
+
+    if (!mounted) return;
+    await launchUrl(uri);
+  }
 
   @override
   void initState() {
@@ -154,10 +178,8 @@ class _AppActivityPageState extends State<AppActivityPage> {
                                   fit: BoxFit.contain,
                                 );
                               },
-                              onTapLink: (text, href, title) {
-                                if (href != null) {
-                                  launchUrl(Uri.parse(href));
-                                }
+                              onTapLink: (text, href, title) async {
+                                await _openMarkdownLink(text, href);
                               },
                             ),
                           ),
@@ -214,16 +236,7 @@ class _AppActivityPageState extends State<AppActivityPage> {
                               ),
                             ),
                             onTapLink: (text, href, title) async {
-                              if (href == null) return;
-                              if (href.startsWith('weixin://')) {
-                                final code = href.split('://').last;
-                                await Clipboard.setData(
-                                  ClipboardData(text: code),
-                                );
-                                await launchUrl(Uri.parse('weixin://'));
-                                return;
-                              }
-                              await launchUrl(Uri.parse(href));
+                              await _openMarkdownLink(text, href);
                             },
                             sizedImageBuilder: (config) {
                               final uriString = config.uri.toString();

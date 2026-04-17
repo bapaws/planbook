@@ -1,180 +1,468 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "CFBundleDisplayName" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planbook"
+  "sourceLanguage": "en",
+  "strings": {
+    "CFBundleDisplayName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划本"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "计划本"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "計劃本"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計劃本"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "計劃本"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計劃本"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
           }
         }
       }
     },
-    "CFBundleName" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planbook"
+    "CFBundleName": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "计划本"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "计划本"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "計劃本"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計劃本"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "計劃本"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "計劃本"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook"
           }
         }
       }
     },
-    "NSCameraUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[Planbook] needs to use your camera to record the task."
+    "NSCameraUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[Planbook] needs to use your camera to record the task."
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「计划本」需要使用您的相机来记录任务。"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「计划本」需要使用您的相机来记录任务。"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的相機來記錄任務。"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的相機來記錄任務。"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的相機來記錄任務。"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的相機來記錄任務。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" benötigt Zugriff auf deine Kamera, um Fotos für Aufgaben und Notizen aufzunehmen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" necesita acceder a tu cámara para tomar fotos para tareas y notas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" a besoin d’accéder à votre caméra pour prendre des photos pour les tâches et les notes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" ha bisogno di accedere alla fotocamera per scattare foto per attività e note."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「Planbook」は、タスクやノート用の写真を撮影するためにカメラへのアクセスが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\"은 작업과 노트에 사용할 사진을 촬영하기 위해 카메라 접근 권한이 필요합니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" precisa de aceder à tua câmara para tirar fotos para tarefas e notas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Planbook» нужен доступ к камере, чтобы делать фотографии для задач и заметок."
           }
         }
       }
     },
-    "NSMicrophoneUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[Planbook] needs to use your camera to record the task."
+    "NSMicrophoneUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[Planbook] needs to use your camera to record the task."
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「计划本」需要使用您的麦克风来记录任务。"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「计划本」需要使用您的麦克风来记录任务。"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的麥克風來記錄任務。"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的麥克風來記錄任務。"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的麥克風來記錄任務。"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的麥克風來記錄任務。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" benötigt Zugriff auf dein Mikrofon, um Audio für Aufgaben und Notizen aufzunehmen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" necesita acceder a tu micrófono para grabar audio para tareas y notas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" a besoin d’accéder à votre micro pour enregistrer de l’audio pour les tâches et les notes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" ha bisogno di accedere al microfono per registrare audio per attività e note."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「Planbook」は、タスクやノート用の音声を録音するためにマイクへのアクセスが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\"은 작업과 노트에 사용할 오디오를 녹음하기 위해 마이크 접근 권한이 필요합니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" precisa de aceder ao teu microfone para gravar áudio para tarefas e notas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Planbook» нужен доступ к микрофону, чтобы записывать аудио для задач и заметок."
           }
         }
       }
     },
-    "NSPhotoLibraryAddUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[Planbook] needs to use your photo library to save images."
+    "NSPhotoLibraryAddUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[Planbook] needs to use your photo library to save images."
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「计划本」需要使用您的照片来保存图片。"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「计划本」需要使用您的照片来保存图片。"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的照片來保存圖片。"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的照片來保存圖片。"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的照片來保存圖片。"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的照片來保存圖片。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" benötigt Zugriff auf deine Fotos, um Bilder zu speichern."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" necesita acceder a tus fotos para guardar imágenes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" a besoin d’accéder à vos photos pour enregistrer des images."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" ha bisogno di accedere alle tue foto per salvare immagini."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「Planbook」は、画像を保存するために写真へのアクセスが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\"은 이미지를 저장하기 위해 사진 접근 권한이 필요합니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" precisa de aceder às tuas fotos para guardar imagens."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Planbook» нужен доступ к фото, чтобы сохранять изображения."
           }
         }
       }
     },
-    "NSPhotoLibraryUsageDescription" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "[Planbook] needs to use your camera to record the task."
+    "NSPhotoLibraryUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[Planbook] needs to use your camera to record the task."
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「计划本」需要使用您的照片来记录任务。"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「计划本」需要使用您的照片来记录任务。"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的照片來記錄任務。"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的照片來記錄任務。"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "「計劃本」需要使用您的照片來記錄任務。"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「計劃本」需要使用您的照片來記錄任務。"
+          }
+        },
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" benötigt Zugriff auf deine Fotos, um Bilder zu Aufgaben und Notizen hinzuzufügen."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" necesita acceder a tus fotos para adjuntar imágenes a tareas y notas."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" a besoin d’accéder à vos photos pour joindre des images aux tâches et aux notes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" ha bisogno di accedere alle tue foto per allegare immagini ad attività e note."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "「Planbook」は、タスクやノートに画像を追加するために写真へのアクセスが必要です。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\"은 작업과 노트에 이미지를 첨부하기 위해 사진 접근 권한이 필요합니다."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"Planbook\" precisa de aceder às tuas fotos para anexar imagens a tarefas e notas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "«Planbook» нужен доступ к фото, чтобы добавлять изображения к задачам и заметкам."
           }
         }
       }
     }
   },
-  "version" : "1.1"
+  "version": "1.1"
 }

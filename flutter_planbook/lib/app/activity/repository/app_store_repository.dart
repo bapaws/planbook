@@ -161,23 +161,24 @@ class AppStoreRepository {
     try {
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
+      final bundleId = packageInfo.packageName;
 
-      final appStoreVersion = await fetchVersion();
+      final appStoreVersion = await fetchVersion(bundleId: bundleId);
       if (appStoreVersion == null || currentVersion != appStoreVersion) {
         return false;
       }
 
       await _sp.setBool(kIsReleaseVersion, true);
       return true;
-    } catch (e) {
+    } on Exception catch (e) {
       log('版本检查失败: $e');
       return false;
     }
   }
 
   Future<String?> fetchVersion({
-    String? bundleId = 'com.bapaws.yummy',
-    String country = 'cn',
+    required String bundleId,
+    String country = 'us',
   }) async {
     try {
       final url = 'https://itunes.apple.com/$country/lookup?bundleId=$bundleId';
@@ -188,7 +189,7 @@ class AppStoreRepository {
         return AppStoreResponse.fromJson(data).results.first.version;
       }
       return null;
-    } catch (e) {
+    } on Exception catch (e) {
       log('获取 App Store 版本失败: $e');
       return null;
     }
@@ -206,7 +207,7 @@ class AppStoreRepository {
         return AppStoreResponse.fromJson(data);
       }
       return null;
-    } catch (e) {
+    } on Exception catch (e) {
       log('获取 App Store 版本失败: $e');
       return null;
     }

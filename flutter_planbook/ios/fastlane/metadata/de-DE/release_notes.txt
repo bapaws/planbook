@@ -1,0 +1,7 @@
+Neu in dieser Version:
+- Doppeltippen zum Vergrößern im Journal
+- Einige Probleme behoben
+
+Vor Kurzem hinzugefügt:
+- Aufgaben können in der Tages-, Wochen- und Monatsansicht per Drag-and-drop verschoben werden
+- Aufgaben lassen sich per Ziehen mit Fokus und Zusammenfassungen verknüpfen

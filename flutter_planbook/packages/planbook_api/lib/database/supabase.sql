@@ -204,20 +204,40 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
     launch_count INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    
+    -- 商户订单号（out_trade_no）
+    alipay_out_trade_no TEXT,
+    -- 支付宝交易号（trade_no）
+    alipay_trade_no TEXT,
+    -- 支付金额
+    payment_amount DECIMAL(10, 2),
+    -- 商品标识（product_id 或 identifier）
+    product_id TEXT REFERENCES planbook.store_products(id),
+    -- 订阅到期时间（如果是订阅类商品）
+    expires_at TIMESTAMPTZ
+
+    -- 按年份的封面设置：JSON 对象，key 为年份字符串（如 "2026"），value 为封面地址（远端 URL 或 App 内置资源路径等）
+    cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb,
 );
 
 -- UserProfiles 表索引
 CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profiles(deleted_at) WHERE deleted_at IS NULL;
+-- 为商户订单号创建唯一索引（防止重复处理）
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_profiles_alipay_out_trade_no
+ON planbook.user_profiles(alipay_out_trade_no)
+WHERE alipay_out_trade_no IS NOT NULL;
+-- 为支付宝交易号创建索引（便于查询）
+CREATE INDEX IF NOT EXISTS idx_user_profiles_alipay_trade_no
+ON planbook.user_profiles(alipay_trade_no)
+WHERE alipay_trade_no IS NOT NULL;
 
 -- ============================================
 -- StoreProducts 表（应用内商品信息表）
 -- ============================================
 -- 用于存储应用内购买商品信息，完全对应 RevenueCat SDK 中的 StoreProduct
 CREATE TABLE IF NOT EXISTS planbook.store_products (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- 产品标识符（唯一，如：com.bapaws.planbook.monthly）
-    identifier TEXT NOT NULL UNIQUE,
+    id TEXT PRIMARY KEY,
     -- 平台（ios, android, all）
     platform TEXT NOT NULL CHECK (platform IN ('ios', 'android', 'all')),
     -- 产品标题
@@ -244,11 +264,65 @@ CREATE TABLE IF NOT EXISTS planbook.store_products (
 );
 
 -- StoreProducts 表索引
-CREATE INDEX IF NOT EXISTS idx_store_products_identifier ON planbook.store_products(identifier);
 CREATE INDEX IF NOT EXISTS idx_store_products_platform ON planbook.store_products(platform);
 CREATE INDEX IF NOT EXISTS idx_store_products_is_enabled ON planbook.store_products(is_enabled) WHERE is_enabled = true;
 CREATE INDEX IF NOT EXISTS idx_store_products_deleted_at ON planbook.store_products(deleted_at) WHERE deleted_at IS NULL;
 CREATE INDEX IF NOT EXISTS idx_store_products_order ON planbook.store_products("order");
+
+-- ============================================
+-- Orders 表（订单表）
+-- ============================================
+-- 用于保存所有支付宝订单记录
+-- 支持订单状态流转：pending -> paid -> failed/refunded
+CREATE TABLE IF NOT EXISTS planbook.orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  -- 用户 ID
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  -- 商品 ID
+  product_id TEXT NOT NULL REFERENCES planbook.store_products(id),
+  -- 商户订单号（唯一）
+  out_trade_no TEXT NOT NULL UNIQUE,
+  -- 支付宝交易号（支付成功后才有）
+  trade_no TEXT,
+  -- 订单状态：pending（待支付）、paid（已支付）、failed（失败）、refunded（已退款）
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'failed', 'refunded')),
+  -- 支付金额
+  amount DECIMAL(10, 2) NOT NULL,
+  -- 货币代码
+  currency_code TEXT NOT NULL DEFAULT 'CNY',
+  -- 订阅到期时间（支付成功后计算）
+  expires_at TIMESTAMPTZ,
+  -- 权益是否已发放（支付成功并同步用户订阅后为 true）
+  benefit_granted BOOLEAN NOT NULL DEFAULT FALSE,
+  -- 该订单的订阅周期（从商品表复制，便于退款时计算扣回天数）
+  -- 格式：P1W / P1M / P3M / P6M / P1Y
+  subscription_period TEXT,
+  -- 支付回调原始数据（JSON）
+  callback_data JSONB,
+  -- 订单创建时间
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  -- 订单更新时间
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  -- 支付完成时间
+  paid_at TIMESTAMPTZ,
+  -- 软删除
+  deleted_at TIMESTAMPTZ
+);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS idx_orders_user_id ON planbook.orders(user_id) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_out_trade_no ON planbook.orders(out_trade_no) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_trade_no ON planbook.orders(trade_no) WHERE deleted_at IS NULL AND trade_no IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_status ON planbook.orders(status) WHERE deleted_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON planbook.orders(created_at DESC) WHERE deleted_at IS NULL;
+
+-- 添加注释
+COMMENT ON TABLE planbook.orders IS '支付宝订单表，记录所有订单创建和支付状态';
+COMMENT ON COLUMN planbook.orders.status IS '订单状态：pending（待支付）、paid（已支付）、failed（失败）、refunded（已退款）';
+COMMENT ON COLUMN planbook.orders.out_trade_no IS '商户订单号，格式：pb_{user_id}_{timestamp}';
+COMMENT ON COLUMN planbook.orders.trade_no IS '支付宝交易号，支付成功后由支付宝返回';
+COMMENT ON COLUMN planbook.orders.benefit_granted IS '权益是否已发放，支付成功并同步用户订阅后为 true';
+COMMENT ON COLUMN planbook.orders.subscription_period IS '该订单的订阅周期（P1W/P1M/P3M/P6M/P1Y），从商品表复制，便于退款时扣回';
 
 -- ============================================
 -- 表权限设置
@@ -262,6 +336,7 @@ GRANT ALL ON planbook.task_tags TO authenticated, service_role;
 GRANT ALL ON planbook.task_activities TO authenticated, service_role;
 GRANT ALL ON planbook.user_profiles TO authenticated, service_role;
 GRANT ALL ON planbook.store_products TO authenticated, service_role;
+GRANT ALL ON planbook.orders TO service_role;
 
 -- ============================================
 -- 启用 Row Level Security (RLS)
@@ -275,6 +350,7 @@ ALTER TABLE planbook.task_tags ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.task_activities ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.user_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE planbook.store_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE planbook.orders ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- Tasks 表 RLS 策略
@@ -436,6 +512,15 @@ CREATE POLICY "Allow service role to manage store products"
   WITH CHECK (true);
 
 -- ============================================
+-- Orders 表 RLS 策略
+-- ============================================
+CREATE POLICY "Allow service role to manage orders"
+  ON planbook.orders FOR ALL
+  TO service_role
+  USING (true)
+  WITH CHECK (true);
+
+-- ============================================
 -- Storage Buckets（存储桶）
 -- ============================================
 -- 创建 planbook-note-images bucket（笔记图片存储桶）
@@ -485,37 +570,3 @@ CREATE POLICY "Allow users to delete their own note images"
   USING (
     bucket_id::text = 'planbook-note-images' AND (storage.foldername(name))[1] = auth.uid()::text
   );
-
--- ============================================
--- 迁移脚本（用于已有数据库升级）
--- ============================================
--- 迁移 v2: 为 Notes 表添加 type 和 focus_at 字段
--- 如果字段已存在则跳过
-DO $$
-BEGIN
-    -- 添加 type 字段
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_schema = 'planbook' 
-        AND table_name = 'notes' 
-        AND column_name = 'type'
-    ) THEN
-        ALTER TABLE planbook.notes 
-        ADD COLUMN type TEXT CHECK (type IN ('journal', 'dailyFocus', 'weeklyFocus'));
-        
-        CREATE INDEX IF NOT EXISTS idx_notes_type ON planbook.notes(type);
-    END IF;
-
-    -- 添加 focus_at 字段
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_schema = 'planbook' 
-        AND table_name = 'notes' 
-        AND column_name = 'focus_at'
-    ) THEN
-        ALTER TABLE planbook.notes 
-        ADD COLUMN focus_at TIMESTAMPTZ;
-        
-        CREATE INDEX IF NOT EXISTS idx_notes_focus_at ON planbook.notes(focus_at);
-    END IF;
-END $$;

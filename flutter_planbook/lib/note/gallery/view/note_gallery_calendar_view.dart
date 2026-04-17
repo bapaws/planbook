@@ -62,7 +62,7 @@ class _NoteGalleryCalendarViewState extends State<NoteGalleryCalendarView> {
     final theme = Theme.of(context);
 
     return AppPageScaffold(
-      height: 218,
+      height: 180,
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: _buildPicker(
         controller: _yearController,

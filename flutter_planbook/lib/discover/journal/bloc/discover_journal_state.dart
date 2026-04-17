@@ -9,20 +9,19 @@ final class DiscoverJournalState extends Equatable {
     this.autoPlayTo,
     this.isLeftEnlarged = false,
     this.isRightEnlarged = false,
+    this.coverBackgroundImage,
+    this.coverColorScheme,
   });
 
   final PageStatus status;
 
-  final Jiffy date;
+  final JournalDate date;
 
   final Jiffy? autoPlayFrom;
   final Jiffy? autoPlayTo;
 
-  int get year => date.year;
-  int get days {
-    final startOfYear = date.startOf(Unit.year);
-    return startOfYear.add(years: 1).diff(startOfYear, unit: Unit.day).toInt();
-  }
+  final String? coverBackgroundImage;
+  final material.ColorScheme? coverColorScheme;
 
   final bool isCalendarExpanded;
   final bool isLeftEnlarged;
@@ -37,16 +36,20 @@ final class DiscoverJournalState extends Equatable {
     autoPlayTo,
     isLeftEnlarged,
     isRightEnlarged,
+    coverBackgroundImage,
+    coverColorScheme,
   ];
 
   DiscoverJournalState copyWith({
     PageStatus? status,
     bool? isCalendarExpanded,
-    Jiffy? date,
+    JournalDate? date,
     Jiffy? autoPlayFrom,
     Jiffy? autoPlayTo,
     bool? isLeftEnlarged,
     bool? isRightEnlarged,
+    String? coverBackgroundImage,
+    material.ColorScheme? coverColorScheme,
   }) {
     return DiscoverJournalState(
       status: status ?? this.status,
@@ -56,6 +59,8 @@ final class DiscoverJournalState extends Equatable {
       autoPlayTo: autoPlayTo ?? this.autoPlayTo,
       isLeftEnlarged: isLeftEnlarged ?? this.isLeftEnlarged,
       isRightEnlarged: isRightEnlarged ?? this.isRightEnlarged,
+      coverBackgroundImage: coverBackgroundImage ?? this.coverBackgroundImage,
+      coverColorScheme: coverColorScheme ?? this.coverColorScheme,
     );
   }
 }
