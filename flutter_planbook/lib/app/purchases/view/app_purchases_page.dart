@@ -4,13 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
-import 'package:flutter_planbook/app/purchases/model/app_future_features.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
 import 'package:flutter_planbook/app/purchases/view/app_purchases_footer.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
-import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/l10n/gen/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/data/page_status.dart';
@@ -58,7 +57,7 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status == PageStatus.loading) {
-              EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+              EasyLoading.show();
             } else if (EasyLoading.isShow) {
               EasyLoading.dismiss();
             }
@@ -81,7 +80,9 @@ class _AppPurchasesPage extends StatelessWidget {
       appBar: AppBar(
         forceMaterialTransparency: true,
         leading: const NavigationBarBackButton(),
-        title: const AppProView(),
+        title: AppProView(
+          style: theme.appBarTheme.titleTextStyle,
+        ),
         actions: [
           CupertinoButton(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -190,97 +191,6 @@ class _AppPurchasesPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: kMinInteractiveDimension,
-                      ),
-                      child: Text(
-                        l10n.futureFeatures,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                    Divider(
-                      height: 24,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                    ),
-                    Row(
-                      children: [
-                        const Expanded(flex: 2, child: SizedBox.square()),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              l10n.basic,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Center(
-                            child: Text(
-                              l10n.pro,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    for (final feature in AppFutureFeatures.values)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          // horizontal: 16,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                feature.getTitle(context),
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  feature.getBasicText(context),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.outline,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Center(
-                                child: Text(
-                                  feature.getProTotalText(context),
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: theme.colorScheme.onSurface,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    Divider(
-                      height: 36,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                    ),
-                    Text(
-                      l10n.aboutSubscription,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -313,7 +223,7 @@ class _AppPurchasesPage extends StatelessWidget {
                           CupertinoButton(
                             onPressed: () {
                               launchUrlString(
-                                'https://uxsyr9xrl46.feishu.cn/wiki/Y8qhw3DLriHC1CkeT2pcUvbunye',
+                                'https://uxsyr9xrl46.feishu.cn/wiki/MBNrwTS1JijUdNkJWsKcTnu5nYe',
                               );
                             },
                             child: Text(

@@ -1,4 +1,8 @@
 Novedades:
-- Compatible con doble toque para ampliar el diario
-- Compatible con arrastrar tareas para asociarlas con enfoques y resúmenes
-- Se corrigieron algunos problemas
+- Establece la portada del diario
+- Doble toque para ampliar el diario
+- Corrección de algunos problemas conocidos
+
+Actualizaciones recientes:
+- Arrastra tareas en las vistas de día, semana y mes
+- Arrastra tareas para asociarlas con el foco y los resúmenes

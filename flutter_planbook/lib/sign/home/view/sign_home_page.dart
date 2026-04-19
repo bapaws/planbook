@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
@@ -21,9 +22,12 @@ class SignHomePage extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SignHomeCubit(
-            usersRepository: context.read(),
-          )..onInitialized(),
+          create: (context) {
+            context.read<AppBloc>().add(const AppInitialized());
+            return SignHomeCubit(
+              usersRepository: context.read(),
+            )..onInitialized();
+          },
         ),
         BlocProvider(
           create: (context) => SignInCubit(

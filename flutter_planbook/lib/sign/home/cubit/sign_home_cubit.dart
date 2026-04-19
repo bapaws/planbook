@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:planbook_repository/users/users_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -13,9 +12,7 @@ class SignHomeCubit extends Cubit<SignHomeState> {
 
   final UsersRepository _usersRepository;
 
-  void onInitialized() {
-    FlutterNativeSplash.remove();
-  }
+  void onInitialized() {}
 
   void backToWelcome() {
     emit(state.copyWith(status: SignHomeStatus.welcome));

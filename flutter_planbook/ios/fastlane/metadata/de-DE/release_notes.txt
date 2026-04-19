@@ -1,6 +1,7 @@
 Neu in dieser Version:
+- Titelbild für das Journal festlegen
 - Doppeltippen zum Vergrößern im Journal
-- Einige Probleme behoben
+- Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
 - Aufgaben können in der Tages-, Wochen- und Monatsansicht per Drag-and-drop verschoben werden

@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/bootstrap.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 
@@ -61,15 +60,11 @@ bool _shouldUseFilteringBinding() {
 void main() async {
   AppChannel.instance.type = AppChannelType.main;
 
-  final WidgetsBinding widgetsBinding;
-
   if (_shouldUseFilteringBinding()) {
-    widgetsBinding = FilteringFlutterBinding();
+    FilteringFlutterBinding();
   } else {
-    widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+    WidgetsFlutterBinding.ensureInitialized();
   }
-
-  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');

@@ -1,7 +1,8 @@
-Novità di questa versione:
-- Supporto al doppio tocco per ingrandire il diario
-- Risolti alcuni problemi
+Novidades:
+- Defina a capa do diário
+- Toque duas vezes para ampliar o diário
+- Correcção de alguns problemas conhecidos
 
-Aggiornamenti recenti:
-- Supporto al trascinamento delle attività nelle viste giorno, settimana e mese
-- Supporto al trascinamento delle attività per collegarle a focus e riepiloghi
+Atualizações recentes:
+- Arraste tarefas nas vistas de dia, semana e mês
+- Arraste tarefas para as associar ao foco e aos resumos

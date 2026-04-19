@@ -11,6 +11,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_api/entity/task_entity.dart';
+import 'package:planbook_core/planbook_core.dart';
 
 class TaskWeekFocusCell extends StatelessWidget {
   const TaskWeekFocusCell({
@@ -27,6 +28,13 @@ class TaskWeekFocusCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isEmpty = note?.content == null || note!.content!.isEmpty;
+    final emptyStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.outlineVariant,
+    );
+    final filledStyle = theme.textTheme.bodySmall?.copyWith(
+      color: theme.colorScheme.primary,
+    );
     final child = ColoredBox(
       color: theme.colorScheme.surface,
       child: GestureDetector(
@@ -58,14 +66,24 @@ class TaskWeekFocusCell extends StatelessWidget {
                     horizontal: 8,
                     vertical: 8,
                   ),
-                  child: Text(
-                    note?.content ?? noteType.getHintText(context.l10n),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: note == null
-                          ? theme.colorScheme.outlineVariant
-                          : theme.colorScheme.primary,
-                    ),
-                  ),
+                  child: isEmpty
+                      ? onTaskDropped != null
+                          ? SequentialRotatingText(
+                              key: ValueKey(noteType),
+                              messages: [
+                                noteType.getHintText(context.l10n),
+                                context.l10n.taskFocusEmptyDragTaskHint,
+                              ],
+                              style: emptyStyle,
+                            )
+                          : Text(
+                              noteType.getHintText(context.l10n),
+                              style: emptyStyle,
+                            )
+                      : Text(
+                          note!.content!,
+                          style: filledStyle,
+                        ),
                 ),
               ),
             ),

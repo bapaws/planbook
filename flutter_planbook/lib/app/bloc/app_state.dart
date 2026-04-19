@@ -11,6 +11,7 @@ final class AppState extends Equatable {
   const AppState({
     required this.darkMode,
     required this.seedColor,
+    this.isInitialized = false,
     this.background,
     this.user,
     this.apkVersion,
@@ -20,6 +21,7 @@ final class AppState extends Equatable {
     this.apkDownloadProgress = 0,
   });
 
+  final bool isInitialized;
   final DarkMode? darkMode;
   final AppSeedColors seedColor;
   final AppBackgroundEntity? background;
@@ -44,6 +46,7 @@ final class AppState extends Equatable {
 
   @override
   List<Object?> get props => [
+    isInitialized,
     darkMode,
     background,
     seedColor,
@@ -56,6 +59,7 @@ final class AppState extends Equatable {
   ];
 
   AppState copyWith({
+    bool? isInitialized,
     ValueGetter<DarkMode?>? darkMode,
     AppBackgroundEntity? background,
     AppSeedColors? seedColor,
@@ -66,19 +70,18 @@ final class AppState extends Equatable {
     String? apkDownloadErrorMessage,
     double? apkDownloadProgress,
     bool clearApkDownloadError = false,
-  }) =>
-      AppState(
-        darkMode: darkMode == null ? this.darkMode : darkMode(),
-        background: background ?? this.background,
-        seedColor: seedColor ?? this.seedColor,
-        user: user ?? this.user,
-        apkVersion: apkVersion ?? this.apkVersion,
-        apkHasNewVersion: apkHasNewVersion ?? this.apkHasNewVersion,
-        apkDownloadStatus: apkDownloadStatus ?? this.apkDownloadStatus,
-        apkDownloadErrorMessage: clearApkDownloadError
-            ? null
-            : (apkDownloadErrorMessage ?? this.apkDownloadErrorMessage),
-        apkDownloadProgress:
-            apkDownloadProgress ?? this.apkDownloadProgress,
-      );
+  }) => AppState(
+    isInitialized: isInitialized ?? this.isInitialized,
+    darkMode: darkMode == null ? this.darkMode : darkMode(),
+    background: background ?? this.background,
+    seedColor: seedColor ?? this.seedColor,
+    user: user ?? this.user,
+    apkVersion: apkVersion ?? this.apkVersion,
+    apkHasNewVersion: apkHasNewVersion ?? this.apkHasNewVersion,
+    apkDownloadStatus: apkDownloadStatus ?? this.apkDownloadStatus,
+    apkDownloadErrorMessage: clearApkDownloadError
+        ? null
+        : (apkDownloadErrorMessage ?? this.apkDownloadErrorMessage),
+    apkDownloadProgress: apkDownloadProgress ?? this.apkDownloadProgress,
+  );
 }

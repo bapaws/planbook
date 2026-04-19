@@ -68,14 +68,6 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     emit(state.copyWith(status: PageStatus.loading));
     final storeProducts = (await AppPurchases.instance.getStoreProducts())
         .sorted((a, b) => a.price.compareTo(b.price));
-    if (kDebugMode) {
-      emit(
-        state.copyWith(
-          activeProductId: 'lifetime',
-        ),
-      );
-      return;
-    }
 
     final selectedStoreProduct = storeProducts.isEmpty
         ? null
@@ -85,7 +77,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     emit(
       state.copyWith(
         status: PageStatus.success,
-        activeProductId: activeProductIdentifier,
+        activeProductId: kDebugMode ? 'lifetime' : activeProductIdentifier,
         storeProducts: storeProducts,
         selectedStoreProduct: selectedStoreProduct,
         savePercentId: selectedStoreProduct?.id,

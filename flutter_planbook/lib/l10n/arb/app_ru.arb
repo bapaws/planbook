@@ -30,7 +30,7 @@
   "taskReminderChannelDescription": "Напоминания перед началом задачи",
   "iKnow": "Понятно",
   "unlockPro": "Откройте все премиум-возможности.",
-  "freeTrial": "Бесплатный пробный период",
+  "freeTrial": "Бесплатный пробный период {days} дней",
   "tryFree": "Попробовать бесплатно",
   "general": "Общие",
   "data": "Данные",
@@ -446,6 +446,7 @@
   "thinkAboutMonthlySummary": "Каких целей вы достигли в этом месяце?",
   "thinkAboutYearlyFocus": "На чем вы хотите сосредоточиться в этом году?",
   "thinkAboutYearlySummary": "Каких целей вы достигли в этом году?",
+  "taskFocusEmptyDragTaskHint": "Перетащите задачу сюда для связи.",
   "thisWeek": "Эта неделя",
   "lastWeek": "Прошлая неделя",
   "thisMonth": "Этот месяц",
@@ -736,5 +737,19 @@
   "journalSetYearCover": "Обложка года",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
-  }
+  },
+  "discoverJournalCoverPageTitle": "Обложка {year}",
+  "@discoverJournalCoverPageTitle": {
+    "description": "Discover journal year cover picker page app bar title",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "Навсегда",
+  "productTitleAnnual": "Годовой",
+  "productTitleMonthly": "Ежемесячный"
+
 }

@@ -1,7 +1,8 @@
-Novità di questa versione:
-- Supporto al doppio tocco per ingrandire il diario
-- Risolti alcuni problemi
+이번 업데이트:
+- 저널 표지 설정 지원
+- 저널 더블 탭으로 확대 지원
+- 일부 알려진 문제 수정
 
-Aggiornamenti recenti:
-- Supporto al trascinamento delle attività nelle viste giorno, settimana e mese
-- Supporto al trascinamento delle attività per collegarle a focus e riepiloghi
+최근 업데이트:
+- 일·주·월 보기에서 할 일 드래그 지원
+- 할 일을 드래그해 포커스·요약과 연결 지원

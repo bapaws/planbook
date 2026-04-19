@@ -1,4 +1,8 @@
 What's New:
-- Support double-tap to zoom in on the journal
-- Support dragging tasks to focus and summarizing associations
-- Fix some issues
+- Set a cover for your journal
+- Double-tap to zoom the journal
+- Fixes for known issues
+
+Recent updates:
+- Drag tasks in day, week, and month views
+- Drag tasks to link with focus and summaries

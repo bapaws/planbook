@@ -30,7 +30,14 @@
   "taskReminderChannelDescription": "Reminders before task start",
   "iKnow": "I Know",
   "unlockPro": "Unlock all premium features.",
-  "freeTrial": "Free Trial",
+  "freeTrial": "Free trial for {days} days",
+  "@freeTrial": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "tryFree": "Try Free",
   "general": "General",
   "data": "Data",
@@ -446,6 +453,10 @@
   "thinkAboutMonthlySummary": "What goals did you achieve this month?",
   "thinkAboutYearlyFocus": "What do you want to focus on this year?",
   "thinkAboutYearlySummary": "What goals did you achieve this year?",
+  "taskFocusEmptyDragTaskHint": "Drag a task here to link it.",
+  "@taskFocusEmptyDragTaskHint": {
+    "description": "Standalone empty placeholder on task tab focus/summary when drag-to-link is available (header already shows type)."
+  },
   "thisWeek": "This Week",
   "lastWeek": "Last Week",
   "thisMonth": "This Month",
@@ -736,5 +747,19 @@
   "journalSetYearCover": "Year cover",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
-  }
+  },
+  "discoverJournalCoverPageTitle": "Cover for {year}",
+  "@discoverJournalCoverPageTitle": {
+    "description": "Discover journal year cover picker page app bar title",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "Lifetime",
+  "productTitleAnnual": "Annual",
+  "productTitleMonthly": "Monthly"
+
 }

@@ -30,7 +30,7 @@
   "taskReminderChannelDescription": "任务开始前的提醒",
   "iKnow": "我知道了",
   "unlockPro": "解锁所有高级功能。",
-  "freeTrial": "免费试用",
+  "freeTrial": "免费试用 {days} 天",
   "tryFree": "免费试用",
   "general": "通用",
   "data": "数据",
@@ -446,6 +446,7 @@
   "thinkAboutMonthlySummary": "本月达成了哪些目标？",
   "thinkAboutYearlyFocus": "今年最想完成什么？",
   "thinkAboutYearlySummary": "今年达成了哪些目标？",
+  "taskFocusEmptyDragTaskHint": "将任务拖到这里即可关联。",
   "thisWeek": "本周",
   "lastWeek": "上周",
   "thisMonth": "本月",
@@ -735,5 +736,19 @@
   "journalSetYearCover": "年度封面",
   "@journalSetYearCover": {
     "description": "发现页日志菜单：设置年度封面"
-  }
+  },
+  "discoverJournalCoverPageTitle": "{year}年封面设置",
+  "@discoverJournalCoverPageTitle": {
+    "description": "发现页年度封面选择页标题",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "终身",
+  "productTitleAnnual": "年度",
+  "productTitleMonthly": "月度"
+
 }

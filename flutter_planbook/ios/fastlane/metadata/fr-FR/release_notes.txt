@@ -1,4 +1,8 @@
 Nouveautés :
-- Prise en charge du double toucher pour zoomer dans le journal
-- Prise en charge du glisser-déposer des tâches vers les associations de focus et de synthèse
-- Correction de quelques problèmes
+- Définir la couverture du journal
+- Double toucher pour agrandir le journal
+- Correction de quelques problèmes connus
+
+Mises à jour récentes :
+- Glisser-déposer des tâches dans les vues jour, semaine et mois
+- Glisser-déposer des tâches pour les associer au focus et aux synthèses

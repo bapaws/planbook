@@ -30,7 +30,7 @@
   "taskReminderChannelDescription": "タスク開始前のリマインダー",
   "iKnow": "わかりました",
   "unlockPro": "すべてのプレミアム機能を解放。",
-  "freeTrial": "無料体験",
+  "freeTrial": "{days}日間無料トライアル",
   "tryFree": "無料で試す",
   "general": "一般",
   "data": "データ",
@@ -446,6 +446,7 @@
   "thinkAboutMonthlySummary": "今月、どんな目標を達成しましたか？",
   "thinkAboutYearlyFocus": "今年、何に集中したいですか？",
   "thinkAboutYearlySummary": "今年、どんな目標を達成しましたか？",
+  "taskFocusEmptyDragTaskHint": "タスクをここにドラッグして関連付け。",
   "thisWeek": "今週",
   "lastWeek": "先週",
   "thisMonth": "今月",
@@ -736,5 +737,19 @@
   "journalSetYearCover": "年間表紙",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
-  }
+  },
+  "discoverJournalCoverPageTitle": "{year}年の表紙",
+  "@discoverJournalCoverPageTitle": {
+    "description": "Discover journal year cover picker page app bar title",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "永久",
+  "productTitleAnnual": "年額",
+  "productTitleMonthly": "月額"
+
 }

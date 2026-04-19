@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
+import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 const double kRootBottomBarHeight = kToolbarHeight;
@@ -32,7 +32,6 @@ class RootHomePage extends StatelessWidget {
             context.read<AppBloc>()
               ..add(AppLaunched(l10n: l10n))
               ..add(const AppApkVersionRequested());
-            FlutterNativeSplash.remove();
 
             /// Trigger app purchases requested to get store products
             context.read<AppPurchasesBloc>();
@@ -73,13 +72,25 @@ class RootHomePage extends StatelessWidget {
           create: (context) => RootDiscoverBloc(),
         ),
       ],
-      child: BlocListener<AppBloc, AppState>(
-        listenWhen: (previous, current) =>
-            previous.apkHasNewVersion != current.apkHasNewVersion &&
-            current.apkHasNewVersion,
-        listener: (context, state) {
-          showApkDownloadDialog(context);
-        },
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AppBloc, AppState>(
+            listenWhen: (previous, current) =>
+                previous.apkHasNewVersion != current.apkHasNewVersion &&
+                current.apkHasNewVersion,
+            listener: (context, state) {
+              showApkDownloadDialog(context);
+            },
+          ),
+          BlocListener<RootHomeBloc, RootHomeState>(
+            listenWhen: (previous, current) =>
+                previous.status != current.status &&
+                current.status != PageStatus.loading,
+            listener: (context, state) {
+              context.read<AppBloc>().add(const AppInitialized());
+            },
+          ),
+        ],
         child: const _RootHomePage(),
       ),
     );

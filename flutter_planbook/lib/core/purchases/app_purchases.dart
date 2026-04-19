@@ -20,8 +20,7 @@ class AppPurchases implements AppPurchasesInterface {
   final AppPurchasesInterface _alipayPurchases;
   final AppPurchasesInterface _revenueCatPurchases;
 
-  bool get isAndroidChina =>
-      kDebugMode || (Platform.isAndroid && _isAlipayEnabled);
+  bool get isAndroidChina => Platform.isAndroid && _isAlipayEnabled;
 
   static late final AppPurchases instance;
 

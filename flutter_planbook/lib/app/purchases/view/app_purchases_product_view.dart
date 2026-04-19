@@ -51,7 +51,7 @@ class AppPurchasesProductView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  product.title,
+                  product.displayTitle(context.l10n),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.outline,
                   ),

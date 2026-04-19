@@ -96,10 +96,7 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     add(const AppBackgroundRequested());
 
     emit(
-      AppState(
-        darkMode: darkMode,
-        seedColor: seedColor,
-      ),
+      AppState(darkMode: darkMode, seedColor: seedColor, isInitialized: true),
     );
   }
 

@@ -30,7 +30,7 @@
   "taskReminderChannelDescription": "작업 시작 전 알림",
   "iKnow": "알겠어요",
   "unlockPro": "모든 프리미엄 기능 잠금 해제",
-  "freeTrial": "무료 체험",
+  "freeTrial": "{days}일 무료 체험",
   "tryFree": "무료로 사용해보기",
   "general": "일반",
   "data": "데이터",
@@ -446,6 +446,7 @@
   "thinkAboutMonthlySummary": "이번 달에 어떤 목표를 이뤘나요?",
   "thinkAboutYearlyFocus": "올해 무엇에 집중하고 싶나요?",
   "thinkAboutYearlySummary": "올해 어떤 목표를 이뤘나요?",
+  "taskFocusEmptyDragTaskHint": "작업을 여기로 드래그해 연결하세요.",
   "thisWeek": "이번 주",
   "lastWeek": "지난주",
   "thisMonth": "이번 달",
@@ -736,5 +737,19 @@
   "journalSetYearCover": "연간 표지",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
-  }
+  },
+  "discoverJournalCoverPageTitle": "{year}년 표지",
+  "@discoverJournalCoverPageTitle": {
+    "description": "Discover journal year cover picker page app bar title",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "평생",
+  "productTitleAnnual": "연간",
+  "productTitleMonthly": "월간"
+
 }

@@ -83,16 +83,6 @@ class JournalCover extends StatelessWidget {
                         ),
                       ],
                     ),
-                    // Text(
-                    //   '$year',
-                    //   style: TextStyle(
-                    //     fontSize: 81,
-                    //     color: cs.primary,
-                    //     fontWeight: FontWeight.bold,
-                    //     letterSpacing: 4,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 10),
                     Container(
                       width: kDiscoverJournalDailyPageWidth / 8,
                       height: 4,
@@ -188,11 +178,6 @@ class _JournalNotebookShell extends StatelessWidget {
   bool get _useBackgroundImage =>
       backgroundImage != null && backgroundImage!.isNotEmpty;
 
-  BorderRadius get _borderRadius => BorderRadius.horizontal(
-    left: Radius.circular(isFront ? 0 : 24),
-    right: Radius.circular(isFront ? 24 : 0),
-  );
-
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
@@ -205,7 +190,6 @@ class _JournalNotebookShell extends StatelessWidget {
       height: h,
       child: DecoratedBox(
         decoration: BoxDecoration(
-          borderRadius: _borderRadius,
           color: coverColor,
           image: _useBackgroundImage
               ? DecorationImage(
@@ -223,48 +207,38 @@ class _JournalNotebookShell extends StatelessWidget {
             ),
           ],
         ),
-        child: ClipRRect(
-          borderRadius: _borderRadius,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: cs.outlineVariant.withValues(alpha: 0.55),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              bottom: 0,
+              left: isFront ? 0 : null,
+              right: isFront ? null : 0,
+              width: 8,
+              child: const DecoratedBox(
+                decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      blurRadius: 12,
+                      color: Colors.black26,
+                    ),
+                  ],
+                ),
               ),
             ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  bottom: 0,
-                  left: isFront ? 0 : null,
-                  right: isFront ? null : 0,
-                  width: 8,
-                  child: const DecoratedBox(
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          blurRadius: 12,
-                          color: Colors.black26,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
 
-                Positioned.fill(
-                  child: Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      isFront ? 44 : 30,
-                      18,
-                      isFront ? 30 : 44,
-                      18,
-                    ),
-                    child: child,
-                  ),
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  isFront ? 44 : 30,
+                  18,
+                  isFront ? 30 : 44,
+                  18,
                 ),
-              ],
+                child: child,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

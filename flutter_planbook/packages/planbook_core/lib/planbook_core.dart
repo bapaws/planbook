@@ -13,3 +13,4 @@ export 'plus/format.dart';
 export 'plus/hex_color.dart';
 export 'view/flip_page_view.dart';
 export 'view/navigation_bar_back_button.dart';
+export 'view/sequential_rotating_text.dart';

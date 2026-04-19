@@ -30,7 +30,7 @@
   "taskReminderChannelDescription": "Lembretes antes do início da tarefa",
   "iKnow": "Entendi",
   "unlockPro": "Desbloqueie todas as funcionalidades premium.",
-  "freeTrial": "Teste gratuito",
+  "freeTrial": "Teste gratuito por {days} dias",
   "tryFree": "Experimentar grátis",
   "general": "Geral",
   "data": "Dados",
@@ -446,6 +446,7 @@
   "thinkAboutMonthlySummary": "Que objetivos alcançou este mês?",
   "thinkAboutYearlyFocus": "Em que quer focar-se este ano?",
   "thinkAboutYearlySummary": "Que objetivos alcançou este ano?",
+  "taskFocusEmptyDragTaskHint": "Arraste uma tarefa para aqui para associar.",
   "thisWeek": "Esta semana",
   "lastWeek": "Semana passada",
   "thisMonth": "Este mês",
@@ -736,5 +737,19 @@
   "journalSetYearCover": "Capa anual",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
-  }
+  },
+  "discoverJournalCoverPageTitle": "Capa de {year}",
+  "@discoverJournalCoverPageTitle": {
+    "description": "Discover journal year cover picker page app bar title",
+    "placeholders": {
+      "year": {
+        "type": "int",
+        "example": "2025"
+      }
+    }
+  },
+  "productTitleLifetime": "Vitalício",
+  "productTitleAnnual": "Anual",
+  "productTitleMonthly": "Mensal"
+
 }

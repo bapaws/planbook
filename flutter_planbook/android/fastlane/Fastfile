@@ -114,7 +114,7 @@ platform :android do
 
   desc "Build release AAB and upload to Play internal testing"
   lane :beta do
-    # build_release_appbundle
+    build_release_appbundle
     upload_to_play_store(
       track: "internal",
       aab: release_aab

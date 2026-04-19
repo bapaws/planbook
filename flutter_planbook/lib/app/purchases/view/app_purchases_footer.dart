@@ -10,6 +10,7 @@ import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class AppPurchasesFooter extends StatelessWidget {
@@ -23,9 +24,9 @@ class AppPurchasesFooter extends StatelessWidget {
     return BlocBuilder<AppPurchasesBloc, AppPurchasesState>(
       builder: (context, state) {
         final storeProducts = state.storeProducts;
-        if (storeProducts.isEmpty) {
-          return const SizedBox.shrink();
-        }
+        // if (storeProducts.isEmpty) {
+        //   return const SizedBox.shrink();
+        // }
 
         final size = MediaQuery.of(context).size;
         const double spacing = 24;
@@ -39,7 +40,7 @@ class AppPurchasesFooter extends StatelessWidget {
             bottom: 8,
           ),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainer,
+            color: theme.colorScheme.surface,
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(24),
             ),
@@ -78,46 +79,67 @@ class AppPurchasesFooter extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 if (!AppPurchases.instance.isAndroidChina)
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () async {
-                      if (AppPurchases.instance.isAndroidChina) {
-                        final isAgreed = await _showAgreementDialog(context);
-                        if ((isAgreed ?? false) && context.mounted) {
-                          context.read<AppPurchasesBloc>()
-                            ..add(
-                              const AppPurchasesAgreedToConditions(
-                                isAgreed: true,
-                              ),
-                            )
-                            ..add(const AppPurchasesPurchased());
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: spacing),
+                    child: CupertinoButton.filled(
+                      padding: EdgeInsets.zero,
+                      color: theme.colorScheme.onSurface,
+                      borderRadius: BorderRadius.circular(24),
+                      onPressed: () async {
+                        if (AppPurchases.instance.isAndroidChina) {
+                          final isAgreed = await _showAgreementDialog(context);
+                          if ((isAgreed ?? false) && context.mounted) {
+                            context.read<AppPurchasesBloc>()
+                              ..add(
+                                const AppPurchasesAgreedToConditions(
+                                  isAgreed: true,
+                                ),
+                              )
+                              ..add(const AppPurchasesPurchased());
+                          }
+                        } else {
+                          context.read<AppPurchasesBloc>().add(
+                            const AppPurchasesPurchased(),
+                          );
                         }
-                      } else {
-                        context.read<AppPurchasesBloc>().add(
-                          const AppPurchasesPurchased(),
-                        );
-                      }
-                    },
-                    minimumSize: Size.zero,
-                    child: Container(
-                      width: productItemWidth * 3 + spacing * 2,
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(
-                          kMinInteractiveDimension,
-                        ),
-                      ),
+                      },
                       child: Row(
                         children: [
                           const Spacer(),
-                          Text(
-                            context.l10n.getPro,
-                            style: theme.textTheme.titleMedium!.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                            ),
+                          BlocSelector<
+                            AppPurchasesBloc,
+                            AppPurchasesState,
+                            StoreProduct?
+                          >(
+                            selector: (state) => state.selectedStoreProduct,
+                            builder: (context, selectedStoreProduct) {
+                              var text = context.l10n.getPro;
+                              final period = selectedStoreProduct?.period;
+                              if (period != null) {
+                                text = switch (period.$2) {
+                                  Unit.day => context.l10n.freeTrial(period.$1),
+                                  Unit.week => context.l10n.freeTrial(
+                                    period.$1 * 7,
+                                  ),
+                                  Unit.month => context.l10n.freeTrial(
+                                    period.$1 * 30,
+                                  ),
+                                  Unit.year => context.l10n.freeTrial(
+                                    period.$1 * 365,
+                                  ),
+                                  _ => context.l10n.freeTrial(period.$1),
+                                };
+                              }
+                              return Text(
+                                text,
+                                style: theme.textTheme.titleMedium!.copyWith(
+                                  color: theme.colorScheme.onPrimary,
+                                  fontWeight: period != null
+                                      ? FontWeight.bold
+                                      : null,
+                                ),
+                              );
+                            },
                           ),
                           const Spacer(),
                         ],

@@ -72,9 +72,13 @@ class AppRouter extends RootStackRouter {
 
   @override
   List<AutoRoute> get routes => [
-    AutoRoute(
-      initial: true,
+    AutoRoute(initial: true, page: SplashRoute.page),
+    CustomRoute<void>(
       page: RootHomeRoute.page,
+      fullscreenDialog: true,
+      transitionsBuilder: TransitionsBuilders.fadeIn,
+      duration: Durations.medium2,
+      reverseDuration: Durations.medium2,
       children: [
         AutoRoute(
           page: RootTaskRoute.page,
@@ -150,7 +154,13 @@ class AppRouter extends RootStackRouter {
 
     AutoRoute(page: AppPurchasesRoute.page),
 
-    AutoRoute(page: SignHomeRoute.page),
+    CustomRoute<void>(
+      page: SignHomeRoute.page,
+      fullscreenDialog: true,
+      transitionsBuilder: TransitionsBuilders.fadeIn,
+      duration: Durations.medium2,
+      reverseDuration: Durations.medium2,
+    ),
 
     AutoRoute(page: MinePasswordRoute.page),
     AutoRoute(page: MinePhoneRoute.page),

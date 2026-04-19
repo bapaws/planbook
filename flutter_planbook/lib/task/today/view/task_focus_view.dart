@@ -6,6 +6,7 @@ import 'package:flutter_planbook/task/today/view/task_focus_header_view.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_api/entity/task_entity.dart';
+import 'package:planbook_core/planbook_core.dart';
 
 class TaskFocusView extends StatelessWidget {
   const TaskFocusView({
@@ -41,9 +42,12 @@ class TaskFocusView extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isEmpty = note?.content == null || note!.content!.isEmpty;
-    final noteContent = isEmpty
-        ? noteType.getHintText(context.l10n)
-        : note!.content!;
+    final emptyStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.outlineVariant,
+    );
+    final filledStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.primary,
+    );
     final content = GestureDetector(
       key: ValueKey(noteType),
       onTap: onTap,
@@ -78,14 +82,24 @@ class TaskFocusView extends StatelessWidget {
               child: Padding(
                 key: ValueKey(noteType),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: Text(
-                  noteContent,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: isEmpty
-                        ? theme.colorScheme.outlineVariant
-                        : theme.colorScheme.primary,
-                  ),
-                ),
+                child: isEmpty
+                    ? onTaskDropped != null
+                        ? SequentialRotatingText(
+                            key: ValueKey(noteType),
+                            messages: [
+                              noteType.getHintText(context.l10n),
+                              context.l10n.taskFocusEmptyDragTaskHint,
+                            ],
+                            style: emptyStyle,
+                          )
+                        : Text(
+                            noteType.getHintText(context.l10n),
+                            style: emptyStyle,
+                          )
+                    : Text(
+                        note!.content!,
+                        style: filledStyle,
+                      ),
               ),
             ),
           ],

@@ -85,7 +85,7 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
   }
 
   Future<void> onSave() async {
-    if (state.title.isEmpty) {
+    if (state.title.isEmpty && state.content.isEmpty && state.images.isEmpty) {
       emit(state.copyWith(status: PageStatus.failure));
       return;
     }

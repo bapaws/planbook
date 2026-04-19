@@ -1,5 +1,5 @@
 // import 'package:flutter/material.dart';
-// import 'package:flutter_planbook/l10n/l10n.dart';
+// import 'package:diaryx/l10n/l10n.dart';
 
 // class AppPurchasesSummaryView extends StatelessWidget {
 //   const AppPurchasesSummaryView({super.key});

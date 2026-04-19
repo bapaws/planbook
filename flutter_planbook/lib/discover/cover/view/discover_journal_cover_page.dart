@@ -2,11 +2,14 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_planbook/app/app_router.gr.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/discover/cover/bloc/discover_cover_bloc.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_cover.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_core/data/page_status.dart';
 
 @RoutePage()
@@ -54,12 +57,14 @@ class _DiscoverJournalCoverPage extends StatelessWidget {
         return AppScaffold(
           appBar: AppBar(
             forceMaterialTransparency: true,
-            title: Text('${state.year} 年封面设置'),
+            title: Text(
+              context.l10n.discoverJournalCoverPageTitle(state.year),
+            ),
           ),
           body: GridView.builder(
             padding: EdgeInsets.fromLTRB(
               16,
-              0,
+              8,
               16,
               MediaQuery.of(context).padding.bottom + 16,
             ),
@@ -78,6 +83,11 @@ class _DiscoverJournalCoverPage extends StatelessWidget {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
+                  final isPremium = context.read<AppPurchasesBloc>().isPremium;
+                  if (!isPremium) {
+                    context.router.push(const AppPurchasesRoute());
+                    return;
+                  }
                   context.read<DiscoverCoverBloc>().add(
                     DiscoverCoverSelected(coverPath: path),
                   );
