@@ -1,1 +1,1 @@
-Tarefas, notas e diário numa app simples para planear com foco.
+Calendário, tags e hábitos: semana/mês, recorrências e lembretes numa só app.

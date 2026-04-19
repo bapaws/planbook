@@ -1,2 +1,1 @@
-organiser,reminder,habit,focus,goals,routine,timeline,gtd,checklist,productivity,diary
-
+pomodoro,eisenhower,gtd,reminder,checklist,timeline,routine,deadline,weekly,monthly,student,widgets

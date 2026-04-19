@@ -1,1 +1,1 @@
-calendario,todo,lista,productividad,hábitos,objetivos,prioridades,tiempo,seguimiento,gtd
+todo,lista,hábitos,objetivos,prioridades,tiempo,seguimiento,gtd,pomodoro,estudiante,semanal,mensual

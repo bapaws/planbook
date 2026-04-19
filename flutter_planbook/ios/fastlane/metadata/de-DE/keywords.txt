@@ -1,1 +1,1 @@
-todo,termine,planung,zeitplan,zeitmanagement,gewohnheiten,ziele,prioritäten,tagebuch,gtd
+todo,termine,zeitplan,zeitmanagement,ziele,prioritäten,gtd,pomodoro,student,deadline,wiederkehrend

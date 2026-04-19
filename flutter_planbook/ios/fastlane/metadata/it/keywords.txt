@@ -1,1 +1,1 @@
-todo,calendario,pianificazione,produttivita,abitudini,obiettivi,priorita,promemoria,tempo
+todo,gtd,pomodoro,tempo,obiettivi,priorita,promemoria,studente,settimanale,mensile,widget,scadenze

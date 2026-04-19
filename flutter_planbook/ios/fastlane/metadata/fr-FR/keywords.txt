@@ -1,1 +1,1 @@
-todo,calendrier,planning,productivité,habitudes,objectifs,priorités,temps,suivi,gtd
+todo,planning,productivité,objectifs,priorités,temps,suivi,gtd,pomodoro,rappel,étudiant,récurrent
