@@ -1,9 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
-import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
 
@@ -43,6 +41,9 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
   bool _isLeftEnlarged = false;
   bool _isRightEnlarged = false;
 
+  /// 缩小动画期间仍使用最近一次放大的缩放锚点，避免 enlarged 标志已清空导致 alignment 瞬间变 center
+  Alignment _scalePivotAlignment = Alignment.center;
+
   @override
   void initState() {
     super.initState();
@@ -69,6 +70,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
     if (_controller.isCoverPage(index) || _controller.isBackCoverPage(index)) {
       _isLeftEnlarged = false;
       _isRightEnlarged = false;
+      _scalePivotAlignment = Alignment.center;
       return;
     }
 
@@ -98,13 +100,6 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
     final isEnlarged = _isLeftEnlarged || _isRightEnlarged;
 
-    var enlargedAlignment = Alignment.center;
-    if (_isLeftEnlarged) {
-      enlargedAlignment = Alignment.centerLeft;
-    } else if (_isRightEnlarged) {
-      enlargedAlignment = Alignment.centerRight;
-    }
-
     // fitHeight / contain 的缩放比
     final containerW = pageWidth + 8;
     const bookW = kDiscoverJournalDailyPageWidth * 2 + 3.0;
@@ -122,7 +117,19 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
         ),
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
+        onEnd: () {
+          if (!mounted) return;
+          if (_isLeftEnlarged || _isRightEnlarged) return;
+          setState(() {
+            _scalePivotAlignment = Alignment.center;
+          });
+        },
         builder: (context, t, child) {
+          final enlargedAlignment = _isLeftEnlarged
+              ? Alignment.centerLeft
+              : _isRightEnlarged
+              ? Alignment.centerRight
+              : _scalePivotAlignment;
           return Transform.scale(
             scale: 1.0 + (enlargedRatio - 1.0) * t,
             alignment: Alignment.lerp(
@@ -147,14 +154,22 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
             backCoverBuilder: widget.backCoverBuilder,
             itemBuilder: widget.itemBuilder,
             onLeftDoubleTap: (index) {
-              context.read<DiscoverJournalBloc>().add(
-                const DiscoverJournalLeftEnlargedToggled(),
-              );
+              setState(() {
+                _isLeftEnlarged = !_isLeftEnlarged;
+                _isRightEnlarged = false;
+                if (_isLeftEnlarged) {
+                  _scalePivotAlignment = Alignment.centerLeft;
+                }
+              });
             },
             onRightDoubleTap: (index) {
-              context.read<DiscoverJournalBloc>().add(
-                const DiscoverJournalRightEnlargedToggled(),
-              );
+              setState(() {
+                _isRightEnlarged = !_isRightEnlarged;
+                _isLeftEnlarged = false;
+                if (_isRightEnlarged) {
+                  _scalePivotAlignment = Alignment.centerRight;
+                }
+              });
             },
           ),
         ),

@@ -4,6 +4,8 @@
   "slogen": "Pianifica, attività, note, tutto in uno 👌",
   "noteSlogen": "Scrivi i capitoli della tua vita.",
   "taskSlogen": "Prima completa, poi perfeziona.",
+  "taskEmptyInbox": "Le attività senza data compaiono qui.",
+  "taskEmptyOverdue": "Le attività in ritardo compaiono qui.",
   "list": "Elenco",
   "save": "Salva",
   "confirm": "Conferma",

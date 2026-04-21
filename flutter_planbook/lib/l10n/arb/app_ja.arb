@@ -4,6 +4,8 @@
   "slogen": "計画、タスク、ノート、これひとつで 👌",
   "noteSlogen": "人生の章を書き留めよう。",
   "taskSlogen": "まず終わらせて、そのあと磨こう。",
+  "taskEmptyInbox": "日付のないタスクはここに表示されます",
+  "taskEmptyOverdue": "期限を過ぎたタスクはここに表示されます",
   "list": "リスト",
   "save": "保存",
   "confirm": "確認",

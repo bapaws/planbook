@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -28,30 +27,30 @@ class AppSupabase {
   static Future<void> initialize() async {
     if (_supabase != null) return;
     Supabase supabase;
-    if (kDebugMode) {
-      supabase = await Supabase.initialize(
-        url: 'https://adzqytnvpuuqemfltavb.supabase.co',
-        anonKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
-            'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFke'
-            'nF5dG52cHV1cWVtZmx0YXZiIiwicm9sZSI6Im'
-            'Fub24iLCJpYXQiOjE3NzMwNjYzNzYsImV4cCI'
-            '6MjA4ODY0MjM3Nn0.'
-            'R9Ikyg9JDzEt40lH639jNb9K4e1pwBYQcqGt7Jtp6CI',
-        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
-      );
-    } else {
-      supabase = await Supabase.initialize(
-        url: 'https://supa.bapaws.top',
-        anonKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
-            'eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiY'
-            'XNlIiwiaWF0IjoxNzYyNzA0MDAwLCJleHAiOj'
-            'E5MjA0NzA0MDB9.'
-            'TKP8eEkch5MSBWn4_Qzz_pYTZWnssVUU-YcTgn_riw8',
-        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
-      );
-    }
+    // if (kDebugMode) {
+    //   supabase = await Supabase.initialize(
+    //     url: 'https://adzqytnvpuuqemfltavb.supabase.co',
+    //     anonKey:
+    //         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+    //         'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFke'
+    //         'nF5dG52cHV1cWVtZmx0YXZiIiwicm9sZSI6Im'
+    //         'Fub24iLCJpYXQiOjE3NzMwNjYzNzYsImV4cCI'
+    //         '6MjA4ODY0MjM3Nn0.'
+    //         'R9Ikyg9JDzEt40lH639jNb9K4e1pwBYQcqGt7Jtp6CI',
+    //     postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
+    //   );
+    // } else {
+    supabase = await Supabase.initialize(
+      url: 'https://supa.bapaws.top',
+      anonKey:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+          'eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiY'
+          'XNlIiwiaWF0IjoxNzYyNzA0MDAwLCJleHAiOj'
+          'E5MjA0NzA0MDB9.'
+          'TKP8eEkch5MSBWn4_Qzz_pYTZWnssVUU-YcTgn_riw8',
+      postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
+    );
+    // }
     _supabase = supabase;
 
     instance._onAuthStateChangeSubscription = _supabase

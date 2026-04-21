@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
@@ -19,6 +23,36 @@ class AppActivityAlertPage extends StatelessWidget {
   });
 
   final ActivityMessageEntity activity;
+
+  Future<void> _openMarkdownLink(
+    BuildContext context,
+    String? text,
+    String? href,
+  ) async {
+    if (href == null) return;
+    if (href.startsWith('weixin://')) {
+      final msg = context.l10n.weChatCopied;
+      unawaited(Fluttertoast.showToast(msg: msg, gravity: ToastGravity.CENTER));
+
+      final code = href.split('://').last;
+      await Clipboard.setData(ClipboardData(text: code));
+      await launchUrl(Uri.parse('weixin://'));
+      return;
+    }
+
+    final uri = Uri.tryParse(href);
+    if (uri == null) return;
+
+    if (uri.scheme == 'mailto') {
+      final mailtoUri = await mailtoWithAppInfo(uri);
+      if (!context.mounted) return;
+      await launchUrl(mailtoUri);
+      return;
+    }
+
+    if (!context.mounted) return;
+    await launchUrl(uri);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +134,7 @@ class AppActivityAlertPage extends StatelessWidget {
                         ),
                       ),
                       onTapLink: (text, href, title) async {
-                        if (href != null) {
-                          await launchUrl(Uri.parse(href));
-                        }
+                        await _openMarkdownLink(context, text, href);
                       },
                     ),
                   ),

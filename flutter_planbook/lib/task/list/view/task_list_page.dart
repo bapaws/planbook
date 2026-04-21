@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_empty_task_view.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
@@ -37,7 +38,9 @@ class _TaskListPage extends StatelessWidget {
           child: child,
         ),
         child: state.tasks.isEmpty
-            ? const AppEmptyTaskView()
+            ? AppEmptyTaskView(
+                title: context.l10n.taskSlogen,
+              )
             : CustomScrollView(
                 slivers: [
                   TaskListView(

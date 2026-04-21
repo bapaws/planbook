@@ -4,6 +4,8 @@
   "slogen": "계획, 작업, 노트, 올인원 👌",
   "noteSlogen": "삶의 장을 써 내려가세요.",
   "taskSlogen": "먼저 끝내고, 그다음 완벽하게.",
+  "taskEmptyInbox": "날짜가 없는 할 일이 여기에 표시돼요",
+  "taskEmptyOverdue": "기한이 지난 할 일이 여기에 표시돼요",
   "list": "목록",
   "save": "저장",
   "confirm": "확인",

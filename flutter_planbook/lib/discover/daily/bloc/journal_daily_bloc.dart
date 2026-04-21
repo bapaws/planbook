@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:rxdart/rxdart.dart';
@@ -147,6 +148,7 @@ class JournalDailyBloc extends Bloc<JournalDailyEvent, JournalDailyState> {
       _notesRepository.getNoteEntitiesByDate(
         date,
         mode: NoteListMode.journal,
+        orderingMode: OrderingMode.asc,
       ),
       onData: (notes) {
         final startOfDay = date.toLocal().startOf(Unit.day);

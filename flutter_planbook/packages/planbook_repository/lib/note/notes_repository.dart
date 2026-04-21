@@ -147,6 +147,7 @@ class NotesRepository {
     Jiffy date, {
     NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
+    OrderingMode orderingMode = OrderingMode.desc,
   }) {
     syncNotes();
     return _dbNoteApi.getNoteEntitiesByDate(
@@ -154,6 +155,7 @@ class NotesRepository {
       tagIds: tagIds,
       userId: userId,
       mode: mode,
+      orderingMode: orderingMode,
     );
   }
 

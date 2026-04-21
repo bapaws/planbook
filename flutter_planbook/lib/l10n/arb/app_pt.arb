@@ -4,6 +4,8 @@
   "slogen": "Plano, Tarefa, Nota, Tudo em Um 👌",
   "noteSlogen": "Escreva os capítulos da sua vida.",
   "taskSlogen": "Primeiro conclua, depois aperfeiçoe.",
+  "taskEmptyInbox": "As tarefas sem data aparecem aqui.",
+  "taskEmptyOverdue": "As tarefas em atraso aparecem aqui.",
   "list": "Lista",
   "save": "Guardar",
   "confirm": "Confirmar",

@@ -4,6 +4,8 @@
   "slogen": "Planen, Aufgaben, Notizen, alles in einem 👌",
   "noteSlogen": "Schreibe die Kapitel deines Lebens.",
   "taskSlogen": "Erst erledigen, dann perfektionieren.",
+  "taskEmptyInbox": "Aufgaben ohne Datum erscheinen hier.",
+  "taskEmptyOverdue": "Überfällige Aufgaben erscheinen hier.",
   "list": "Liste",
   "save": "Speichern",
   "confirm": "Bestätigen",

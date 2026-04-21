@@ -4,6 +4,8 @@
   "slogen": "計劃、任務、筆記，一本搞定 👌",
   "noteSlogen": "書寫你的人生自傳",
   "taskSlogen": "先完成，再完美",
+  "taskEmptyInbox": "未設定日期的任務會出現在這裡",
+  "taskEmptyOverdue": "已經過了截止日期的任務會出現在這裡",
   "list": "列表",
   "save": "儲存",
   "confirm": "確認",

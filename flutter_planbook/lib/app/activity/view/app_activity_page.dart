@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +12,7 @@ import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -39,6 +42,9 @@ class _AppActivityPageState extends State<AppActivityPage> {
   Future<void> _openMarkdownLink(String? text, String? href) async {
     if (href == null) return;
     if (href.startsWith('weixin://')) {
+      final msg = context.l10n.weChatCopied;
+      unawaited(Fluttertoast.showToast(msg: msg, gravity: ToastGravity.CENTER));
+
       final code = href.split('://').last;
       await Clipboard.setData(ClipboardData(text: code));
       await launchUrl(Uri.parse('weixin://'));

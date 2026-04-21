@@ -4,6 +4,8 @@
   "slogen": "Plan, Task, Note, All in One 👌",
   "noteSlogen": "Pen the chapters of your life.",
   "taskSlogen": "First complete, then perfect.",
+  "taskEmptyInbox": "Tasks without a date appear here.",
+  "taskEmptyOverdue": "Overdue tasks appear here.",
   "list": "List",
   "save": "Save",
   "confirm": "Confirm",

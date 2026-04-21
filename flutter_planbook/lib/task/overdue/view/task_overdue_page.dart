@@ -29,7 +29,9 @@ class TaskOverduePage extends StatelessWidget {
         child: switch (state.viewType) {
           RootTaskViewType.list =>
             state.taskCounts[TaskListMode.overdue] == 0
-                ? const AppEmptyTaskView()
+                ? AppEmptyTaskView(
+                    title: context.l10n.taskEmptyOverdue,
+                  )
                 : const _TaskOverdueListPage(),
           RootTaskViewType.priority => TaskPriorityPage(
             style: state.priorityStyle,

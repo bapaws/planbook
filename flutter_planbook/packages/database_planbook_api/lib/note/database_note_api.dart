@@ -212,6 +212,7 @@ class DatabaseNoteApi {
     NoteListMode mode = NoteListMode.all,
     List<String>? tagIds,
     String? userId,
+    OrderingMode orderingMode = OrderingMode.desc,
   }) {
     final startOfDay = date.startOf(Unit.day);
     final endOfDay = date.endOf(Unit.day);
@@ -262,7 +263,12 @@ class DatabaseNoteApi {
             ],
           )
           ..where(exp)
-          ..orderBy([OrderingTerm.desc(db.notes.createdAt.datetime)]))
+          ..orderBy([
+            OrderingTerm(
+              expression: db.notes.createdAt.datetime,
+              mode: orderingMode,
+            ),
+          ]))
         .watch()
         .asyncMap(buildNoteEntities);
   }
