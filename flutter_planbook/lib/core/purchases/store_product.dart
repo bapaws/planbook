@@ -79,6 +79,25 @@ final class StoreProduct extends Equatable {
     );
   }
 
+  factory StoreProduct.fromJson(Map<String, dynamic> json) {
+    return StoreProduct(
+      id: json['id'] as String,
+      title: json['title'] as String,
+      description: json['description'] as String?,
+      price: json['price'] as double,
+      priceString: json['price_string'] as String,
+      currencyCode: json['currency_code'] as String,
+      subscriptionPeriod: json['subscription_period'] as String?,
+      introductoryPrice:
+          json['introductory_price'] != null &&
+              json['introductory_price'] is Map
+          ? IntroductoryPrice.fromJson(
+              Map<String, dynamic>.from(json['introductory_price'] as Map),
+            )
+          : null,
+    );
+  }
+
   final String id;
   final String title;
   final String? description;

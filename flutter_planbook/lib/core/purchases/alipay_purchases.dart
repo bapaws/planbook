@@ -1,5 +1,6 @@
 import 'package:flutter_planbook/core/purchases/app_purchases_interface.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
+import 'package:planbook_repository/users/users_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tobias/tobias.dart';
 
@@ -37,54 +38,51 @@ final class AlipayPurchases implements AppPurchasesInterface {
 
   @override
   Future<String?> restore() async {
-    return null;
-    // final response = await _supabase?.functions.invoke(
-    //   'flutter_planbook-alipay-query',
-    // );
-    // if (response == null ||
-    //     response.status != 200 ||
-    //     response.data is! Map<String, dynamic>) {
-    //   return null;
-    // }
-    // final data = response.data as Map<String, dynamic>;
-    // if (data['success'] != true) {
-    //   return null;
-    // }
-    // final userProfile = await UsersRepository.instance.getUserProfile(
-    //   force: true,
-    // );
-    // if (userProfile == null) {
-    //   return null;
-    // }
-    // return userProfile.productId;
+    final response = await _supabase?.functions.invoke(
+      'flutter_planbook-alipay-query',
+    );
+    if (response == null ||
+        response.status != 200 ||
+        response.data is! Map<String, dynamic>) {
+      return null;
+    }
+    final data = response.data as Map<String, dynamic>;
+    if (data['success'] != true) {
+      return null;
+    }
+    final userProfile = await UsersRepository.instance.getUserProfile(
+      force: true,
+    );
+    if (userProfile == null) {
+      return null;
+    }
+    return userProfile.productId;
   }
 
   @override
   Future<String?> getActiveIdentifier() async {
-    return null;
-    // final userProfile = await UsersRepository.instance.getUserProfile();
-    // if (userProfile == null) {
-    //   return null;
-    // }
-    // final productId = userProfile.productId;
-    // if (productId == null) return null;
-    // if (productId.toLowerCase().contains('lifetime')) return productId;
-    // final expiresAt = userProfile.expiresAt;
-    // if (expiresAt == null) return null;
-    // if (expiresAt.isBefore(DateTime.now())) return null;
-    // return productId;
+    final userProfile = await UsersRepository.instance.getUserProfile();
+    if (userProfile == null) {
+      return null;
+    }
+    final productId = userProfile.productId;
+    if (productId == null) return null;
+    if (productId.toLowerCase().contains('lifetime')) return productId;
+    final expiresAt = userProfile.expiresAt;
+    if (expiresAt == null) return null;
+    if (expiresAt.isBefore(DateTime.now())) return null;
+    return productId;
   }
 
   @override
   Future<List<StoreProduct>> getStoreProducts() async {
-    return [];
-    // final response = await _supabase
-    //     ?.from('store_products')
-    //     .select()
-    //     .eq('is_enabled', true)
-    //     .isFilter('deleted_at', null)
-    //     .order('order', ascending: true);
-    // return response?.map(StoreProduct.fromJson).toList() ?? [];
+    final response = await _supabase
+        ?.from('store_products')
+        .select()
+        .eq('is_enabled', true)
+        .isFilter('deleted_at', null)
+        .order('order', ascending: true);
+    return response?.map(StoreProduct.fromJson).toList() ?? [];
   }
 
   @override
