@@ -1,17 +1,13 @@
-import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart'
     show TaskListTile;
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:planbook_api/entity/task_entity.dart';
-import 'package:planbook_repository/settings/settings_repository.dart';
 
 /// 统一的任务列表项组件
 ///
@@ -182,14 +178,6 @@ class _TaskMonthListTileState extends State<TaskMonthListTile> {
   }
 
   Future<void> _playCompletedSound() async {
-    unawaited(HapticFeedback.lightImpact());
-
-    final sound = await context
-        .read<SettingsRepository>()
-        .getTaskCompletedSound();
-    if (sound != null && sound.isNotEmpty) {
-      final player = AudioPlayer();
-      await player.play(AssetSource(sound));
-    }
+    await context.read<TaskActionService>().playCompletedFeedback();
   }
 }

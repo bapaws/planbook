@@ -401,8 +401,10 @@ class AppDatabase extends _$AppDatabase {
       );
     }
     path ??= (await getApplicationDocumentsDirectory()).path;
-    final file = File(p.join(path, 'habits.sqlite'));
-    debugPrint('database file: $file');
+    final file = File(p.join(path, 'planbook.sqlite'));
+    if (kDebugMode) {
+      debugPrint('database file: $file');
+    }
     return file;
   }
 }

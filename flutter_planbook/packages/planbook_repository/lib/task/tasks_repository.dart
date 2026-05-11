@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/task/alarm_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/task/supabase_task_api.dart';
@@ -83,6 +84,7 @@ class TasksRepository {
       taskTags: taskTags,
       children: newChildren,
     );
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
   Future<void> update({
@@ -124,6 +126,7 @@ class TasksRepository {
       taskTags: taskTags,
       children: newChildren,
     );
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
   /// 使用编辑模式更新重复任务
@@ -183,6 +186,7 @@ class TasksRepository {
 
     // 保存到本地数据库
     await _dbTaskUpdateApi.saveUpdateResult(result);
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
   /// 判断是否需要让用户选择编辑模式
@@ -401,6 +405,7 @@ class TasksRepository {
     }
     await _supabaseTaskApi.complete(activities: activities);
     await _dbTaskCompletionApi.completeTaskByActivities(activities);
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
     return activities;
   }
 
@@ -409,6 +414,7 @@ class TasksRepository {
     if (task == null) return;
     await _supabaseTaskApi.deleteByTaskId(taskId);
     await _dbTaskApi.deleteTaskById(taskId);
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
   /// 更新任务优先级（用于四象限视图拖动调整）
@@ -513,6 +519,7 @@ class TasksRepository {
         children: result.children,
       );
     }
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
   Future<void> createDefaultTasks({required String languageCode}) async {

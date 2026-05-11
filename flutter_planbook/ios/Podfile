@@ -103,4 +103,19 @@ post_install do |installer|
 
     end
   end
+
+  # 打破 Xcode「Cycle inside Runner」：Flutter 会给 Thin Binary 加上 App 内 Info.plist
+  # 的 inputPaths，与嵌入 Widget 扩展、Copy Pods Resources 组合易成环；pod install 在其
+  # 之后执行，此处清空 inputPaths（阶段仍为 alwaysOutOfDate，脚本照常跑）。
+  require 'xcodeproj'
+  runner_project = Xcodeproj::Project.open(File.join(__dir__, 'Runner.xcodeproj'))
+  runner_project.targets.each do |t|
+    next unless t.name == 'Runner'
+    t.build_phases.each do |phase|
+      next unless phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+      next unless phase.name == 'Thin Binary'
+      phase.input_paths = []
+    end
+  end
+  runner_project.save
 end

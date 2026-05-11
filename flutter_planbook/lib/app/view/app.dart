@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/links/app_links_handler.dart';
 import 'package:flutter_planbook/core/apk_download_service.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
@@ -26,6 +27,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   final _appRouter = AppRouter();
   late Brightness _brightness;
   late final methodChannel = const MethodChannel('com.bapaws.planbook.flutter');
+  late final _appLinksHandler = AppLinksHandler(router: _appRouter);
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
     _setupMethodChannelListener();
     ApkDownloadService.start(context.read());
+    _appLinksHandler.init();
 
     super.initState();
   }
@@ -49,6 +52,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _appLinksHandler.dispose();
     super.dispose();
   }
 

@@ -1,13 +1,13 @@
 # Planbook - AI Agent Guide
 
 > **Project Language**: The codebase uses Chinese for comments and documentation.
-> **Last Updated**: 2026-04-11
+> **Last Updated**: 2026-05-06
 
 ## Project Overview
 
 **Planbook** is a comprehensive task management and note-taking Flutter application. It's a "Plan, Task, Note, All in One" productivity app that helps users manage tasks, write notes, and track their daily/weekly/monthly focus and summaries.
 
-- **Version**: 2.6.2+105
+- **Version**: 2.6.8+118
 - **Flutter SDK**: ^3.8.1
 - **Created with**: Very Good CLI
 
@@ -18,7 +18,7 @@
 - Recurring tasks with customizable rules
 - Daily/weekly/monthly focus and summary tracking
 - In-app purchases (RevenueCat integration)
-- Multi-language support (English, Simplified Chinese, Traditional Chinese)
+- Multi-language support (10 languages: English, Chinese [Simplified / Traditional], German, Spanish, French, Italian, Japanese, Korean, Portuguese, Russian)
 - Customizable themes and app icons
 - Android home screen widgets
 
@@ -45,7 +45,7 @@ The project follows **Clean Architecture** with a layered package structure:
 ```
 ┌─────────────────────────────────────┐
 │         flutter_planbook            │  <- UI Layer (Flutter App)
-│    (329 Dart files in lib/)         │
+│    (358 Dart files in lib/)         │
 ├─────────────────────────────────────┤
 │      planbook_repository            │  <- Repository Layer
 │  (Business logic, data aggregation) │
@@ -149,11 +149,17 @@ lib/
 | Package | Files | Purpose |
 |---------|-------|---------|
 | `planbook_api` | ~20 | Entity definitions, database schema, Supabase config |
-| `database_planbook_api` | ~10 | Drift/SQLite database operations |
-| `supabase_planbook_api` | ~10 | Supabase remote API operations |
-| `planbook_repository` | ~15 | Repository pattern, business logic |
+| `database_planbook_api` | ~13 | Drift/SQLite database operations |
+| `supabase_planbook_api` | ~5 | Supabase remote API operations |
+| `planbook_repository` | ~11 | Repository pattern, business logic |
 | `planbook_core` | ~20 | Shared widgets, utilities, constants |
-| `home_widget` | ~15 | Android home screen widget implementation |
+| `planbook_widget` | ~3 | Channel bridge to native Android/iOS home-screen widgets |
+
+> Two separate things share the "widget" name and are easy to confuse:
+> - **`packages/planbook_widget/`** (local) — registers Dart-side action handlers (e.g. complete-task) and signals "Flutter ready" to the native side. Used by `lib/widget/widget_action_setup.dart`.
+> - **`home_widget` ^0.9.1** (pub.dev) — generic Flutter ↔ native widget data channel; wrapped by `planbook_core/lib/app/app_home_widget.dart` (`AppHomeWidget`) which is what app code actually calls.
+>
+> The native widget UI itself lives in `android/app/src/main/kotlin/com/bapaws/planbook/widget/` and `ios/PlanbookWidget*/`. Neither Dart package renders anything.
 
 ## Database Schema
 
@@ -364,7 +370,25 @@ Uses **AutoRoute** for declarative routing:
 ## Localization
 
 - Template: `lib/l10n/arb/app_en.arb` (English)
-- Translations: Chinese (Simplified/Traditional)
+- ARB files (12, covering 10 languages):
+
+  | Locale | Language | Notes |
+  |--------|----------|-------|
+  | `en` | English | Source / template |
+  | `zh` | Chinese (generic) | Fallback for Chinese-speaking users |
+  | `zh_Hans` | Simplified Chinese | Mainland China / Singapore |
+  | `zh_Hant` | Traditional Chinese | Hong Kong / Taiwan |
+  | `de` | German | |
+  | `es` | Spanish | |
+  | `fr` | French | |
+  | `it` | Italian | |
+  | `ja` | Japanese | |
+  | `ko` | Korean | |
+  | `pt` | Portuguese | |
+  | `ru` | Russian | |
+
+- Default locale: resolved from `Platform.localeName` and assigned to `Intl.defaultLocale` in `lib/app/view/app.dart`
+- Supported locales registered via `AppLocalizations.supportedLocales`
 - Code generation: `flutter gen-l10n`
 - Output: `lib/l10n/gen/`
 - Extension for BuildContext: `context.l10n`
@@ -457,12 +481,14 @@ The project currently has no test files. When adding tests:
 
 ### Platform Integration
 - **in_app_purchase** ^3.2.3 - IAP (Google/Apple)
-- **purchases_flutter** 9.9.9 - RevenueCat
+- **purchases_flutter** 9.9.9 - RevenueCat (used in tandem with `in_app_purchase`)
+- **tobias** ^5.3.2 - Alipay (支付宝) IAP for the China self-distribution channel
 - **in_app_review** ^2.0.10 - App store reviews
 - **app_settings** ^7.0.0 - Open system settings
 - **flutter_dynamic_icon_plus** ^1.3.1 - Dynamic app icons
 - **share_plus** ^12.0.1 - Content sharing
 - **url_launcher** ^6.3.2 - Open URLs
+- **install_plugin_v3** ^3.1.3 - Sideload APK install (cloud channel)
 
 ### Backend & Sync
 - **supabase_flutter** ^2.9.1 - Backend
@@ -470,11 +496,15 @@ The project currently has no test files. When adding tests:
 - **sign_in_with_apple** ^7.0.1 - Apple auth
 - **http** ^1.6.0 - HTTP requests
 
+### Export & Capture
+- **pdf** ^3.11.3 - PDF generation (used by `lib/discover/export/`)
+- **screenshot** ^3.0.0 - Render widgets to images
+- **saver_gallery** ^4.0.0 - Save exports to system gallery
+
 ### Date/Time
 - **jiffy** ^6.3.1 - Date manipulation
 - **intl** ^0.20.2 - Internationalization
 - **calendar_date_picker2** ^2.0.1 - Date picker
-- **flutter_timezone** ^4.0.0 - Timezone support
 
 ## Security Considerations
 
@@ -489,7 +519,9 @@ The project currently has no test files. When adding tests:
    - iOS: Uses App Group container (`group.GM4766U38W.com.bapaws.planbook`)
    - Android: Standard app documents directory
 
-4. **URL Scheme**: `planbook.bapaws` (for deep linking)
+4. **URL Scheme**: `planbook.bapaws` (for deep linking; also configured as the `tobias` Alipay URL scheme — handled by `lib/app/links/`)
+
+5. **Alipay (cloud channel)**: `tobias` is enabled for the self-distribution build so users in mainland China can pay via Alipay. SKUs are mirrored from Supabase (see commit `b582dee feat(purchases): 启用支付宝内购与 Supabase 商品同步`); receipts are still validated server-side. Universal link: `https://bapaws.github.io`.
 
 ## Platform-Specific Notes
 
@@ -508,25 +540,41 @@ The project currently has no test files. When adding tests:
 
 ### Known Issues & Workarounds
 
-1. **iPadOS 26 Bug**: Drawer/Dialog/BottomSheet closes immediately after opening
+1. **iPadOS 26.1+ Bug**: Drawer/Dialog/BottomSheet closes immediately after opening
    - Workaround: `FilteringFlutterBinding` class in `main.dart`
    - Filters out pointer events at position (0, 0)
+   - Gated to iPad-only AND iPadOS ≥ 26.1 (parsed from `Platform.operatingSystemVersion`); iPhones and earlier iPadOS use the standard binding
 
 2. **Native Splash**: Disabled for Android 12+ due to branding size requirements
    - Commented out in `pubspec.yaml`
 
 ## Development Workflow
 
+### Composition Root (`lib/bootstrap.dart`)
+
+`bootstrap()` is the single place where repositories and cross-cutting services are constructed and provided to the widget tree:
+
+1. Init RevenueCat (`Purchases.configure` with the iOS/Android key + China proxy URL).
+2. Init Supabase via `AppSupabase.initialize()`.
+3. Build `HydratedBloc.storage` (writes to the temp directory).
+4. Open the Drift `AppDatabase` and a shared `DatabaseTagApi`.
+5. Construct `TagsRepository`, `TasksRepository`, `NotesRepository`, `AssetsRepository`, `SettingsRepository`, and the singleton `UsersRepository`.
+6. Construct `TaskActionService` (the unified orchestrator for task complete/delete/auto-note/reminder/sound side effects).
+7. Wire `setupPlanbookWidgetActions(...)` so the home-screen widget's "complete task" event runs through the same `TaskActionService`.
+8. Mount everything inside `MultiRepositoryProvider` → `MultiBlocProvider` → `App`.
+
+When you add a new repository or app-wide service, register it here — don't lazily construct one inside a feature widget. Reading a repository from `context.read<T>()` requires it to live in this providers list.
+
 ### Code Generation
 ```bash
 # Generate routes (after modifying app_router.dart)
-flutter pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 
 # Generate localization
 flutter gen-l10n
 
 # Generate Drift database code (in planbook_api package)
-cd packages/planbook_api && flutter pub run build_runner build
+cd packages/planbook_api && dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### Adding a New Feature

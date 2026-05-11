@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -13,14 +14,18 @@ part 'task_new_state.dart';
 class TaskNewCubit extends HydratedCubit<TaskNewState> {
   TaskNewCubit({
     required TasksRepository tasksRepository,
+    required TaskActionService taskActionService,
     TaskEntity? initialTask,
     Jiffy? dueAt,
+    TaskPriority? priority,
   }) : _tasksRepository = tasksRepository,
+       _taskActionService = taskActionService,
        super(
-         TaskNewState.fromData(task: initialTask, dueAt: dueAt),
+         TaskNewState.fromData(task: initialTask, dueAt: dueAt, priority: priority),
        );
 
   final TasksRepository _tasksRepository;
+  final TaskActionService _taskActionService;
 
   @override
   TaskNewState? fromJson(Map<String, dynamic> json) {
@@ -208,7 +213,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       await clear();
       // clear() 只清除持久化存储，需要手动重置状态
       emit(const TaskNewState(status: PageStatus.success));
-      unawaited(AlarmNotificationService.instance.scheduleForTask(task));
+      _taskActionService.rescheduleAlarm(task);
       return;
     }
 
@@ -255,7 +260,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       children: state.children,
       occurrenceAt: initialTask.occurrence?.occurrenceAt,
     );
-    unawaited(AlarmNotificationService.instance.scheduleForTask(task));
+    _taskActionService.rescheduleAlarm(task);
     emit(state.copyWith(status: PageStatus.success));
   }
 }

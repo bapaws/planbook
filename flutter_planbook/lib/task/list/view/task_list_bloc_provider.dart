@@ -27,8 +27,7 @@ class TaskListBlocProvider extends StatelessWidget {
     return BlocProvider(
       create: (context) => TaskListBloc(
         tasksRepository: context.read(),
-        notesRepository: context.read(),
-        settingsRepository: context.read(),
+        taskActionService: context.read(),
         mode: mode,
         priority: priority,
       )..add(requestEvent()),

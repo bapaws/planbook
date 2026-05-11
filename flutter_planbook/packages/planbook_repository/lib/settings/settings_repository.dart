@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +110,12 @@ class SettingsRepository {
     } else {
       await _sp.setInt(kSettingsDarkModeKey, mode.index);
     }
+    // 同步深色模式到 Widget（iOS + Android）
+    final isDarkMode = mode == DarkMode.dark;
+    await AppHomeWidget.saveWidgetData(
+      'widget_theme',
+      jsonEncode({'isDarkMode': isDarkMode}),
+    );
   }
 
   String? getAppIconName() => _sp.getString(kSettingsAppIconNameKey);
@@ -128,7 +133,6 @@ class SettingsRepository {
   }
 
   Future<void> saveLightColorScheme(Map<String, int> colorScheme) async {
-    if (!Platform.isIOS) return;
     await AppHomeWidget.saveWidgetData(
       kSettingsLightColorSchemeKey,
       jsonEncode(colorScheme),
@@ -136,7 +140,6 @@ class SettingsRepository {
   }
 
   Future<void> saveDarkColorScheme(Map<String, int> colorScheme) async {
-    if (!Platform.isIOS) return;
     await AppHomeWidget.saveWidgetData(
       kSettingsDarkColorSchemeKey,
       jsonEncode(colorScheme),
@@ -144,7 +147,6 @@ class SettingsRepository {
   }
 
   Future<Map<String, int>?> getLightColorScheme() async {
-    if (!Platform.isIOS) return null;
     final json = await AppHomeWidget.getWidgetData<String>(
       kSettingsLightColorSchemeKey,
     );
@@ -154,7 +156,6 @@ class SettingsRepository {
   }
 
   Future<Map<String, int>?> getDarkColorScheme() async {
-    if (!Platform.isIOS) return null;
     final json = await AppHomeWidget.getWidgetData<String>(
       kSettingsDarkColorSchemeKey,
     );
@@ -268,6 +269,14 @@ class SettingsRepository {
     await AppHomeWidget.saveWidgetData(
       kSettingsBackgroundAsset,
       jsonEncode(asset.toJson()),
+    );
+    // 同步背景资源名称到 Widget（提取 bg_dot / bg_grid）
+    final assetBaseName = asset.darkAsset
+        .replaceAll('assets/images/', '')
+        .replaceAll('_tile_dark.png', '');
+    await AppHomeWidget.saveWidgetData(
+      'widget_background_asset',
+      assetBaseName,
     );
     _onBackgroundAssetChangeController.add(asset);
   }

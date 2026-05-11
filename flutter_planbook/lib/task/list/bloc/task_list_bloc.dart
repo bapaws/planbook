@@ -5,10 +5,10 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:uuid/uuid.dart';
 
 part 'task_list_event.dart';
 part 'task_list_state.dart';
@@ -16,14 +16,12 @@ part 'task_list_state.dart';
 class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   TaskListBloc({
     required TasksRepository tasksRepository,
-    required NotesRepository notesRepository,
-    required SettingsRepository settingsRepository,
+    required TaskActionService taskActionService,
     TaskListMode mode = TaskListMode.inbox,
     this.priority,
   }) : _tasksRepository = tasksRepository,
-       _notesRepository = notesRepository,
+       _taskActionService = taskActionService,
        _mode = mode,
-       _settingsRepository = settingsRepository,
        super(const TaskListState()) {
     on<TaskListRequested>(_onRequested, transformer: restartable());
     on<TaskListDayAllRequested>(_onDayAllRequested, transformer: restartable());
@@ -36,8 +34,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   }
 
   final TasksRepository _tasksRepository;
-  final NotesRepository _notesRepository;
-  final SettingsRepository _settingsRepository;
+  final TaskActionService _taskActionService;
 
   final TaskListMode _mode;
   final TaskPriority? priority;
@@ -116,24 +113,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         occurrenceAt = parentTask.occurrence!.occurrenceAt;
       }
     }
-    final activities = await _tasksRepository.completeTask(
-      task,
+    final activities = await _taskActionService.completeTask(
+      task: task,
       occurrenceAt: occurrenceAt,
-    );
-
-    /// 更新任务完成后，更新重点或总结
-    unawaited(
-      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
     );
     for (final activity in activities) {
       add(TaskListNoteCreated(activity: activity));
-
-      /// 取消任务的提醒
-      if (activity.taskId != null) {
-        unawaited(
-          AlarmNotificationService.instance.cancelForTask(activity.taskId!),
-        );
-      }
     }
     emit(state.copyWith(status: PageStatus.success));
   }
@@ -142,11 +127,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListDeleted event,
     Emitter<TaskListState> emit,
   ) async {
-    await _tasksRepository.deleteTaskById(event.taskId);
+    await _taskActionService.deleteTask(event.taskId);
     emit(state.copyWith(status: PageStatus.success));
-    unawaited(
-      AlarmNotificationService.instance.cancelForTask(event.taskId),
-    );
   }
 
   Future<void> _onNoteCreated(
@@ -158,33 +140,10 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     final task = await _tasksRepository.getTaskEntityById(taskId);
     if (task == null) return;
 
-    final type = await _settingsRepository.getTaskAutoNoteTypeByTask(task);
-    if (type == TaskAutoNoteType.none) return;
-
-    NoteEntity? noteEntity;
-    if (type.isCreate) {
-      final note = await _notesRepository.create(
-        title:
-            '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        tags: task.tags,
-        taskId: task.id,
-      );
-      if (type == TaskAutoNoteType.createAndEdit) {
-        noteEntity = await _notesRepository.getNoteEntityById(note.id);
-      }
-    } else if (type == TaskAutoNoteType.edit) {
-      final note = Note(
-        id: const Uuid().v4(),
-        title:
-            '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        taskId: task.id,
-        createdAt: Jiffy.now(),
-        images: [],
-      );
-      noteEntity = NoteEntity(note: note, tags: task.tags);
-    }
+    final noteEntity = await _taskActionService.resolveAutoNote(
+      activity: event.activity,
+      task: task,
+    );
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
     );

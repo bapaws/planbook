@@ -39,8 +39,8 @@ class TaskDetailPage extends StatelessWidget {
       create: (context) =>
           TaskDetailBloc(
               tasksRepository: context.read(),
-              settingsRepository: context.read(),
               notesRepository: context.read(),
+              taskActionService: context.read(),
               taskId: taskId,
               occurrenceAt: occurrenceAt,
             )

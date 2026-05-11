@@ -33,7 +33,7 @@ class DiscoverJournalCoverPage extends StatelessWidget {
       child: BlocListener<DiscoverCoverBloc, DiscoverCoverState>(
         listener: (context, state) {
           if (state.status == PageStatus.loading) {
-            EasyLoading.show(maskType: EasyLoadingMaskType.clear);
+            EasyLoading.show(maskType: EasyLoadingMaskType.none);
           } else {
             EasyLoading.dismiss();
           }

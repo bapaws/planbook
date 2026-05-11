@@ -1,9 +1,5 @@
-import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
@@ -16,11 +12,11 @@ import 'package:flutter_planbook/task/done/view/task_done_complete_at_view.dart'
 import 'package:flutter_planbook/task/done/view/task_duration_tag_view.dart';
 import 'package:flutter_planbook/task/done/view/task_recurrence_rule_tag_view.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
-import 'package:planbook_repository/settings/settings_repository.dart';
 
 @RoutePage()
 class TaskDonePage extends StatelessWidget {
@@ -35,9 +31,7 @@ class TaskDonePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TaskDoneCubit(
-        tasksRepository: context.read(),
-        settingsRepository: context.read(),
-        notesRepository: context.read(),
+        taskActionService: context.read(),
         task: task,
       )..onRequested(),
       child: MultiBlocListener(
@@ -243,7 +237,7 @@ class _TaskDonePage extends StatelessWidget {
                   minimumSize: Size.zero,
                   onPressed: () {
                     context.read<TaskDoneCubit>().onCompleted();
-                    _playCompletedSound(context);
+                    context.read<TaskActionService>().playCompletedFeedback();
                   },
                   child: Container(
                     width: double.infinity,
@@ -295,15 +289,4 @@ class _TaskDonePage extends StatelessWidget {
     );
   }
 
-  Future<void> _playCompletedSound(BuildContext context) async {
-    unawaited(HapticFeedback.lightImpact());
-
-    final sound = await context
-        .read<SettingsRepository>()
-        .getTaskCompletedSound();
-    if (sound != null && sound.isNotEmpty) {
-      final player = AudioPlayer();
-      await player.play(AssetSource(sound));
-    }
-  }
 }

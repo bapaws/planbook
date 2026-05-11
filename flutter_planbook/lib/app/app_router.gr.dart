@@ -1683,6 +1683,7 @@ class TaskNewRoute extends _i61.PageRouteInfo<TaskNewRouteArgs> {
   TaskNewRoute({
     _i65.TaskEntity? initialTask,
     _i65.Jiffy? dueAt,
+    _i65.TaskPriority? priority,
     _i63.Key? key,
     List<_i61.PageRouteInfo>? children,
   }) : super(
@@ -1690,6 +1691,7 @@ class TaskNewRoute extends _i61.PageRouteInfo<TaskNewRouteArgs> {
          args: TaskNewRouteArgs(
            initialTask: initialTask,
            dueAt: dueAt,
+           priority: priority,
            key: key,
          ),
          initialChildren: children,
@@ -1706,6 +1708,7 @@ class TaskNewRoute extends _i61.PageRouteInfo<TaskNewRouteArgs> {
       return _i52.TaskNewPage(
         initialTask: args.initialTask,
         dueAt: args.dueAt,
+        priority: args.priority,
         key: args.key,
       );
     },
@@ -1713,17 +1716,24 @@ class TaskNewRoute extends _i61.PageRouteInfo<TaskNewRouteArgs> {
 }
 
 class TaskNewRouteArgs {
-  const TaskNewRouteArgs({this.initialTask, this.dueAt, this.key});
+  const TaskNewRouteArgs({
+    this.initialTask,
+    this.dueAt,
+    this.priority,
+    this.key,
+  });
 
   final _i65.TaskEntity? initialTask;
 
   final _i65.Jiffy? dueAt;
 
+  final _i65.TaskPriority? priority;
+
   final _i63.Key? key;
 
   @override
   String toString() {
-    return 'TaskNewRouteArgs{initialTask: $initialTask, dueAt: $dueAt, key: $key}';
+    return 'TaskNewRouteArgs{initialTask: $initialTask, dueAt: $dueAt, priority: $priority, key: $key}';
   }
 
   @override
@@ -1732,11 +1742,13 @@ class TaskNewRouteArgs {
     if (other is! TaskNewRouteArgs) return false;
     return initialTask == other.initialTask &&
         dueAt == other.dueAt &&
+        priority == other.priority &&
         key == other.key;
   }
 
   @override
-  int get hashCode => initialTask.hashCode ^ dueAt.hashCode ^ key.hashCode;
+  int get hashCode =>
+      initialTask.hashCode ^ dueAt.hashCode ^ priority.hashCode ^ key.hashCode;
 }
 
 /// generated route for

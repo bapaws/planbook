@@ -13,12 +13,15 @@ import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
+import 'package:flutter_planbook/widget/widget_action_setup.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/supabase_planbook_api.dart';
 
 class AppBlocObserver extends BlocObserver {
   const AppBlocObserver();
@@ -62,6 +65,11 @@ Future<Widget> _initApp() async {
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 
+  /// Migration database path
+  /// 当前情况是将数据库从 habits.sqlite 迁移到 planbook.sqlite
+  /// 清除一些缓存数据，重新获取数据
+  await _migrationDatabasePath(sp);
+
   final db = AppDatabase();
   final tagApi = DatabaseTagApi(db: db);
   final tagsRepository = TagsRepository(
@@ -90,6 +98,23 @@ Future<Widget> _initApp() async {
 
   final settingsRepository = SettingsRepository(sp: sp);
 
+  // 统一编排 Task 完成 / 删除 / 自动笔记 / 提醒 / 音效等副作用，
+  // 由各 bloc / view / widget 入口共享同一份逻辑。
+  final taskActionService = TaskActionService(
+    tasksRepository: tasksRepository,
+    notesRepository: notesRepository,
+    settingsRepository: settingsRepository,
+  );
+
+  // 把小组件的 "完成任务" 事件接入到主 App 的 service，并通知 native 端 Flutter 已就绪。
+  // 必须在 repos 全部创建完毕后调用，否则 native 端等到的 ready 信号不带可用 handler。
+  unawaited(
+    setupPlanbookWidgetActions(
+      tasksRepository: tasksRepository,
+      taskActionService: taskActionService,
+    ),
+  );
+
   return MultiRepositoryProvider(
     providers: [
       RepositoryProvider.value(value: sp),
@@ -98,6 +123,7 @@ Future<Widget> _initApp() async {
       RepositoryProvider.value(value: tasksRepository),
       RepositoryProvider.value(value: notesRepository),
       RepositoryProvider.value(value: assetsRepository),
+      RepositoryProvider.value(value: taskActionService),
       RepositoryProvider.value(value: UsersRepository.instance),
       RepositoryProvider(
         create: (context) => AppActivityRepository(
@@ -173,4 +199,14 @@ Future<void> _initPurchases() async {
   }
 
   await Purchases.configure(configuration);
+}
+
+Future<void> _migrationDatabasePath(SharedPreferences sp) async {
+  final dbFile = await AppDatabase.getDatabaseFile();
+  if (dbFile.existsSync()) {
+    return;
+  }
+  unawaited(sp.remove(SupabaseNoteApi.kLastGetNotesTimestamp));
+  unawaited(sp.remove(SupabaseTaskApi.kLastGetTasksTimestamp));
+  unawaited(sp.remove(SupabaseTagApi.kLastGetTagsTimestamp));
 }

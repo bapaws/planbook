@@ -12,6 +12,7 @@
 	</array>
 	<key>com.apple.security.application-groups</key>
 	<array>
+		<string>group.GM4766U38W.com.bapaws.habits</string>
 		<string>group.GM4766U38W.com.bapaws.planbook</string>
 	</array>
 </dict>

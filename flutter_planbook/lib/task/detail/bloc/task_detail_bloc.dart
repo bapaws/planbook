@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:uuid/uuid.dart';
 
 part 'task_detail_event.dart';
 part 'task_detail_state.dart';
@@ -17,13 +16,13 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
   TaskDetailBloc({
     required TasksRepository tasksRepository,
     required NotesRepository notesRepository,
+    required TaskActionService taskActionService,
     required String taskId,
-    required SettingsRepository settingsRepository,
     Jiffy? occurrenceAt,
   }) : _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
+       _taskActionService = taskActionService,
        _taskId = taskId,
-       _settingsRepository = settingsRepository,
        _occurrenceAt = occurrenceAt,
        super(const TaskDetailState()) {
     on<TaskDetailRequested>(_onRequested);
@@ -50,7 +49,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
 
   final TasksRepository _tasksRepository;
   final NotesRepository _notesRepository;
-  final SettingsRepository _settingsRepository;
+  final TaskActionService _taskActionService;
 
   Task? _updatedTask;
   List<TagEntity>? _updatedTags;
@@ -86,13 +85,8 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
   ) async {
     final taskId = state.task?.id;
     if (taskId == null) return;
-    await _tasksRepository.deleteTaskById(taskId);
+    await _taskActionService.deleteTask(taskId);
     emit(state.copyWith(status: PageStatus.dispose));
-
-    /// 取消任务的提醒
-    unawaited(
-      AlarmNotificationService.instance.cancelForTask(taskId),
-    );
   }
 
   Future<void> _onTitleChanged(
@@ -203,14 +197,9 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     final task = event.task;
     if (task == null) return;
 
-    final activities = await _tasksRepository.completeTask(
-      task,
+    final activities = await _taskActionService.completeTask(
+      task: task,
       occurrenceAt: state.task?.occurrence?.occurrenceAt,
-    );
-
-    /// 更新任务完成后，更新重点或总结
-    unawaited(
-      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
     );
     for (final activity in activities) {
       add(TaskDetailNoteCreated(activity: activity));
@@ -222,13 +211,6 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         final newChildren = [...state.task!.children];
         newChildren[index] = newChildren[index].copyWith(activity: activity);
         emit(state.copyWith(task: state.task!.copyWith(children: newChildren)));
-      }
-
-      /// 取消任务的提醒
-      if (activity.taskId != null) {
-        unawaited(
-          AlarmNotificationService.instance.cancelForTask(activity.taskId!),
-        );
       }
     }
     emit(
@@ -242,11 +224,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       ),
     );
 
-    final sound = await _settingsRepository.getTaskCompletedSound();
-    if (sound != null && sound.isNotEmpty) {
-      final player = AudioPlayer();
-      await player.play(AssetSource(sound));
-    }
+    unawaited(_taskActionService.playCompletedFeedback());
   }
 
   Future<void> _onNoteCreated(
@@ -258,33 +236,10 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     final task = await _tasksRepository.getTaskEntityById(taskId);
     if (task == null) return;
 
-    final type = await _settingsRepository.getTaskAutoNoteTypeByTask(task);
-    if (type == TaskAutoNoteType.none) return;
-
-    NoteEntity? noteEntity;
-    if (type.isCreate) {
-      final note = await _notesRepository.create(
-        title:
-            '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        tags: task.tags,
-        taskId: task.id,
-      );
-      if (type == TaskAutoNoteType.createAndEdit) {
-        noteEntity = await _notesRepository.getNoteEntityById(note.id);
-      }
-    } else if (type == TaskAutoNoteType.edit) {
-      final note = Note(
-        id: const Uuid().v4(),
-        title:
-            '${event.activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        taskId: task.id,
-        createdAt: Jiffy.now(),
-        images: [],
-      );
-      noteEntity = NoteEntity(note: note, tags: task.tags);
-    }
+    final noteEntity = await _taskActionService.resolveAutoNote(
+      activity: event.activity,
+      task: task,
+    );
     emit(
       state.copyWith(status: PageStatus.success, currentTaskNote: noteEntity),
     );
@@ -340,7 +295,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     _updatedChildren = null;
 
     /// 重新调度任务的提醒
-    unawaited(AlarmNotificationService.instance.scheduleForTask(task));
+    _taskActionService.rescheduleAlarm(task);
   }
 
   Future<void> _onUpdated(

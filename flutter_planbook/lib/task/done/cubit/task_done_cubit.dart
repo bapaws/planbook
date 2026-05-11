@@ -3,21 +3,17 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:uuid/uuid.dart';
 
 part 'task_done_state.dart';
 
 class TaskDoneCubit extends Cubit<TaskDoneState> {
   TaskDoneCubit({
-    required TasksRepository tasksRepository,
-    required SettingsRepository settingsRepository,
-    required NotesRepository notesRepository,
+    required TaskActionService taskActionService,
     required TaskEntity task,
-  }) : _tasksRepository = tasksRepository,
-       _settingsRepository = settingsRepository,
-       _notesRepository = notesRepository,
+  }) : _taskActionService = taskActionService,
        super(
          TaskDoneState(
            task: task,
@@ -25,9 +21,7 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
          ),
        );
 
-  final TasksRepository _tasksRepository;
-  final SettingsRepository _settingsRepository;
-  final NotesRepository _notesRepository;
+  final TaskActionService _taskActionService;
 
   int get incompleteChildrenCount => state.incompleteChildrenCount;
 
@@ -93,20 +87,13 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
     }
   }
 
-  Future<List<TaskActivity>> _completeTask(TaskEntity task) async {
-    final completedAt = state.completedAt;
-    final activities = await _tasksRepository.completeTask(
-      task,
-      completedAt: completedAt,
+  Future<List<TaskActivity>> _completeTask(TaskEntity task) {
+    return _taskActionService.completeTask(
+      task: task,
+      completedAt: state.completedAt,
       // 子任务与父任务的重复规则一致，直接使用传入的 occurrenceAt
       occurrenceAt: state.task.occurrence?.occurrenceAt,
     );
-
-    /// 更新任务完成后，更新重点或总结
-    unawaited(
-      _notesRepository.updateTypeNoteContentByTaskActivities(activities),
-    );
-    return activities;
   }
 
   Future<void> _onNoteCreated(
@@ -115,35 +102,11 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
     Jiffy? createdAt,
   }) async {
     if (task == null) return;
-
-    final type = await _settingsRepository.getTaskAutoNoteTypeByTask(task);
-    if (type == TaskAutoNoteType.none) return;
-
-    NoteEntity? noteEntity;
-    if (type.isCreate) {
-      final note = await _notesRepository.create(
-        title:
-            '${activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        tags: task.tags,
-        taskId: task.id,
-        createdAt: createdAt ?? Jiffy.now(),
-      );
-      if (type == TaskAutoNoteType.createAndEdit) {
-        noteEntity = await _notesRepository.getNoteEntityById(note.id);
-      }
-    } else if (type == TaskAutoNoteType.edit) {
-      final note = Note(
-        id: const Uuid().v4(),
-        title:
-            '${activity.deletedAt == null ? '✅' : '❌'} '
-            '${task.title}',
-        taskId: task.id,
-        createdAt: createdAt ?? Jiffy.now(),
-        images: [],
-      );
-      noteEntity = NoteEntity(note: note, tags: task.tags);
-    }
+    final noteEntity = await _taskActionService.resolveAutoNote(
+      activity: activity,
+      task: task,
+      createdAt: createdAt,
+    );
     emit(
       state.copyWith(
         status: PageStatus.success,

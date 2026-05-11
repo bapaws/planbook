@@ -54,9 +54,6 @@ class DiscoverCoverBloc extends Bloc<DiscoverCoverEvent, DiscoverCoverState> {
       state.copyWith(
         builtinCovers: covers,
         builtinColorSchemes: [...state.builtinColorSchemes, coverColorScheme],
-        status: covers.length == DiscoverCoverState.defaultBuiltinCovers.length
-            ? PageStatus.success
-            : PageStatus.loading,
       ),
     );
   }

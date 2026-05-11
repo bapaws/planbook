@@ -949,12 +949,13 @@ packages:
     source: hosted
     version: "2.19.1"
   home_widget:
-    dependency: transitive
+    dependency: "direct main"
     description:
-      path: "packages/home_widget"
-      relative: true
-    source: path
-    version: "0.9.0"
+      name: home_widget
+      sha256: b04f99438ad6c5aad80fc9fca1e2e3471bf2a15028f614e4814d2552e13bc2a3
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.9.1"
   hotreloader:
     dependency: transitive
     description:
@@ -1496,6 +1497,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0+1"
+  planbook_widget:
+    dependency: "direct main"
+    description:
+      path: "packages/planbook_widget"
+      relative: true
+    source: path
+    version: "0.1.0"
   platform:
     dependency: transitive
     description:

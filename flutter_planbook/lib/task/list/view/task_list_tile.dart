@@ -1,18 +1,14 @@
-import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
-import 'package:planbook_repository/settings/settings_repository.dart';
 
 /// 统一的任务列表项组件
 ///
@@ -353,15 +349,7 @@ class _TaskListTileState extends State<TaskListTile>
   }
 
   Future<void> _playCompletedSound() async {
-    unawaited(HapticFeedback.lightImpact());
-
-    final sound = await context
-        .read<SettingsRepository>()
-        .getTaskCompletedSound();
-    if (sound != null && sound.isNotEmpty) {
-      final player = AudioPlayer();
-      await player.play(AssetSource(sound));
-    }
+    await context.read<TaskActionService>().playCompletedFeedback();
   }
 
   void _showDeleteConfirmationDialog() {

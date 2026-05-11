@@ -34,7 +34,67 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="planbook.bapaws" />
+            </intent-filter>
         </activity>
+        <!-- Widget Receivers - RemoteViews 实现 -->
+        <receiver
+            android:name=".widget.QuadrantWidgetLargeProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quadrant_widget_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.QuadrantWidgetSmallProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quadrant_widget_small_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.QuickNoteWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_note_widget_info" />
+        </receiver>
+
+        <!-- Widget 配置界面 -->
+        <activity
+            android:name=".widget.WidgetConfigureActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Material.Light.Dialog">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- Widget 点击事件接收器 -->
+        <receiver
+            android:name=".widget.WidgetClickReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.bapaws.planbook.widget.COMPLETE_TASK" />
+                <action android:name="com.bapaws.planbook.widget.SWITCH_QUADRANT" />
+            </intent-filter>
+        </receiver>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

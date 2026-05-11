@@ -27,8 +27,11 @@ final class TaskNewState extends Equatable {
     this.showEditModeSelection = false,
   });
 
-  factory TaskNewState.fromData({TaskEntity? task, Jiffy? dueAt}) {
-    print('fromData: ${task?.startAt}');
+  factory TaskNewState.fromData({
+    TaskEntity? task,
+    Jiffy? dueAt,
+    TaskPriority? priority,
+  }) {
     return TaskNewState(
       initialTask: task,
       title: task?.title ?? '',
@@ -36,7 +39,7 @@ final class TaskNewState extends Equatable {
       endAt: task?.endAt,
       isAllDay: task?.isAllDay ?? true,
       recurrenceRule: task?.recurrenceRule,
-      priority: task?.priority ?? TaskPriority.none,
+      priority: task?.priority ?? priority ?? TaskPriority.none,
       alarms: task?.alarms ?? const [],
       tags: task?.tags ?? const [],
       children: task?.children ?? const [],

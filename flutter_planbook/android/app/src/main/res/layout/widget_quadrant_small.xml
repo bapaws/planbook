@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    小号四象限小组件 (2x2)，与 iOS QuadrantWidgetSmallView 严格对齐。
+    iOS 端关键参数（SwiftUIX 常量 .extraSmall=4, .small=8）：
+      * VStack(alignment: .leading, spacing: 4)：项之间 4pt 间距
+      * 切换栏: padding(.top, .extraSmall)=4, padding(.horizontal, .small)=8, height(36)
+      * 切换栏 4 按钮：HStack(spacing:0) 内每个 frame(width: totalWidth/4)，21pt 按钮居中
+      * 任务行：QuadrantTaskRow 在 systemSmall 时，icon padding leading=4+8=12, trailing=8, vertical=4
+      * 任务图标 15pt，文字 .footnote(~13pt)
+    Android 完全对齐：
+      * 整体不设统一 padding（与 iOS .contentMarginsDisabled 一致）
+      * 切换栏 layout_height=36dp + paddingTop=4dp + paddingHorizontal=8dp
+      * 4 个 ImageView 用 layout_weight=1 均分宽度，scaleType=center 让 21dp bitmap 居中
+      * 任务行 layout_marginTop=4dp，paddingVertical=4dp
+      * 图标 marginStart=12dp(15dp 尺寸)，文字 marginStart=8dp(13sp)
+      * 整行 LinearLayout 可点击（点击事件区域跨满整行）
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <!-- 顶部切换栏（4 个数字按钮均分宽度） -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            android:paddingHorizontal="8dp">
+
+            <ImageView
+                android:id="@+id/btn_q1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="center" />
+
+            <ImageView
+                android:id="@+id/btn_q2"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="center" />
+
+            <ImageView
+                android:id="@+id/btn_q3"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="center" />
+
+            <ImageView
+                android:id="@+id/btn_q4"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:scaleType="center" />
+        </LinearLayout>
+
+        <!-- 任务列表 -->
+        <LinearLayout
+            android:id="@+id/task_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="4dp">
+            <ImageView
+                android:id="@+id/task_1_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_circle" />
+            <TextView
+                android:id="@+id/task_1_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/task_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="4dp">
+            <ImageView
+                android:id="@+id/task_2_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_circle" />
+            <TextView
+                android:id="@+id/task_2_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/task_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="4dp">
+            <ImageView
+                android:id="@+id/task_3_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_circle" />
+            <TextView
+                android:id="@+id/task_3_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/task_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="4dp">
+            <ImageView
+                android:id="@+id/task_4_icon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_circle" />
+            <TextView
+                android:id="@+id/task_4_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:textSize="13sp"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

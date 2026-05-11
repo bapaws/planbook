@@ -75,6 +75,22 @@ class UsersRepository {
       sp: sp,
     );
     await _instance!.getUserProfile();
+    // 同步当前 Supabase 用户 id 到 widget 共享存储。
+    // 登录 / 注销链路本身已经在每次状态变更时写入这里，但冷启动时
+    // session 可能是从磁盘恢复的（不会走 signIn 系列方法），此时 widget
+    // 端拿到的 id 可能是上次会话遗留的或为空——这里做一次权威同步。
+    await _instance!._syncCurrentUserIdToWidget();
+  }
+
+  /// 把 [_supabase?.auth.currentUser?.id] 写到 widget 共享存储；
+  /// 用户已注销时清掉对应键。
+  Future<void> _syncCurrentUserIdToWidget() async {
+    final id = _supabase?.auth.currentUser?.id;
+    if (id == null || id.isEmpty) {
+      await AppHomeWidget.removeWidgetData(kUserId);
+    } else {
+      await AppHomeWidget.saveWidgetData(kUserId, id);
+    }
   }
 
   Future<AuthResponse?> signUp({

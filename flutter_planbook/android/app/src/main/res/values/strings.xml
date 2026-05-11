@@ -5,5 +5,17 @@
     <string name="microphone_permission_description">[Planbook] needs to use your microphone to record the task.</string>
     <string name="photo_library_permission_description">[Planbook] needs to use your photo library to save images.</string>
     <string name="photo_library_usage_description">[Planbook] needs to use your photos to record the task.</string>
+    <string name="widget_large_name">四象限（大）</string>
+    <string name="widget_large_description">显示四个象限的任务列表</string>
+    <string name="widget_medium_name">四象限（中）</string>
+    <string name="widget_medium_description">切换显示不同象限的任务</string>
+    <string name="widget_quick_note_name">快速笔记</string>
+    <string name="widget_quick_note_description">快速创建一条笔记</string>
+    <string name="widget_test_name">测试组件</string>
+    <string name="widget_test_description">极简测试组件，用于调试</string>
+    <string name="quadrant_high">重要且紧急</string>
+    <string name="quadrant_medium">重要不紧急</string>
+    <string name="quadrant_low">紧急不重要</string>
+    <string name="quadrant_none">不重要不紧急</string>
 </resources>
 

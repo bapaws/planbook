@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "feather-pointed-solid-full.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

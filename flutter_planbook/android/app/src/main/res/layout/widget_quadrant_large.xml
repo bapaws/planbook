@@ -1,0 +1,723 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    大号四象限小组件 (4x4)，与 iOS QuadrantWidgetLargeView 严格对齐。
+    关键参数（对齐 iOS 端 SwiftUIX 常量 .small=8, .extraSmall=4, kQuadrantLargeSpacing=12）：
+      * Header 在象限内 marginStart=12dp，等同 iOS .padding(.leading, kQuadrantLargeSpacing)
+      * Header 内边距 paddingStart=8dp / paddingEnd=4dp，等同 iOS .padding(.leading, .small) / .padding(.trailing, .extraSmall)
+      * Header 高度 20dp，等同 iOS .height(20)
+      * Header 数字字号 14sp（iOS .system(size:14,bold,italic)）；标题字号 11sp（iOS .system(size:11)）
+      * 任务行 marginTop=4dp，等同 iOS VStack(spacing:4)
+      * 任务行 paddingVertical=4dp，等同 iOS .padding(.vertical, .extraSmall)
+      * 任务图标 15dp×15dp，marginStart=12dp（与 header 颜色左边对齐）
+      * 任务文字字号 13sp（iOS .footnote），与图标间距 8dp
+      * 整行 LinearLayout 可点击（点击事件区域：象限的最左边到最右边）
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!-- 背景图：铺满整个 widget（圆角已经在 createRoundedTiledBackground 中处理）。
+     注意 FrameLayout 不能加 padding，否则 ImageView 也会被内缩，背景就不再铺满。 -->
+<ImageView
+    android:id="@+id/widget_bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:scaleType="fitXY" />
+
+<!-- 内容容器：
+     * paddingTop=12dp 对应 iOS .padding(.top, kQuadrantLargeSpacing)
+     * paddingEnd=12dp 对应 iOS halfWidth = (W - 12) / 2 留下的右侧 12pt 空白
+       （iOS 中 4 个象限总宽 = W-12，剩 12pt 在最右边） -->
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="12dp"
+    android:paddingEnd="12dp"
+    android:orientation="vertical">
+
+    <!-- Row 1 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Quadrant 1: 重要且紧急 -->
+        <LinearLayout
+            android:id="@+id/quadrant_1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_header"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:orientation="horizontal"
+                android:gravity="bottom|start"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"
+                android:background="@drawable/bg_quadrant_header">
+
+                <TextView
+                    android:id="@+id/quadrant_1_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1."
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/quadrant_1_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="重要且紧急"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_task_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_1_task_1_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_1_task_1_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_task_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_1_task_2_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_1_task_2_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_task_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_1_task_3_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_1_task_3_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_task_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_1_task_4_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_1_task_4_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_1_task_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_1_task_5_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_1_task_5_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Quadrant 2: 重要不紧急 -->
+        <LinearLayout
+            android:id="@+id/quadrant_2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_header"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:orientation="horizontal"
+                android:gravity="bottom|start"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"
+                android:background="@drawable/bg_quadrant_header">
+
+                <TextView
+                    android:id="@+id/quadrant_2_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2."
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/quadrant_2_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="重要不紧急"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_task_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_2_task_1_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_2_task_1_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_task_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_2_task_2_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_2_task_2_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_task_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_2_task_3_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_2_task_3_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_task_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_2_task_4_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_2_task_4_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_2_task_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_2_task_5_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_2_task_5_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Row 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="horizontal">
+
+        <!-- Quadrant 3: 紧急不重要 -->
+        <LinearLayout
+            android:id="@+id/quadrant_3"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_header"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:orientation="horizontal"
+                android:gravity="bottom|start"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"
+                android:background="@drawable/bg_quadrant_header">
+
+                <TextView
+                    android:id="@+id/quadrant_3_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3."
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/quadrant_3_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="紧急不重要"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_task_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_3_task_1_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_3_task_1_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_task_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_3_task_2_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_3_task_2_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_task_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_3_task_3_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_3_task_3_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_task_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_3_task_4_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_3_task_4_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_3_task_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_3_task_5_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_3_task_5_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Quadrant 4: 不重要不紧急 -->
+        <LinearLayout
+            android:id="@+id/quadrant_4"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_header"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:orientation="horizontal"
+                android:gravity="bottom|start"
+                android:paddingStart="8dp"
+                android:paddingEnd="4dp"
+                android:background="@drawable/bg_quadrant_header">
+
+                <TextView
+                    android:id="@+id/quadrant_4_number"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4."
+                    android:textSize="14sp"
+                    android:textStyle="bold|italic"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/quadrant_4_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="不重要不紧急"
+                    android:textSize="11sp"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:layout_marginStart="2dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_task_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_4_task_1_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_4_task_1_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_task_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_4_task_2_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_4_task_2_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_task_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_4_task_3_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_4_task_3_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_task_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_4_task_4_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_4_task_4_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/quadrant_4_task_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="4dp"
+                android:paddingVertical="4dp">
+                <ImageView
+                    android:id="@+id/quadrant_4_task_5_icon"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_marginStart="12dp"
+                    android:src="@drawable/ic_circle" />
+                <TextView
+                    android:id="@+id/quadrant_4_task_5_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:textSize="13sp"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+</FrameLayout>
