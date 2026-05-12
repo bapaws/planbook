@@ -13,7 +13,7 @@ BEGIN
         AND column_name = 'type'
     ) THEN
         ALTER TABLE planbook.notes 
-        ADD COLUMN type TEXT CHECK (type IN ('journal', 'dailyFocus', 'weeklyFocus'));
+        ADD COLUMN type TEXT;
         
         CREATE INDEX IF NOT EXISTS idx_notes_type ON planbook.notes(type);
     END IF;
@@ -107,3 +107,8 @@ BEGIN
         ADD COLUMN cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb;
     END IF;
 END $$;
+
+-- ============================================
+-- 迁移 v5: 移除 notes.type 的 CHECK（合法值由客户端 NoteType 约束；便于扩展）
+-- ============================================
+ALTER TABLE planbook.notes DROP CONSTRAINT IF EXISTS notes_type_check;
