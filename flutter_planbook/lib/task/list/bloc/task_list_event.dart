@@ -22,23 +22,47 @@ final class TaskListRequested extends TaskListEvent {
 
   @override
   List<Object?> get props => [date, tagId, isCompleted, selectedTagIds];
+
+  TaskListRequested copyWith({
+    Jiffy? date,
+    String? tagId,
+    bool? isCompleted,
+    Set<String>? selectedTagIds,
+  }) {
+    return TaskListRequested(
+      date: date ?? this.date,
+      tagId: tagId ?? this.tagId,
+      isCompleted: isCompleted ?? this.isCompleted,
+      selectedTagIds: selectedTagIds ?? this.selectedTagIds,
+    );
+  }
 }
 
-final class TaskListDayAllRequested extends TaskListEvent {
+final class TaskListDayAllRequested extends TaskListRequested {
   const TaskListDayAllRequested({
-    this.date,
-    this.tagId,
-    this.isCompleted,
-    this.selectedTagIds = const {},
+    super.date,
+    super.tagId,
+    super.isCompleted,
+    super.selectedTagIds = const {},
   });
-
-  final Jiffy? date;
-  final String? tagId;
-  final bool? isCompleted;
-  final Set<String> selectedTagIds;
 
   @override
   List<Object?> get props => [date, tagId, isCompleted, selectedTagIds];
+
+  @override
+  TaskListDayAllRequested copyWith({
+    Jiffy? date,
+    String? tagId,
+    bool? isCompleted,
+    Set<String>? selectedTagIds,
+  }) {
+    return TaskListDayAllRequested(
+      date: date ?? this.date,
+      tagId: tagId ?? this.tagId,
+      isCompleted: isCompleted ?? this.isCompleted,
+      selectedTagIds: selectedTagIds ?? this.selectedTagIds,
+    );
+  }
 }
 
 final class TaskListCompleted extends TaskListEvent {

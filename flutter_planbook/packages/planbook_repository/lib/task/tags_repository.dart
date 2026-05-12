@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
@@ -16,15 +17,17 @@ import 'package:uuid/uuid.dart';
 
 class TagsRepository {
   TagsRepository({
-    required SharedPreferences sp,
+    required AppDatabase db,
     required DatabaseTagApi tagApi,
+    required OutboxApi outboxApi,
+    required SharedPreferences sp,
   }) : _tagApi = tagApi,
-       _supabaseTagApi = SupabaseTagApi(sp: sp),
-       _db = tagApi.db;
+       _db = db,
+       _supabaseTagApi = SupabaseTagApi(sp: sp);
 
   final DatabaseTagApi _tagApi;
-  final SupabaseTagApi _supabaseTagApi;
   final AppDatabase _db;
+  final SupabaseTagApi _supabaseTagApi;
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
 
@@ -88,7 +91,6 @@ class TagsRepository {
       level: (parentTag?.level ?? -1) + 1,
       createdAt: Jiffy.now(),
     );
-    await _supabaseTagApi.create(tag: tag);
     await _tagApi.create(tag: tag);
   }
 
@@ -110,13 +112,11 @@ class TagsRepository {
       level: (parentTag?.level ?? -1) + 1,
       updatedAt: Value(Jiffy.now()),
     );
-    await _supabaseTagApi.update(tag: newTag);
     await _tagApi.update(tag: newTag);
   }
 
   /// 递归删除 tag 及其所有子 tag
   Future<void> deleteById(String id) async {
-    await _supabaseTagApi.deleteById(id);
     await _tagApi.deleteById(id);
   }
 

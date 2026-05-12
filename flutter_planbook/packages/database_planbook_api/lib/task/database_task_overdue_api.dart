@@ -8,6 +8,7 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
   DatabaseTaskOverdueApi({
     required super.db,
     required super.tagApi,
+    required super.outboxApi,
   });
 
   /// 获取指定日期内的 overdue 任务数量

@@ -3,6 +3,7 @@ library;
 
 export 'note/database_note_api.dart';
 export 'note/database_note_task_api.dart';
+export 'sync/outbox_api.dart';
 export 'tag/database_tag_api.dart';
 export 'task/database_task_api.dart';
 export 'task/database_task_completion_api.dart';

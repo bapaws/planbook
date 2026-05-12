@@ -10,16 +10,12 @@ class TaskPriorityPage extends StatelessWidget {
     required this.style,
     super.key,
     this.date,
-    this.selectedTagIds = const {},
-    this.isCompleted,
   });
 
   final TaskPriorityStyle style;
 
   final TaskListMode mode;
   final Jiffy? date;
-  final Set<String> selectedTagIds;
-  final bool? isCompleted;
 
   static const spacing = 12.0;
 
@@ -100,14 +96,11 @@ class TaskPriorityPage extends StatelessWidget {
     return TaskListBlocProvider(
       mode: mode,
       priority: priority,
-      key: ValueKey(date.toString() + priority.name + isCompleted.toString()),
-      requestEvent: () => TaskListDayAllRequested(
-        date: date,
-        isCompleted: isCompleted,
-        selectedTagIds: selectedTagIds,
-      ),
+      key: ValueKey(date.toString() + priority.name),
+      requestEvent: () => TaskListDayAllRequested(date: date),
       child: Expanded(
         child: TaskPriorityListView(
+          key: ValueKey(priority.name),
           style: style,
         ),
       ),

@@ -20,17 +20,23 @@ class TaskListBlocProvider extends StatelessWidget {
   final TaskListMode mode;
   final TaskPriority? priority;
   final Widget child;
-  final ValueGetter<TaskListEvent> requestEvent;
+  final ValueGetter<TaskListRequested> requestEvent;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TaskListBloc(
-        tasksRepository: context.read(),
-        taskActionService: context.read(),
-        mode: mode,
-        priority: priority,
-      )..add(requestEvent()),
+      create: (context) =>
+          TaskListBloc(
+            tasksRepository: context.read(),
+            taskActionService: context.read(),
+            mode: mode,
+            priority: priority,
+          )..add(
+            requestEvent().copyWith(
+              isCompleted: context.read<RootTaskBloc>().isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
+            ),
+          ),
       child: MultiBlocListener(
         listeners: [
           BlocListener<RootTaskBloc, RootTaskState>(
@@ -38,7 +44,10 @@ class TaskListBlocProvider extends StatelessWidget {
                 previous.showCompleted != current.showCompleted ||
                 previous.selectedTagIds != current.selectedTagIds,
             listener: (context, state) {
-              final event = requestEvent();
+              final event = requestEvent().copyWith(
+                isCompleted: state.isCompleted,
+                selectedTagIds: state.selectedTagIds,
+              );
               context.read<TaskListBloc>().add(event);
             },
           ),

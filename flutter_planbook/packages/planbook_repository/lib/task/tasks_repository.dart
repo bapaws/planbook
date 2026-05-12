@@ -18,16 +18,17 @@ class TasksRepository {
     required DatabaseTagApi tagApi,
     required SharedPreferences sp,
     required AppDatabase db,
+    required OutboxApi outboxApi,
   }) : _db = db,
        _tagApi = tagApi,
        _supabaseTaskApi = SupabaseTaskApi(sp: sp),
-       _dbTaskApi = DatabaseTaskApi(db: db, tagApi: tagApi),
-       _dbTaskInboxApi = DatabaseTaskInboxApi(db: db, tagApi: tagApi),
-       _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi),
-       _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi),
-       _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi),
+       _dbTaskApi = DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+       _dbTaskInboxApi = DatabaseTaskInboxApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+       _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+       _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+       _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
        _dbTaskDelayApi = DatabaseTaskDelayApi(db: db, tagApi: tagApi),
-       _dbTaskUpdateApi = DatabaseTaskUpdateApi(db: db, tagApi: tagApi);
+       _dbTaskUpdateApi = DatabaseTaskUpdateApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
 
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
@@ -74,11 +75,6 @@ class TasksRepository {
           ),
         )
         .toList();
-    await _supabaseTaskApi.create(
-      task: newTask,
-      taskTags: taskTags,
-      children: newChildren,
-    );
     await _dbTaskApi.create(
       task: newTask,
       taskTags: taskTags,
@@ -116,11 +112,6 @@ class TasksRepository {
           ),
         )
         .toList();
-    await _supabaseTaskApi.update(
-      task: newTask,
-      taskTags: taskTags,
-      children: newChildren,
-    );
     await _dbTaskUpdateApi.update(
       task: newTask,
       taskTags: taskTags,
@@ -161,28 +152,6 @@ class TasksRepository {
       userId: userId,
       editMode: editMode,
     );
-
-    // 同步到 Supabase
-    if (result.originalTaskUpdated != null) {
-      await _supabaseTaskApi.update(
-        task: result.originalTaskUpdated!,
-        taskTags: result.originalTaskTags ?? [],
-      );
-    }
-
-    if (result.isNewTask) {
-      await _supabaseTaskApi.create(
-        task: result.updatedTask,
-        taskTags: result.taskTags,
-        children: result.children,
-      );
-    } else {
-      await _supabaseTaskApi.update(
-        task: result.updatedTask,
-        taskTags: result.taskTags,
-        children: result.children,
-      );
-    }
 
     // 保存到本地数据库
     await _dbTaskUpdateApi.saveUpdateResult(result);
@@ -403,16 +372,12 @@ class TasksRepository {
         activities[i] = activities[i].copyWith(userId: Value(userId));
       }
     }
-    await _supabaseTaskApi.complete(activities: activities);
     await _dbTaskCompletionApi.completeTaskByActivities(activities);
     unawaited(AppHomeWidget.refreshQuadrantWidgets());
     return activities;
   }
 
   Future<void> deleteTaskById(String taskId) async {
-    final task = await _dbTaskApi.deleteTaskById(taskId);
-    if (task == null) return;
-    await _supabaseTaskApi.deleteByTaskId(taskId);
     await _dbTaskApi.deleteTaskById(taskId);
     unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
@@ -487,11 +452,6 @@ class TasksRepository {
 
     if (result.isNewTask) {
       // 重复任务创建了新的分离实例
-      await _supabaseTaskApi.create(
-        task: result.task,
-        taskTags: taskTags,
-        children: result.children,
-      );
       await _dbTaskApi.create(
         task: result.task,
         taskTags: taskTags,
@@ -508,11 +468,6 @@ class TasksRepository {
       }
     } else {
       // 非重复任务更新了时间
-      await _supabaseTaskApi.update(
-        task: result.task,
-        taskTags: taskTags,
-        children: result.children,
-      );
       await _dbTaskUpdateApi.update(
         task: result.task,
         taskTags: taskTags,

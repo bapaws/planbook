@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:database_planbook_api/task/database_task_api.dart';
 import 'package:database_planbook_api/task/recurring_task_edit_mode.dart';
@@ -47,6 +48,7 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
   DatabaseTaskUpdateApi({
     required super.db,
     required super.tagApi,
+    required super.outboxApi,
   });
 
   /// 检查任务是否有分离实例
@@ -374,6 +376,13 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
         db.tasks,
       )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
 
+      await outboxApi.enqueue(
+        tableName: 'tasks',
+        recordId: task.id,
+        operation: 'update',
+        payload: jsonEncode(task.toJson()),
+      );
+
       if (taskTags != null) {
         await (db.delete(
           db.taskTags,
@@ -381,6 +390,15 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
         for (final taskTag in taskTags) {
           await db.into(db.taskTags).insert(taskTag);
         }
+        await outboxApi.enqueue(
+          tableName: 'task_tags',
+          recordId: task.id,
+          operation: 'replace_associations',
+          payload: jsonEncode({
+            'parent_id': task.id,
+            'associations': taskTags.map((e) => e.toJson()).toList(),
+          }),
+        );
       }
       // 处理子任务
       if (children != null && children.isNotEmpty) {

@@ -71,20 +71,29 @@ Future<Widget> _initApp() async {
   await _migrationDatabasePath(sp);
 
   final db = AppDatabase();
-  final tagApi = DatabaseTagApi(db: db);
+  final outboxApi = OutboxApi(db: db);
+  final syncEngine = SyncEngine(
+    outboxApi: outboxApi,
+    supabase: AppSupabase.client,
+  );
+  final tagApi = DatabaseTagApi(db: db, outboxApi: outboxApi);
   final tagsRepository = TagsRepository(
+    db: db,
     sp: sp,
     tagApi: tagApi,
+    outboxApi: outboxApi,
   );
   final tasksRepository = TasksRepository(
     sp: sp,
     tagApi: tagApi,
     db: db,
+    outboxApi: outboxApi,
   );
   final notesRepository = NotesRepository(
     sp: sp,
     db: db,
     tagApi: tagApi,
+    outboxApi: outboxApi,
   );
   final assetsRepository = AssetsRepository(
     supabase: AppSupabase.client,
@@ -115,9 +124,13 @@ Future<Widget> _initApp() async {
     ),
   );
 
+  syncEngine.start();
+
   return MultiRepositoryProvider(
     providers: [
       RepositoryProvider.value(value: sp),
+      RepositoryProvider.value(value: outboxApi),
+      RepositoryProvider.value(value: syncEngine),
       RepositoryProvider.value(value: settingsRepository),
       RepositoryProvider.value(value: tagsRepository),
       RepositoryProvider.value(value: tasksRepository),
@@ -160,6 +173,7 @@ Future<Widget> _initApp() async {
                   notesRepository: context.read(),
                   usersRepository: context.read(),
                   sp: context.read(),
+                  syncEngine: context.read(),
                 )
                 ..add(const AppInitialized())
                 ..add(const AppUserRequested()),

@@ -77,11 +77,11 @@ class TaskTodayPage extends StatelessWidget {
                   },
                   onTaskDropped: (task) {
                     context.read<TaskTodayBloc>().add(
-                          TaskTodayNoteTaskAppended(
-                            task: task,
-                            noteType: noteType,
-                          ),
-                        );
+                      TaskTodayNoteTaskAppended(
+                        task: task,
+                        noteType: noteType,
+                      ),
+                    );
                   },
                 );
               },
@@ -91,9 +91,7 @@ class TaskTodayPage extends StatelessWidget {
               child: BlocBuilder<RootTaskBloc, RootTaskState>(
                 buildWhen: (previous, current) =>
                     previous.viewType != current.viewType ||
-                    previous.showCompleted != current.showCompleted ||
-                    previous.priorityStyle != current.priorityStyle ||
-                    previous.selectedTagIds != current.selectedTagIds,
+                    previous.priorityStyle != current.priorityStyle,
                 builder: (context, rootTaskState) => AnimatedSwitcher(
                   duration: Durations.medium1,
                   child: switch (rootTaskState.viewType) {
@@ -102,8 +100,6 @@ class TaskTodayPage extends StatelessWidget {
                       style: rootTaskState.priorityStyle,
                       mode: TaskListMode.today,
                       date: todayState.date,
-                      isCompleted: rootTaskState.isCompleted,
-                      selectedTagIds: rootTaskState.selectedTagIds,
                     ),
                   },
                 ),
@@ -155,9 +151,7 @@ class _TaskTodayListPage extends StatelessWidget {
           builder: (context, tags) {
             final filteredTags = selectedTagIds.isEmpty
                 ? tags
-                : tags
-                    .where((t) => selectedTagIds.contains(t.id))
-                    .toList();
+                : tags.where((t) => selectedTagIds.contains(t.id)).toList();
             return CustomScrollView(
               slivers: [
                 if (selectedTagIds.isEmpty) _buildTaskList(context),
@@ -185,7 +179,6 @@ class _TaskTodayListPage extends StatelessWidget {
       requestEvent: () => TaskListRequested(
         date: context.read<TaskTodayBloc>().state.date,
         tagId: tag?.id,
-        isCompleted: context.read<RootTaskBloc>().isCompleted,
       ),
       child: BlocListener<TaskTodayBloc, TaskTodayState>(
         listenWhen: (previous, current) => previous.date != current.date,
@@ -194,7 +187,6 @@ class _TaskTodayListPage extends StatelessWidget {
             TaskListRequested(
               date: state.date,
               tagId: tag?.id,
-              isCompleted: context.read<RootTaskBloc>().isCompleted,
             ),
           );
         },

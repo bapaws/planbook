@@ -42,6 +42,7 @@ linked_*.ds
 unlinked.ds
 unlinked_spec.ds
 .fvm/
+coverage_merged/
 
 # Android related
 **/android/**/gradle-wrapper.jar

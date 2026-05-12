@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'dart:convert';
 
+import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
@@ -10,10 +12,12 @@ class DatabaseNoteApi {
   DatabaseNoteApi({
     required this.db,
     required this.tagApi,
-  });
+    required OutboxApi outboxApi,
+  }) : _outboxApi = outboxApi;
 
   final AppDatabase db;
   final DatabaseTagApi tagApi;
+  final OutboxApi _outboxApi;
 
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.notes, distinct: true)
@@ -75,6 +79,21 @@ class DatabaseNoteApi {
       for (final noteTag in noteTags) {
         await db.into(db.noteTags).insert(noteTag);
       }
+      await _outboxApi.enqueue(
+        tableName: 'notes',
+        recordId: note.id,
+        operation: 'insert',
+        payload: jsonEncode(note.toJson()),
+      );
+      await _outboxApi.enqueue(
+        tableName: 'note_tags',
+        recordId: note.id,
+        operation: 'replace_associations',
+        payload: jsonEncode({
+          'parent_id': note.id,
+          'associations': noteTags.map((e) => e.toJson()).toList(),
+        }),
+      );
     });
   }
 
@@ -93,6 +112,21 @@ class DatabaseNoteApi {
       for (final noteTag in noteTags) {
         await db.into(db.noteTags).insert(noteTag.toCompanion(false));
       }
+      await _outboxApi.enqueue(
+        tableName: 'notes',
+        recordId: note.id,
+        operation: 'update',
+        payload: jsonEncode(note.toJson()),
+      );
+      await _outboxApi.enqueue(
+        tableName: 'note_tags',
+        recordId: note.id,
+        operation: 'replace_associations',
+        payload: jsonEncode({
+          'parent_id': note.id,
+          'associations': noteTags.map((e) => e.toJson()).toList(),
+        }),
+      );
     });
   }
 
@@ -421,6 +455,12 @@ class DatabaseNoteApi {
             (nt) => nt.noteId.equals(noteId) & nt.deletedAt.isNull(),
           ))
           .write(NoteTagsCompanion(deletedAt: Value(now)));
+      await _outboxApi.enqueue(
+        tableName: 'notes',
+        recordId: noteId,
+        operation: 'delete',
+        payload: jsonEncode({'id': noteId}),
+      );
     });
   }
 }

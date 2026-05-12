@@ -9,7 +9,7 @@ final class RootTaskState extends Equatable {
   const RootTaskState({
     this.status = PageStatus.initial,
     this.viewType = RootTaskViewType.list,
-    this.showCompleted = false,
+    this.showCompleted = true,
     this.selectedTagIds = const {},
     this.taskCounts = const {},
     this.dailyTaskCounts = const {},

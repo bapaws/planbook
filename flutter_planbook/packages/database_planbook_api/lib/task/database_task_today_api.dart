@@ -8,6 +8,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
   DatabaseTaskTodayApi({
     required super.db,
     required super.tagApi,
+    required super.outboxApi,
   });
 
   Stream<int> getTodayTaskCount({

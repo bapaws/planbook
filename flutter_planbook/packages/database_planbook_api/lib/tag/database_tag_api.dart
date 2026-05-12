@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
@@ -7,9 +10,11 @@ import 'package:planbook_api/planbook_api.dart';
 class DatabaseTagApi {
   DatabaseTagApi({
     required this.db,
-  });
+    required OutboxApi outboxApi,
+  }) : _outboxApi = outboxApi;
 
   final AppDatabase db;
+  final OutboxApi _outboxApi;
 
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.tags, distinct: true)
@@ -191,17 +196,33 @@ class DatabaseTagApi {
   Future<void> create({
     required Tag tag,
   }) async {
-    await db.into(db.tags).insert(tag.toCompanion(false));
+    await db.transaction(() async {
+      await db.into(db.tags).insert(tag.toCompanion(false));
+      await _outboxApi.enqueue(
+        tableName: 'tags',
+        recordId: tag.id,
+        operation: 'insert',
+        payload: jsonEncode(tag.toJson()),
+      );
+    });
   }
 
   Future<void> update({
     required Tag tag,
   }) async {
-    await (db.update(
-      db.tags,
-    )..where((t) => t.id.equals(tag.id))).write(
-      tag.toCompanion(false),
-    );
+    await db.transaction(() async {
+      await (db.update(
+        db.tags,
+      )..where((t) => t.id.equals(tag.id))).write(
+        tag.toCompanion(false),
+      );
+      await _outboxApi.enqueue(
+        tableName: 'tags',
+        recordId: tag.id,
+        operation: 'update',
+        payload: jsonEncode(tag.toJson()),
+      );
+    });
 
     // TODO: update task tags and note tags
   }
@@ -217,25 +238,36 @@ class DatabaseTagApi {
     if (tag == null) return;
 
     final trimmedName = name?.trim() ?? tag.name.trim();
-    await (db.update(
-      db.tags,
-    )..where((tag) => tag.id.equals(id) & tag.deletedAt.isNull())).write(
-      TagsCompanion(
-        name: Value(trimmedName),
-        level: parentTag != null
-            ? Value(parentTag.level + 1)
-            : const Value.absent(),
-        parentId: parentTag != null
-            ? Value(parentTag.id)
-            : const Value.absent(),
-        lightColorScheme: lightColorScheme != null
-            ? Value(lightColorScheme)
-            : const Value.absent(),
-        darkColorScheme: darkColorScheme != null
-            ? Value(darkColorScheme)
-            : const Value.absent(),
-      ),
-    );
+    await db.transaction(() async {
+      await (db.update(
+        db.tags,
+      )..where((tag) => tag.id.equals(id) & tag.deletedAt.isNull())).write(
+        TagsCompanion(
+          name: Value(trimmedName),
+          level: parentTag != null
+              ? Value(parentTag.level + 1)
+              : const Value.absent(),
+          parentId: parentTag != null
+              ? Value(parentTag.id)
+              : const Value.absent(),
+          lightColorScheme: lightColorScheme != null
+              ? Value(lightColorScheme)
+              : const Value.absent(),
+          darkColorScheme: darkColorScheme != null
+              ? Value(darkColorScheme)
+              : const Value.absent(),
+        ),
+      );
+      final updatedTag = await (db.select(db.tags)
+            ..where((t) => t.id.equals(id)))
+          .getSingle();
+      await _outboxApi.enqueue(
+        tableName: 'tags',
+        recordId: id,
+        operation: 'update',
+        payload: jsonEncode(updatedTag.toJson()),
+      );
+    });
   }
 
   /// 递归删除 tag 及其所有子 tag
@@ -294,6 +326,14 @@ class DatabaseTagApi {
     } else {
       await deleteById(id);
     }
+    await db.transaction(() async {
+      await _outboxApi.enqueue(
+        tableName: 'tags',
+        recordId: id,
+        operation: 'delete',
+        payload: jsonEncode({'id': id}),
+      );
+    });
   }
 
   Future<void> deleteAllTags() async {

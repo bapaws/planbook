@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
+import 'package:flutter/widgets.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/core/apk_download_service.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
@@ -18,7 +19,7 @@ part 'app_state.dart';
 const kAppGroupId = 'group.GM4766U38W.com.bapaws.planbook';
 const kAppUrlScheme = 'planbook.bapaws';
 
-class AppBloc extends Bloc<AppEvent, AppState> {
+class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
   AppBloc({
     required SettingsRepository settingsRepository,
     required TagsRepository tagsRepository,
@@ -26,18 +27,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     required NotesRepository notesRepository,
     required UsersRepository usersRepository,
     required SharedPreferences sp,
+    required SyncEngine syncEngine,
   }) : _settingsRepository = settingsRepository,
        _tagsRepository = tagsRepository,
        _tasksRepository = tasksRepository,
        _notesRepository = notesRepository,
        _usersRepository = usersRepository,
        _sp = sp,
+       _syncEngine = syncEngine,
        super(
          const AppState(
            darkMode: DarkMode.light,
            seedColor: AppSeedColors.green,
          ),
        ) {
+    WidgetsBinding.instance.addObserver(this);
     on<AppInitialized>(_onInitialized);
     on<AppLaunched>(_onLaunched);
     on<AppUserRequested>(_onUserProfileRequested);
@@ -56,12 +60,21 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
   final UsersRepository _usersRepository;
   final SharedPreferences _sp;
+  final SyncEngine _syncEngine;
 
   StreamSubscription<double>? _apkProgressSub;
   AppLocalizations? _apkL10n;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _syncEngine.triggerSync();
+    }
+  }
+
+  @override
   Future<void> close() async {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_apkProgressSub?.cancel());
     await super.close();
   }
@@ -135,9 +148,11 @@ class AppBloc extends Bloc<AppEvent, AppState> {
     await emit.forEach(
       _usersRepository.onUserEntityChange,
       onData: (user) {
-        // if (user != null && user.id != state.user?.id) {
-        //   unawaited(_syncRepository.sync());
-        // }
+        if (user != null && user.id != state.user?.id) {
+          unawaited(_tasksRepository.syncTasks(force: true));
+          unawaited(_notesRepository.syncNotes(force: true));
+          _syncEngine.triggerSync();
+        }
         return state.copyWith(user: user);
       },
     );

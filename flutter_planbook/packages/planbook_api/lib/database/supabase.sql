@@ -88,9 +88,9 @@ CREATE TABLE IF NOT EXISTS planbook.notes (
     images TEXT,
     cover_image TEXT,
     task_id TEXT REFERENCES planbook.tasks(id) ON DELETE SET NULL,
-    -- 笔记类型（journal: 日记, dailyFocus: 每日目标, weeklyFocus: 每周目标）
-    type TEXT CHECK (type IN ('journal', 'dailyFocus', 'weeklyFocus')),
-    -- 目标日期（用于 dailyFocus 和 weeklyFocus 类型，标识目标对应的日期）
+    -- 笔记类型（存 NoteType.name；不在库上做 CHECK，避免扩展枚举时须改库）
+    type TEXT,
+    -- 目标日期（用于 focus/summary 等类型，标识目标对应的日期）
     focus_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ,

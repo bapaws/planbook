@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:supabase_planbook_api/supabase_planbook_api.dart';
+import 'package:supabase_planbook_api/note/supabase_note_api.dart';
 import 'package:uuid/uuid.dart';
 
 class NotesRepository {
@@ -16,12 +16,15 @@ class NotesRepository {
     required SharedPreferences sp,
     required AppDatabase db,
     required DatabaseTagApi tagApi,
-  }) : _dbNoteApi = DatabaseNoteApi(db: db, tagApi: tagApi),
+    required OutboxApi outboxApi,
+    DatabaseNoteApi? dbNoteApi,
+    DatabaseNoteTaskApi? dbNoteTaskApi,
+  }) : _dbNoteApi = dbNoteApi ??
+            DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
        _supabaseNoteApi = SupabaseNoteApi(sp: sp),
        _db = db,
        _tagApi = tagApi,
-       _supabaseNoteTaskApi = SupabaseNoteTaskApi(),
-       _dbNoteTaskApi = DatabaseNoteTaskApi(db: db);
+       _dbNoteTaskApi = dbNoteTaskApi ?? DatabaseNoteTaskApi(db: db);
 
   final DatabaseNoteApi _dbNoteApi;
 
@@ -29,7 +32,6 @@ class NotesRepository {
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
 
-  final SupabaseNoteTaskApi _supabaseNoteTaskApi;
   final DatabaseNoteTaskApi _dbNoteTaskApi;
 
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
@@ -77,7 +79,6 @@ class NotesRepository {
       userId: userId,
     );
 
-    await _supabaseNoteApi.create(note: note, noteTags: noteTags);
     await _dbNoteApi.create(note: note, noteTags: noteTags);
     return note;
   }
@@ -92,7 +93,6 @@ class NotesRepository {
       userId: userId,
     );
     final newNote = note.copyWith(userId: Value(userId));
-    await _supabaseNoteApi.update(note: newNote, noteTags: noteTags);
     await _dbNoteApi.update(note: newNote, noteTags: noteTags);
   }
 
@@ -194,7 +194,6 @@ class NotesRepository {
   }
 
   Future<void> deleteNoteById(String noteId) async {
-    await _supabaseNoteApi.deleteByNoteId(noteId: noteId);
     return _dbNoteApi.deleteNoteById(noteId);
   }
 
@@ -304,7 +303,6 @@ class NotesRepository {
     final notes = await _dbNoteTaskApi.generateNoteContentByTaskActivities(
       activities,
     );
-    await _supabaseNoteTaskApi.updateTypeNoteContent(notes: notes);
     await _dbNoteTaskApi.updateTypeNoteContent(notes);
   }
 }

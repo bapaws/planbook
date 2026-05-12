@@ -23,8 +23,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
        _taskActionService = taskActionService,
        _mode = mode,
        super(const TaskListState()) {
-    on<TaskListRequested>(_onRequested, transformer: restartable());
-    on<TaskListDayAllRequested>(_onDayAllRequested, transformer: restartable());
+    // TaskListDayAllRequested 继承 TaskListRequested；
+    // bloc 的 on<E> 用 `event is E` 过滤，
+    // 若同时注册 on<TaskListRequested> 与 on<TaskListDayAllRequested>，
+    // 同一事件会进两个 handler，出现 getTaskEntities 与 getAllTodayTaskEntities 两套流竞态，
+    // 四象限 UI 会错乱。
+    on<TaskListRequested>(_onLoadRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);
     on<TaskListDeleted>(_onDeleted);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
@@ -40,6 +44,17 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   final TaskPriority? priority;
 
   Set<String> _selectedTagIds = {};
+
+  Future<void> _onLoadRequested(
+    TaskListRequested event,
+    Emitter<TaskListState> emit,
+  ) async {
+    if (event is TaskListDayAllRequested) {
+      await _onDayAllRequested(event, emit);
+    } else {
+      await _onRequested(event, emit);
+    }
+  }
 
   Future<void> _onRequested(
     TaskListRequested event,
@@ -77,9 +92,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   TaskListState _onTasksDataChanged(List<TaskEntity> tasks) {
     final filteredTasks = _selectedTagIds.isEmpty
         ? tasks
-        : tasks.where((task) =>
-            task.tags.any((tag) => _selectedTagIds.contains(tag.id)),
-          ).toList();
+        : tasks
+              .where(
+                (task) =>
+                    task.tags.any((tag) => _selectedTagIds.contains(tag.id)),
+              )
+              .toList();
     final displayedTasks = <TaskEntity>[];
     for (final task in filteredTasks) {
       if (state.expandedTaskIds.contains(task.id)) {
@@ -93,8 +111,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     return state.copyWith(
       status: PageStatus.success,
       tasks: displayedTasks,
-      uncompletedTaskCount:
-          filteredTasks.where((task) => !task.isCompleted).length,
+      uncompletedTaskCount: filteredTasks
+          .where((task) => !task.isCompleted)
+          .length,
     );
   }
 

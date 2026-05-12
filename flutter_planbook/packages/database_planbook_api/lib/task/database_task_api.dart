@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 
+import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
 import 'package:drift/drift.dart';
@@ -12,10 +14,12 @@ class DatabaseTaskApi {
   DatabaseTaskApi({
     required this.db,
     required this.tagApi,
+    required this.outboxApi,
   });
 
   final AppDatabase db;
   final DatabaseTagApi tagApi;
+  final OutboxApi outboxApi;
 
   late final $TasksTable childrenTasks = db.alias(db.tasks, 'children_tasks');
   late final $TaskActivitiesTable childrenTaskActivities = db.alias(
@@ -87,14 +91,37 @@ class DatabaseTaskApi {
   }) async {
     await db.transaction(() async {
       await db.into(db.tasks).insert(task);
+      await outboxApi.enqueue(
+        tableName: 'tasks',
+        recordId: task.id,
+        operation: 'insert',
+        payload: jsonEncode(task.toJson()),
+      );
+
       if (taskTags != null && taskTags.isNotEmpty) {
         for (final taskTag in taskTags) {
           await db.into(db.taskTags).insert(taskTag);
         }
+        await outboxApi.enqueue(
+          tableName: 'task_tags',
+          recordId: task.id,
+          operation: 'replace_associations',
+          payload: jsonEncode({
+            'parent_id': task.id,
+            'associations': taskTags.map((e) => e.toJson()).toList(),
+          }),
+        );
       }
+
       if (children != null && children.isNotEmpty) {
         for (final child in children) {
           await db.into(db.tasks).insert(child);
+          await outboxApi.enqueue(
+            tableName: 'tasks',
+            recordId: child.id,
+            operation: 'insert',
+            payload: jsonEncode(child.toJson()),
+          );
         }
       }
     });
@@ -407,15 +434,26 @@ class DatabaseTaskApi {
           .goAndReturn()
           .then((value) => value.firstOrNull);
     } else {
-      return (db.update(db.tasks)..where(
-            (t) => t.id.equals(taskId) & t.deletedAt.isNull(),
-          ))
-          .writeReturning(
-            TasksCompanion(
-              deletedAt: Value(Jiffy.now()),
-            ),
-          )
-          .then((value) => value.firstOrNull);
+      return db.transaction(() async {
+        final result = await (db.update(db.tasks)..where(
+              (t) => t.id.equals(taskId) & t.deletedAt.isNull(),
+            ))
+            .writeReturning(
+              TasksCompanion(
+                deletedAt: Value(Jiffy.now()),
+              ),
+            );
+        final task = result.firstOrNull;
+        if (task != null) {
+          await outboxApi.enqueue(
+            tableName: 'tasks',
+            recordId: task.id,
+            operation: 'delete',
+            payload: jsonEncode(task.toJson()),
+          );
+        }
+        return task;
+      });
     }
   }
 

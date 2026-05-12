@@ -7,6 +7,7 @@ class DatabaseTaskInboxApi extends DatabaseTaskApi {
   DatabaseTaskInboxApi({
     required super.db,
     required super.tagApi,
+    required super.outboxApi,
   });
 
   /// 获取指定日期内的 inbox 任务数量

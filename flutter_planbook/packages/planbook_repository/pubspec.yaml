@@ -10,6 +10,7 @@ environment:
 dependencies:
   cached_network_image: ^3.4.1
   collection: ^1.19.1
+  connectivity_plus: ^6.1.4
   database_planbook_api:
     path: ../database_planbook_api
   drift: ^2.26.1
@@ -19,6 +20,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
   flutter_local_notifications: ^19.3.1
   flutter_timezone: ^4.0.0
+  internet_connection_checker: ^3.0.1
   jiffy: ^6.4.3
   path_provider: ^2.1.5
   planbook_api:

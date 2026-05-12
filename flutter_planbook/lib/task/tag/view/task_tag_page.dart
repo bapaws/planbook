@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
-import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
@@ -39,11 +38,7 @@ class TaskTagPage extends StatelessWidget {
   Widget _buildTaskList(BuildContext context, TaskListMode mode) {
     return TaskListBlocProvider(
       mode: mode,
-      requestEvent: () => TaskListRequested(
-        date: Jiffy.now(),
-        isCompleted: context.read<RootTaskBloc>().isCompleted,
-        selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
-      ),
+      requestEvent: () => TaskListRequested(date: Jiffy.now()),
       child: BlocBuilder<TaskListBloc, TaskListState>(
         builder: (context, state) => TaskListView(
           tasks: state.tasks,

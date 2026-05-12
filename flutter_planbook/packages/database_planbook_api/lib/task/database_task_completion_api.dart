@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:database_planbook_api/task/database_task_api.dart';
 import 'package:drift/drift.dart';
 import 'package:jiffy/jiffy.dart';
@@ -9,6 +11,7 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
   DatabaseTaskCompletionApi({
     required super.db,
     required super.tagApi,
+    required super.outboxApi,
   });
 
   Future<void> completeTaskByActivities(List<TaskActivity> activities) async {
@@ -16,6 +19,12 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
     await db.transaction(() async {
       for (final activity in activities) {
         await db.into(db.taskActivities).insertOnConflictUpdate(activity);
+        await outboxApi.enqueue(
+          tableName: 'task_activities',
+          recordId: activity.id,
+          operation: 'insert',
+          payload: jsonEncode(activity.toJson()),
+        );
       }
     });
   }

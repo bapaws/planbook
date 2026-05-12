@@ -22,8 +22,7 @@ class TaskOverduePage extends StatelessWidget {
       buildWhen: (previous, current) =>
           previous.viewType != current.viewType ||
           previous.taskCounts != current.taskCounts ||
-          previous.priorityStyle != current.priorityStyle ||
-          previous.selectedTagIds != current.selectedTagIds,
+          previous.priorityStyle != current.priorityStyle,
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
         child: switch (state.viewType) {
@@ -36,8 +35,6 @@ class TaskOverduePage extends StatelessWidget {
           RootTaskViewType.priority => TaskPriorityPage(
             style: state.priorityStyle,
             mode: TaskListMode.overdue,
-            isCompleted: state.showCompleted ? null : false,
-            selectedTagIds: state.selectedTagIds,
           ),
         },
       ),
@@ -52,11 +49,7 @@ class _TaskOverdueListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return TaskListBlocProvider(
       mode: TaskListMode.overdue,
-      requestEvent: () => TaskListDayAllRequested(
-        date: Jiffy.now(),
-        isCompleted: context.read<RootTaskBloc>().isCompleted,
-        selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
-      ),
+      requestEvent: () => TaskListDayAllRequested(date: Jiffy.now()),
       child: BlocBuilder<TaskListBloc, TaskListState>(
         builder: (context, state) => CustomScrollView(
           slivers: [

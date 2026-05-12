@@ -324,6 +324,43 @@ class TaskOccurrences extends Table {
   ];
 }
 
+/// 同步 Outbox 表（待同步变更队列）
+///
+/// 所有业务写操作通过 DatabaseApi 自动写入此表，SyncEngine 后台排空到 Supabase。
+class SyncOutbox extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// 业务表名：tasks, notes, tags, task_tags, note_tags, task_activities
+  TextColumn get targetTable => text().named('table_name')();
+
+  /// 业务记录 UUID
+  TextColumn get recordId => text()();
+
+  /// 操作类型：insert | update | delete | replace_associations
+  /// SQLite 中 CHECK 的字符串须为单引号字面量（双引号会被当作标识符）
+  TextColumn get operation => text().customConstraint(
+    "NOT NULL CHECK (operation IN ('insert', 'update', 'delete', 'replace_associations'))",
+  )();
+
+  /// 完整 JSON payload（用于 upsert 到 Supabase）
+  TextColumn get payload => text()();
+
+  /// 创建时间（epoch milliseconds）
+  IntColumn get createdAt => integer()();
+
+  /// 已尝试同步次数
+  IntColumn get retryCount => integer().withDefault(const Constant(0))();
+
+  /// 最后一次错误信息
+  TextColumn get errorMessage => text().nullable()();
+
+  /// 成功同步时间（null 表示未同步）
+  IntColumn get syncedAt => integer().nullable()();
+
+  /// 下次允许重试的时间（epoch millis，用于指数退避）
+  IntColumn get nextRetryAt => integer().nullable()();
+}
+
 @DriftDatabase(
   tables: [
     Tasks,
@@ -333,6 +370,7 @@ class TaskOccurrences extends Table {
     TaskTags,
     TaskActivities,
     TaskOccurrences,
+    SyncOutbox,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -341,8 +379,11 @@ class AppDatabase extends _$AppDatabase {
   // These are described in the getting started guide: https://drift.simonbinder.eu/getting-started/#open
   AppDatabase() : super(_openConnection());
 
+  /// 测试专用构造函数，允许注入内存或 mock 的 [QueryExecutor]。
+  AppDatabase.forTesting(super.executor);
+
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -354,6 +395,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 2) {
           await m.addColumn(notes, notes.type);
           await m.addColumn(notes, notes.focusAt);
+        }
+        if (from < 3) {
+          await m.createTable(syncOutbox);
         }
       },
     );
