@@ -7,6 +7,7 @@
 
 import AppIntents
 import WidgetKit
+
 #if canImport(planbook_widget)
     import planbook_widget
 #endif
@@ -37,12 +38,18 @@ struct CompleteTaskIntent: AppIntent {
         self.taskId = taskId
     }
 
+    /// 返回 IntentResult & OpensIntent 是为了让系统在主 App 进程执行 `perform()`。
+    /// 这样我们才能通过 `AppDelegate.flutterEngine` 拿到主 App 的 FlutterEngine，
+    /// 从而通过 MethodChannel 调用 Flutter 端的方法。
+    ///
+    /// 注意：必须返回 IntentResult & OpensIntent，否则会导致崩溃，无法执行 OpensIntent。
     func perform() async throws -> some IntentResult & OpensIntent {
         // 1. 计算翻转后的目标状态——优先看 pending（防止用户连点时基于 stale DB 翻转），
         //    其次回落到 DB 的真实状态；都拿不到就当作未完成。
-        let current = WidgetSettings.pendingCompletion(forTaskId: taskId)
-            ?? WidgetDatabase.shared.isTaskCompleted(taskId: taskId)
-            ?? false
+        let current =
+            WidgetSettings.pendingCompletion(forTaskId: taskId)
+                ?? WidgetDatabase.shared.isTaskCompleted(taskId: taskId)
+                ?? false
         let newCompleted = !current
 
         // 2. 写入 pending，让下一次 reload 立刻反馈。
