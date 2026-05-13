@@ -1,0 +1,4 @@
+• Startbildschirm-Widgets
+• Local-First-Sync
+
+Zuletzt: Journal-Titelbild & Zoom, Aufgaben ziehen (Tag/Woche/Monat), Fokus-/Zusammenfassungs-Links, Fixes

@@ -1,0 +1,4 @@
+• Widgets de la pantalla de inicio
+• Sincronización local primero
+
+Reciente: portada y zoom del diario, arrastrar tareas (día/semana/mes), foco y resúmenes, correcciones

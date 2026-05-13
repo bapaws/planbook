@@ -1,8 +1,9 @@
 Novità di questa versione:
-- Imposta la copertina del diario
-- Doppio tocco per ingrandire il diario
-- Risolti alcuni problemi noti
+- Supporto ai widget della schermata Home
+- Sincronizzazione local-first
 
 Aggiornamenti recenti:
-- Supporto al trascinamento delle attività nelle viste giorno, settimana e mese
-- Supporto al trascinamento delle attività per collegarle a focus e riepiloghi
+- Copertina del diario e doppio tocco per ingrandire
+- Trascinamento delle attività nelle viste giorno, settimana e mese;
+- Collega le attività a focus e riepiloghi
+- Risolti alcuni problemi noti

@@ -1,0 +1,4 @@
+• Home screen widgets
+• Local-first sync
+
+Recent: journal cover & zoom, drag tasks in day/week/month views, link to focus & summaries, fixes

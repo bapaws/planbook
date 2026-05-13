@@ -1,8 +1,9 @@
 Nouveautés :
-- Définir la couverture du journal
-- Double toucher pour agrandir le journal
-- Correction de quelques problèmes connus
+- Prise en charge des widgets d’accueil
+- Synchronisation local d’abord
 
 Mises à jour récentes :
-- Glisser-déposer des tâches dans les vues jour, semaine et mois
-- Glisser-déposer des tâches pour les associer au focus et aux synthèses
+- Couverture du journal et double toucher pour agrandir
+- Glisser-déposer des tâches dans les vues jour, semaine et mois ;
+- Associer les tâches au focus et aux synthèses
+- Correctifs de problèmes connus

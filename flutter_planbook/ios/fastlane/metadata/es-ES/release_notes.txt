@@ -1,8 +1,9 @@
 Novedades:
-- Establece la portada del diario
-- Doble toque para ampliar el diario
-- Corrección de algunos problemas conocidos
+- Soporte para widgets de la pantalla de inicio
+- Sincronización local primero
 
 Actualizaciones recientes:
-- Arrastra tareas en las vistas de día, semana y mes
-- Arrastra tareas para asociarlas con el foco y los resúmenes
+- Portada del diario y doble toque para ampliar
+- Arrastra tareas en las vistas de día, semana y mes;
+- Asocia tareas al foco y a los resúmenes
+- Corrección de algunos problemas conocidos

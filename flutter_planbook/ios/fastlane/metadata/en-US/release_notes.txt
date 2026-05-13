@@ -1,8 +1,9 @@
 What's New:
-- Set a cover for your journal
-- Double-tap to zoom the journal
-- Fixes for known issues
+- Home screen widgets
+- Local-first sync
 
 Recent updates:
-- Drag tasks in day, week, and month views
-- Drag tasks to link with focus and summaries
+- Journal cover and double-tap to zoom
+- Drag tasks in day, week, and month views;
+- Link tasks to focus and summaries
+- Fixes for known issues

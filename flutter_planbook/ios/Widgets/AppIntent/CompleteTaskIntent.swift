@@ -37,7 +37,7 @@ struct CompleteTaskIntent: AppIntent {
         self.taskId = taskId
     }
 
-    func perform() async throws -> some IntentResult {
+    func perform() async throws -> some IntentResult & OpensIntent {
         // 1. 计算翻转后的目标状态——优先看 pending（防止用户连点时基于 stale DB 翻转），
         //    其次回落到 DB 的真实状态；都拿不到就当作未完成。
         let current = WidgetSettings.pendingCompletion(forTaskId: taskId)
