@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
+import 'package:planbook_api/settings/quadrant_config_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
 enum UserGender {
@@ -35,6 +36,12 @@ Map<String, String> _coverByYearFromDynamic(Object? raw) {
   return result;
 }
 
+/// 解析 `user_profiles.quadrant_config`（JSON 数组：四象限名称/emoji 配置）
+List<QuadrantConfigEntity> _quadrantConfigFromDynamic(Object? raw) {
+  if (raw is! List) return const [];
+  return QuadrantConfigEntity.listFromJson(raw);
+}
+
 class UserProfileEntity extends Equatable {
   const UserProfileEntity({
     required this.id,
@@ -48,6 +55,7 @@ class UserProfileEntity extends Equatable {
     this.lastLaunchAppAt,
     this.launchCount = 0,
     this.coverByYear = const {},
+    this.quadrantConfig = const [],
     this.productId,
     this.expiresAt,
     this.alipayOutTradeNo,
@@ -83,6 +91,7 @@ class UserProfileEntity extends Equatable {
           : null,
       launchCount: map['launch_count'] as int? ?? 0,
       coverByYear: _coverByYearFromDynamic(map['cover_by_year']),
+      quadrantConfig: _quadrantConfigFromDynamic(map['quadrant_config']),
       productId: map['product_id'] as String?,
       expiresAt: map['expires_at'] != null
           ? DateTime.parse(map['expires_at'] as String)
@@ -106,6 +115,9 @@ class UserProfileEntity extends Equatable {
   /// 按年份的日记封面配置（key：年份如 `"2026"`，value：远端 URL 或 App 内置路径）
   final Map<String, String> coverByYear;
 
+  /// 四象限自定义配置（名称 + emoji），按优先级维度
+  final List<QuadrantConfigEntity> quadrantConfig;
+
   final String? productId;
   final DateTime? expiresAt;
   final String? alipayOutTradeNo;
@@ -128,6 +140,7 @@ class UserProfileEntity extends Equatable {
     lastLaunchAppAt,
     launchCount,
     coverByYear,
+    quadrantConfig,
     productId,
     expiresAt,
     alipayOutTradeNo,
@@ -146,6 +159,7 @@ class UserProfileEntity extends Equatable {
     DateTime? lastLaunchAppAt,
     int? launchCount,
     Map<String, String>? coverByYear,
+    List<QuadrantConfigEntity>? quadrantConfig,
     String? productId,
     DateTime? expiresAt,
     String? alipayOutTradeNo,
@@ -163,6 +177,7 @@ class UserProfileEntity extends Equatable {
       lastLaunchAppAt: lastLaunchAppAt ?? this.lastLaunchAppAt,
       launchCount: launchCount ?? this.launchCount,
       coverByYear: coverByYear ?? this.coverByYear,
+      quadrantConfig: quadrantConfig ?? this.quadrantConfig,
       productId: productId ?? this.productId,
       expiresAt: expiresAt ?? this.expiresAt,
       alipayOutTradeNo: alipayOutTradeNo ?? this.alipayOutTradeNo,
@@ -184,6 +199,7 @@ class UserProfileEntity extends Equatable {
         'last_launch_app_at': lastLaunchAppAt?.toIso8601String(),
       'launch_count': launchCount,
       'cover_by_year': coverByYear,
+      'quadrant_config': quadrantConfig.map((e) => e.toJson()).toList(),
       if (productId != null) 'product_id': productId,
       if (expiresAt != null) 'expires_at': expiresAt?.toIso8601String(),
       if (alipayOutTradeNo != null) 'alipay_out_trade_no': alipayOutTradeNo,

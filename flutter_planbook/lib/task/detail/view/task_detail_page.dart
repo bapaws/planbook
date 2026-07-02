@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/core/view/app_empty_note_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
@@ -133,6 +135,9 @@ class _TaskDetailPage extends StatelessWidget {
               if (task == null) return const SizedBox.shrink();
 
               final colorScheme = task.priority.getColorScheme(context);
+              final quadrantConfigs = context.select(
+                (AppBloc b) => b.state.quadrantConfigs,
+              );
               final tagColorScheme = (theme.brightness == Brightness.dark
                   ? task.tags.firstOrNull?.dark
                   : task.tags.firstOrNull?.light);
@@ -270,12 +275,9 @@ class _TaskDetailPage extends StatelessWidget {
                       foregroundColor: colorScheme.primary,
                     ),
                     title: context.l10n.priority,
-                    trailing: Text(switch (task.priority) {
-                      TaskPriority.high => context.l10n.importantUrgent,
-                      TaskPriority.medium => context.l10n.importantNotUrgent,
-                      TaskPriority.low => context.l10n.urgentUnimportant,
-                      TaskPriority.none => context.l10n.notUrgentUnimportant,
-                    }),
+                    trailing: Text(
+                      quadrantConfigs.nameOf(task.priority, context.l10n),
+                    ),
                   ),
                   TaskDetailSliverTile(
                     onPressed: () {

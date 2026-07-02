@@ -215,11 +215,18 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
     -- 商品标识（product_id 或 identifier）
     product_id TEXT REFERENCES planbook.store_products(id),
     -- 订阅到期时间（如果是订阅类商品）
-    expires_at TIMESTAMPTZ
+    expires_at TIMESTAMPTZ,
 
     -- 按年份的封面设置：JSON 对象，key 为年份字符串（如 "2026"），value 为封面地址（远端 URL 或 App 内置资源路径等）
     cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb,
+
+    -- 四象限自定义配置：JSON 数组，每项 {"priority":"high","name":...}
+    quadrant_config JSONB NOT NULL DEFAULT '[]'::jsonb
 );
+
+-- 已有部署的增量迁移（幂等）
+ALTER TABLE planbook.user_profiles
+    ADD COLUMN IF NOT EXISTS quadrant_config JSONB NOT NULL DEFAULT '[]'::jsonb;
 
 -- UserProfiles 表索引
 CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profiles(deleted_at) WHERE deleted_at IS NULL;

@@ -3,8 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -127,6 +129,21 @@ class _SettingsTaskPage extends StatelessWidget {
                   ),
                 ),
           ),
+          SettingsRow(
+            onPressed: () {
+              if (!context.read<AppPurchasesBloc>().isPremium) {
+                context.router.push(const AppPurchasesRoute());
+                return;
+              }
+              context.router.push(const SettingsQuadrantRoute());
+            },
+            leading: const Icon(
+              FontAwesomeIcons.tableCellsLarge,
+              size: 20,
+              color: Colors.deepPurple,
+            ),
+            title: Text(context.l10n.quadrantCustomize),
+          ),
           SettingsSectionHeader(
             title: context.l10n.noteRules,
           ),
@@ -168,6 +185,7 @@ class _SettingsTaskPage extends StatelessWidget {
   Widget _buildPriorityItem(BuildContext context, TaskPriority priority) {
     final colorScheme = priority.getColorScheme(context);
     final theme = Theme.of(context);
+    final configs = context.select((AppBloc b) => b.state.quadrantConfigs);
     return BlocSelector<
       SettingsTaskCubit,
       SettingsTaskState,
@@ -196,12 +214,7 @@ class _SettingsTaskPage extends StatelessWidget {
             ),
           ),
           title: Text(
-            switch (priority) {
-              TaskPriority.high => context.l10n.importantUrgent,
-              TaskPriority.medium => context.l10n.importantNotUrgent,
-              TaskPriority.low => context.l10n.urgentUnimportant,
-              TaskPriority.none => context.l10n.notUrgentUnimportant,
-            },
+            configs.nameOf(priority, context.l10n),
             style: theme.textTheme.bodyLarge?.copyWith(
               color: colorScheme.primary,
             ),

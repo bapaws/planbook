@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +31,7 @@ class ActivityMessageEntity {
     this.endAt,
     this.platforms = const [ActivityPlatform.ios],
     this.isNew = false,
+    this.enableInAppRedeem = false,
   });
 
   factory ActivityMessageEntity.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class ActivityMessageEntity {
               .toList() ??
           const [ActivityPlatform.ios],
       isNew: json['isNew'] as bool? ?? false,
+      enableInAppRedeem: json['enableInAppRedeem'] as bool? ?? false,
     );
   }
 
@@ -71,6 +74,7 @@ class ActivityMessageEntity {
   final DateTime? endAt;
   final List<ActivityPlatform> platforms;
   final bool isNew;
+  final bool enableInAppRedeem;
 
   bool isAvailable(ActivityPlatform platform) {
     return platforms.contains(platform);
@@ -98,6 +102,9 @@ class AppActivityRepository {
   final SharedPreferences _sp;
   final AppStoreRepository appStoreRepository;
 
+  /// 应用内切换的语言；`null` 表示跟随系统。
+  Locale? _localeOverride;
+
   final _controller = StreamController<List<ActivityMessageEntity>>();
   Stream<List<ActivityMessageEntity>> get onActivityChange =>
       _controller.stream;
@@ -106,6 +113,34 @@ class AppActivityRepository {
   static const kActivityWillShowAt = 'activity_will_show_at';
 
   static const _activityItemsAsset = 'assets/files/activity_messages.json';
+
+  /// 更新活动筛选使用的语言，切换语言后需重新 [fetch]。
+  void updateLocale(Locale? locale) {
+    _localeOverride = locale;
+  }
+
+  Locale get _effectiveLocale =>
+      _localeOverride ?? PlatformDispatcher.instance.locale;
+
+  /// 按当前语言生成匹配优先级，例如 zh_Hant → [zh_Hant, zh]。
+  static List<String> languageCodesFor(Locale locale) {
+    final languageCode = locale.languageCode;
+    final scriptCode = locale.scriptCode;
+    final codes = <String>[];
+    if (scriptCode != null && scriptCode.isNotEmpty) {
+      codes.add('${languageCode}_$scriptCode');
+    }
+    if (!codes.contains(languageCode)) {
+      codes.add(languageCode);
+    }
+    return codes;
+  }
+
+  List<String> get _languageCodes => languageCodesFor(_effectiveLocale);
+
+  bool _matchesLanguage(ActivityMessageEntity item) {
+    return _languageCodes.contains(item.languageCode);
+  }
 
   Future<List<ActivityMessageEntity>> _loadItems() async {
     final rawJson = await rootBundle.loadString(_activityItemsAsset);
@@ -118,26 +153,12 @@ class AppActivityRepository {
         .toList();
   }
 
-  List<String> get _languageCodes {
-    final locale = PlatformDispatcher.instance.locale;
-    final languageCode = locale.languageCode;
-    final scriptCode = locale.scriptCode;
-    if (scriptCode == null || scriptCode.isEmpty) {
-      return [languageCode];
-    }
-    return ['${languageCode}_$scriptCode', languageCode];
-  }
-
-  bool _matchesLanguage(ActivityMessageEntity item) {
-    return _languageCodes.contains(item.languageCode);
-  }
-
   Future<bool> isReleaseVersion() async {
     return appStoreRepository.isReleaseVersion();
   }
 
   Future<List<ActivityMessageEntity>> fetch({bool isNew = false}) async {
-    // if (!await isReleaseVersion()) return [];
+    if (!await isReleaseVersion()) return [];
 
     final isPremium = await AppPurchases.instance.isPremium;
     final items = await _loadItems();
@@ -166,7 +187,7 @@ class AppActivityRepository {
 
       final willShowAt = _sp.getInt('${kActivityWillShowAt}_${item.id}');
       if (willShowAt != null &&
-          now.isAfter(DateTime.fromMillisecondsSinceEpoch(willShowAt))) {
+          now.isBefore(DateTime.fromMillisecondsSinceEpoch(willShowAt))) {
         return false;
       }
 
@@ -177,7 +198,7 @@ class AppActivityRepository {
   }
 
   Future<List<ActivityMessageEntity>> fetchAll() async {
-    // if (!await isReleaseVersion()) return [];
+    if (!await isReleaseVersion()) return [];
 
     final isPremium = await AppPurchases.instance.isPremium;
     final items = await _loadItems();
@@ -208,6 +229,15 @@ class AppActivityRepository {
     }).toList();
   }
 
+  /// 当前语言下支持 App 内兑换的活动（忽略「不再显示」）。
+  Future<ActivityMessageEntity?> findInAppRedeemActivity() async {
+    final items = await fetchAll();
+    for (final item in items) {
+      if (item.enableInAppRedeem) return item;
+    }
+    return null;
+  }
+
   void notShowAgain(ActivityMessageEntity message) {
     _sp.setBool('${kActivityNotShowAgain}_${message.id}', true);
   }
@@ -220,6 +250,17 @@ class AppActivityRepository {
         '${kActivityWillShowAt}_${message.id}',
         date.millisecondsSinceEpoch,
       );
+    }
+  }
+
+  /// 清除活动本地偏好（不再显示、稍后提醒），用于 Debug 重测。
+  Future<void> clearLocalActivityPreferences() async {
+    const prefixNotShow = '${kActivityNotShowAgain}_';
+    const prefixWillShow = '${kActivityWillShowAt}_';
+    for (final key in _sp.getKeys()) {
+      if (key.startsWith(prefixNotShow) || key.startsWith(prefixWillShow)) {
+        await _sp.remove(key);
+      }
     }
   }
 }

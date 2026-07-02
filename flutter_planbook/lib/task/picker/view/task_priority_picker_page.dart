@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/view/app_icon.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -48,6 +51,7 @@ class TaskPriorityPickerPage extends StatelessWidget {
 
   Widget _buildPriorityItem(BuildContext context, TaskPriority priority) {
     final colorScheme = priority.getColorScheme(context);
+    final configs = context.select((AppBloc b) => b.state.quadrantConfigs);
     return CupertinoButton(
       child: Row(
         children: [
@@ -58,7 +62,7 @@ class TaskPriorityPickerPage extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            priority.getTitle(context.l10n),
+            configs.nameOf(priority, context.l10n),
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: colorScheme.primary,
             ),

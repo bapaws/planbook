@@ -420,4 +420,28 @@ class UsersRepository {
         })
         .eq('id', entity.id);
   }
+
+  /// 保存四象限自定义配置到 `user_profiles.quadrant_config`
+  Future<void> updateQuadrantConfig(
+    List<QuadrantConfigEntity> configs,
+  ) async {
+    if (_supabase?.auth.currentUser == null) return;
+    var entity = userProfile;
+    entity ??= await getUserProfile(force: true);
+    if (entity == null) return;
+    final now = DateTime.now().toUtc();
+    final newEntity = entity.copyWith(
+      quadrantConfig: configs,
+      updatedAt: now,
+    );
+    unawaited(_sp.setString(kUserProfile, newEntity.toJson()));
+    _onUserProfileChangeController.add(newEntity);
+    await _supabase
+        ?.from('user_profiles')
+        .update({
+          'quadrant_config': configs.map((e) => e.toJson()).toList(),
+          'updated_at': now.toIso8601String(),
+        })
+        .eq('id', entity.id);
+  }
 }

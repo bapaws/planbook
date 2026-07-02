@@ -19,6 +19,9 @@ object WidgetSettings {
     private const val KEY_DARK_COLOR_SCHEME = "__settings_dark_color_scheme_key__"
     private const val KEY_FILTER_MODE_PREFIX = "widget_filter_mode_"
 
+    // 与 Flutter SettingsRepository.kSettingsQuadrantConfigs 保持一致
+    private const val KEY_QUADRANT_CONFIGS = "widget_quadrant_configs"
+
     // 与 Flutter SettingsRepository.kSettingsTaskAutoNoteRulesKey 保持一致
     private const val KEY_TASK_AUTO_NOTE_RULES = "__settings_task_auto_note_rules_key__"
 
@@ -68,6 +71,35 @@ object WidgetSettings {
 
     fun setSelectedPriority(context: Context, priority: TaskPriority) {
         getPrefs(context).edit().putString(KEY_SELECTED_PRIORITY, priority.rawValue).apply()
+    }
+
+    /**
+     * 四象限自定义名称（仅包含非空名称）。
+     * Flutter 端 jsonEncode 写入 [{"priority","name"}, ...]。
+     */
+    fun getQuadrantConfigs(context: Context): Map<String, String> {
+        val json = getPrefs(context).getString(KEY_QUADRANT_CONFIGS, null) ?: return emptyMap()
+        return try {
+            val arr = JSONArray(json)
+            val result = mutableMapOf<String, String>()
+            for (i in 0 until arr.length()) {
+                val obj = arr.optJSONObject(i) ?: continue
+                val priority = obj.optString("priority", "")
+                if (priority.isEmpty()) continue
+                val name = if (obj.isNull("name")) null else obj.optString("name", null)
+                if (!name.isNullOrEmpty()) {
+                    result[priority] = name
+                }
+            }
+            result
+        } catch (_: Exception) {
+            emptyMap()
+        }
+    }
+
+    /** 读取某个象限的自定义名称；未配置或为空时返回 null */
+    fun getCustomQuadrantName(context: Context, priority: TaskPriority): String? {
+        return getQuadrantConfigs(context)[priority.rawValue]
     }
 
     /** 背景资源名称（Flutter 同步写入） */

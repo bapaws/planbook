@@ -6,6 +6,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:image_picker/image_picker.dart';
 
 const _imageQuality = 80;
+const kRedeemMaxImages = 3;
 
 Future<String?> showImagePicker(
   BuildContext context, {
@@ -87,6 +88,57 @@ Future<List<String>?> showMuiltiImagePicker(BuildContext context) {
               if (!context.mounted) return;
 
               final paths = files.map((file) => file.path).toList();
+              Navigator.of(context).pop(paths);
+            },
+          ),
+          CupertinoActionSheetAction(
+            child: Text(l10n.camera),
+            onPressed: () async {
+              final picker = ImagePicker();
+              final file = await picker.pickImage(
+                source: ImageSource.camera,
+                imageQuality: _imageQuality,
+              );
+
+              if (!context.mounted || file == null) return;
+
+              Navigator.of(context).pop([file.path]);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+/// 好评截图选择器，最多 [kRedeemMaxImages] 张。
+Future<List<String>?> showRedeemImagePicker(BuildContext context) {
+  return showCupertinoModalPopup<List<String>>(
+    context: context,
+    builder: (_) {
+      final l10n = context.l10n;
+      return CupertinoActionSheet(
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(l10n.cancel),
+        ),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            child: Text(Platform.isIOS ? l10n.photos : l10n.gallery),
+            onPressed: () async {
+              final picker = ImagePicker();
+              final files = await picker.pickMultiImage(
+                limit: kRedeemMaxImages,
+                imageQuality: _imageQuality,
+              );
+              if (!context.mounted) return;
+
+              final paths = files
+                  .map((file) => file.path)
+                  .take(kRedeemMaxImages)
+                  .toList();
               Navigator.of(context).pop(paths);
             },
           ),

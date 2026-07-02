@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/model/app_activity_notice.dart';
+import 'package:flutter_planbook/app/activity/view/app_activity_notice_navigation.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -20,6 +23,9 @@ class AppActivityListPage extends StatelessWidget {
         forceMaterialTransparency: true,
         leading: const NavigationBarBackButton(),
         title: Text(context.l10n.rewardActivities),
+        actions: const [
+          _RedeemPromoCodeAction(),
+        ],
       ),
       body: BlocBuilder<AppActivityBloc, AppActivityState>(
         builder: (context, state) {
@@ -46,6 +52,27 @@ class AppActivityListPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+/// 右上角兑换码入口（仅已收到兑换码时显示）。
+class _RedeemPromoCodeAction extends StatelessWidget {
+  const _RedeemPromoCodeAction();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<AppActivityBloc, AppActivityState, AppActivityNotice?>(
+      selector: (state) => state.redeemApprovedNotice,
+      builder: (context, notice) {
+        if (notice == null) return const SizedBox.shrink();
+
+        return CupertinoButton(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          onPressed: () => openAppActivityNotice(context, notice),
+          child: Text(context.l10n.redeemPromoCode),
+        );
+      },
     );
   }
 }

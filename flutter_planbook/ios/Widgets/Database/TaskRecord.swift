@@ -42,6 +42,11 @@ enum TaskPriority: String, CaseIterable, AppEnum {
         }
     }
 
+    /// 最终展示的象限名称（用户自定义优先，回退本地化）
+    var displayTitle: String {
+        WidgetSettings.customQuadrantName(for: self) ?? quadrantTitle
+    }
+
     /// 当前主题下的优先级主色（对应 Flutter ColorScheme.primary）
     func color(for isDarkMode: Bool) -> Color {
         getColorScheme(isDarkMode: isDarkMode).primaryColor
@@ -138,7 +143,7 @@ struct QuadrantGroup: Identifiable {
     let priority: TaskPriority
     var tasks: [QuadrantTask]
 
-    var title: String { priority.quadrantTitle }
+    var title: String { priority.displayTitle }
     func color(for isDarkMode: Bool) -> Color {
         priority.color(for: isDarkMode)
     }

@@ -1640,6 +1640,15 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.7.0"
+  redeem_client:
+    dependency: "direct main"
+    description:
+      path: "client/flutter/redeem_client"
+      ref: main
+      resolved-ref: "480f998e9a39359b5420aa6537bf7f5ac9e4c615"
+      url: "https://github.com/bapaws/redeem_code.git"
+    source: git
+    version: "1.0.0"
   retry:
     dependency: transitive
     description:

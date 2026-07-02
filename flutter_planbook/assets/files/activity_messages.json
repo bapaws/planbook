@@ -4,176 +4,187 @@
     "emoji": "🎁",
     "title": "快来领取包月会员",
     "languageCode": "zh",
-    "content": "**App Store 五🌟好评，可免费领取包月会员～**\n1. 点击「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」，打开 App Store。\n2. 给「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」一个五🌟好评，也可以同时写下使用体验。\n",
+    "content": "**App Store 五🌟好评，可免费领取包月会员～**\n1. 点击「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」，打开 App Store。\n2. 给「[**计划本**](https://apps.apple.com/app/id6737596725?action=write-review)」一个五🌟好评，也可以同时写下使用体验。\n3. 返回 App，点击「**提交截图**」上传好评截图，审核通过后可一键领取优惠码。\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "去写评论",
     "illustration": "gift_box.svg",
-    "receiveWay": "🔴小红书\n  1. 打开小红书，🔍搜索开发者小红书账户：[6481492100000000120342c4](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。\n  2. 点击私信页面，将「**你的评分与评论**」页面的截图发送给账户。\n  3. 我们将在 24 小时内，私信会员兑换码。\n\n🟢微信\n  1. 添加「**计划本**」客服账户：[**MC_AI_Studio**](weixin://MC_AI_Studio)。\n  2. 将「**你的评分与评论**」页面的截图发送给客服账户。\n  3. 将在 24 小时内，发送会员兑换码。\n\n![MC Studio](assets/images/wx_qr.png)\n\n**👉由于会员码的限制，只能在 App Store 兑换一次。**",
+    "receiveWay": "📱 **App 内提交（推荐）**\n  1. 完成好评后，点击活动页「**提交截图**」。\n  2. 上传 1～3 张「你的评分与评论」页面截图。\n  3. 审核通过后，在 App 内一键领取优惠码。\n\n #  \n #  \n-------\n\n #  \n #  \n若 App 内提交遇到问题，可通过以下方式：\n\n🔴小红书\n  1. 打开小红书，🔍搜索或者点击：[MC Studio](xhsdiscover://user/6481492100000000120342c4)，打开开发者小红书账号。点击❤️关注。\n  2. 点击私信页面，将「**你的评分与评论**」页面的截图发送给账户。\n  3. 我们将在 24 小时内，私信会员兑换码。\n\n**👉由于会员码的限制，只能在 App Store 兑换一次。**",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 10,
     "emoji": "🎁",
     "title": "Claim a Free Monthly Membership",
     "languageCode": "en",
-    "content": "**Get a free monthly membership by leaving a 5-star App Store review.**\n1. Tap [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) to open App Store.\n2. Leave a 5-star review for [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) and optionally share your experience.\n",
+    "content": "**Get a free monthly membership by leaving a 5-star App Store review.**\n1. Tap [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) to open App Store.\n2. Leave a 5-star review for [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) and optionally share your experience.\n3. Return to the app and tap **Submit Screenshot** to upload your review screenshot. Redeem your offer code in-app after approval.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Write a Review",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 Email\n  1. Take a screenshot of your review page.\n  2. Send the screenshot to **[dev@bapaws.com](mailto:dev@bapaws.com)**.\n  3. We will reply with your membership redemption code within 24 hours.\n",
+    "receiveWay": "📱 **In-app submission (recommended)**\n  1. After leaving your review, tap **Submit Screenshot** on the activity page.\n  2. Upload 1–3 screenshots of your review page.\n  3. After approval, redeem your offer code in the app.\n\n #  \n #  \n-------\n\n #  \n #  \nIf in-app submission fails, you can also:\n\n📧 Email\n  1. Take a screenshot of your review page.\n  2. Send the screenshot to **[dev@bapaws.com](mailto:dev@bapaws.com)**.\n  3. We will reply with your membership redemption code within 24 hours.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 11,
     "emoji": "🎁",
     "title": "Recevez un abonnement mensuel gratuit",
     "languageCode": "fr",
-    "content": "**Obtenez un abonnement mensuel gratuit en laissant un avis 5 etoiles sur l'App Store.**\n1. Appuyez sur [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) pour ouvrir l'App Store.\n2. Laissez un avis 5 etoiles pour [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), avec votre retour si vous le souhaitez.\n",
+    "content": "**Obtenez un abonnement mensuel gratuit en laissant un avis 5 etoiles sur l'App Store.**\n1. Appuyez sur [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) pour ouvrir l'App Store.\n2. Laissez un avis 5 etoiles pour [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), avec votre retour si vous le souhaitez.\n3. Revenez dans l'app et appuyez sur **Envoyer la capture** pour televerser votre capture d'ecran.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Ecrire un avis",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 E-mail\n  1. Faites une capture d'ecran de votre page d'avis.\n  2. Envoyez la capture a **dev@bapaws.com**.\n  3. Nous vous enverrons un code d'echange sous 24 heures.\n",
+    "receiveWay": "📱 **Soumission dans l'app (recommandee)**\n  1. Apres votre avis, appuyez sur **Envoyer la capture**.\n  2. Televersez 1 a 3 captures de votre page d'avis.\n  3. Apres approbation, echangez le code dans l'app.\n\n #  \n #  \n-------\n\n #  \n #  \nSinon :\n\n📧 E-mail\n  1. Faites une capture d'ecran de votre page d'avis.\n  2. Envoyez la capture a **dev@bapaws.com**.\n  3. Nous vous enverrons un code d'echange sous 24 heures.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 12,
     "emoji": "🎁",
     "title": "無料で月額会員を受け取る",
     "languageCode": "ja",
-    "content": "**App Storeで星5レビューを投稿すると、無料で月額会員を受け取れます。**\n1. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) をタップして App Store を開きます。\n2. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) に星5レビューを投稿し、必要なら感想も記入してください。\n",
+    "content": "**App Storeで星5レビューを投稿すると、無料で月額会員を受け取れます。**\n1. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) をタップして App Store を開きます。\n2. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) に星5レビューを投稿し、必要なら感想も記入してください。\n3. アプリに戻り「**スクリーンショットを送信**」からレビュー画面の画像をアップロードしてください。\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "レビューを書く",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 メール\n  1. レビュー画面のスクリーンショットを撮影してください。\n  2. スクリーンショットを **dev@bapaws.com** に送信してください。\n  3. 24時間以内に会員交換コードを返信します。\n",
+    "receiveWay": "📱 **アプリ内送信（推奨）**\n  1. レビュー後、活動ページの「**スクリーンショットを送信**」をタップ。\n  2. レビュー画面のスクリーンショットを1～3枚アップロード。\n  3. 審査通過後、アプリ内でコードを受け取り。\n\n #  \n #  \n-------\n\n #  \n #  \nうまくいかない場合：\n\n📧 メール\n  1. レビュー画面のスクリーンショットを撮影してください。\n  2. スクリーンショットを **dev@bapaws.com** に送信してください。\n  3. 24時間以内に会員交換コードを返信します。\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 13,
     "emoji": "🎁",
     "title": "Recibe gratis la membresia mensual",
     "languageCode": "es",
-    "content": "**Consigue una membresia mensual gratis dejando una resena de 5 estrellas en App Store.**\n1. Toca [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) para abrir App Store.\n2. Deja una resena de 5 estrellas para [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) y, si quieres, comparte tu experiencia.\n",
+    "content": "**Consigue una membresia mensual gratis dejando una resena de 5 estrellas en App Store.**\n1. Toca [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) para abrir App Store.\n2. Deja una resena de 5 estrellas para [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) y, si quieres, comparte tu experiencia.\n3. Vuelve a la app y toca **Enviar captura** para subir tu captura de pantalla.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Escribir resena",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 Correo electronico\n  1. Haz una captura de pantalla de tu pagina de resena.\n  2. Envia la captura a **dev@bapaws.com**.\n  3. Te responderemos con el codigo de canje en 24 horas.\n",
+    "receiveWay": "📱 **Envio en la app (recomendado)**\n  1. Tras tu resena, toca **Enviar captura**.\n  2. Sube 1 a 3 capturas de tu pagina de resena.\n  3. Tras la aprobacion, canjea el codigo en la app.\n\n #  \n #  \n-------\n\n #  \n #  \nAlternativa:\n\n📧 Correo electronico\n  1. Haz una captura de pantalla de tu pagina de resena.\n  2. Envia la captura a **dev@bapaws.com**.\n  3. Te responderemos con el codigo de canje en 24 horas.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 14,
     "emoji": "🎁",
     "title": "快來領取包月會員",
     "languageCode": "zh_Hant",
-    "content": "**App Store 五星好評，可免費領取包月會員。**\n1. 點擊「[**計劃本**](https://apps.apple.com/app/id6737596725?action=write-review)」，開啟 App Store。\n2. 為「[**計劃本**](https://apps.apple.com/app/id6737596725?action=write-review)」留下五星好評，也可以同時寫下使用心得。\n",
+    "content": "**App Store 五星好評，可免費領取包月會員。**\n1. 點擊「[**計劃本**](https://apps.apple.com/app/id6737596725?action=write-review)」，開啟 App Store。\n2. 為「[**計劃本**](https://apps.apple.com/app/id6737596725?action=write-review)」留下五星好評，也可以同時寫下使用心得。\n3. 返回 App，點擊「**提交截圖**」上傳好評截圖，審核通過後可一鍵領取優惠碼。\n",
     "contentURL": "https://bapaws.super.site/活動消息/免費領取月費會員",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "去寫評論",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 電子郵件\n  1. 請截圖「你的評分與評論」頁面。\n  2. 將截圖寄送到 **dev@bapaws.com**。\n  3. 我們會在 24 小時內回覆會員兌換碼。\n",
+    "receiveWay": "📱 **App 內提交（推薦）**\n  1. 完成好評後，點擊活動頁「**提交截圖**」。\n  2. 上傳 1～3 張「你的評分與評論」頁面截圖。\n  3. 審核通過後，在 App 內一鍵領取優惠碼。\n\n #  \n #  \n-------\n\n #  \n #  \n若 App 內提交遇到問題：\n\n📧 電子郵件\n  1. 請截圖「你的評分與評論」頁面。\n  2. 將截圖寄送到 **dev@bapaws.com**。\n  3. 我們會在 24 小時內回覆會員兌換碼。\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 15,
     "emoji": "🎁",
     "title": "Kostenlose Monatsmitgliedschaft erhalten",
     "languageCode": "de",
-    "content": "**Erhalte eine kostenlose Monatsmitgliedschaft, wenn du eine 5-Sterne-Bewertung im App Store hinterlaesst.**\n1. Tippe auf [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), um den App Store zu oeffnen.\n2. Hinterlasse fuer [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) eine 5-Sterne-Bewertung und teile gern auch deine Erfahrung.\n",
+    "content": "**Erhalte eine kostenlose Monatsmitgliedschaft, wenn du eine 5-Sterne-Bewertung im App Store hinterlaesst.**\n1. Tippe auf [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), um den App Store zu oeffnen.\n2. Hinterlasse fuer [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) eine 5-Sterne-Bewertung und teile gern auch deine Erfahrung.\n3. Kehre zur App zurueck und tippe auf **Screenshot senden**.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Bewertung schreiben",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 E-Mail\n  1. Mache einen Screenshot deiner Bewertungsseite.\n  2. Sende ihn an **dev@bapaws.com**.\n  3. Wir antworten dir innerhalb von 24 Stunden mit dem Einloesecode.\n",
+    "receiveWay": "📱 **In-App-Einreichung (empfohlen)**\n  1. Nach deiner Bewertung tippe auf **Screenshot senden**.\n  2. Lade 1–3 Screenshots hoch.\n  3. Nach Freigabe Code in der App einloesen.\n\n #  \n #  \n-------\n\n #  \n #  \nAlternativ:\n\n📧 E-Mail\n  1. Mache einen Screenshot deiner Bewertungsseite.\n  2. Sende ihn an **dev@bapaws.com**.\n  3. Wir antworten dir innerhalb von 24 Stunden mit dem Einloesecode.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 16,
     "emoji": "🎁",
     "title": "Ricevi un abbonamento mensile gratuito",
     "languageCode": "it",
-    "content": "**Ottieni un abbonamento mensile gratuito lasciando una recensione a 5 stelle su App Store.**\n1. Tocca [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) per aprire App Store.\n2. Lascia una recensione a 5 stelle per [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) e, se vuoi, racconta anche la tua esperienza.\n",
+    "content": "**Ottieni un abbonamento mensile gratuito lasciando una recensione a 5 stelle su App Store.**\n1. Tocca [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) per aprire App Store.\n2. Lascia una recensione a 5 stelle per [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) e, se vuoi, racconta anche la tua esperienza.\n3. Torna nell'app e tocca **Invia screenshot**.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Scrivi una recensione",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 E-mail\n  1. Fai uno screenshot della pagina della tua recensione.\n  2. Invia lo screenshot a **dev@bapaws.com**.\n  3. Ti risponderemo con il codice di riscatto entro 24 ore.\n",
+    "receiveWay": "📱 **Invio in-app (consigliato)**\n  1. Dopo la recensione, tocca **Invia screenshot**.\n  2. Carica 1–3 screenshot della pagina recensione.\n  3. Dopo l'approvazione, riscatta il codice nell'app.\n\n #  \n #  \n-------\n\n #  \n #  \nIn alternativa:\n\n📧 E-mail\n  1. Fai uno screenshot della pagina della tua recensione.\n  2. Invia lo screenshot a **dev@bapaws.com**.\n  3. Ti risponderemo con il codice di riscatto entro 24 ore.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 17,
     "emoji": "🎁",
     "title": "무료 월간 멤버십 받기",
     "languageCode": "ko",
-    "content": "**App Store에 5점 리뷰를 남기면 무료 월간 멤버십을 받을 수 있습니다.**\n1. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review)을 눌러 App Store를 엽니다.\n2. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review)에 5점 리뷰를 남기고, 원하면 사용 경험도 함께 적어 주세요.\n",
+    "content": "**App Store에 5점 리뷰를 남기면 무료 월간 멤버십을 받을 수 있습니다.**\n1. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review)을 눌러 App Store를 엽니다.\n2. [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review)에 5점 리뷰를 남기고, 원하면 사용 경험도 함께 적어 주세요.\n3. 앱으로 돌아와 **스크린샷 제출**을 눌러 업로드하세요.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "리뷰 쓰기",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 이메일\n  1. 리뷰 페이지를 캡처해 주세요.\n  2. 캡처 이미지를 **dev@bapaws.com** 으로 보내 주세요.\n  3. 24시간 안에 멤버십 교환 코드를 답장해 드립니다.\n",
+    "receiveWay": "📱 **앱 내 제출 (권장)**\n  1. 리뷰 후 **스크린샷 제출**을 누르세요.\n  2. 리뷰 화면 스크린샷 1~3장을 업로드하세요.\n  3. 승인 후 앱에서 코드를 받으세요.\n\n #  \n #  \n-------\n\n #  \n #  \n대안:\n\n📧 이메일\n  1. 리뷰 페이지를 캡처해 주세요.\n  2. 캡처 이미지를 **dev@bapaws.com** 으로 보내 주세요.\n  3. 24시간 안에 멤버십 교환 코드를 답장해 드립니다.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 18,
     "emoji": "🎁",
     "title": "Recebe uma adesao mensal gratuita",
     "languageCode": "pt",
-    "content": "**Recebe uma adesao mensal gratuita ao deixar uma avaliacao de 5 estrelas na App Store.**\n1. Toca em [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) para abrir a App Store.\n2. Deixa uma avaliacao de 5 estrelas para [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) e, se quiseres, partilha tambem a tua experiencia.\n",
+    "content": "**Recebe uma adesao mensal gratuita ao deixar uma avaliacao de 5 estrelas na App Store.**\n1. Toca em [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) para abrir a App Store.\n2. Deixa uma avaliacao de 5 estrelas para [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) e, se quiseres, partilha tambem a tua experiencia.\n3. Volta a app e toca em **Enviar captura**.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Escrever avaliacao",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 E-mail\n  1. Faz uma captura de ecra da tua pagina de avaliacao.\n  2. Envia a captura para **dev@bapaws.com**.\n  3. Vamos responder com o codigo de resgate em ate 24 horas.\n",
+    "receiveWay": "📱 **Envio na app (recomendado)**\n  1. Apos a avaliacao, toca em **Enviar captura**.\n  2. Carrega 1 a 3 capturas da pagina de avaliacao.\n  3. Apos aprovacao, resgata o codigo na app.\n\n #  \n #  \n-------\n\n #  \n #  \nAlternativa:\n\n📧 E-mail\n  1. Faz uma captura de ecra da tua pagina de avaliacao.\n  2. Envia a captura para **dev@bapaws.com**.\n  3. Vamos responder com o codigo de resgate em ate 24 horas.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 19,
     "emoji": "🎁",
     "title": "Получите бесплатную месячную подписку",
     "languageCode": "ru",
-    "content": "**Получите бесплатную месячную подписку, оставив отзыв на 5 звезд в App Store.**\n1. Нажмите [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), чтобы открыть App Store.\n2. Оставьте для [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) отзыв на 5 звезд и при желании поделитесь своим опытом.\n",
+    "content": "**Получите бесплатную месячную подписку, оставив отзыв на 5 звезд в App Store.**\n1. Нажмите [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review), чтобы открыть App Store.\n2. Оставьте для [**Planbook**](https://apps.apple.com/app/id6737596725?action=write-review) отзыв на 5 звезд и при желании поделитесь своим опытом.\n3. Вернитесь в приложение и нажмите **Отправить скриншот**.\n",
     "contentURL": "https://bapaws.super.site/活动消息/免费领取月费会员",
     "openURL": "https://apps.apple.com/app/id6737596725?action=write-review",
     "openTitle": "Написать отзыв",
     "illustration": "gift_box.svg",
-    "receiveWay": "📧 E-mail\n  1. Сделайте скриншот страницы с вашим отзывом.\n  2. Отправьте скриншот на **dev@bapaws.com**.\n  3. Мы ответим кодом активации в течение 24 часов.\n",
+    "receiveWay": "📱 **Отправка в приложении (рекомендуется)**\n  1. После отзыва нажмите **Отправить скриншот**.\n  2. Загрузите 1–3 скриншота страницы отзыва.\n  3. После одобрения получите код в приложении.\n\n #  \n #  \n-------\n\n #  \n #  \nАльтернатива:\n\n📧 E-mail\n  1. Сделайте скриншот страницы с вашим отзывом.\n  2. Отправьте скриншот на **dev@bapaws.com**.\n  3. Мы ответим кодом активации в течение 24 часов.\n",
     "platforms": [
       "ios"
     ],
-    "isNew": true
+    "isNew": true,
+    "enableInAppRedeem": true
   },
   {
     "id": 2,
@@ -187,7 +198,9 @@
     "receiveWay": "### 🔴小红书\n  1. 打开开发者小红书账户：[**MC Studio**](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。\n  2. 点击私信页面，将您的评论截图和笔记链接分享给账户。\n  3. 我们将在 24 小时内，私信会员兑换码。\n",
     "platforms": [
       "ios"
-    ]
+    ],
+    "startAt": "2026-01-01 00:00:00",
+    "endAt": "2026-06-30 23:59:59"
   },
   {
     "id": 20,

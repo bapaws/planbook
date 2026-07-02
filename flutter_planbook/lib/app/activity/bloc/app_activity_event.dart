@@ -4,7 +4,7 @@ sealed class AppActivityEvent extends Equatable {
   const AppActivityEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class AppActivityRequested extends AppActivityEvent {
@@ -17,7 +17,20 @@ final class AppActivityFetched extends AppActivityEvent {
   final bool isNew;
 
   @override
-  List<Object> get props => [isNew];
+  List<Object?> get props => [isNew];
+}
+
+final class AppActivityLocaleChanged extends AppActivityEvent {
+  const AppActivityLocaleChanged({this.locale});
+
+  final Locale? locale;
+
+  @override
+  List<Object?> get props => [locale];
+}
+
+final class AppActivityNoticesRefreshed extends AppActivityEvent {
+  const AppActivityNoticesRefreshed();
 }
 
 final class AppActivityNotShowAgain extends AppActivityEvent {

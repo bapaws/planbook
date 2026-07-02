@@ -35,6 +35,17 @@ final class AppDarkModeChanged extends AppEvent {
   List<Object?> get props => [darkMode];
 }
 
+final class AppLocaleChanged extends AppEvent {
+  const AppLocaleChanged({
+    this.locale,
+  });
+
+  final Locale? locale;
+
+  @override
+  List<Object?> get props => [locale];
+}
+
 final class AppSeedColorChanged extends AppEvent {
   const AppSeedColorChanged({
     required this.seedColor,
@@ -45,6 +56,10 @@ final class AppSeedColorChanged extends AppEvent {
 
 final class AppBackgroundRequested extends AppEvent {
   const AppBackgroundRequested();
+}
+
+final class AppQuadrantConfigsRequested extends AppEvent {
+  const AppQuadrantConfigsRequested();
 }
 
 final class AppApkVersionRequested extends AppEvent {

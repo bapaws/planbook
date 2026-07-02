@@ -20,6 +20,9 @@ enum WidgetSettings {
         static let widgetTheme = "widget_theme"
         static let lightColorScheme = "__settings_light_color_scheme_key__"
         static let darkColorScheme = "__settings_dark_color_scheme_key__"
+        /// 四象限自定义配置（名称），Flutter 端通过 home_widget 写入，
+        /// 与 `SettingsRepository.kSettingsQuadrantConfigs` 保持一致。
+        static let quadrantConfigs = "widget_quadrant_configs"
         /// pending 完成状态：widget AppIntent 翻转后写入这里，UI 立刻反馈；
         /// Flutter 端真正改完 DB 后会通过 MethodChannel 清除这一项。
         /// 字典格式：[taskId: completed]。
@@ -61,6 +64,30 @@ enum WidgetSettings {
             return false
         }
         return theme["isDarkMode"] as? Bool ?? false
+    }
+
+    // MARK: - 四象限自定义配置
+
+    /// 四象限自定义名称（仅包含非空名称）
+    static var quadrantConfigs: [String: String] {
+        guard let json = defaults.string(forKey: Keys.quadrantConfigs),
+              let data = json.data(using: .utf8),
+              let array = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] else {
+            return [:]
+        }
+        var result: [String: String] = [:]
+        for item in array {
+            guard let priority = item["priority"] as? String,
+                  let name = item["name"] as? String,
+                  !name.isEmpty else { continue }
+            result[priority] = name
+        }
+        return result
+    }
+
+    /// 读取某个象限的自定义名称；未配置或为空时返回 nil
+    static func customQuadrantName(for priority: TaskPriority) -> String? {
+        quadrantConfigs[priority.rawValue]
     }
 
     // MARK: - 主题颜色

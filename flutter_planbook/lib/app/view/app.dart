@@ -5,6 +5,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/links/app_links_handler.dart';
@@ -28,6 +29,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   late Brightness _brightness;
   late final methodChannel = const MethodChannel('com.bapaws.planbook.flutter');
   late final _appLinksHandler = AppLinksHandler(router: _appRouter);
+  String? _intlLocaleKey;
 
   @override
   void initState() {
@@ -36,9 +38,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     final platformDispatcher = SchedulerBinding.instance.platformDispatcher
       ..onPlatformBrightnessChanged = _onPlatformBrightnessChanged;
     _brightness = platformDispatcher.platformBrightness;
-
-    /// 这里的设置让 DateFormat 本地化生效
-    Intl.defaultLocale = Intl.canonicalizedLocale(Platform.localeName);
 
     WidgetsBinding.instance.addObserver(this);
 
@@ -87,6 +86,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       // 从后台回到前台时滚动补 schedule，使重复任务提醒窗口始终覆盖未来一段时间
       final repo = context.read<TasksRepository>();
       Future.microtask(repo.rescheduleAllRecurringAlarms);
+      context.read<AppActivityBloc>().add(const AppActivityNoticesRefreshed());
     }
   }
 
@@ -152,33 +152,60 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     }
   }
 
+  /// 同步 DateFormat 使用的 locale
+  void _syncIntlDefaultLocale(Locale? locale) {
+    final key = locale == null
+        ? Platform.localeName
+        : locale.scriptCode != null
+        ? '${locale.languageCode}_${locale.scriptCode}'
+        : locale.languageCode;
+    if (_intlLocaleKey == key) return;
+    _intlLocaleKey = key;
+    Intl.defaultLocale = Intl.canonicalizedLocale(key);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AppBloc, AppState>(
-      builder: (context, state) {
-        return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: _getSystemUiOverlayStyle(state),
-          child: MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            theme: state.getTheme(_brightness),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-            routerConfig: _appRouter.config(),
-            builder: (context, child) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                // 只在 Android 上设置 edgeToEdge 模式
-                if (Platform.isAndroid) {
-                  SystemChrome.setEnabledSystemUIMode(
-                    SystemUiMode.edgeToEdge,
-                    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-                  );
-                }
-              });
-              return EasyLoading.init()(context, child);
-            },
-          ),
-        );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<AppBloc, AppState>(
+          listenWhen: (previous, current) =>
+              previous.locale != current.locale,
+          listener: (context, state) {
+            context.read<AppActivityBloc>().add(
+              AppActivityLocaleChanged(locale: state.locale),
+            );
+          },
+        ),
+      ],
+      child: BlocBuilder<AppBloc, AppState>(
+        builder: (context, state) {
+          _syncIntlDefaultLocale(state.locale);
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: _getSystemUiOverlayStyle(state),
+            child: MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              theme: state.getTheme(_brightness),
+              locale: state.locale,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              routerConfig: _appRouter.config(),
+              builder: (context, child) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  // 只在 Android 上设置 edgeToEdge 模式
+                  if (Platform.isAndroid) {
+                    SystemChrome.setEnabledSystemUIMode(
+                      SystemUiMode.edgeToEdge,
+                      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+                    );
+                  }
+                });
+                return EasyLoading.init()(context, child);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

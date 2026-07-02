@@ -24,6 +24,11 @@ enum class TaskPriority(val rawValue: String, val index: Int) {
         NONE -> "不重要不紧急"
     }
 
+    /** 最终展示名称（用户自定义优先，回退默认） */
+    fun displayTitle(configs: Map<String, String>): String {
+        return configs[rawValue] ?: quadrantTitle()
+    }
+
     val isImportant: Boolean
         get() = this == HIGH || this == MEDIUM
 

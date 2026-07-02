@@ -29,8 +29,19 @@ class SettingsRepository {
   AppBackgroundEntity? get backgroundAsset =>
       _onBackgroundAssetChangeController.value;
 
+  late final _quadrantConfigsController =
+      BehaviorSubject<List<QuadrantConfigEntity>>();
+  Stream<List<QuadrantConfigEntity>> get onQuadrantConfigsChange =>
+      _quadrantConfigsController.stream;
+  List<QuadrantConfigEntity>? get quadrantConfigs =>
+      _quadrantConfigsController.valueOrNull;
+
   @visibleForTesting
   static const kSettingsDarkModeKey = '__settings_dark_mode_key__';
+
+  /// The key used for storing the app locale locally.
+  @visibleForTesting
+  static const kSettingsLocaleKey = '__settings_locale_key__';
 
   /// The key used for storing the settings app icon name locally.
   @visibleForTesting
@@ -73,6 +84,9 @@ class SettingsRepository {
       '__settings_task_completed_sound_key__';
   static const kSettingsBackgroundAsset = '__settings_background_asset_key__';
 
+  /// 四象限自定义配置（裸 key，便于原生 widget 直接读取）
+  static const kSettingsQuadrantConfigs = 'widget_quadrant_configs';
+
   /// 发现页日志「翻页手势」首次提示是否已展示
   @visibleForTesting
   static const kDiscoverJournalFlipGestureHintShownKey =
@@ -96,6 +110,37 @@ class SettingsRepository {
             jsonDecode(backgroundAssetData) as Map<String, dynamic>,
           );
     _onBackgroundAssetChangeController.add(backgroundAsset);
+
+    final quadrantConfigsData = await AppHomeWidget.getWidgetData<String?>(
+      kSettingsQuadrantConfigs,
+    );
+    final quadrantConfigs = quadrantConfigsData == null
+        ? QuadrantConfigEntity.defaults
+        : QuadrantConfigEntity.listFromJson(
+            jsonDecode(quadrantConfigsData) as List<dynamic>,
+          );
+    _quadrantConfigsController.add(quadrantConfigs);
+  }
+
+  Locale? getLocale() {
+    final key = _sp.getString(kSettingsLocaleKey);
+    if (key == null || key.isEmpty) return null;
+    final parts = key.split('_');
+    if (parts.length >= 2 && parts[0] == 'zh') {
+      return Locale.fromSubtags(languageCode: 'zh', scriptCode: parts[1]);
+    }
+    return Locale(parts[0]);
+  }
+
+  Future<void> saveLocale(Locale? locale) async {
+    if (locale == null) {
+      await _sp.remove(kSettingsLocaleKey);
+      return;
+    }
+    final key = locale.languageCode == 'zh' && locale.scriptCode != null
+        ? '${locale.languageCode}_${locale.scriptCode}'
+        : locale.languageCode;
+    await _sp.setString(kSettingsLocaleKey, key);
   }
 
   DarkMode? getDarkMode() {
@@ -279,6 +324,25 @@ class SettingsRepository {
       assetBaseName,
     );
     _onBackgroundAssetChangeController.add(asset);
+  }
+
+  Future<List<QuadrantConfigEntity>> getQuadrantConfigs() async {
+    final json = await AppHomeWidget.getWidgetData<String>(
+      kSettingsQuadrantConfigs,
+    );
+    final configs = json == null
+        ? QuadrantConfigEntity.defaults
+        : QuadrantConfigEntity.listFromJson(jsonDecode(json) as List<dynamic>);
+    _quadrantConfigsController.add(configs);
+    return configs;
+  }
+
+  Future<void> saveQuadrantConfigs(List<QuadrantConfigEntity> configs) async {
+    await AppHomeWidget.saveWidgetData(
+      kSettingsQuadrantConfigs,
+      jsonEncode(configs.map((e) => e.toJson()).toList()),
+    );
+    _quadrantConfigsController.add(configs);
   }
 
   bool getDiscoverJournalFlipGestureHintShown() {

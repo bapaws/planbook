@@ -70,6 +70,24 @@ class AppRouter extends RootStackRouter {
     );
   }
 
+  AutoRoute _buildDialogRoute(
+    PageInfo page, {
+    List<AutoRoute>? children,
+  }) {
+    return CustomRoute<void>(
+      page: page,
+      children: children,
+      customRouteBuilder: <T>(context, child, page) {
+        return DialogRoute<T>(
+          context: context,
+          settings: page,
+          builder: (context) => child,
+          barrierColor: Colors.black.withValues(alpha: 0.4),
+        );
+      },
+    );
+  }
+
   @override
   List<AutoRoute> get routes => [
     AutoRoute(initial: true, page: SplashRoute.page),
@@ -147,9 +165,11 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: FeedbackRoute.page),
     AutoRoute(page: AboutRoute.page),
     AutoRoute(page: SettingsDarkModeRoute.page),
+    AutoRoute(page: SettingsLanguageRoute.page),
     AutoRoute(page: SettingsSeedColorRoute.page),
     AutoRoute(page: SettingsIconRoute.page),
     AutoRoute(page: SettingsTaskRoute.page),
+    _buildModalBottomSheetRoute(SettingsQuadrantRoute.page),
     AutoRoute(page: SettingsBackgroundRoute.page),
 
     AutoRoute(page: AppPurchasesRoute.page),
@@ -169,18 +189,9 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MineDeleteRoute.page),
 
     AutoRoute(page: AppActivityRoute.page),
+    AutoRoute(page: AppActivityRedeemRoute.page),
     AutoRoute(page: AppActivityListRoute.page),
-    CustomRoute<void>(
-      page: AppActivityAlertRoute.page,
-      customRouteBuilder: <T>(context, child, page) {
-        return DialogRoute<T>(
-          context: context,
-          settings: page,
-          builder: (context) => child,
-          barrierColor: Colors.black.withValues(alpha: 0.4),
-        );
-      },
-    ),
+    _buildDialogRoute(AppActivityAlertRoute.page),
 
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
 

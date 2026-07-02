@@ -11,8 +11,10 @@ final class AppState extends Equatable {
   const AppState({
     required this.darkMode,
     required this.seedColor,
+    this.locale,
     this.isInitialized = false,
     this.background,
+    this.quadrantConfigs = const [],
     this.user,
     this.apkVersion,
     this.apkHasNewVersion = false,
@@ -23,8 +25,10 @@ final class AppState extends Equatable {
 
   final bool isInitialized;
   final DarkMode? darkMode;
+  final Locale? locale;
   final AppSeedColors seedColor;
   final AppBackgroundEntity? background;
+  final List<QuadrantConfigEntity> quadrantConfigs;
 
   final UserEntity? user;
 
@@ -48,7 +52,9 @@ final class AppState extends Equatable {
   List<Object?> get props => [
     isInitialized,
     darkMode,
+    locale,
     background,
+    quadrantConfigs,
     seedColor,
     user,
     apkVersion,
@@ -61,7 +67,9 @@ final class AppState extends Equatable {
   AppState copyWith({
     bool? isInitialized,
     ValueGetter<DarkMode?>? darkMode,
+    ValueGetter<Locale?>? locale,
     AppBackgroundEntity? background,
+    List<QuadrantConfigEntity>? quadrantConfigs,
     AppSeedColors? seedColor,
     UserEntity? user,
     String? apkVersion,
@@ -73,7 +81,9 @@ final class AppState extends Equatable {
   }) => AppState(
     isInitialized: isInitialized ?? this.isInitialized,
     darkMode: darkMode == null ? this.darkMode : darkMode(),
+    locale: locale == null ? this.locale : locale(),
     background: background ?? this.background,
+    quadrantConfigs: quadrantConfigs ?? this.quadrantConfigs,
     seedColor: seedColor ?? this.seedColor,
     user: user ?? this.user,
     apkVersion: apkVersion ?? this.apkVersion,

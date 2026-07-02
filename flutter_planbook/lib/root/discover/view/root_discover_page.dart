@@ -1,10 +1,8 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/view/app_activity_alert_listener.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
@@ -30,9 +28,6 @@ class RootDiscoverPage extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) {
-            /// Show app activity alert
-            showAppActivityAlert(context);
-
             final now = Jiffy.now();
             return DiscoverJournalBloc(
               now: now,
@@ -67,28 +62,17 @@ class RootDiscoverPage extends StatelessWidget {
           },
         ),
       ],
-      child: AutoTabsRouter(
-        routes: const [
-          DiscoverJournalRoute(),
-          DiscoverFocusRoute(),
-          DiscoverSummaryRoute(),
-        ],
-        builder: (context, child) => _RootDiscoverPage(child: child),
+      child: AppActivityAlertListener(
+        child: AutoTabsRouter(
+          routes: const [
+            DiscoverJournalRoute(),
+            DiscoverFocusRoute(),
+            DiscoverSummaryRoute(),
+          ],
+          builder: (context, child) => _RootDiscoverPage(child: child),
+        ),
       ),
     );
-  }
-
-  void showAppActivityAlert(BuildContext context) {
-    if (!AppChannel.isMain) return;
-    final bloc = context.read<AppActivityBloc>();
-    if (bloc.state.activities.isEmpty) return;
-    if (!bloc.state.isReleasedVersion) return;
-
-    final activity = bloc.state.activities.firstWhereOrNull(
-      (activity) => activity.isNew,
-    );
-    if (activity == null) return;
-    context.router.push(AppActivityAlertRoute(activity: activity));
   }
 }
 

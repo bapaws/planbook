@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
@@ -46,8 +47,10 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     on<AppLaunched>(_onLaunched);
     on<AppUserRequested>(_onUserProfileRequested);
     on<AppDarkModeChanged>(_onDarkModeChanged);
+    on<AppLocaleChanged>(_onLocaleChanged);
     on<AppSeedColorChanged>(_onSeedColorChanged);
     on<AppBackgroundRequested>(_onBackgroundRequested);
+    on<AppQuadrantConfigsRequested>(_onQuadrantConfigsRequested);
     on<AppApkVersionRequested>(_onApkVersionRequested);
     on<AppApkDownloadRequested>(_onApkDownloadRequested);
     on<AppApkDownloadProgressUpdated>(_onApkDownloadProgressUpdated);
@@ -84,6 +87,7 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     Emitter<AppState> emit,
   ) async {
     final darkMode = _settingsRepository.getDarkMode();
+    final locale = _settingsRepository.getLocale();
     final seedColorHex = _settingsRepository.getSeedColorHex();
     final seedColor = seedColorHex == null
         ? AppSeedColors.green
@@ -108,9 +112,13 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     /// Request background asset
     add(const AppBackgroundRequested());
 
+    /// Request quadrant configs
+    add(const AppQuadrantConfigsRequested());
+
     emit(
       state.copyWith(
         darkMode: () => darkMode,
+        locale: () => locale,
         seedColor: seedColor,
         isInitialized: true,
       ),
@@ -153,9 +161,26 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
           unawaited(_notesRepository.syncNotes(force: true));
           _syncEngine.triggerSync();
         }
+        _reconcileQuadrantConfigsFromRemote(user);
         return state.copyWith(user: user);
       },
     );
+  }
+
+  /// 登录/换号后把远端四象限配置回灌到本地（带动 UI 流与小组件刷新）
+  void _reconcileQuadrantConfigsFromRemote(UserEntity? user) {
+    final remote = user?.profile?.quadrantConfig;
+    if (remote == null || remote.isEmpty) return;
+    // 远端全为默认值时无需回灌
+    if (remote.every((e) => e.isDefault)) return;
+    final local = _settingsRepository.quadrantConfigs;
+    if (local != null && const ListEquality<QuadrantConfigEntity>().equals(
+      local,
+      remote,
+    )) {
+      return;
+    }
+    unawaited(_settingsRepository.saveQuadrantConfigs(remote));
   }
 
   void _onDarkModeChanged(
@@ -166,6 +191,18 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     emit(
       state.copyWith(
         darkMode: () => event.darkMode,
+      ),
+    );
+  }
+
+  void _onLocaleChanged(
+    AppLocaleChanged event,
+    Emitter<AppState> emit,
+  ) {
+    _settingsRepository.saveLocale(event.locale);
+    emit(
+      state.copyWith(
+        locale: () => event.locale,
       ),
     );
   }
@@ -200,6 +237,16 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     await emit.forEach(
       _settingsRepository.onBackgroundAssetChange,
       onData: (background) => state.copyWith(background: background),
+    );
+  }
+
+  Future<void> _onQuadrantConfigsRequested(
+    AppQuadrantConfigsRequested event,
+    Emitter<AppState> emit,
+  ) async {
+    await emit.forEach(
+      _settingsRepository.onQuadrantConfigsChange,
+      onData: (configs) => state.copyWith(quadrantConfigs: configs),
     );
   }
 

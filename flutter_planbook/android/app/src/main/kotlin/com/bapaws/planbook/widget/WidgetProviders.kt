@@ -83,6 +83,8 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                     R.id.quadrant_1_title, R.id.quadrant_2_title, R.id.quadrant_3_title, R.id.quadrant_4_title
                 )
 
+                val quadrantConfigs = WidgetSettings.getQuadrantConfigs(context)
+
                 for (i in 0 until 4) {
                     val group = groups.getOrNull(i)
                     val priority = TaskPriority.entries[i]
@@ -103,7 +105,7 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                     rv.setTextColor(numberIds[i], theme.onPrimaryContainerColor().toArgbInt())
 
                     // 设置标题文字样式（小号）
-                    rv.setTextViewText(titleIds[i], priority.quadrantTitle())
+                    rv.setTextViewText(titleIds[i], priority.displayTitle(quadrantConfigs))
                     rv.setTextColor(titleIds[i], theme.onPrimaryContainerColor().toArgbInt())
 
                     // 设置任务
@@ -150,6 +152,15 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                         }
                     }
                 }
+
+                // 空白区域点击打开 App（子 view 有独立 PendingIntent 时优先响应）
+                val quadrantIds = listOf(
+                    R.id.quadrant_1, R.id.quadrant_2, R.id.quadrant_3, R.id.quadrant_4
+                )
+                for (i in quadrantIds.indices) {
+                    bindOpenAppClick(rv, context, quadrantIds[i], 1000 + i)
+                }
+                bindOpenAppClick(rv, context, R.id.widget_root, 2000)
 
                 appWidgetManager.updateAppWidget(appWidgetId, rv)
                 Log.d(TAG, "Large widget updated successfully")
@@ -285,6 +296,10 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                         rv.setViewVisibility(taskRowId, android.view.View.GONE)
                     }
                 }
+
+                // 空白区域点击打开 App
+                bindOpenAppClick(rv, context, R.id.task_list_spacer, 3000)
+                bindOpenAppClick(rv, context, R.id.widget_root, 3001)
 
                 appWidgetManager.updateAppWidget(appWidgetId, rv)
                 Log.d(TAG, "Small widget updated successfully")
@@ -491,6 +506,16 @@ fun refreshQuadrantWidgets(context: Context) {
     for (id in smallIds) {
         QuadrantWidgetSmallProvider.updateSmallWidget(context, appWidgetManager, id)
     }
+}
+
+/** 绑定打开 App 首页的点击事件 */
+private fun bindOpenAppClick(rv: RemoteViews, context: Context, viewId: Int, requestCode: Int) {
+    val openIntent = WidgetActionUtils.createOpenAppIntent(context)
+    val openPending = PendingIntent.getActivity(
+        context, requestCode, openIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+    rv.setOnClickPendingIntent(viewId, openPending)
 }
 
 /**

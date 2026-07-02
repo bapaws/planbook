@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -85,6 +87,9 @@ class _TaskDonePage extends StatelessWidget {
                 .incompleteChildrenCount;
             final theme = Theme.of(context);
             final colorScheme = state.task.priority.getColorScheme(context);
+            final quadrantConfigs = context.select(
+              (AppBloc b) => b.state.quadrantConfigs,
+            );
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -165,7 +170,10 @@ class _TaskDonePage extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              state.task.priority.getTitle(context.l10n),
+                              quadrantConfigs.nameOf(
+                                state.task.priority,
+                                context.l10n,
+                              ),
                               style: theme.textTheme.labelMedium?.copyWith(
                                 color: colorScheme.primary,
                               ),

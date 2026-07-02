@@ -1,14 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/redeem/redeem_service.dart';
 import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -19,6 +22,7 @@ import 'package:flutter_planbook/settings/home/view/settings_home_upgrade_button
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:flutter_planbook/settings/home/view/settings_section_header.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/user_entity.dart';
@@ -178,6 +182,17 @@ class _SettingsHomePage extends StatelessWidget {
           ),
           SettingsRow(
             leading: const Icon(
+              FontAwesomeIcons.language,
+              color: Colors.deepPurple,
+              size: 20,
+            ),
+            title: Text(l10n.language),
+            onPressed: () {
+              context.router.push(const SettingsLanguageRoute());
+            },
+          ),
+          SettingsRow(
+            leading: const Icon(
               FontAwesomeIcons.solidImage,
               color: Colors.cyan,
               size: 20,
@@ -226,7 +241,8 @@ class _SettingsHomePage extends StatelessWidget {
             title: l10n.other,
           ),
           BlocSelector<AppActivityBloc, AppActivityState, bool>(
-            selector: (state) => state.activities.isNotEmpty,
+            selector: (state) =>
+                state.activities.isNotEmpty || state.notices.isNotEmpty,
             builder: (context, isNotEmpty) {
               return isNotEmpty
                   ? SettingsRow(
@@ -289,6 +305,29 @@ class _SettingsHomePage extends StatelessWidget {
           //     launchUrlString(context.l10n.helpUrl);
           //   },
           // ),
+          if (kDebugMode)
+            SettingsRow(
+              leading: const Icon(
+                Icons.restart_alt,
+                color: Colors.deepOrange,
+                size: 20,
+              ),
+              title: Text(
+                '重置活动与兑换本地记录',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              onPressed: () async {
+                await context
+                    .read<AppActivityRepository>()
+                    .clearLocalActivityPreferences();
+                await RedeemService.instance.clearLocalState();
+                if (!context.mounted) return;
+                context.read<AppActivityBloc>().add(const AppActivityFetched());
+                await Fluttertoast.showToast(msg: '已清空活动和兑换本地记录');
+              },
+            ),
           SettingsRow(
             leading: const Icon(
               FontAwesomeIcons.circleInfo,

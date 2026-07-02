@@ -25,8 +25,8 @@ platform :ios do
   end
 
   lane :release do
-    # increment_build_number(xcodeproj: "Runner.xcodeproj")
-    # build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    increment_build_number(xcodeproj: "Runner.xcodeproj")
+    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
     upload_to_app_store(
       api_key_path: "./fastlane/AuthKey.json",
       skip_screenshots: true,

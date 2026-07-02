@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
+import 'package:flutter_planbook/app/activity/model/app_activity_notice.dart';
+import 'package:flutter_planbook/app/activity/notice/app_activity_notice_resolver.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
@@ -39,6 +42,7 @@ class _AppActivityPageState extends State<AppActivityPage> {
 
   bool _isTitleVisible = false;
 
+  bool get _showInAppRedeem => activity.enableInAppRedeem && Platform.isIOS;
   Future<void> _openMarkdownLink(String? text, String? href) async {
     if (href == null) return;
     if (href.startsWith('weixin://')) {
@@ -83,8 +87,31 @@ class _AppActivityPageState extends State<AppActivityPage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocSelector<
+      AppActivityBloc,
+      AppActivityState,
+      AppActivityNoticeKind?
+    >(
+      selector: (state) => AppActivityNoticeResolver.redeemKindForActivity(
+        state.notices,
+        activity.id,
+      ),
+      builder: (context, redeemKind) => _buildPage(
+        context,
+        redeemKind: redeemKind,
+      ),
+    );
+  }
+
+  Widget _buildPage(
+    BuildContext context, {
+    required AppActivityNoticeKind? redeemKind,
+  }) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final redeemPending = redeemKind == AppActivityNoticeKind.redeemPending;
+    final redeemApproved = redeemKind == AppActivityNoticeKind.redeemApproved;
+
     return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -92,15 +119,28 @@ class _AppActivityPageState extends State<AppActivityPage> {
         leading: const NavigationBarBackButton(),
         centerTitle: false,
         actions: [
+          if (_showInAppRedeem)
+            CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              onPressed: () {
+                context.router.push(
+                  AppActivityRedeemRoute(activity: activity),
+                );
+              },
+              child: Text(
+                redeemApproved
+                    ? context.l10n.redeemNow
+                    : context.l10n.submitReviewScreenshot,
+              ),
+            ),
           Builder(
             builder: (context) {
               return CupertinoButton(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: const Icon(CupertinoIcons.share),
                 onPressed: () async {
                   final image = await _screenshotController.capture();
                   if (image == null || !context.mounted) return;
-
-                  // ImageGallerySaver.saveImage(image);
 
                   final box = context.findRenderObject() as RenderBox?;
                   await SharePlus.instance.share(
@@ -146,6 +186,32 @@ class _AppActivityPageState extends State<AppActivityPage> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (redeemPending || redeemApproved)
+                          CupertinoButton(
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              context.router.push(
+                                AppActivityRedeemRoute(activity: activity),
+                              );
+                            },
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: redeemApproved
+                                    ? colorScheme.tertiaryContainer
+                                    : colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                redeemApproved
+                                    ? context.l10n.redeemApprovedActivity
+                                    : context.l10n.redeemPending,
+                                style: textTheme.bodyMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         if (activity.content != null)
                           SizedBox(
                             width: double.infinity,
@@ -203,11 +269,6 @@ class _AppActivityPageState extends State<AppActivityPage> {
                           CupertinoButton(
                             padding: EdgeInsets.zero,
                             minimumSize: Size.zero,
-                            // onPressed: () {
-                            //   setState(() {
-                            //     _isReceiveWayVisible = !_isReceiveWayVisible;
-                            //   });
-                            // },
                             onPressed: null,
                             child: Text(
                               context.l10n.receiveWay,
@@ -239,6 +300,15 @@ class _AppActivityPageState extends State<AppActivityPage> {
                               h3Padding: const EdgeInsets.only(top: 12),
                               p: textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurface,
+                              ),
+                              horizontalRuleDecoration: BoxDecoration(
+                                border: Border(
+                                  top: BorderSide(
+                                    width: 2,
+                                    color: colorScheme.surfaceContainerHighest,
+                                  ),
+                                ),
+                                // height: kMinInteractiveDimension,
                               ),
                             ),
                             onTapLink: (text, href, title) async {
@@ -278,11 +348,8 @@ class _AppActivityPageState extends State<AppActivityPage> {
                       borderRadius: BorderRadius.circular(16),
                       onPressed: () {
                         context.read<AppActivityBloc>().add(
-                          AppActivityNotShowAgain(
-                            message: activity,
-                          ),
+                          AppActivityNotShowAgain(message: activity),
                         );
-
                         context.router.maybePop();
                       },
                       child: Text(
@@ -300,13 +367,13 @@ class _AppActivityPageState extends State<AppActivityPage> {
                         await launchUrl(Uri.parse(activity.openURL!));
                         if (context.mounted) {
                           context.read<AppActivityBloc>().add(
-                            AppActivityNotShowAgain(
-                              message: activity,
-                            ),
+                            AppActivityNotShowAgain(message: activity),
                           );
                         }
                       },
-                      child: Text(activity.openTitle ?? context.l10n.done),
+                      child: Text(
+                        activity.openTitle ?? context.l10n.done,
+                      ),
                     ),
                   ),
                 ],

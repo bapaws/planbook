@@ -216,8 +216,10 @@ class AppActivityAlertPage extends StatelessWidget {
               decorationColor: Colors.white,
             ),
           ),
-          onPressed: () {
-            context.router.push(AppActivityRoute(activity: activity));
+          onPressed: () async {
+            await context.router.maybePop();
+            if (!context.mounted) return;
+            await context.router.push(AppActivityRoute(activity: activity));
           },
         ),
         const SizedBox(height: 96),

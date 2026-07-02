@@ -181,6 +181,7 @@ Future<Widget> _initApp() async {
         BlocProvider(
           create: (context) => AppActivityBloc(
             appActivityRepository: context.read(),
+            settingsRepository: context.read(),
           )..add(const AppActivityFetched()),
         ),
       ],

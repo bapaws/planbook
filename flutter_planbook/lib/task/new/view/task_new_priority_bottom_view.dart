@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/new/cubit/task_new_cubit.dart';
@@ -20,6 +22,7 @@ class TaskNewPriorityBottomView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final mediaQuery = MediaQuery.of(context);
+    final configs = context.select((AppBloc b) => b.state.quadrantConfigs);
 
     return BlocSelector<TaskNewCubit, TaskNewState, TaskPriority>(
       selector: (state) => state.priority,
@@ -44,13 +47,13 @@ class TaskNewPriorityBottomView extends StatelessWidget {
                         children: [
                           _buildQuadrant(
                             context: context,
-                            label: l10n.importantUrgent,
+                            label: configs.nameOf(TaskPriority.high, l10n),
                             priority: TaskPriority.high,
                             selectedPriority: selectedPriority,
                           ),
                           _buildQuadrant(
                             context: context,
-                            label: l10n.urgentUnimportant,
+                            label: configs.nameOf(TaskPriority.low, l10n),
                             priority: TaskPriority.low,
                             selectedPriority: selectedPriority,
                           ),
@@ -62,13 +65,13 @@ class TaskNewPriorityBottomView extends StatelessWidget {
                         children: [
                           _buildQuadrant(
                             context: context,
-                            label: l10n.importantNotUrgent,
+                            label: configs.nameOf(TaskPriority.medium, l10n),
                             priority: TaskPriority.medium,
                             selectedPriority: selectedPriority,
                           ),
                           _buildQuadrant(
                             context: context,
-                            label: l10n.notUrgentUnimportant,
+                            label: configs.nameOf(TaskPriority.none, l10n),
                             priority: TaskPriority.none,
                             selectedPriority: selectedPriority,
                           ),
