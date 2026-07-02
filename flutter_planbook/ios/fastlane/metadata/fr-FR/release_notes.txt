@@ -1,9 +1,10 @@
 Nouveautés :
-- Prise en charge des widgets d’accueil
-- Synchronisation local d’abord
+- Personnalisation des noms de quadrants
+- Correctifs de problèmes connus
 
 Mises à jour récentes :
+- Prise en charge des widgets d’accueil
+- Synchronisation local d’abord
 - Couverture du journal et double toucher pour agrandir
-- Glisser-déposer des tâches dans les vues jour, semaine et mois ;
+- Glisser-déposer des tâches dans les vues jour, semaine et mois
 - Associer les tâches au focus et aux synthèses
-- Correctifs de problèmes connus

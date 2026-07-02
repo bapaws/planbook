@@ -170,10 +170,12 @@
         </LinearLayout>
 
         <!-- 占满任务列表下方剩余空间，使空白区域可点击打开 App -->
-        <View
+        <!-- RemoteViews 不支持原生 View，须用 LinearLayout -->
+        <LinearLayout
             android:id="@+id/task_list_spacer"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:orientation="vertical" />
     </LinearLayout>
 </FrameLayout>

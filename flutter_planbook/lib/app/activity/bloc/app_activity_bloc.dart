@@ -34,6 +34,7 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
   final SettingsRepository _settingsRepository;
 
   AppActivityRedeemSnapshot _redeemSnapshot = const AppActivityRedeemSnapshot();
+  bool _listeningToActivityStream = false;
 
   void _syncLocale() {
     _appActivityRepository.updateLocale(_settingsRepository.getLocale());
@@ -95,7 +96,10 @@ class AppActivityBloc extends Bloc<AppActivityEvent, AppActivityState> {
       isReleasedVersion: isReleasedVersion,
     );
 
-    add(const AppActivityRequested());
+    if (!_listeningToActivityStream) {
+      _listeningToActivityStream = true;
+      add(const AppActivityRequested());
+    }
   }
 
   Future<void> _onLocaleChanged(

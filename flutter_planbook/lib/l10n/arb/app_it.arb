@@ -291,6 +291,8 @@
   "termsOfUse": "Termini di utilizzo",
   "and": "e",
   "privacyPolicy": "Informativa sulla privacy",
+  "privacyConsentTitle": "Informativa sulla privacy",
+  "privacyConsentBody": "Benvenuto in Planbook! La tua privacy è importante per noi. Prima di continuare, leggi e accetta i Termini di utilizzo e l'Informativa sulla privacy.\n\nPer fornire i nostri servizi, potremmo raccogliere:\n\n· Informazioni sull'account (telefono, email) per accesso e gestione\n· Attività, note e contenuti per sincronizzazione cloud e archiviazione\n· Informazioni sul dispositivo per sicurezza e miglioramento dell'esperienza\n\nToccando «Accetta», confermi di aver letto e accettato quanto sopra.",
   "passwordNotMatch": "Le password non corrispondono",
   "passwordInvalid": "Password non valida",
   "passwordMessage": "Inserisci una password di almeno 8 caratteri con lettere e numeri",

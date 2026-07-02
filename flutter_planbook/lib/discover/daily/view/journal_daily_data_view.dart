@@ -92,10 +92,11 @@ class JournalDailyDataView extends StatelessWidget {
     }
     spans.add(TextSpan(text: ' ', style: baseStyle));
 
-    // 完成任务统计
-    final completedFromPlan = state.completedTasksCount;
+    // 完成任务统计（仅父任务，与计划数口径一致）
+    final totalCompleted = state.completedTasksCount;
+    final completedFromPlan =
+        state.plannedTasksCount - state.uncompletedTasksCount;
     final completedFromInbox = state.completedInboxTasksCount;
-    final totalCompleted = completedFromPlan + completedFromInbox;
 
     if (totalCompleted == 0) {
       _addTextWithNumbers(

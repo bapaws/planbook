@@ -15,22 +15,60 @@
 
 default_platform(:ios)
 
+def flutter_marketing_version
+  path = File.expand_path("../../pubspec.yaml", __dir__)
+  UI.user_error!("Missing #{path}") unless File.file?(path)
+
+  content = File.read(path, encoding: "UTF-8")
+  match = content.match(/^version:\s*(\S+)/)
+  UI.user_error!("No version: line found in pubspec.yaml") unless match
+
+  match[1].split("+").first
+end
+
+# 与 Xcode Organizer 一致：命令行 export 需允许自动更新 Provisioning Profile
+def build_runner_app
+  build_app(
+    workspace: "Runner.xcworkspace",
+    scheme: "Runner",
+    export_method: "app-store",
+    xcargs: "-allowProvisioningUpdates",
+    export_xcargs: "-allowProvisioningUpdates",
+    export_options: {
+      signingStyle: "automatic",
+      teamID: "GM4766U38W",
+    },
+  )
+end
+
 platform :ios do
   desc "Push a new release build to the App Store"
 
   lane :beta do
     increment_build_number(xcodeproj: "Runner.xcodeproj")
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    build_runner_app
     upload_to_testflight(api_key_path: "./fastlane/AuthKey.json")
   end
 
   lane :release do
     increment_build_number(xcodeproj: "Runner.xcodeproj")
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    build_runner_app
     upload_to_app_store(
       api_key_path: "./fastlane/AuthKey.json",
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
+    )
+  end
+
+  desc "Upload App Store metadata only (release notes, description, etc.)"
+  lane :metadata do
+    upload_to_app_store(
+      api_key_path: "./fastlane/AuthKey.json",
+      app_version: flutter_marketing_version,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      force: true,
     )
   end
 end

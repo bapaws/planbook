@@ -4,15 +4,18 @@ import 'dart:io';
 
 import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
+import 'package:flutter_planbook/app/privacy/view/privacy_consent_page.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_planbook/widget/widget_action_setup.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -40,28 +43,98 @@ class AppBlocObserver extends BlocObserver {
 }
 
 Future<void> bootstrap() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
 
   Bloc.observer = const AppBlocObserver();
 
-  await _initPurchases();
-  await AppSupabase.initialize();
+  runApp(const _BootstrapApp());
+}
 
-  HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorageDirectory.web
-        : HydratedStorageDirectory((await getTemporaryDirectory()).path),
-  );
+/// 启动门控：国内渠道需先同意隐私政策，再初始化 SDK 并挂载主 App
+class _BootstrapApp extends StatefulWidget {
+  const _BootstrapApp();
 
-  runApp(await _initApp());
+  @override
+  State<_BootstrapApp> createState() => _BootstrapAppState();
+}
+
+class _BootstrapAppState extends State<_BootstrapApp> {
+  Widget? _app;
+  bool _needsConsent = false;
+  late SharedPreferences _sp;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_start());
+  }
+
+  Future<void> _start() async {
+    _sp = await SharedPreferences.getInstance();
+
+    if (Platform.isAndroid && AppChannel.isAndroidChina) {
+      final accepted = SettingsRepository.getPrivacyConsentAcceptedFrom(_sp);
+      if (!accepted) {
+        setState(() => _needsConsent = true);
+        return;
+      }
+    }
+
+    await _completeBootstrap();
+  }
+
+  Future<void> _onConsentAccepted() async {
+    await SettingsRepository.savePrivacyConsentAcceptedTo(
+      _sp,
+      accepted: true,
+    );
+    setState(() => _needsConsent = false);
+    await _completeBootstrap();
+  }
+
+  Future<void> _completeBootstrap() async {
+    await _initPurchases();
+    await AppSupabase.initialize();
+
+    HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: kIsWeb
+          ? HydratedStorageDirectory.web
+          : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+    );
+
+    final app = await _initApp();
+    if (mounted) {
+      setState(() => _app = app);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_app != null) {
+      return _app!;
+    }
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        useMaterial3: true,
+      ),
+      home: _needsConsent
+          ? PrivacyConsentPage(onAccepted: _onConsentAccepted)
+          : const Scaffold(body: SizedBox.shrink()),
+    );
+  }
 }
 
 /// Inital the app
 Future<Widget> _initApp() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 

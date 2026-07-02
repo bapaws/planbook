@@ -92,6 +92,10 @@ class SettingsRepository {
   static const kDiscoverJournalFlipGestureHintShownKey =
       '__discover_journal_flip_gesture_hint_shown__';
 
+  /// 国内渠道首启隐私政策是否已同意
+  static const kSettingsPrivacyConsentAcceptedKey =
+      '__settings_privacy_consent_accepted_key__';
+
   Future<void> _init() async {
     final styleData = await AppHomeWidget.getWidgetData<String?>(
       kSettingsTaskPriorityStyleKey,
@@ -230,6 +234,25 @@ class SettingsRepository {
 
   Future<void> saveOnboarding({required bool completed}) async {
     await _sp.setBool(kSettingsOnboardingCompletedKey, completed);
+  }
+
+  Future<bool> getPrivacyConsentAccepted() async {
+    return getPrivacyConsentAcceptedFrom(_sp);
+  }
+
+  Future<void> savePrivacyConsentAccepted({required bool accepted}) async {
+    await savePrivacyConsentAcceptedTo(_sp, accepted: accepted);
+  }
+
+  static bool getPrivacyConsentAcceptedFrom(SharedPreferences sp) {
+    return sp.getBool(kSettingsPrivacyConsentAcceptedKey) ?? false;
+  }
+
+  static Future<void> savePrivacyConsentAcceptedTo(
+    SharedPreferences sp, {
+    required bool accepted,
+  }) async {
+    await sp.setBool(kSettingsPrivacyConsentAcceptedKey, accepted);
   }
 
   Future<List<TaskAutoNoteRule>> getTaskAutoNoteRules() async {

@@ -1,9 +1,10 @@
 Neu in dieser Version:
-- Unterstützung für Startbildschirm-Widgets
-- Local-First-Synchronisation
+- Quadrantennamen anpassen
+- Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
+- Unterstützung für Startbildschirm-Widgets
+- Local-First-Synchronisation
 - Titelbild für das Journal, Doppeltippen zum Vergrößern
-- Aufgaben per Drag-and-drop in Tages-, Wochen- und Monatsansicht;
+- Aufgaben per Drag-and-drop in Tages-, Wochen- und Monatsansicht
 - Aufgaben mit Fokus und Zusammenfassungen verknüpfen
-- Einige bekannte Probleme behoben

@@ -298,6 +298,8 @@
   "termsOfUse": "Terms of Use",
   "and": "and",
   "privacyPolicy": "Privacy Policy",
+  "privacyConsentTitle": "Privacy Policy Notice",
+  "privacyConsentBody": "Welcome to Planbook! We value your privacy. Before you continue, please read and agree to our Terms of Use and Privacy Policy.\n\nTo provide our services, we may collect:\n\n· Account information (phone number, email) for sign-in and account management\n· Tasks, notes, and related content for cloud sync and storage\n· Device information to ensure security and improve your experience\n\nTap \"Agree to Conditions\" to confirm you have read and accepted the above.",
   "passwordNotMatch": "Password not match",
   "passwordInvalid": "Password invalid",
   "passwordMessage": "Please enter a password, at least 8 digits and letters",

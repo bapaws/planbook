@@ -1,9 +1,10 @@
 What's New:
-- Home screen widgets
-- Local-first sync
+- Customize Eisenhower quadrant names
+- Fixes for known issues
 
 Recent updates:
+- Home screen widgets
+- Local-first sync
 - Journal cover and double-tap to zoom
-- Drag tasks in day, week, and month views;
+- Drag tasks in day, week, and month views
 - Link tasks to focus and summaries
-- Fixes for known issues

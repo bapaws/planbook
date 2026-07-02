@@ -291,6 +291,8 @@
   "termsOfUse": "Nutzungsbedingungen",
   "and": "und",
   "privacyPolicy": "Datenschutzerklärung",
+  "privacyConsentTitle": "Hinweis zur Datenschutzerklärung",
+  "privacyConsentBody": "Willkommen bei Planbook! Wir nehmen den Schutz Ihrer Daten ernst. Bitte lesen Sie unsere Nutzungsbedingungen und Datenschutzerklärung, bevor Sie fortfahren.\n\nZur Bereitstellung unserer Dienste können wir folgende Informationen erheben:\n\n· Kontoinformationen (Telefonnummer, E-Mail) für Anmeldung und Kontoverwaltung\n· Aufgaben, Notizen und Inhalte für Cloud-Synchronisation und Speicherung\n· Geräteinformationen für Sicherheit und Verbesserung der Nutzererfahrung\n\nMit „Zustimmen“ bestätigen Sie, dass Sie die oben genannten Bedingungen gelesen und akzeptiert haben.",
   "passwordNotMatch": "Passwörter stimmen nicht überein",
   "passwordInvalid": "Ungültiges Passwort",
   "passwordMessage": "Bitte gib ein Passwort mit mindestens 8 Zeichen aus Buchstaben und Zahlen ein",

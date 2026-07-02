@@ -126,4 +126,14 @@ platform :android do
     build_release_appbundle
     upload_to_play_store(aab: release_aab)
   end
+
+  desc "Upload Play Store metadata only (changelogs, description, etc.)"
+  lane :metadata do
+    upload_to_play_store(
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
 end

@@ -1,9 +1,10 @@
 Novità di questa versione:
-- Supporto ai widget della schermata Home
-- Sincronizzazione local-first
+- Personalizzazione dei nomi dei quadranti
+- Risolti alcuni problemi noti
 
 Aggiornamenti recenti:
+- Supporto ai widget della schermata Home
+- Sincronizzazione local-first
 - Copertina del diario e doppio tocco per ingrandire
-- Trascinamento delle attività nelle viste giorno, settimana e mese;
+- Trascinamento delle attività nelle viste giorno, settimana e mese
 - Collega le attività a focus e riepiloghi
-- Risolti alcuni problemi noti

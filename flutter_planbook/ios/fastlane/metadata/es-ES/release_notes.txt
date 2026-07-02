@@ -1,9 +1,10 @@
 Novedades:
-- Soporte para widgets de la pantalla de inicio
-- Sincronización local primero
+- Personalización de nombres de cuadrantes
+- Corrección de algunos problemas conocidos
 
 Actualizaciones recientes:
+- Soporte para widgets de la pantalla de inicio
+- Sincronización local primero
 - Portada del diario y doble toque para ampliar
-- Arrastra tareas en las vistas de día, semana y mes;
+- Arrastra tareas en las vistas de día, semana y mes
 - Asocia tareas al foco y a los resúmenes
-- Corrección de algunos problemas conocidos

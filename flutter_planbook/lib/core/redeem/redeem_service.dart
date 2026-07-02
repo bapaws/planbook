@@ -69,12 +69,14 @@ class RedeemService {
     await c.openRedeemURL(url);
   }
 
-  /// 清空本地保存的兑换提交记录，用于 Debug 重测。
+  /// 清空本地兑换状态（Keychain client_id + 提交记录），用于 Debug 重测。
   Future<void> clearLocalState() async {
     if (!RedeemConfig.isConfigured) {
       _client = null;
       return;
     }
-    (_client ?? await _ensureClient()).savedSubmissionId = null;
+    final client = _client ?? await _ensureClient();
+    await client.clearLocalState();
+    _client = null;
   }
 }

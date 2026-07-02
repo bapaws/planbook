@@ -291,6 +291,8 @@
   "termsOfUse": "Termos de Utilização",
   "and": "e",
   "privacyPolicy": "Política de Privacidade",
+  "privacyConsentTitle": "Aviso de Política de Privacidade",
+  "privacyConsentBody": "Bem-vindo ao Planbook! Valorizamos sua privacidade. Antes de continuar, leia e concorde com nossos Termos de Uso e Política de Privacidade.\n\nPara fornecer nossos serviços, podemos coletar:\n\n· Informações de conta (telefone, e-mail) para login e gerenciamento\n· Tarefas, notas e conteúdo para sincronização na nuvem e armazenamento\n· Informações do dispositivo para segurança e melhoria da experiência\n\nAo tocar em «Concordar», você confirma que leu e aceitou o acima.",
   "passwordNotMatch": "As palavras-passe não coincidem",
   "passwordInvalid": "Palavra-passe inválida",
   "passwordMessage": "Introduza uma palavra-passe com pelo menos 8 caracteres, incluindo letras e números",

@@ -307,6 +307,30 @@ void main() {
         expect(await stream.first, 0);
       });
 
+      test('excludes completed child tasks from count', () async {
+        final today = Jiffy.now().startOf(Unit.day);
+        final parentTask = _sampleTask(title: 'Parent');
+        final childTask1 = _sampleTask(
+          title: 'Child 1',
+          parentId: parentTask.id,
+        );
+        final childTask2 = _sampleTask(
+          title: 'Child 2',
+          parentId: parentTask.id,
+        );
+        await baseApi.create(
+          task: parentTask,
+          children: [childTask1, childTask2],
+        );
+
+        final childEntity = await baseApi.getTaskEntityById(childTask1.id);
+        final activities = await api.completeTask(childEntity!);
+        await api.completeTaskByActivities(activities);
+
+        final stream = api.getCompletedTaskCount(date: today);
+        expect(await stream.first, 0);
+      });
+
       test('returns completed non-recurring tasks for date', () async {
         final today = Jiffy.now().startOf(Unit.day);
         final task = _sampleTask(title: 'Non-recurring');
