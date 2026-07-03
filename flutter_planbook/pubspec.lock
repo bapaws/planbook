@@ -957,13 +957,12 @@ packages:
     source: hosted
     version: "2.19.1"
   home_widget:
-    dependency: "direct main"
+    dependency: transitive
     description:
-      name: home_widget
-      sha256: b04f99438ad6c5aad80fc9fca1e2e3471bf2a15028f614e4814d2552e13bc2a3
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.9.1"
+      path: "packages/home_widget"
+      relative: true
+    source: path
+    version: "0.9.1-planbook.1"
   hotreloader:
     dependency: transitive
     description:

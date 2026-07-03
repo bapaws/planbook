@@ -87,6 +87,11 @@
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
   "weChatCopied": "WeChat ID가 복사되었습니다. WeChat에서 추가하세요.",
+  "userIdCopied": "사용자 ID가 복사되었습니다. 샤오홍슈 DM으로 노트 링크를 보내 주세요.",
+  "userId": "ID",
+  "userIdCopySuccess": "사용자 ID가 복사되었습니다",
+  "activityClaim": "받기",
+  "activityClaimSignInRequired": "받기 전에 로그인해 주세요.",
   "importantUrgent": "중요하고 긴급함",
   "importantNotUrgent": "중요하지만 긴급하지 않음",
   "urgentUnimportant": "긴급하지만 중요하지 않음",
@@ -644,6 +649,17 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionQuadrantCount": "{quadrantName} {count}개",
+  "@dailyDescriptionQuadrantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "quadrantName": {
+        "type": "String"
       }
     }
   },

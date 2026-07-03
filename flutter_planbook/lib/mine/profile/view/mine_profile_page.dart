@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
@@ -9,6 +12,7 @@ import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/mine/profile/cubit/mine_profile_cubit.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -81,6 +85,47 @@ class _MineProfilePage extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     children: [
+                      SettingsRow(
+                        leading: const Icon(
+                          FontAwesomeIcons.fingerprint,
+                          color: Colors.purple,
+                          size: 18,
+                        ),
+                        title: Text(context.l10n.userId),
+                        additionalInfo: Text(
+                          user?.maskedId ?? '',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                        trailing: CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          minimumSize: Size.zero,
+                          onPressed: user?.id == null
+                              ? null
+                              : () async {
+                                  await Clipboard.setData(
+                                    ClipboardData(text: user!.id),
+                                  );
+                                  if (!context.mounted) return;
+                                  unawaited(
+                                    Fluttertoast.showToast(
+                                      msg: context.l10n.userIdCopySuccess,
+                                      gravity: ToastGravity.CENTER,
+                                    ),
+                                  );
+                                },
+                          child: Icon(
+                            CupertinoIcons.doc_on_doc,
+                            size: 20,
+                            color: user?.id == null
+                                ? theme.colorScheme.outline.withValues(
+                                    alpha: 0.4,
+                                  )
+                                : theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
                       SettingsRow(
                         leading: const Icon(
                           FontAwesomeIcons.phone,

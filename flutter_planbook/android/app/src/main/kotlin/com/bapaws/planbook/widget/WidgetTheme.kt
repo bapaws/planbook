@@ -1,8 +1,6 @@
 package com.bapaws.planbook.widget
 
 import android.content.Context
-import androidx.compose.ui.graphics.Color
-import androidx.glance.unit.ColorProvider
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -49,53 +47,43 @@ data class FlutterColorScheme(
     val surfaceTint: Long
 )
 
-fun Long.toColor(): Color = Color(this.toInt())
+fun Long.toArgbInt(): Int = this.toInt()
 
-/** 将 Compose Color 转为 Android ARGB Int（RemoteViews 用） */
-fun Color.toArgbInt(): Int {
-    return android.graphics.Color.argb(
-        (alpha * 255).toInt().coerceIn(0, 255),
-        (red * 255).toInt().coerceIn(0, 255),
-        (green * 255).toInt().coerceIn(0, 255),
-        (blue * 255).toInt().coerceIn(0, 255)
-    )
-}
-
-fun FlutterColorScheme.primaryColor(): Color = primary.toColor()
-fun FlutterColorScheme.onPrimaryColor(): Color = onPrimary.toColor()
-fun FlutterColorScheme.primaryContainerColor(): Color = primaryContainer.toColor()
-fun FlutterColorScheme.onPrimaryContainerColor(): Color = onPrimaryContainer.toColor()
-fun FlutterColorScheme.secondaryColor(): Color = secondary.toColor()
-fun FlutterColorScheme.onSecondaryColor(): Color = onSecondary.toColor()
-fun FlutterColorScheme.secondaryContainerColor(): Color = secondaryContainer.toColor()
-fun FlutterColorScheme.onSecondaryContainerColor(): Color = onSecondaryContainer.toColor()
-fun FlutterColorScheme.tertiaryColor(): Color = tertiary.toColor()
-fun FlutterColorScheme.onTertiaryColor(): Color = onTertiary.toColor()
-fun FlutterColorScheme.tertiaryContainerColor(): Color = tertiaryContainer.toColor()
-fun FlutterColorScheme.onTertiaryContainerColor(): Color = onTertiaryContainer.toColor()
-fun FlutterColorScheme.errorColor(): Color = error.toColor()
-fun FlutterColorScheme.onErrorColor(): Color = onError.toColor()
-fun FlutterColorScheme.errorContainerColor(): Color = errorContainer.toColor()
-fun FlutterColorScheme.onErrorContainerColor(): Color = onErrorContainer.toColor()
-fun FlutterColorScheme.backgroundColor(): Color = background.toColor()
-fun FlutterColorScheme.onBackgroundColor(): Color = onBackground.toColor()
-fun FlutterColorScheme.surfaceColor(): Color = surface.toColor()
-fun FlutterColorScheme.onSurfaceColor(): Color = onSurface.toColor()
-fun FlutterColorScheme.surfaceVariantColor(): Color = surfaceVariant.toColor()
-fun FlutterColorScheme.onSurfaceVariantColor(): Color = onSurfaceVariant.toColor()
-fun FlutterColorScheme.surfaceContainerLowestColor(): Color = surfaceContainerLowest.toColor()
-fun FlutterColorScheme.surfaceContainerLowColor(): Color = surfaceContainerLow.toColor()
-fun FlutterColorScheme.surfaceContainerColor(): Color = surfaceContainer.toColor()
-fun FlutterColorScheme.surfaceContainerHighColor(): Color = surfaceContainerHigh.toColor()
-fun FlutterColorScheme.surfaceContainerHighestColor(): Color = surfaceContainerHighest.toColor()
-fun FlutterColorScheme.outlineColor(): Color = outline.toColor()
-fun FlutterColorScheme.outlineVariantColor(): Color = outlineVariant.toColor()
-fun FlutterColorScheme.shadowColor(): Color = shadow.toColor()
-fun FlutterColorScheme.scrimColor(): Color = scrim.toColor()
-fun FlutterColorScheme.inverseSurfaceColor(): Color = inverseSurface.toColor()
-fun FlutterColorScheme.onInverseSurfaceColor(): Color = onInverseSurface.toColor()
-fun FlutterColorScheme.inversePrimaryColor(): Color = inversePrimary.toColor()
-fun FlutterColorScheme.surfaceTintColor(): Color = surfaceTint.toColor()
+fun FlutterColorScheme.primaryColor(): Int = primary.toArgbInt()
+fun FlutterColorScheme.onPrimaryColor(): Int = onPrimary.toArgbInt()
+fun FlutterColorScheme.primaryContainerColor(): Int = primaryContainer.toArgbInt()
+fun FlutterColorScheme.onPrimaryContainerColor(): Int = onPrimaryContainer.toArgbInt()
+fun FlutterColorScheme.secondaryColor(): Int = secondary.toArgbInt()
+fun FlutterColorScheme.onSecondaryColor(): Int = onSecondary.toArgbInt()
+fun FlutterColorScheme.secondaryContainerColor(): Int = secondaryContainer.toArgbInt()
+fun FlutterColorScheme.onSecondaryContainerColor(): Int = onSecondaryContainer.toArgbInt()
+fun FlutterColorScheme.tertiaryColor(): Int = tertiary.toArgbInt()
+fun FlutterColorScheme.onTertiaryColor(): Int = onTertiary.toArgbInt()
+fun FlutterColorScheme.tertiaryContainerColor(): Int = tertiaryContainer.toArgbInt()
+fun FlutterColorScheme.onTertiaryContainerColor(): Int = onTertiaryContainer.toArgbInt()
+fun FlutterColorScheme.errorColor(): Int = error.toArgbInt()
+fun FlutterColorScheme.onErrorColor(): Int = onError.toArgbInt()
+fun FlutterColorScheme.errorContainerColor(): Int = errorContainer.toArgbInt()
+fun FlutterColorScheme.onErrorContainerColor(): Int = onErrorContainer.toArgbInt()
+fun FlutterColorScheme.backgroundColor(): Int = background.toArgbInt()
+fun FlutterColorScheme.onBackgroundColor(): Int = onBackground.toArgbInt()
+fun FlutterColorScheme.surfaceColor(): Int = surface.toArgbInt()
+fun FlutterColorScheme.onSurfaceColor(): Int = onSurface.toArgbInt()
+fun FlutterColorScheme.surfaceVariantColor(): Int = surfaceVariant.toArgbInt()
+fun FlutterColorScheme.onSurfaceVariantColor(): Int = onSurfaceVariant.toArgbInt()
+fun FlutterColorScheme.surfaceContainerLowestColor(): Int = surfaceContainerLowest.toArgbInt()
+fun FlutterColorScheme.surfaceContainerLowColor(): Int = surfaceContainerLow.toArgbInt()
+fun FlutterColorScheme.surfaceContainerColor(): Int = surfaceContainer.toArgbInt()
+fun FlutterColorScheme.surfaceContainerHighColor(): Int = surfaceContainerHigh.toArgbInt()
+fun FlutterColorScheme.surfaceContainerHighestColor(): Int = surfaceContainerHighest.toArgbInt()
+fun FlutterColorScheme.outlineColor(): Int = outline.toArgbInt()
+fun FlutterColorScheme.outlineVariantColor(): Int = outlineVariant.toArgbInt()
+fun FlutterColorScheme.shadowColor(): Int = shadow.toArgbInt()
+fun FlutterColorScheme.scrimColor(): Int = scrim.toArgbInt()
+fun FlutterColorScheme.inverseSurfaceColor(): Int = inverseSurface.toArgbInt()
+fun FlutterColorScheme.onInverseSurfaceColor(): Int = onInverseSurface.toArgbInt()
+fun FlutterColorScheme.inversePrimaryColor(): Int = inversePrimary.toArgbInt()
+fun FlutterColorScheme.surfaceTintColor(): Int = surfaceTint.toArgbInt()
 
 /**
  * 预定义颜色方案

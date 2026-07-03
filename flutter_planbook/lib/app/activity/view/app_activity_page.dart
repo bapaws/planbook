@@ -1,3 +1,6 @@
+//
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 
@@ -6,12 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_planbook/app/activity/activity_xhs_claim.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/model/app_activity_notice.dart';
 import 'package:flutter_planbook/app/activity/notice/app_activity_notice_resolver.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
@@ -43,6 +49,7 @@ class _AppActivityPageState extends State<AppActivityPage> {
   bool _isTitleVisible = false;
 
   bool get _showInAppRedeem => activity.enableInAppRedeem && Platform.isIOS;
+  bool get _showXhsClaim => activity.enableXhsClaim;
   Future<void> _openMarkdownLink(String? text, String? href) async {
     if (href == null) return;
     if (href.startsWith('weixin://')) {
@@ -52,6 +59,15 @@ class _AppActivityPageState extends State<AppActivityPage> {
       final code = href.split('://').last;
       await Clipboard.setData(ClipboardData(text: code));
       await launchUrl(Uri.parse('weixin://'));
+      return;
+    }
+
+    if (href.startsWith('xhsdiscover://') && context.mounted) {
+      final userId =
+          context.read<AppBloc>().state.user?.id ??
+          await AppPurchases.instance.getAppUserID();
+      if (userId == null) return;
+      await openXhsDiscoverLink(l10n: context.l10n, userId: userId, href: href);
       return;
     }
 
@@ -132,6 +148,22 @@ class _AppActivityPageState extends State<AppActivityPage> {
                     ? context.l10n.redeemNow
                     : context.l10n.submitReviewScreenshot,
               ),
+            ),
+          if (_showXhsClaim)
+            CupertinoButton(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              onPressed: () async {
+                final userId =
+                    context.read<AppBloc>().state.user?.id ??
+                    await AppPurchases.instance.getAppUserID();
+                if (userId == null) return;
+                await claimActivityViaXhs(
+                  l10n: context.l10n,
+                  userId: userId,
+                  activity: activity,
+                );
+              },
+              child: Text(context.l10n.activityClaim),
             ),
           Builder(
             builder: (context) {

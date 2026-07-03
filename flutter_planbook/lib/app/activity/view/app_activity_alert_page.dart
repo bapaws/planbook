@@ -1,3 +1,6 @@
+//
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 
@@ -7,10 +10,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_planbook/app/activity/activity_xhs_claim.dart';
 import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/core/email/mailto_with_app_info.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,6 +43,15 @@ class AppActivityAlertPage extends StatelessWidget {
       final code = href.split('://').last;
       await Clipboard.setData(ClipboardData(text: code));
       await launchUrl(Uri.parse('weixin://'));
+      return;
+    }
+
+    if (href.startsWith('xhsdiscover://') && context.mounted) {
+      final userId =
+          context.read<AppBloc>().state.user?.id ??
+          await AppPurchases.instance.getAppUserID();
+      if (userId == null) return;
+      await openXhsDiscoverLink(l10n: context.l10n, userId: userId, href: href);
       return;
     }
 

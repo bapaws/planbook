@@ -32,6 +32,8 @@ class ActivityMessageEntity {
     this.platforms = const [ActivityPlatform.ios],
     this.isNew = false,
     this.enableInAppRedeem = false,
+    this.enableXhsClaim = false,
+    this.xhsClaimURL,
   });
 
   factory ActivityMessageEntity.fromJson(Map<String, dynamic> json) {
@@ -56,8 +58,13 @@ class ActivityMessageEntity {
           const [ActivityPlatform.ios],
       isNew: json['isNew'] as bool? ?? false,
       enableInAppRedeem: json['enableInAppRedeem'] as bool? ?? false,
+      enableXhsClaim: json['enableXhsClaim'] as bool? ?? false,
+      xhsClaimURL: json['xhsClaimURL'] as String?,
     );
   }
+
+  static const kDefaultXhsClaimURL =
+      'xhsdiscover://user/6481492100000000120342c4';
 
   final int id;
   final String emoji;
@@ -75,6 +82,8 @@ class ActivityMessageEntity {
   final List<ActivityPlatform> platforms;
   final bool isNew;
   final bool enableInAppRedeem;
+  final bool enableXhsClaim;
+  final String? xhsClaimURL;
 
   bool isAvailable(ActivityPlatform platform) {
     return platforms.contains(platform);
@@ -171,13 +180,15 @@ class AppActivityRepository {
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;
       if (item.endAt != null && now.isAfter(item.endAt!)) return false;
 
-      if (item.platforms.isEmpty) return false;
-      if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
-        return false;
-      }
-      if (Platform.isAndroid &&
-          !item.platforms.contains(ActivityPlatform.android)) {
-        return false;
+      if (!kDebugMode) {
+        if (item.platforms.isEmpty) return false;
+        if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
+          return false;
+        }
+        if (Platform.isAndroid &&
+            !item.platforms.contains(ActivityPlatform.android)) {
+          return false;
+        }
       }
 
       if (isNew && !item.isNew) return false;
@@ -211,13 +222,15 @@ class AppActivityRepository {
       if (item.startAt != null && now.isBefore(item.startAt!)) return false;
       if (item.endAt != null && now.isAfter(item.endAt!)) return false;
 
-      if (item.platforms.isEmpty) return false;
-      if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
-        return false;
-      }
-      if (Platform.isAndroid &&
-          !item.platforms.contains(ActivityPlatform.android)) {
-        return false;
+      if (!kDebugMode) {
+        if (item.platforms.isEmpty) return false;
+        if (Platform.isIOS && !item.platforms.contains(ActivityPlatform.ios)) {
+          return false;
+        }
+        if (Platform.isAndroid &&
+            !item.platforms.contains(ActivityPlatform.android)) {
+          return false;
+        }
       }
 
       if (kDebugMode) {

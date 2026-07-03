@@ -1,5 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_api/database/task_priority.dart';
@@ -75,6 +78,9 @@ class JournalDailyPieChartView extends StatelessWidget {
   Widget _buildPriorityItem(BuildContext context, TaskPriority priority) {
     final colorScheme = priority.getColorScheme(context);
     final theme = Theme.of(context);
+    final quadrantConfigs = context.select(
+      (AppBloc bloc) => bloc.state.quadrantConfigs,
+    );
     return Row(
       children: [
         Container(
@@ -97,7 +103,7 @@ class JournalDailyPieChartView extends StatelessWidget {
         const SizedBox(width: 4, height: 24),
         Expanded(
           child: Text(
-            priority.getTitle(context.l10n),
+            quadrantConfigs.nameOf(priority, context.l10n),
             maxLines: 1,
             overflow: TextOverflow.fade,
             style: theme.textTheme.bodySmall?.copyWith(

@@ -102,11 +102,11 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                     // 设置数字样式（大号粗斜体）
                     val numberText = "<b>${i + 1}.</b>"
                     rv.setTextViewText(numberIds[i], Html.fromHtml(numberText, Html.FROM_HTML_MODE_LEGACY))
-                    rv.setTextColor(numberIds[i], theme.onPrimaryContainerColor().toArgbInt())
+                    rv.setTextColor(numberIds[i], theme.onPrimaryContainerColor())
 
                     // 设置标题文字样式（小号）
                     rv.setTextViewText(titleIds[i], priority.displayTitle(quadrantConfigs))
-                    rv.setTextColor(titleIds[i], theme.onPrimaryContainerColor().toArgbInt())
+                    rv.setTextColor(titleIds[i], theme.onPrimaryContainerColor())
 
                     // 设置任务
                     val tasks = group?.tasks?.take(5) ?: emptyList()
@@ -131,8 +131,8 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                             )
                             rv.setTextViewText(textId, task.title)
                             rv.setTextColor(textId,
-                                if (task.isCompleted) theme.outlineColor().toArgbInt()
-                                else theme.onSurfaceVariantColor().toArgbInt()
+                                if (task.isCompleted) theme.outlineColor()
+                                else theme.onSurfaceVariantColor()
                             )
 
                             // 设置点击事件 - 完成任务
@@ -228,8 +228,8 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                     val btnBitmap = createQuadrantButtonBitmap(
                         context = context,
                         number = "${i + 1}",
-                        bgColor = theme.primaryContainerColor().toArgbInt(),
-                        textColor = theme.primaryColor().toArgbInt(),
+                        bgColor = theme.primaryContainerColor(),
+                        textColor = theme.primaryColor(),
                         isSelected = isSelected,
                         sizeDp = 21,
                         cornerRadiusDp = 8
@@ -279,8 +279,8 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                         )
                         rv.setTextViewText(textId, task.title)
                         rv.setTextColor(textId,
-                            if (task.isCompleted) theme.outlineColor().toArgbInt()
-                            else theme.onSurfaceVariantColor().toArgbInt()
+                            if (task.isCompleted) theme.outlineColor()
+                            else theme.onSurfaceVariantColor()
                         )
 
                         val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
@@ -346,11 +346,11 @@ class QuickNoteWidgetProvider : AppWidgetProvider() {
 
                 // 生成圆形 icon 背景（精确匹配 iOS: Circle().fill(iconBackgroundColor)）
                 val iconBgSize = (40 * density).toInt()
-                val iconBgBitmap = createCircleBitmap(iconBgSize, colorScheme.primaryContainerColor().toArgbInt())
+                val iconBgBitmap = createCircleBitmap(iconBgSize, colorScheme.primaryContainerColor())
                 rv.setImageViewBitmap(R.id.icon_bg, iconBgBitmap)
 
                 // 文字颜色
-                rv.setTextColor(R.id.label, colorScheme.outlineColor().toArgbInt())
+                rv.setTextColor(R.id.label, colorScheme.outlineColor())
 
                 // 点击打开 App 创建笔记
                 val openIntent = WidgetActionUtils.createOpenAppIntent(context, "planbook.bapaws://note/new")

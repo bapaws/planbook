@@ -231,6 +231,12 @@ class UserEntity extends Equatable {
 
   int get joinDays => DateTime.now().difference(createdAt).inDays;
 
+  /// 脱敏用户 ID：显示前 4 位和后 4 位，中间用 *** 代替
+  String get maskedId {
+    if (id.length <= 11) return id;
+    return '${id.substring(0, 4)}***${id.substring(id.length - 4)}';
+  }
+
   /// 脱敏手机号：显示前3位和后4位，中间用*代替
   /// 例如：138****1234
   String _maskPhone(String phone) {

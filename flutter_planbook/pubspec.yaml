@@ -49,7 +49,6 @@ dependencies:
   fluttertoast: ^8.2.11
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.0
-  home_widget: ^0.9.1
   http: ^1.6.0
   hydrated_bloc: ^10.1.1
   image_cropper: ^11.0.0

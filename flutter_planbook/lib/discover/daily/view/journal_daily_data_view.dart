@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/view/app_tag_view.dart';
+import 'package:flutter_planbook/core/model/quadrant_config_x.dart';
 import 'package:flutter_planbook/discover/daily/bloc/journal_daily_bloc.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_header.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_pie_chart_view.dart';
@@ -306,6 +308,7 @@ class JournalDailyDataView extends StatelessWidget {
     JournalDailyState state,
   ) {
     final l10n = context.l10n;
+    final quadrantConfigs = context.read<AppBloc>().state.quadrantConfigs;
     final priorityCounts = state.taskPriorityCounts;
 
     if (priorityCounts.isEmpty) return '';
@@ -320,21 +323,12 @@ class JournalDailyDataView extends StatelessWidget {
     for (final count in sortedCounts) {
       if (count.totalCount == 0) continue;
 
-      final text = switch (count.priority) {
-        TaskPriority.high => l10n.dailyDescriptionImportantUrgentCount(
+      breakdownParts.add(
+        l10n.dailyDescriptionQuadrantCount(
           count.totalCount,
+          quadrantConfigs.nameOf(count.priority, l10n),
         ),
-        TaskPriority.medium => l10n.dailyDescriptionImportantNotUrgentCount(
-          count.totalCount,
-        ),
-        TaskPriority.low => l10n.dailyDescriptionUrgentNotImportantCount(
-          count.totalCount,
-        ),
-        TaskPriority.none => l10n.dailyDescriptionNotUrgentNotImportantCount(
-          count.totalCount,
-        ),
-      };
-      breakdownParts.add(text);
+      );
     }
 
     return breakdownParts.join(l10n.punctuationEnumSeparator);

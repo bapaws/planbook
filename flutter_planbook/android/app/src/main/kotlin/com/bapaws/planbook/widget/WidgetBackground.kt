@@ -1,13 +1,6 @@
 package com.bapaws.planbook.widget
 
 import android.content.Context
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.glance.GlanceModifier
-import androidx.glance.ImageProvider
-import androidx.glance.background
-import androidx.glance.layout.Box
-import androidx.glance.layout.fillMaxSize
 import com.bapaws.planbook.R
 
 /**
@@ -53,20 +46,4 @@ data class WidgetBackgroundConfig(
             }
         }
     }
-}
-
-/**
- * 小组件背景
- * 使用纯色背景，兼容所有 ROM（包括 MIUI）
- * Glance 的 Image/background(ImageProvider) 在部分国产 ROM 上存在兼容性问题
- */
-@Composable
-fun WidgetTiledBackground(resId: Int) {
-    // 暂时使用纯色背景，避免 MIUI 等 ROM 上图片背景渲染异常
-    Box(
-        modifier = GlanceModifier
-            .fillMaxSize()
-            .background(Color(0xFFF8F9FA)),
-        content = {}
-    )
 }

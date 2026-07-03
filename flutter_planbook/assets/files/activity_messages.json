@@ -212,7 +212,7 @@
     "openURL": "https://play.google.com/store/apps/details?id=com.bapaws.planbook&showAllReviews=true",
     "openTitle": "去写评论",
     "illustration": "gift_box.svg",
-    "receiveWay": "🔴小红书\n  1. 打开小红书，🔍搜索开发者小红书账户：[6481492100000000120342c4](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。\n  2. 点击私信页面，将「**你的评分与评论**」页面的截图发送给账户。\n  3. 我们将在 24 小时内，私信会员兑换码。\n\n🟢微信\n  1. 添加「**计划本**」客服账户：[**MC Studio**](weixin://MC_AI_Studio)。\n  2. 将「**你的评分与评论**」页面的截图发送给客服账户。\n  3. 将在 24 小时内，发送会员兑换码。\n\n![MC Studio](assets/images/wx_qr.png)",
+    "receiveWay": "🔴小红书\n  1. 打开小红书，🔍搜索开发者小红书账户：[6481492100000000120342c4](xhsdiscover://user/6481492100000000120342c4)。点击❤️关注。\n  2. 点击私信页面，将「**你的评分与评论**」页面的截图发送给账户。\n  3. 我们将在 24 小时内，私信会员兑换码。\n",
     "platforms": [
       "android"
     ],
@@ -377,5 +377,23 @@
       "android"
     ],
     "isNew": true
+  },
+  {
+    "id": 32,
+    "emoji": "📕",
+    "title": "发小红书，免费领取包月会员",
+    "languageCode": "zh",
+    "content": "**发布小红书笔记，可免费领取包月会员～**\n\n## 参与活动\n\n1. 在小红书发布一篇关于「**计划本**」的笔记，分享你的使用心得或常用功能。\n2. 笔记需带上话题 **#计划本** **#计划本app**，并公开保留至少 1 个月。\n\n### 笔记内容建议\n\n  + 使用心得\n  + 喜欢或经常使用的功能\n  + 一天的任务安排\n  + 等等…\n\n笔记可使用四象限、任务列表、周视图、月视图、笔记时间轴页等截图或录屏，一般包含手帐本的翻页笔记能获得更多的赞哦🥳。\n\n### 参考截图\n![screenshots](assets/images/screenshots.png)\n\n### ⚠️ 注意\n  - ❌ 二次编辑笔记无效\n  - ❌ 禁止出现送会员、集赞、互踩、二维码、链接等，容易平台限流\n",
+    "contentURL": "https://bapaws.super.site/活动消息/发小红书赢年会员",
+    "openURL": "xhsdiscover://post/",
+    "openTitle": "发笔记",
+    "illustration": "gift_box.svg",
+    "receiveWay": "🔴 **小红书领取**\n  1. 打开开发者小红书账户：[**MC Studio**](xhsdiscover://user/6481492100000000120342c4)，点击❤️关注。\n  2. 点击右上角「**领取**」，App 会自动复制你的用户 ID 并跳转小红书。\n  3. 在私信中将「**用户 ID**」和「**笔记链接**」发送给账户。\n  4. 我们将在 24 小时内，私信会员兑换码。\n",
+    "platforms": [
+      "android"
+    ],
+    "isNew": true,
+    "enableXhsClaim": true,
+    "xhsClaimURL": "xhsdiscover://user/6481492100000000120342c4"
   }
 ]

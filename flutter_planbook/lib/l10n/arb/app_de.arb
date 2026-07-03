@@ -87,6 +87,11 @@
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
   "weChatCopied": "Die WeChat-ID wurde kopiert. Öffne WeChat, um sie hinzuzufügen.",
+  "userIdCopied": "Deine Benutzer-ID wurde kopiert. Öffne Xiaohongshu und sende den Notizlink per DM.",
+  "userId": "ID",
+  "userIdCopySuccess": "Benutzer-ID kopiert",
+  "activityClaim": "Einlösen",
+  "activityClaimSignInRequired": "Bitte melde dich an, bevor du einlöst.",
   "importantUrgent": "Wichtig & Dringend",
   "importantNotUrgent": "Wichtig & Nicht dringend",
   "urgentUnimportant": "Dringend & Unwichtig",
@@ -644,6 +649,17 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionQuadrantCount": "{count} {quadrantName}",
+  "@dailyDescriptionQuadrantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "quadrantName": {
+        "type": "String"
       }
     }
   },

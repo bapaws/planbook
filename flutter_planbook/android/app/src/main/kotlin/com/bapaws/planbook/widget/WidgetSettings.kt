@@ -2,7 +2,6 @@ package com.bapaws.planbook.widget
 
 import android.content.Context
 import android.content.SharedPreferences
-import es.antonborri.home_widget.HomeWidgetPlugin
 import org.json.JSONArray
 
 /**
@@ -38,7 +37,7 @@ object WidgetSettings {
     private const val KEY_CURRENT_USER_ID = "__supabase_user_id__"
 
     private fun getPrefs(context: Context): SharedPreferences {
-        return HomeWidgetPlugin.getData(context)
+        return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
     }
 
     /** 当前过滤模式（按 widget 实例隔离） */

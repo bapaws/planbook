@@ -87,6 +87,11 @@
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb",
   "weChatCopied": "微信號已複製，請前往微信新增。",
+  "userIdCopied": "用戶 ID 已複製，請前往小紅書私信發送筆記連結。",
+  "userId": "ID",
+  "userIdCopySuccess": "用戶 ID 已複製",
+  "activityClaim": "領取",
+  "activityClaimSignInRequired": "請先登入後再領取。",
   "importantUrgent": "重要且緊急",
   "importantNotUrgent": "重要但不緊急",
   "urgentUnimportant": "緊急但不重要",
@@ -644,6 +649,17 @@
     "placeholders": {
       "count": {
         "type": "int"
+      }
+    }
+  },
+  "dailyDescriptionQuadrantCount": "{count} 項{quadrantName}",
+  "@dailyDescriptionQuadrantCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "quadrantName": {
+        "type": "String"
       }
     }
   },
