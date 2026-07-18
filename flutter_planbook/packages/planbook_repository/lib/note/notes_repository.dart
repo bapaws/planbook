@@ -19,8 +19,9 @@ class NotesRepository {
     required OutboxApi outboxApi,
     DatabaseNoteApi? dbNoteApi,
     DatabaseNoteTaskApi? dbNoteTaskApi,
-  }) : _dbNoteApi = dbNoteApi ??
-            DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+  }) : _dbNoteApi =
+           dbNoteApi ??
+           DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
        _supabaseNoteApi = SupabaseNoteApi(sp: sp),
        _db = db,
        _tagApi = tagApi,
@@ -159,8 +160,37 @@ class NotesRepository {
     );
   }
 
+  Stream<List<NoteEntity>> getNoteEntitiesForMonth(
+    Jiffy date, {
+    NoteListMode mode = NoteListMode.all,
+    List<String>? tagIds,
+    OrderingMode orderingMode = OrderingMode.desc,
+  }) {
+    syncNotes();
+    final startOfMonth = date.startOf(Unit.month);
+    final endOfMonth = date.endOf(Unit.month);
+    return _dbNoteApi.getNoteEntitiesByDateRange(
+      startOfMonth,
+      endOfMonth,
+      tagIds: tagIds,
+      userId: userId,
+      mode: mode,
+      orderingMode: orderingMode,
+    );
+  }
+
   Stream<List<NoteImageEntity>> getNoteImageEntities(int year) {
     return _dbNoteApi.getNoteImageEntities(year, userId);
+  }
+
+  Stream<List<NoteImageEntity>> getNoteImageEntitiesForMonth(Jiffy date) {
+    final startOfMonth = date.startOf(Unit.month);
+    final endOfMonth = date.endOf(Unit.month);
+    return _dbNoteApi.getNoteImageEntitiesByDateRange(
+      startOfMonth,
+      endOfMonth,
+      userId,
+    );
   }
 
   Stream<List<NoteEntity>> getWrittenNoteEntities(

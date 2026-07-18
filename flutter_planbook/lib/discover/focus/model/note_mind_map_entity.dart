@@ -69,21 +69,7 @@ final class NoteMindMapEntity extends Equatable {
     if (type.isYearly) {
       return type.isSummary ? context.greenColorScheme : context.redColorScheme;
     }
-    final colorScheme = switch (date.month) {
-      1 => context.blueColorScheme,
-      2 => context.amberColorScheme,
-      3 => context.yellowColorScheme,
-      4 => context.pinkColorScheme,
-      5 => context.orangeColorScheme,
-      6 => context.brownColorScheme,
-      7 => context.indigoColorScheme,
-      8 => context.tealColorScheme,
-      9 => context.cyanColorScheme,
-      10 => context.limeColorScheme,
-      11 => context.purpleColorScheme,
-      12 => context.greyColorScheme,
-      _ => context.greyColorScheme,
-    };
+    final colorScheme = context.colorSchemeForMonth(date.month);
     return colorScheme;
     // return switch (type) {
     //   NoteType.yearlyFocus || NoteType.yearlySummary => context.redColorScheme,

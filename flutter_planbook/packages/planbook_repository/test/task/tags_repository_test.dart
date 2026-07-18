@@ -12,7 +12,10 @@ class MockDatabaseTagApi extends Mock implements DatabaseTagApi {}
 
 class FakeAppDatabase implements AppDatabase {
   @override
-  Future<T> transaction<T>(Future<T> Function() action, {bool requireNew = false}) async {
+  Future<T> transaction<T>(
+    Future<T> Function() action, {
+    bool requireNew = false,
+  }) async {
     return await action();
   }
 
@@ -46,7 +49,9 @@ TagEntity _testTagEntity({
   int level = 0,
   String? parentId,
 }) {
-  return TagEntity(tag: _testTag(id: id, name: name, level: level, parentId: parentId));
+  return TagEntity(
+    tag: _testTag(id: id, name: name, level: level, parentId: parentId),
+  );
 }
 
 ColorScheme _testColorScheme(int color) {
@@ -128,8 +133,9 @@ void main() {
 
   group('TagsRepository', () {
     test('getTotalCount proxies to tagApi and returns result', () async {
-      when(() => mockTagApi.getTotalCount(userId: any(named: 'userId')))
-          .thenAnswer((_) async => 5);
+      when(
+        () => mockTagApi.getTotalCount(userId: any(named: 'userId')),
+      ).thenAnswer((_) async => 5);
 
       final result = await repository.getTotalCount();
 
@@ -139,8 +145,9 @@ void main() {
 
     test('getTopLevelTags proxies to tagApi and returns stream', () {
       final tags = [_testTagEntity()];
-      when(() => mockTagApi.getTopLevelTags(userId: any(named: 'userId')))
-          .thenAnswer((_) => Stream.value(tags));
+      when(
+        () => mockTagApi.getTopLevelTags(userId: any(named: 'userId')),
+      ).thenAnswer((_) => Stream.value(tags));
 
       final stream = repository.getTopLevelTags();
 
@@ -150,25 +157,31 @@ void main() {
 
     test('getAllTags proxies to tagApi with notIncludeTagIds', () async {
       final tags = [_testTagEntity()];
-      when(() => mockTagApi.getAllTags(
-            notIncludeTagIds: any(named: 'notIncludeTagIds'),
-            userId: any(named: 'userId'),
-          )).thenAnswer((_) => Stream.value(tags));
+      when(
+        () => mockTagApi.getAllTags(
+          notIncludeTagIds: any(named: 'notIncludeTagIds'),
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer((_) => Stream.value(tags));
 
       final stream = repository.getAllTags(notIncludeTagIds: {'tag-2'});
 
       await expectLater(stream, emits(tags));
-      verify(() => mockTagApi.getAllTags(
-            notIncludeTagIds: {'tag-2'},
-            userId: null,
-          )).called(1);
+      verify(
+        () => mockTagApi.getAllTags(
+          notIncludeTagIds: {'tag-2'},
+          userId: null,
+        ),
+      ).called(1);
     });
 
     test('createTag creates tag when no existing tag with same name', () async {
-      when(() => mockTagApi.getTagEntityByName(any(), any()))
-          .thenAnswer((_) async => null);
-      when(() => mockTagApi.create(tag: any(named: 'tag')))
-          .thenAnswer((_) async {});
+      when(
+        () => mockTagApi.getTagEntityByName(any(), any()),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockTagApi.create(tag: any(named: 'tag')),
+      ).thenAnswer((_) async {});
 
       await repository.createTag(
         name: '  New Tag  ',
@@ -182,8 +195,9 @@ void main() {
 
     test('createTag does nothing when tag with same name exists', () async {
       final existing = _testTagEntity(name: 'Existing');
-      when(() => mockTagApi.getTagEntityByName(any(), any()))
-          .thenAnswer((_) async => existing);
+      when(
+        () => mockTagApi.getTagEntityByName(any(), any()),
+      ).thenAnswer((_) async => existing);
 
       await repository.createTag(
         name: 'Existing',
@@ -196,10 +210,12 @@ void main() {
     });
 
     test('createTag uses parentTag level for new tag level', () async {
-      when(() => mockTagApi.getTagEntityByName(any(), any()))
-          .thenAnswer((_) async => null);
-      when(() => mockTagApi.create(tag: any(named: 'tag')))
-          .thenAnswer((_) async {});
+      when(
+        () => mockTagApi.getTagEntityByName(any(), any()),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockTagApi.create(tag: any(named: 'tag')),
+      ).thenAnswer((_) async {});
 
       final parent = _testTagEntity(id: 'parent', name: 'Parent', level: 1);
       await repository.createTag(
@@ -209,9 +225,9 @@ void main() {
         parentTag: parent,
       );
 
-      final captured =
-          verify(() => mockTagApi.create(tag: captureAny(named: 'tag')))
-              .captured;
+      final captured = verify(
+        () => mockTagApi.create(tag: captureAny(named: 'tag')),
+      ).captured;
       final createdTag = captured.first as Tag;
       expect(createdTag.level, 2);
       expect(createdTag.parentId, 'parent');
@@ -220,8 +236,9 @@ void main() {
     test('updateTag updates tag when found', () async {
       final tag = _testTag(id: 'tag-1', name: 'Old Name');
       when(() => mockTagApi.getTagById('tag-1')).thenAnswer((_) async => tag);
-      when(() => mockTagApi.update(tag: any(named: 'tag')))
-          .thenAnswer((_) async {});
+      when(
+        () => mockTagApi.update(tag: any(named: 'tag')),
+      ).thenAnswer((_) async {});
 
       await repository.updateTag(
         id: 'tag-1',
@@ -230,16 +247,17 @@ void main() {
       );
 
       verify(() => mockTagApi.getTagById('tag-1')).called(1);
-      final captured =
-          verify(() => mockTagApi.update(tag: captureAny(named: 'tag')))
-              .captured;
+      final captured = verify(
+        () => mockTagApi.update(tag: captureAny(named: 'tag')),
+      ).captured;
       final updatedTag = captured.first as Tag;
       expect(updatedTag.name, 'New Name');
     });
 
     test('updateTag does nothing when tag not found', () async {
-      when(() => mockTagApi.getTagById('unknown'))
-          .thenAnswer((_) async => null);
+      when(
+        () => mockTagApi.getTagById('unknown'),
+      ).thenAnswer((_) async => null);
 
       await repository.updateTag(id: 'unknown', name: 'New Name');
 
@@ -265,8 +283,9 @@ void main() {
 
     test('getTagEntityById proxies to tagApi and returns result', () async {
       final entity = _testTagEntity(id: 'tag-1');
-      when(() => mockTagApi.getTagEntityById('tag-1'))
-          .thenAnswer((_) async => entity);
+      when(
+        () => mockTagApi.getTagEntityById('tag-1'),
+      ).thenAnswer((_) async => entity);
 
       final result = await repository.getTagEntityById('tag-1');
 
@@ -276,8 +295,9 @@ void main() {
 
     test('getTagEntityByName proxies to tagApi and returns result', () async {
       final entity = _testTagEntity(name: 'Work');
-      when(() => mockTagApi.getTagEntityByName('Work', null))
-          .thenAnswer((_) async => entity);
+      when(
+        () => mockTagApi.getTagEntityByName('Work', null),
+      ).thenAnswer((_) async => entity);
 
       final result = await repository.getTagEntityByName('Work');
 

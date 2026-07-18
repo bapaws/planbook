@@ -1,4 +1,4 @@
-• Widget schermata Home
-• Sync local-first
+• Accesso con WeChat
+• Correzioni di bug
 
-Recente: copertina e zoom diario, trascina attività (giorno/settimana/mese), focus e riepiloghi, fix
+Recente: nomi dei quadranti personalizzati, widget schermata Home, copertina e zoom diario

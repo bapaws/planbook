@@ -71,7 +71,9 @@ void main() {
         final taskId = const Uuid().v4();
         final date = Jiffy.now().startOf(Unit.day);
 
-        await db.into(db.taskOccurrences).insert(
+        await db
+            .into(db.taskOccurrences)
+            .insert(
               TaskOccurrence(
                 id: const Uuid().v4(),
                 taskId: taskId,
@@ -95,7 +97,9 @@ void main() {
         final today = Jiffy.now().startOf(Unit.day);
         final tomorrow = today.add(days: 1);
 
-        await db.into(db.taskOccurrences).insert(
+        await db
+            .into(db.taskOccurrences)
+            .insert(
               TaskOccurrence(
                 id: const Uuid().v4(),
                 taskId: taskId,
@@ -103,7 +107,9 @@ void main() {
                 createdAt: Jiffy.now(),
               ),
             );
-        await db.into(db.taskOccurrences).insert(
+        await db
+            .into(db.taskOccurrences)
+            .insert(
               TaskOccurrence(
                 id: const Uuid().v4(),
                 taskId: taskId,
@@ -218,8 +224,7 @@ void main() {
         expect(result.originalOccurrenceAt, isNotNull);
       });
 
-      test('recurring task: copies children with new IDs for detached',
-          () {
+      test('recurring task: copies children with new IDs for detached', () {
         final baseDate = Jiffy.parse('2024-01-01');
         final task = _sampleTask(
           startAt: baseDate,

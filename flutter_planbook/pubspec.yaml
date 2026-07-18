@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 3.0.1+121
+version: 3.0.2+122
 publish_to: none
 
 environment:
@@ -47,6 +47,7 @@ dependencies:
   flutter_staggered_grid_view: ^0.7.0
   flutter_svg: ^2.2.0
   fluttertoast: ^8.2.11
+  fluwx: ^5.0.0
   font_awesome_flutter: ^10.8.0
   google_fonts: ^6.3.0
   http: ^1.6.0
@@ -123,7 +124,7 @@ flutter:
     - assets/tiles/
     - assets/files/
     - assets/audios/
-    # - assets/demo/
+    - assets/demo/
 
 flutter_launcher_icons:
   android: "launcher_icon"

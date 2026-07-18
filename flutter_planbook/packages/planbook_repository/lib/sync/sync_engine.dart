@@ -19,10 +19,11 @@ class SyncEngine {
     required SupabaseClient? supabase,
     Connectivity? connectivity,
     InternetConnectionChecker? connectionChecker,
-  })  : _outboxApi = outboxApi,
-        _supabase = supabase,
-        _connectivity = connectivity ?? Connectivity(),
-        _connectionChecker = connectionChecker ?? InternetConnectionChecker.instance;
+  }) : _outboxApi = outboxApi,
+       _supabase = supabase,
+       _connectivity = connectivity ?? Connectivity(),
+       _connectionChecker =
+           connectionChecker ?? InternetConnectionChecker.instance;
 
   final OutboxApi _outboxApi;
   final SupabaseClient? _supabase;
@@ -119,9 +120,11 @@ class SyncEngine {
       case 'update':
         await table.upsert([payload], onConflict: 'id');
       case 'delete':
-        await table.update({
-          'deleted_at': DateTime.now().toIso8601String(),
-        }).eq('id', item.recordId);
+        await table
+            .update({
+              'deleted_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', item.recordId);
       case 'replace_associations':
         final parentId = payload['parent_id'] as String?;
         final associations = payload['associations'] as List<dynamic>?;
@@ -129,9 +132,11 @@ class SyncEngine {
           throw Exception('replace_associations missing parent_id');
         }
         final parentColumn = '${item.targetTable.split('_').first}_id';
-        await table.update({
-          'deleted_at': DateTime.now().toIso8601String(),
-        }).eq(parentColumn, parentId);
+        await table
+            .update({
+              'deleted_at': DateTime.now().toIso8601String(),
+            })
+            .eq(parentColumn, parentId);
         if (associations != null && associations.isNotEmpty) {
           await table.insert(associations.cast<Map<String, dynamic>>());
         }

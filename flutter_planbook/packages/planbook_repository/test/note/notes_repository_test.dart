@@ -63,8 +63,9 @@ void main() {
       ),
     ).thenAnswer((_) async {});
 
-    when(() => mockTagApi.getTagEntityById(any()))
-        .thenAnswer((_) async => null);
+    when(
+      () => mockTagApi.getTagEntityById(any()),
+    ).thenAnswer((_) async => null);
   });
 
   tearDown(() async {
@@ -112,8 +113,9 @@ void main() {
           createdAt: Jiffy.now(),
         ),
       );
-      when(() => mockTagApi.getTagEntityById('tag-1'))
-          .thenAnswer((_) async => tag);
+      when(
+        () => mockTagApi.getTagEntityById('tag-1'),
+      ).thenAnswer((_) async => tag);
 
       final note = await repository.create(
         title: 'Tagged Note',
@@ -240,7 +242,8 @@ void main() {
         stream,
         emits(
           predicate<List<NoteEntity>>(
-            (list) => list.length == 1 && list.first.note.title == 'Tagged Note',
+            (list) =>
+                list.length == 1 && list.first.note.title == 'Tagged Note',
           ),
         ),
       );

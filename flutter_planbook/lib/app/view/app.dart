@@ -169,8 +169,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppBloc, AppState>(
-          listenWhen: (previous, current) =>
-              previous.locale != current.locale,
+          listenWhen: (previous, current) => previous.locale != current.locale,
           listener: (context, state) {
             context.read<AppActivityBloc>().add(
               AppActivityLocaleChanged(locale: state.locale),

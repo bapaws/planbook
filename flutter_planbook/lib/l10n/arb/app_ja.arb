@@ -322,6 +322,16 @@
   "gender": "性別",
   "birthday": "誕生日",
   "bind": "連携",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ 本当にアカウントを削除しますか？ この操作は元に戻せません。",
   "deleteAccountHint": "削除を確認するには「Delete Account」と入力してください",
   "male": "男性",
@@ -789,6 +799,8 @@
   },
   "productTitleLifetime": "永久",
   "productTitleAnnual": "年額",
+  "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
+  "productTitleMonths": "{months, plural, =1{1ヶ月} other{{months}ヶ月}}",
   "productTitleMonthly": "月額"
 
 }

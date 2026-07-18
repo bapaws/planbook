@@ -1,3 +1,4 @@
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -23,7 +24,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
        _tagsRepository = tagsRepository,
        _usersRepository = usersRepository,
        super(const AppPurchasesState()) {
-    on<AppPurchasesRequested>(_onRequested);
+    on<AppPurchasesRequested>(_onRequested, transformer: restartable());
     on<AppPurchasesUserRequested>(_onUserRequested);
     on<AppPurchasesRestored>(_onRestored);
     on<AppPurchasesLogin>(_onLogin);
@@ -66,8 +67,14 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     Emitter<AppPurchasesState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
-    final storeProducts = (await AppPurchases.instance.getStoreProducts())
+
+    final fetchedProducts = (await AppPurchases.instance.getStoreProducts())
         .sorted((a, b) => a.price.compareTo(b.price));
+
+    // 新结果为空时保留上次非空列表，避免重叠请求或异常导致页面空白
+    final storeProducts = fetchedProducts.isNotEmpty
+        ? fetchedProducts
+        : state.storeProducts;
 
     final selectedStoreProduct = storeProducts.isEmpty
         ? null
@@ -78,7 +85,6 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
       state.copyWith(
         status: PageStatus.success,
         activeProductId: kDebugMode ? 'lifetime' : activeProductIdentifier,
-        // activeProductId: activeProductIdentifier,
         storeProducts: storeProducts,
         selectedStoreProduct: selectedStoreProduct,
         savePercentId: selectedStoreProduct?.id,

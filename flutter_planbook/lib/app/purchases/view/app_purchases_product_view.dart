@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 
@@ -51,7 +52,10 @@ class AppPurchasesProductView extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  product.displayTitle(context.l10n),
+                  product.displayTitle(
+                    context.l10n,
+                    preferDuration: AppPurchases.instance.isAndroidChina,
+                  ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.outline,
                   ),

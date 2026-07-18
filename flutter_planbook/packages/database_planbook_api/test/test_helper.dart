@@ -22,7 +22,8 @@ AppDatabase createTestDatabase() {
   OutboxApi outboxApi,
   DatabaseTagApi tagApi,
   DatabaseTaskApi taskApi,
-}) createTestApis() {
+})
+createTestApis() {
   final db = createTestDatabase();
   final outboxApi = OutboxApi(db: db);
   final tagApi = DatabaseTagApi(db: db, outboxApi: outboxApi);

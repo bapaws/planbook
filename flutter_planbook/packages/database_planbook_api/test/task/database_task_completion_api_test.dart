@@ -154,26 +154,30 @@ void main() {
         expect(activities.first.occurrenceAt, isNull);
       });
 
-      test('returns completion activity with occurrenceAt for recurring task',
-          () async {
-        final now = Jiffy.now().startOf(Unit.day);
-        final task = _sampleTask(
-          startAt: now,
-          recurrenceRule: RecurrenceRule(
-            frequency: RecurrenceFrequency.daily,
-          ),
-        );
-        await baseApi.create(task: task);
+      test(
+        'returns completion activity with occurrenceAt for recurring task',
+        () async {
+          final now = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: now,
+            recurrenceRule: RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+            ),
+          );
+          await baseApi.create(task: task);
 
-        final entity = await baseApi.getTaskEntityById(task.id);
-        expect(entity, isNotNull);
+          final entity = await baseApi.getTaskEntityById(task.id);
+          expect(entity, isNotNull);
 
-        final occurrenceAt = now.add(days: 1);
-        final activities =
-            await api.completeTask(entity!, occurrenceAt: occurrenceAt);
-        expect(activities, hasLength(1));
-        expect(activities.first.occurrenceAt, isNotNull);
-      });
+          final occurrenceAt = now.add(days: 1);
+          final activities = await api.completeTask(
+            entity!,
+            occurrenceAt: occurrenceAt,
+          );
+          expect(activities, hasLength(1));
+          expect(activities.first.occurrenceAt, isNotNull);
+        },
+      );
 
       test('cascades to parent when all children are completed', () async {
         final parentTask = _sampleTask();
@@ -188,7 +192,10 @@ void main() {
           layer: 1,
         );
 
-        await baseApi.create(task: parentTask, children: [childTask1, childTask2]);
+        await baseApi.create(
+          task: parentTask,
+          children: [childTask1, childTask2],
+        );
 
         // 完成第一个子任务
         final childEntity1 = await baseApi.getTaskEntityById(childTask1.id);
@@ -231,33 +238,35 @@ void main() {
         expect(uncompletedEntity!.isCompleted, isFalse);
       });
 
-      test('cascades uncompletion to parent when child is toggled off',
-          () async {
-        final parentTask = _sampleTask();
-        final childTask = _sampleTask(
-          title: 'Child',
-          parentId: parentTask.id,
-          layer: 1,
-        );
+      test(
+        'cascades uncompletion to parent when child is toggled off',
+        () async {
+          final parentTask = _sampleTask();
+          final childTask = _sampleTask(
+            title: 'Child',
+            parentId: parentTask.id,
+            layer: 1,
+          );
 
-        await baseApi.create(task: parentTask, children: [childTask]);
+          await baseApi.create(task: parentTask, children: [childTask]);
 
-        // 完成子任务 → 父任务自动完成
-        final childEntity = await baseApi.getTaskEntityById(childTask.id);
-        final activities1 = await api.completeTask(childEntity!);
-        await api.completeTaskByActivities(activities1);
+          // 完成子任务 → 父任务自动完成
+          final childEntity = await baseApi.getTaskEntityById(childTask.id);
+          final activities1 = await api.completeTask(childEntity!);
+          await api.completeTaskByActivities(activities1);
 
-        final parentEntity1 = await baseApi.getTaskEntityById(parentTask.id);
-        expect(parentEntity1!.isCompleted, isTrue);
+          final parentEntity1 = await baseApi.getTaskEntityById(parentTask.id);
+          expect(parentEntity1!.isCompleted, isTrue);
 
-        // 取消完成子任务 → 父任务自动取消完成
-        final completedChild = await baseApi.getTaskEntityById(childTask.id);
-        final activities2 = await api.completeTask(completedChild!);
-        await api.completeTaskByActivities(activities2);
+          // 取消完成子任务 → 父任务自动取消完成
+          final completedChild = await baseApi.getTaskEntityById(childTask.id);
+          final activities2 = await api.completeTask(completedChild!);
+          await api.completeTaskByActivities(activities2);
 
-        final parentEntity2 = await baseApi.getTaskEntityById(parentTask.id);
-        expect(parentEntity2!.isCompleted, isFalse);
-      });
+          final parentEntity2 = await baseApi.getTaskEntityById(parentTask.id);
+          expect(parentEntity2!.isCompleted, isFalse);
+        },
+      );
     });
 
     group('getCompletedTaskCount / getCompletedTaskEntities', () {
@@ -356,12 +365,14 @@ void main() {
         await baseApi.create(task: task);
 
         final occurrenceAt = today;
-        await db.into(db.taskOccurrences).insert(
-          TaskOccurrencesCompanion.insert(
-            taskId: Value(task.id),
-            occurrenceAt: occurrenceAt,
-          ),
-        );
+        await db
+            .into(db.taskOccurrences)
+            .insert(
+              TaskOccurrencesCompanion.insert(
+                taskId: Value(task.id),
+                occurrenceAt: occurrenceAt,
+              ),
+            );
 
         final entity = await baseApi.getTaskEntityById(
           task.id,
@@ -456,31 +467,37 @@ void main() {
         expect(stored.first.completedAt, customCompletedAt);
       });
 
-      test('recurring task without occurrenceAt uses entity occurrence',
-          () async {
-        final today = Jiffy.now().startOf(Unit.day);
-        final task = _sampleTask(
-          startAt: today,
-          recurrenceRule: RecurrenceRule(frequency: RecurrenceFrequency.daily),
-        );
-        await baseApi.create(task: task);
+      test(
+        'recurring task without occurrenceAt uses entity occurrence',
+        () async {
+          final today = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: today,
+            recurrenceRule: RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+            ),
+          );
+          await baseApi.create(task: task);
 
-        final occurrenceAt = today.add(days: 1);
-        await db.into(db.taskOccurrences).insert(
-          TaskOccurrencesCompanion.insert(
-            taskId: Value(task.id),
+          final occurrenceAt = today.add(days: 1);
+          await db
+              .into(db.taskOccurrences)
+              .insert(
+                TaskOccurrencesCompanion.insert(
+                  taskId: Value(task.id),
+                  occurrenceAt: occurrenceAt,
+                ),
+              );
+
+          final entity = await baseApi.getTaskEntityById(
+            task.id,
             occurrenceAt: occurrenceAt,
-          ),
-        );
-
-        final entity = await baseApi.getTaskEntityById(
-          task.id,
-          occurrenceAt: occurrenceAt,
-        );
-        final activities = await api.completeTask(entity!);
-        expect(activities, hasLength(1));
-        expect(activities.first.occurrenceAt, occurrenceAt);
-      });
+          );
+          final activities = await api.completeTask(entity!);
+          expect(activities, hasLength(1));
+          expect(activities.first.occurrenceAt, occurrenceAt);
+        },
+      );
     });
   });
 }

@@ -47,12 +47,18 @@ class SupabaseNoteApi {
     required String noteId,
   }) async {
     if (supabase == null) return;
-    await supabase!.from('notes').update({
-      'deleted_at': DateTime.now().toIso8601String(),
-    }).eq('id', noteId);
-    await supabase!.from('note_tags').update({
-      'deleted_at': DateTime.now().toIso8601String(),
-    }).eq('note_id', noteId);
+    await supabase!
+        .from('notes')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', noteId);
+    await supabase!
+        .from('note_tags')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('note_id', noteId);
   }
 
   Future<List<Map<String, dynamic>>> getLatestNotes({

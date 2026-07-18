@@ -27,7 +27,7 @@ class AppPurchases implements AppPurchasesInterface {
   static Future<void> initialize({bool enableAlipay = false}) async {
     instance = AppPurchases(
       isAlipayEnabled: enableAlipay,
-      alipayPurchases: const AlipayPurchases(),
+      alipayPurchases: AlipayPurchases(),
       revenueCatPurchases: const RevenueCatPurchases(),
     );
   }

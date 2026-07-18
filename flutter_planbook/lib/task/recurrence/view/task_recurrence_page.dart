@@ -63,7 +63,8 @@ class _TaskRecurrencePageState extends State<TaskRecurrencePage> {
               titleSpacing: 0,
               title: CupertinoButton(
                 onPressed: () {
-                  context.router.maybePop();
+                  // 用 false 表示「不重复」，与下滑关闭返回的 null 区分
+                  context.router.maybePop(false);
                 },
                 child: Text(context.l10n.noRepeat),
               ),

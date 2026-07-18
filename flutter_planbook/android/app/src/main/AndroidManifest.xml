@@ -38,6 +38,21 @@
                 <data android:scheme="planbook.bapaws" />
             </intent-filter>
         </activity>
+
+        <!-- 微信登录回调 Activity -->
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:taskAffinity="com.bapaws.planbook"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wx43f0daa78129a486" />
+            </intent-filter>
+        </activity>
         <!-- Widget Receivers - RemoteViews 实现 -->
         <receiver
             android:name=".widget.QuadrantWidgetLargeProvider"
@@ -104,6 +119,7 @@
 
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
+        <package android:name="com.tencent.mm" />
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

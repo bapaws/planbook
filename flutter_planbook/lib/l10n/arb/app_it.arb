@@ -322,6 +322,16 @@
   "gender": "Genere",
   "birthday": "Compleanno",
   "bind": "Collega",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ Sei sicuro di voler eliminare il tuo account? Questa azione non può essere annullata.",
   "deleteAccountHint": "Inserisci il testo 'Delete Account' per confermare l'eliminazione",
   "male": "Maschio",
@@ -789,6 +799,8 @@
   },
   "productTitleLifetime": "A vita",
   "productTitleAnnual": "Annuale",
+  "productTitleYears": "{years, plural, =1{1 anno} other{{years} anni}}",
+  "productTitleMonths": "{months, plural, =1{1 mese} other{{months} mesi}}",
   "productTitleMonthly": "Mensile"
 
 }

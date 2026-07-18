@@ -12,6 +12,9 @@ import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_cover.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_date_change_view.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_flip_view.dart';
+import 'package:flutter_planbook/discover/monthly/journal_monthly_bloc_manager.dart';
+import 'package:flutter_planbook/discover/monthly/view/journal_monthly_highlight_page.dart';
+import 'package:flutter_planbook/discover/monthly/view/journal_monthly_summary_page.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
@@ -37,6 +40,10 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
     notesRepository: context.read(),
     tasksRepository: context.read(),
   );
+  late final _monthlyBlocManager = JournalMonthlyBlocManager(
+    notesRepository: context.read(),
+    tasksRepository: context.read(),
+  );
 
   Timer? _timer;
 
@@ -53,15 +60,21 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
   @override
   void dispose() {
     _blocManager.dispose();
+    _monthlyBlocManager.dispose();
     super.dispose();
   }
 
   void _prefetch() {
     if (!mounted) return;
     final journalDate = context.read<DiscoverJournalBloc>().state.date;
-    _blocManager.prefetchDaysAround(
-      centerDate: journalDate.date,
-      dayCount: journalDate.daysInYear,
+    if (journalDate.isDayPage) {
+      _blocManager.prefetchDaysAround(
+        centerDate: journalDate.date,
+        dayCount: journalDate.daysInYear,
+      );
+    }
+    _monthlyBlocManager.prefetchMonthsAround(
+      centerDate: journalDate.monthStart,
     );
   }
 
@@ -95,9 +108,21 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
     required Jiffy from,
     required Jiffy to,
   }) async {
-    final startOfYear = from.startOf(Unit.year);
-    final fromPage = from.diff(startOfYear, unit: Unit.day).toInt() * 2;
-    final toPage = to.diff(startOfYear, unit: Unit.day).toInt() * 2;
+    final fromDate = JournalDate.fromJiffy(from.startOf(Unit.day));
+    final toDate = JournalDate.fromJiffy(to.startOf(Unit.day));
+    final fromPage = fromDate.contentIndexStart;
+    var toPage = toDate.contentIndexStart;
+
+    // 若结束日期是月末，则把 summary 页包含进来；否则展示到结束日期右半页。
+    if (toDate.isDayPage && toDate.day! == toDate.monthStart.daysInMonth) {
+      toPage = JournalDate.monthSummary(
+        year: toDate.year,
+        month: toDate.month,
+      ).contentIndexStart;
+    } else if (toDate.isDayPage) {
+      toPage = toPage + 1;
+    }
+
     await _controller.animateToPage(FlipPageIndex.fromLeft(fromPage));
 
     _timer?.cancel();
@@ -153,8 +178,11 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
           },
         ),
       ],
-      child: RepositoryProvider.value(
-        value: _blocManager,
+      child: MultiRepositoryProvider(
+        providers: [
+          RepositoryProvider.value(value: _blocManager),
+          RepositoryProvider.value(value: _monthlyBlocManager),
+        ],
         child: _DiscoverJournalPage(
           controller: _controller,
         ),
@@ -288,9 +316,25 @@ class _DiscoverJournalContent extends StatelessWidget {
                   );
                 },
                 controller: controller,
-                itemsCount: state.date.daysInYear * 2,
+                itemsCount: state.date.contentPageCount,
                 itemBuilder: (context, index) {
-                  final date = state.date.startOfYear.add(days: index ~/ 2);
+                  final journalDate = JournalDate.fromContentIndex(
+                    state.date.year,
+                    index,
+                  );
+                  if (journalDate.isMonthHighlightPage) {
+                    return JournalMonthlyHighlightPage(
+                      date: journalDate,
+                      isLeft: index.isEven,
+                    );
+                  }
+                  if (journalDate.isMonthSummaryPage) {
+                    return JournalMonthlySummaryPage(
+                      date: journalDate,
+                      isLeft: index.isEven,
+                    );
+                  }
+                  final date = journalDate.date;
                   if (index.isEven) {
                     return JournalDailyLeftPage(date: date);
                   }

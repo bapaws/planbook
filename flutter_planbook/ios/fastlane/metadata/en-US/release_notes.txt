@@ -1,10 +1,8 @@
 What's New:
-- Customize Eisenhower quadrant names
+- Support WeChat login
 - Fixes for known issues
 
 Recent updates:
+- Customize Eisenhower quadrant names
 - Home screen widgets
-- Local-first sync
 - Journal cover and double-tap to zoom
-- Drag tasks in day, week, and month views
-- Link tasks to focus and summaries

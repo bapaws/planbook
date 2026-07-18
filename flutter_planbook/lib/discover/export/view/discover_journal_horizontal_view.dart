@@ -13,6 +13,8 @@ import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
 import 'package:flutter_planbook/discover/journal/view/discover_journal_cover.dart';
+import 'package:flutter_planbook/discover/monthly/view/journal_monthly_highlight_page.dart';
+import 'package:flutter_planbook/discover/monthly/view/journal_monthly_summary_page.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
@@ -141,34 +143,55 @@ class _DiscoverJournalHorizontalViewState
     return _pageController!;
   }
 
-  /// 当年的总页数（封面 + 左右半页 + 封底）。
+  /// 当年的总页数（封面 + 内容页 + 封底）。
   int _itemCountForYear(int year) {
-    final startOfYear = Jiffy.parseFromList([year]);
-    final daysInYear = startOfYear
-        .add(years: 1)
-        .diff(startOfYear, unit: Unit.day)
-        .toInt();
-    return daysInYear * 2 + 2;
+    final journalDate = JournalDate(year: year, month: 1, day: 1);
+    return journalDate.contentPageCount + 2;
   }
 
   /// 将 [JournalDate] 映射到 PageView 中的页索引。日子默认落在左半页。
   int _pageIndexForDate(JournalDate date) {
     if (date.isCoverPage) return 0;
-    if (date.isBackCoverPage) return date.daysInYear * 2 + 1;
-    // JournalDate.pageIndex.left = dayIndex * 2，加 1 跳过封面
-    return 1 + date.pageIndex.left;
+    if (date.isBackCoverPage) {
+      return _itemCountForYear(date.year) - 1;
+    }
+    // 内容页索引 = contentIndexStart；加 1 跳过封面
+    return 1 + date.contentIndexStart;
   }
 
   /// PageView 页索引反查对应的日期（始终以当前控制器所在年份为基准）。
   JournalDate _dateFromPageIndex(int index, int year) {
     final backCoverIndex = _itemCountForYear(year) - 1;
-    if (index <= 0) return JournalDate.fromYear(year);
+    if (index <= 0) return JournalDate.cover(year);
     if (index >= backCoverIndex) {
-      return JournalDate(year: year, month: 12, day: null);
+      return JournalDate.backCover(year);
     }
-    final dayIdx = (index - 1) ~/ 2;
-    final startOfYear = Jiffy.parseFromList([year]);
-    return JournalDate.fromJiffy(startOfYear.add(days: dayIdx));
+    return JournalDate.fromContentIndex(year, index - 1);
+  }
+
+  /// 计算导出区间对应的 PageView 起止页索引（包含首尾）。
+  (int, int) _pageRangeForDates(Jiffy start, Jiffy end) {
+    final startDate = JournalDate.fromJiffy(start.startOf(Unit.day));
+    final endDate = JournalDate.fromJiffy(end.startOf(Unit.day));
+    var startContent = startDate.contentIndexStart;
+    var endContent = endDate.contentIndexStart + 1;
+
+    if (startDate.isDayPage && startDate.day == 1) {
+      startContent = JournalDate.monthHighlight(
+        year: startDate.year,
+        month: startDate.month,
+      ).contentIndexStart;
+    }
+    if (endDate.isDayPage && endDate.day == endDate.monthStart.daysInMonth) {
+      endContent =
+          JournalDate.monthSummary(
+            year: endDate.year,
+            month: endDate.month,
+          ).contentIndexStart +
+          1;
+    }
+
+    return (1 + startContent, 1 + endContent);
   }
 
   @override
@@ -208,8 +231,10 @@ class _DiscoverJournalHorizontalViewState
     final normalizedEnd = end.startOf(Unit.day);
     if (normalizedEnd.isBefore(normalizedStart)) return null;
 
-    final totalDays =
-        normalizedEnd.diff(normalizedStart, unit: Unit.day).toInt() + 1;
+    final (fromPage, toPage) = _pageRangeForDates(
+      normalizedStart,
+      normalizedEnd,
+    );
     final doc = pw.Document();
     const exportPixelRatio = 1.75;
 
@@ -232,37 +257,30 @@ class _DiscoverJournalHorizontalViewState
       // 1. 开始年份的封面
       final coverPng = await _goToAndCapture(
         journalBloc: journalBloc,
-        target: JournalDate.fromYear(normalizedStart.year),
+        pageIdx: 0,
+        year: normalizedStart.year,
         pixelRatio: exportPixelRatio,
       );
       if (coverPng != null) addPng(coverPng);
 
-      // 2. 每日左右半页
-      for (var i = 0; i < totalDays; i++) {
+      // 2. 区间内的所有内容页
+      for (var page = fromPage; page <= toPage; page++) {
         if (!mounted) return null;
-        final d = normalizedStart.add(days: i);
-
-        for (var half = 0; half < 2; half++) {
-          if (!mounted) return null;
-          final png = await _goToAndCapture(
-            journalBloc: journalBloc,
-            target: JournalDate.fromJiffy(d),
-            halfOffset: half,
-            pixelRatio: exportPixelRatio,
-          );
-          if (png != null) addPng(png);
-        }
+        final png = await _goToAndCapture(
+          journalBloc: journalBloc,
+          pageIdx: page,
+          year: normalizedStart.year,
+          pixelRatio: exportPixelRatio,
+        );
+        if (png != null) addPng(png);
       }
 
       // 3. 结束年份的封底
       if (mounted) {
         final backCoverPng = await _goToAndCapture(
           journalBloc: journalBloc,
-          target: JournalDate(
-            year: normalizedEnd.year,
-            month: 12,
-            day: null,
-          ),
+          pageIdx: _itemCountForYear(normalizedEnd.year) - 1,
+          year: normalizedEnd.year,
           pixelRatio: exportPixelRatio,
         );
         if (backCoverPng != null) addPng(backCoverPng);
@@ -280,14 +298,14 @@ class _DiscoverJournalHorizontalViewState
     }
   }
 
-  /// 确保 Bloc 指向 [target]，动画到对应页并截图。
-  /// [halfOffset] 仅对日子页生效：0=左半页、1=右半页。
+  /// 确保 Bloc 指向 [pageIdx] 对应的页，动画到该页并截图。
   Future<Uint8List?> _goToAndCapture({
     required DiscoverJournalBloc journalBloc,
-    required JournalDate target,
+    required int pageIdx,
+    required int year,
     required double pixelRatio,
-    int halfOffset = 0,
   }) async {
+    final target = _dateFromPageIndex(pageIdx, year);
     journalBloc.add(DiscoverJournalDateChanged(date: target));
     await SchedulerBinding.instance.endOfFrame;
     await Future<void>.delayed(const Duration(milliseconds: 16));
@@ -295,11 +313,6 @@ class _DiscoverJournalHorizontalViewState
     if (!mounted) return null;
     final c = _pageController;
     if (c == null || !c.hasClients) return null;
-
-    var pageIdx = _pageIndexForDate(target);
-    if (!target.isCoverPage && !target.isBackCoverPage) {
-      pageIdx += halfOffset;
-    }
 
     _isAnimating = true;
     await c.animateToPage(
@@ -339,14 +352,21 @@ class _DiscoverJournalHorizontalViewState
   /// 根据 PageView 页索引生成保存到相册时使用的文件名。
   String _filenameForPage(int pageIdx, int year) {
     final date = _dateFromPageIndex(pageIdx, year);
+    final half = pageIdx.isOdd ? 'L' : 'R';
     if (date.isCoverPage) return 'Journal_${year}_Cover';
     if (date.isBackCoverPage) return 'Journal_${year}_BackCover';
+    if (date.isMonthHighlightPage) {
+      final month = date.month.toString().padLeft(2, '0');
+      return 'Journal_${year}_${month}_Highlight_$half';
+    }
+    if (date.isMonthSummaryPage) {
+      final month = date.month.toString().padLeft(2, '0');
+      return 'Journal_${year}_${month}_Summary_$half';
+    }
     final dateStr =
         '${date.year}-'
         '${date.month.toString().padLeft(2, '0')}-'
         '${date.day!.toString().padLeft(2, '0')}';
-    // 封面之后：奇数=左半页、偶数=右半页
-    final half = pageIdx.isOdd ? 'L' : 'R';
     return 'Journal_${dateStr}_$half';
   }
 
@@ -362,10 +382,11 @@ class _DiscoverJournalHorizontalViewState
     final normalizedEnd = end.startOf(Unit.day);
     if (normalizedEnd.isBefore(normalizedStart)) return 0;
 
-    final totalDays =
-        normalizedEnd.diff(normalizedStart, unit: Unit.day).toInt() + 1;
-    // 每日 2 张 + 封面 + 封底
-    final totalImages = totalDays * 2 + 2;
+    final (fromPage, toPage) = _pageRangeForDates(
+      normalizedStart,
+      normalizedEnd,
+    );
+    final totalImages = toPage - fromPage + 1 + 2;
     const exportPixelRatio = 1.75;
 
     if (!mounted) return 0;
@@ -384,7 +405,8 @@ class _DiscoverJournalHorizontalViewState
       // 1. 开始年份的封面
       final coverPng = await _goToAndCapture(
         journalBloc: journalBloc,
-        target: JournalDate.fromYear(normalizedStart.year),
+        pageIdx: 0,
+        year: normalizedStart.year,
         pixelRatio: exportPixelRatio,
       );
       if (await saveOne(coverPng, 'Journal_${normalizedStart.year}_Cover')) {
@@ -392,28 +414,19 @@ class _DiscoverJournalHorizontalViewState
         onProgress?.call(saved, totalImages);
       }
 
-      // 2. 每日左右半页
-      for (var i = 0; i < totalDays; i++) {
+      // 2. 区间内的所有内容页
+      for (var page = fromPage; page <= toPage; page++) {
         if (!mounted) return saved;
-        final d = normalizedStart.add(days: i);
-        final dateStr =
-            '${d.year}-'
-            '${d.month.toString().padLeft(2, '0')}-'
-            '${d.date.toString().padLeft(2, '0')}';
-
-        for (var half = 0; half < 2; half++) {
-          if (!mounted) return saved;
-          final png = await _goToAndCapture(
-            journalBloc: journalBloc,
-            target: JournalDate.fromJiffy(d),
-            halfOffset: half,
-            pixelRatio: exportPixelRatio,
-          );
-          final tag = half == 0 ? 'L' : 'R';
-          if (await saveOne(png, 'Journal_${dateStr}_$tag')) {
-            saved++;
-            onProgress?.call(saved, totalImages);
-          }
+        final png = await _goToAndCapture(
+          journalBloc: journalBloc,
+          pageIdx: page,
+          year: normalizedStart.year,
+          pixelRatio: exportPixelRatio,
+        );
+        final fileName = _filenameForPage(page, normalizedStart.year);
+        if (await saveOne(png, fileName)) {
+          saved++;
+          onProgress?.call(saved, totalImages);
         }
       }
 
@@ -421,11 +434,8 @@ class _DiscoverJournalHorizontalViewState
       if (mounted) {
         final backCoverPng = await _goToAndCapture(
           journalBloc: journalBloc,
-          target: JournalDate(
-            year: normalizedEnd.year,
-            month: 12,
-            day: null,
-          ),
+          pageIdx: _itemCountForYear(normalizedEnd.year) - 1,
+          year: normalizedEnd.year,
           pixelRatio: exportPixelRatio,
         );
         if (await saveOne(
@@ -530,18 +540,35 @@ class _DiscoverJournalHorizontalViewState
                         colorScheme: state.coverColorScheme,
                       );
                     } else {
-                      final dayIdx = (index - 1) ~/ 2;
-                      final date = state.date.startOfYear.add(days: dayIdx);
-                      // 封面之后：奇数=左半页、偶数=右半页
-                      child = index.isOdd
-                          ? JournalDailyLeftPage(
-                              date: date,
-                              key: ValueKey(index),
-                            )
-                          : JournalDailyRightPage(
-                              date: date,
-                              key: ValueKey(index),
-                            );
+                      final journalDate = JournalDate.fromContentIndex(
+                        state.date.year,
+                        index - 1,
+                      );
+                      if (journalDate.isMonthHighlightPage) {
+                        child = JournalMonthlyHighlightPage(
+                          date: journalDate,
+                          isLeft: index.isOdd,
+                          key: ValueKey(index),
+                        );
+                      } else if (journalDate.isMonthSummaryPage) {
+                        child = JournalMonthlySummaryPage(
+                          date: journalDate,
+                          isLeft: index.isOdd,
+                          key: ValueKey(index),
+                        );
+                      } else {
+                        final date = journalDate.date;
+                        // 封面之后：奇数=左半页、偶数=右半页
+                        child = index.isOdd
+                            ? JournalDailyLeftPage(
+                                date: date,
+                                key: ValueKey(index),
+                              )
+                            : JournalDailyRightPage(
+                                date: date,
+                                key: ValueKey(index),
+                              );
+                      }
                     }
                     return FittedBox(
                       child: RepaintBoundary(
@@ -659,12 +686,7 @@ class _DiscoverJournalHorizontalViewState
     required Jiffy from,
     required Jiffy to,
   }) async {
-    final startOfYear = from.startOf(Unit.year);
-    final fromDay = from.diff(startOfYear, unit: Unit.day).toInt();
-    final toDay = to.diff(startOfYear, unit: Unit.day).toInt();
-    // 封面占据索引 0，日子页从 1 开始
-    final fromPage = 1 + fromDay * 2;
-    final toPage = 1 + toDay * 2 + 1;
+    final (fromPage, toPage) = _pageRangeForDates(from, to);
 
     if (!mounted) return;
     _isPlaying = true;
@@ -689,10 +711,10 @@ class _DiscoverJournalHorizontalViewState
         if (mounted) _isPlaying = false;
         return;
       }
-      final dayIdx = (page - 1) ~/ 2;
-      final date = startOfYear.add(days: dayIdx);
+      final year = context.read<DiscoverJournalBloc>().state.date.year;
+      final date = _dateFromPageIndex(page, year);
       context.read<DiscoverJournalBloc>().add(
-        DiscoverJournalDateChanged(date: JournalDate.fromJiffy(date)),
+        DiscoverJournalDateChanged(date: date),
       );
       _isAnimating = true;
       c

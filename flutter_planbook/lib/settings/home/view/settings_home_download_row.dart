@@ -59,8 +59,8 @@ class SettingsHomeDownloadRow extends StatelessWidget {
               ? null
               : () {
                   context.read<AppBloc>().add(
-                        AppApkDownloadRequested(l10n: context.l10n),
-                      );
+                    AppApkDownloadRequested(l10n: context.l10n),
+                  );
                 },
         );
       },

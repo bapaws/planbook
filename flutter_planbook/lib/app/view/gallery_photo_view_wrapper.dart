@@ -13,12 +13,12 @@ void showGalleryPhotoView(
     PageRouteBuilder<void>(
       pageBuilder: (context, animation, secondaryAnimation) =>
           GalleryPhotoViewWrapper(
-        galleryItems: urls,
-        backgroundDecoration: const BoxDecoration(
-          color: Colors.black,
-        ),
-        initialIndex: initialIndex,
-      ),
+            galleryItems: urls,
+            backgroundDecoration: const BoxDecoration(
+              color: Colors.black,
+            ),
+            initialIndex: initialIndex,
+          ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
           opacity: animation,

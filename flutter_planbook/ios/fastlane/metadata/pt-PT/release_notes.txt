@@ -1,10 +1,8 @@
 Novidades:
-- Personalização dos nomes dos quadrantes
+- Início de sessão com WeChat
 - Correcção de alguns problemas conhecidos
 
 Atualizações recentes:
+- Personalização dos nomes dos quadrantes
 - Suporte a widgets do ecrã inicial
-- Sincronização local-first
 - Capa do diário e toque duplo para ampliar
-- Arrastar tarefas nas vistas de dia, semana e mês
-- Associar tarefas ao foco e aos resumos

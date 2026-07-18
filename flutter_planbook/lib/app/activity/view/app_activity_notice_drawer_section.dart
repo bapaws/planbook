@@ -12,7 +12,11 @@ class AppActivityNoticeDrawerSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AppActivityBloc, AppActivityState, List<AppActivityNotice>>(
+    return BlocSelector<
+      AppActivityBloc,
+      AppActivityState,
+      List<AppActivityNotice>
+    >(
       selector: (state) => state.drawerNotices,
       builder: (context, notices) {
         if (notices.isEmpty) return const SizedBox.shrink();

@@ -14,16 +14,25 @@ class SignButton extends StatelessWidget {
     super.key,
     this.isLoading = false,
     this.style = SignButtonStyle.normal,
+    this.backgroundColor,
+    this.foregroundColor,
   });
 
   final String text;
   final VoidCallback onPressed;
   final bool isLoading;
   final SignButtonStyle style;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final effectiveForeground =
+        foregroundColor ??
+        (style == SignButtonStyle.filled
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurfaceVariant);
     final child = AnimatedSwitcher(
       duration: Durations.medium2,
       child: isLoading
@@ -32,18 +41,14 @@ class SignButton extends StatelessWidget {
               height: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: style == SignButtonStyle.filled
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant,
+                color: effectiveForeground,
               ),
             )
           : Text(
               text,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: style == SignButtonStyle.filled
-                    ? theme.colorScheme.onPrimary
-                    : theme.colorScheme.onSurfaceVariant,
+                color: effectiveForeground,
               ),
             ),
     );
@@ -84,7 +89,7 @@ class SignButton extends StatelessWidget {
     final theme = Theme.of(context);
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.onSurfaceVariant,
+        color: backgroundColor ?? theme.colorScheme.onSurfaceVariant,
         borderRadius: BorderRadius.circular(24),
       ),
       child: child,

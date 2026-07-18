@@ -162,11 +162,11 @@ class _TaskMonthPage extends StatelessWidget {
           },
           onTaskDropped: (task) {
             context.read<TaskMonthBloc>().add(
-                  TaskMonthNoteTaskAppended(
-                    task: task,
-                    noteType: noteType,
-                  ),
-                );
+              TaskMonthNoteTaskAppended(
+                task: task,
+                noteType: noteType,
+              ),
+            );
           },
         );
       },

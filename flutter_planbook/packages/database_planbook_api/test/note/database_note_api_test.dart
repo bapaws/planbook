@@ -255,8 +255,12 @@ void main() {
 
     group('getTotalCount', () {
       test('counts only non-deleted notes', () async {
-        await noteApi.create(note: _testNote(id: 'note-1', title: 'A'));
-        await noteApi.create(note: _testNote(id: 'note-2', title: 'B'));
+        await noteApi.create(
+          note: _testNote(id: 'note-1', title: 'A'),
+        );
+        await noteApi.create(
+          note: _testNote(id: 'note-2', title: 'B'),
+        );
 
         expect(await noteApi.getTotalCount(userId: null), 2);
 
@@ -381,7 +385,9 @@ void main() {
 
       test('sets userId on generated tags', () {
         final tags = [
-          TagEntity(tag: _testTag(id: 'tag-1', name: 'Work')),
+          TagEntity(
+            tag: _testTag(id: 'tag-1', name: 'Work'),
+          ),
         ];
         final noteTags = noteApi.generateNoteTags(
           noteId: 'note-1',
@@ -395,7 +401,11 @@ void main() {
 
     group('getNoteEntitiesByTaskId', () {
       test('returns notes linked to task', () async {
-        final note = _testNote(id: 'note-1', title: 'Task Note', taskId: 'task-1');
+        final note = _testNote(
+          id: 'note-1',
+          title: 'Task Note',
+          taskId: 'task-1',
+        );
         await noteApi.create(note: note);
 
         final notes = await noteApi.getNoteEntitiesByTaskId('task-1').first;
@@ -404,7 +414,11 @@ void main() {
       });
 
       test('excludes deleted notes', () async {
-        final note = _testNote(id: 'note-1', title: 'Task Note', taskId: 'task-1');
+        final note = _testNote(
+          id: 'note-1',
+          title: 'Task Note',
+          taskId: 'task-1',
+        );
         await noteApi.create(note: note);
         await noteApi.deleteNoteById('note-1');
 

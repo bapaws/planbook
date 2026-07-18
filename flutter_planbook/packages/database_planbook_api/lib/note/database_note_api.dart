@@ -428,6 +428,101 @@ class DatabaseNoteApi {
         .watch();
   }
 
+  Stream<List<NoteEntity>> getNoteEntitiesByDateRange(
+    Jiffy from,
+    Jiffy to, {
+    NoteListMode mode = NoteListMode.all,
+    List<String>? tagIds,
+    String? userId,
+    OrderingMode orderingMode = OrderingMode.desc,
+  }) {
+    final start = from.startOf(Unit.day).dateTime;
+    final end = to.endOf(Unit.day).dateTime;
+
+    var exp =
+        db.notes.deletedAt.isNull() &
+        db.notes.createdAt.isBiggerOrEqualValue(start) &
+        db.notes.createdAt.isSmallerOrEqualValue(end) &
+        (userId == null
+            ? db.notes.userId.isNull()
+            : db.notes.userId.equals(userId));
+
+    if (tagIds != null && tagIds.isNotEmpty) {
+      exp &= db.noteTags.tagId.isIn(tagIds);
+    }
+
+    switch (mode) {
+      case NoteListMode.all:
+        break;
+      case NoteListMode.written:
+        exp &= db.tasks.id.isNull();
+      case NoteListMode.task:
+        exp &= db.tasks.id.isNotNull();
+      case NoteListMode.journal:
+        exp &=
+            db.notes.type.isNull() |
+            db.notes.type.equals(NoteType.journal.name);
+    }
+
+    return (db.select(db.notes).join(
+            [
+              leftOuterJoin(
+                db.tasks,
+                db.tasks.id.equalsExp(db.notes.taskId) &
+                    db.tasks.deletedAt.isNull(),
+              ),
+              leftOuterJoin(
+                db.noteTags,
+                db.noteTags.noteId.equalsExp(db.notes.id) &
+                    db.noteTags.linkedTagId.isNull() &
+                    db.noteTags.deletedAt.isNull(),
+              ),
+            ],
+          )
+          ..where(exp)
+          ..orderBy([
+            OrderingTerm(
+              expression: db.notes.createdAt.datetime,
+              mode: orderingMode,
+            ),
+          ]))
+        .watch()
+        .asyncMap(buildNoteEntities);
+  }
+
+  Stream<List<NoteImageEntity>> getNoteImageEntitiesByDateRange(
+    Jiffy from,
+    Jiffy to,
+    String? userId,
+  ) {
+    final start = from.startOf(Unit.day).dateTime;
+    final end = to.endOf(Unit.day).dateTime;
+
+    return (db.select(db.notes)..where(
+          (n) =>
+              n.deletedAt.isNull() &
+              n.createdAt.isBiggerOrEqualValue(start) &
+              n.createdAt.isSmallerOrEqualValue(end) &
+              (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
+        ))
+        .watch()
+        .asyncMap((notes) {
+          final images = <NoteImageEntity>[];
+          for (final note in notes) {
+            for (final image in note.images) {
+              images.add(
+                NoteImageEntity(
+                  id: image,
+                  image: image,
+                  createdAt: note.createdAt,
+                ),
+              );
+            }
+          }
+          return images;
+        });
+  }
+
   Future<Jiffy?> getStartDate({String? userId}) async {
     final row =
         await (db.select(

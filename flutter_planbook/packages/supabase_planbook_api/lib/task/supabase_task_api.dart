@@ -107,11 +107,17 @@ class SupabaseTaskApi {
 
   Future<void> deleteByTaskId(String taskId) async {
     if (supabase == null) return;
-    await supabase!.from('tasks').update({
-      'deleted_at': DateTime.now().toIso8601String(),
-    }).eq('id', taskId);
-    await supabase!.from('task_tags').update({
-      'deleted_at': DateTime.now().toIso8601String(),
-    }).eq('task_id', taskId);
+    await supabase!
+        .from('tasks')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', taskId);
+    await supabase!
+        .from('task_tags')
+        .update({
+          'deleted_at': DateTime.now().toIso8601String(),
+        })
+        .eq('task_id', taskId);
   }
 }

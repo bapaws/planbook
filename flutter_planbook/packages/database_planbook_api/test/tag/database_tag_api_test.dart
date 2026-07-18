@@ -216,22 +216,26 @@ void main() {
         final tag = _testTag(id: 'tag-1', name: 'Work');
         await tagApi.create(tag: tag);
 
-        await db.into(db.taskTags).insert(
-          TaskTag(
-            id: 'tt-1',
-            taskId: 'task-1',
-            tagId: 'tag-1',
-            createdAt: Jiffy.now(),
-          ),
-        );
-        await db.into(db.noteTags).insert(
-          NoteTag(
-            id: 'nt-1',
-            noteId: 'note-1',
-            tagId: 'tag-1',
-            createdAt: Jiffy.now(),
-          ),
-        );
+        await db
+            .into(db.taskTags)
+            .insert(
+              TaskTag(
+                id: 'tt-1',
+                taskId: 'task-1',
+                tagId: 'tag-1',
+                createdAt: Jiffy.now(),
+              ),
+            );
+        await db
+            .into(db.noteTags)
+            .insert(
+              NoteTag(
+                id: 'nt-1',
+                noteId: 'note-1',
+                tagId: 'tag-1',
+                createdAt: Jiffy.now(),
+              ),
+            );
 
         await tagApi.deleteById('tag-1');
 
@@ -308,8 +312,12 @@ void main() {
 
     group('getTotalCount', () {
       test('counts non-deleted tags', () async {
-        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
-        await tagApi.create(tag: _testTag(id: 'tag-2', name: 'B'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-1', name: 'A'),
+        );
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B'),
+        );
 
         expect(await tagApi.getTotalCount(userId: null), 2);
 
@@ -333,7 +341,9 @@ void main() {
 
     group('getTopLevelTags', () {
       test('returns only tags with null parentId', () async {
-        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'Parent'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-1', name: 'Parent'),
+        );
         await tagApi.create(
           tag: _testTag(
             id: 'tag-2',
@@ -363,18 +373,28 @@ void main() {
     });
 
     group('getAllTags', () {
-      test('returns all non-deleted tags ordered by level/order/createdAt',
-          () async {
-        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
-        await tagApi.create(tag: _testTag(id: 'tag-2', name: 'B'));
+      test(
+        'returns all non-deleted tags ordered by level/order/createdAt',
+        () async {
+          await tagApi.create(
+            tag: _testTag(id: 'tag-1', name: 'A'),
+          );
+          await tagApi.create(
+            tag: _testTag(id: 'tag-2', name: 'B'),
+          );
 
-        final tags = await tagApi.getAllTags(userId: null).first;
-        expect(tags, hasLength(2));
-      });
+          final tags = await tagApi.getAllTags(userId: null).first;
+          expect(tags, hasLength(2));
+        },
+      );
 
       test('excludes deleted tags', () async {
-        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
-        await tagApi.create(tag: _testTag(id: 'tag-2', name: 'B'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-1', name: 'A'),
+        );
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B'),
+        );
         await tagApi.deleteById('tag-1');
 
         final tags = await tagApi.getAllTags(userId: null).first;
@@ -383,8 +403,12 @@ void main() {
       });
 
       test('excludes specified tag ids', () async {
-        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
-        await tagApi.create(tag: _testTag(id: 'tag-2', name: 'B'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-1', name: 'A'),
+        );
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B'),
+        );
 
         final tags = await tagApi
             .getAllTags(notIncludeTagIds: {'tag-1'}, userId: null)
@@ -471,14 +495,16 @@ void main() {
 
     group('getTaskTagsByTaskId', () {
       test('returns task tags for task', () async {
-        await db.into(db.taskTags).insert(
-          TaskTag(
-            id: 'tt-1',
-            taskId: 'task-1',
-            tagId: 'tag-1',
-            createdAt: Jiffy.now(),
-          ),
-        );
+        await db
+            .into(db.taskTags)
+            .insert(
+              TaskTag(
+                id: 'tt-1',
+                taskId: 'task-1',
+                tagId: 'tag-1',
+                createdAt: Jiffy.now(),
+              ),
+            );
 
         final result = await tagApi.getTaskTagsByTaskId('task-1', null);
         expect(result, hasLength(1));
@@ -486,23 +512,27 @@ void main() {
       });
 
       test('excludes deleted task tags', () async {
-        await db.into(db.taskTags).insert(
-          TaskTag(
-            id: 'tt-1',
-            taskId: 'task-1',
-            tagId: 'tag-1',
-            createdAt: Jiffy.now(),
-          ),
-        );
-        await db.into(db.taskTags).insert(
-          TaskTag(
-            id: 'tt-2',
-            taskId: 'task-1',
-            tagId: 'tag-2',
-            createdAt: Jiffy.now(),
-            deletedAt: Jiffy.now(),
-          ),
-        );
+        await db
+            .into(db.taskTags)
+            .insert(
+              TaskTag(
+                id: 'tt-1',
+                taskId: 'task-1',
+                tagId: 'tag-1',
+                createdAt: Jiffy.now(),
+              ),
+            );
+        await db
+            .into(db.taskTags)
+            .insert(
+              TaskTag(
+                id: 'tt-2',
+                taskId: 'task-1',
+                tagId: 'tag-2',
+                createdAt: Jiffy.now(),
+                deletedAt: Jiffy.now(),
+              ),
+            );
 
         final result = await tagApi.getTaskTagsByTaskId('task-1', null);
         expect(result, hasLength(1));
@@ -512,14 +542,16 @@ void main() {
 
     group('getNoteTagsByNoteId', () {
       test('returns note tags for note', () async {
-        await db.into(db.noteTags).insert(
-          NoteTag(
-            id: 'nt-1',
-            noteId: 'note-1',
-            tagId: 'tag-1',
-            createdAt: Jiffy.now(),
-          ),
-        );
+        await db
+            .into(db.noteTags)
+            .insert(
+              NoteTag(
+                id: 'nt-1',
+                noteId: 'note-1',
+                tagId: 'tag-1',
+                createdAt: Jiffy.now(),
+              ),
+            );
 
         final result = await tagApi.getNoteTagsByNoteId('note-1', null);
         expect(result, hasLength(1));

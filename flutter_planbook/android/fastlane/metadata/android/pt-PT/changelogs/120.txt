@@ -1,4 +1,4 @@
-• Widgets do ecrã inicial
-• Sincronização local-first
+• Início de sessão com WeChat
+• Correcção de erros
 
-Recente: capa e zoom do diário, arrastar tarefas (dia/semana/mês), foco e resumos, correcções
+Recente: nomes dos quadrantes personalizados, widgets do ecrã inicial, capa e zoom do diário

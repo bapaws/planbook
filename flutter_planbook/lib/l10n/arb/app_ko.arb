@@ -322,6 +322,16 @@
   "gender": "성별",
   "birthday": "생일",
   "bind": "연결",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ 정말로 계정을 삭제하시겠어요? 이 작업은 되돌릴 수 없습니다.",
   "deleteAccountHint": "삭제를 확인하려면 'Delete Account'를 입력하세요",
   "male": "남성",
@@ -789,6 +799,8 @@
   },
   "productTitleLifetime": "평생",
   "productTitleAnnual": "연간",
+  "productTitleYears": "{years, plural, =1{1년} other{{years}년}}",
+  "productTitleMonths": "{months, plural, =1{1개월} other{{months}개월}}",
   "productTitleMonthly": "월간"
 
 }

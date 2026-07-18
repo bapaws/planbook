@@ -11,12 +11,14 @@ class JournalDailyFocusView extends StatelessWidget {
     required this.note,
     required this.noteType,
     required this.colorScheme,
+    this.maxLines,
     super.key,
   });
 
   final Note? note;
   final NoteType noteType;
   final ColorScheme colorScheme;
+  final int? maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +41,9 @@ class JournalDailyFocusView extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          note?.content?.replaceAll('\n', ' ') ??
-              noteType.getHintText(context.l10n),
+          note?.content?.trim() ?? noteType.getHintText(context.l10n),
+          maxLines: maxLines,
+          overflow: maxLines == null ? null : TextOverflow.ellipsis,
           style: theme.textTheme.bodySmall?.copyWith(
             color: note == null
                 ? theme.colorScheme.outlineVariant

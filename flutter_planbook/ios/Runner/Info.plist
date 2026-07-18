@@ -60,12 +60,12 @@
 				<string>Editor</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>planbook.bapaws</string>
+					<string>wx43f0daa78129a486</string>
 				</array>
 			</dict>
 		</array>
 		<key>CFBundleVersion</key>
-		<string>3</string>
+		<string>5</string>
 		<key>ITSAppUsesNonExemptEncryption</key>
 		<false/>
 		<key>LSRequiresIPhoneOS</key>
@@ -78,6 +78,15 @@
 		<string>[Planbook] needs to use your photo library to save images.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>[Planbook] needs to use your photos to record the task.</string>
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>weixin</string>
+			<string>weixinULAPI</string>
+			<string>weixinRes1</string>
+			<string>mqqapi</string>
+			<string>mqq</string>
+			<string>mqqOpensdkSSoLogin</string>
+		</array>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UILaunchStoryboardName</key>

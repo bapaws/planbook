@@ -71,7 +71,9 @@ class _FakePostgrestFilterBuilder implements PostgrestFilterBuilder {
         );
       }
       final onValue = invocation.positionalArguments[0] as Function;
-      return Future.value(onValue(PostgrestResponse<dynamic>(data: null, count: 0)));
+      return Future.value(
+        onValue(PostgrestResponse<dynamic>(data: null, count: 0)),
+      );
     }
     if (invocation.memberName == #eq) return this;
     return super.noSuchMethod(invocation);
@@ -100,8 +102,9 @@ void main() {
     when(() => mockSupabase.auth).thenReturn(mockAuth);
     when(() => mockAuth.currentUser).thenReturn(mockUser);
     when(() => mockUser.id).thenReturn('user-123');
-    when(() => mockConnectivity.onConnectivityChanged)
-        .thenAnswer((_) => const Stream.empty());
+    when(
+      () => mockConnectivity.onConnectivityChanged,
+    ).thenAnswer((_) => const Stream.empty());
     when(() => mockSupabase.from(any())).thenAnswer((_) => fakeQueryBuilder);
 
     engine = SyncEngine(
@@ -114,26 +117,31 @@ void main() {
 
   group('triggerSync', () {
     test('没有 pending 记录时什么都不做', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => []);
 
       engine.triggerSync();
       await Future.delayed(Duration.zero);
 
       verify(() => mockOutboxApi.getPending(limit: 50)).called(1);
       verifyNever(() => mockOutboxApi.markSynced(any()));
-      verifyNever(() => mockOutboxApi.markFailed(
-            outboxId: any(named: 'outboxId'),
-            error: any(named: 'error'),
-            retryCount: any(named: 'retryCount'),
-          ));
+      verifyNever(
+        () => mockOutboxApi.markFailed(
+          outboxId: any(named: 'outboxId'),
+          error: any(named: 'error'),
+          retryCount: any(named: 'retryCount'),
+        ),
+      );
     });
 
     test('有 pending 记录且网络可用时调用 supabase upsert', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
       final pending = [
         SyncOutboxData(
           id: 1,
@@ -145,26 +153,30 @@ void main() {
           retryCount: 0,
         ),
       ];
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => pending);
-      when(() => mockOutboxApi.markSynced(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => pending);
+      when(() => mockOutboxApi.markSynced(any())).thenAnswer((_) async {});
 
       engine.triggerSync();
       await Future.delayed(Duration.zero);
 
       verify(() => mockSupabase.from('tags')).called(1);
-      final upsertInvocation = fakeQueryBuilder.invocations
-          .firstWhere((i) => i.memberName == #upsert);
-      expect(upsertInvocation.positionalArguments[0],
-          isA<List<Map<String, dynamic>>>());
+      final upsertInvocation = fakeQueryBuilder.invocations.firstWhere(
+        (i) => i.memberName == #upsert,
+      );
+      expect(
+        upsertInvocation.positionalArguments[0],
+        isA<List<Map<String, dynamic>>>(),
+      );
       expect(upsertInvocation.namedArguments[#onConflict], 'id');
       verify(() => mockOutboxApi.markSynced(1)).called(1);
     });
 
     test('网络不可用时直接返回', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => false);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => false);
 
       engine.triggerSync();
       await Future.delayed(Duration.zero);
@@ -173,8 +185,9 @@ void main() {
     });
 
     test('成功同步后调用 outboxApi.markSynced', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
       final pending = [
         SyncOutboxData(
           id: 2,
@@ -186,25 +199,28 @@ void main() {
           retryCount: 0,
         ),
       ];
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => pending);
-      when(() => mockOutboxApi.markSynced(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => pending);
+      when(() => mockOutboxApi.markSynced(any())).thenAnswer((_) async {});
 
       engine.triggerSync();
       await Future.delayed(Duration.zero);
 
       verify(() => mockOutboxApi.markSynced(2)).called(1);
-      verifyNever(() => mockOutboxApi.markFailed(
-            outboxId: any(named: 'outboxId'),
-            error: any(named: 'error'),
-            retryCount: any(named: 'retryCount'),
-          ));
+      verifyNever(
+        () => mockOutboxApi.markFailed(
+          outboxId: any(named: 'outboxId'),
+          error: any(named: 'error'),
+          retryCount: any(named: 'retryCount'),
+        ),
+      );
     });
 
     test('同步失败后调用 outboxApi.markFailed', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
       final pending = [
         SyncOutboxData(
           id: 3,
@@ -216,15 +232,17 @@ void main() {
           retryCount: 0,
         ),
       ];
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => pending);
-      when(() => mockOutboxApi.markFailed(
-            outboxId: any(named: 'outboxId'),
-            error: any(named: 'error'),
-            retryCount: any(named: 'retryCount'),
-          )).thenAnswer((_) async {});
-      when(() => mockOutboxApi.markSynced(any()))
-          .thenAnswer((_) async {});
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => pending);
+      when(
+        () => mockOutboxApi.markFailed(
+          outboxId: any(named: 'outboxId'),
+          error: any(named: 'error'),
+          retryCount: any(named: 'retryCount'),
+        ),
+      ).thenAnswer((_) async {});
+      when(() => mockOutboxApi.markSynced(any())).thenAnswer((_) async {});
 
       // 让 upsert 抛异常
       fakeQueryBuilder.throwOnAwait(
@@ -234,11 +252,13 @@ void main() {
       engine.triggerSync();
       await Future.delayed(Duration.zero);
 
-      verify(() => mockOutboxApi.markFailed(
-            outboxId: 3,
-            error: 'DB error',
-            retryCount: 1,
-          )).called(1);
+      verify(
+        () => mockOutboxApi.markFailed(
+          outboxId: 3,
+          error: 'DB error',
+          retryCount: 1,
+        ),
+      ).called(1);
       verifyNever(() => mockOutboxApi.markSynced(3));
     });
   });
@@ -261,8 +281,9 @@ void main() {
           .where((i) => i.memberName == #upsert)
           .toList();
       expect(upsertInvocations, hasLength(1));
-      final payload = upsertInvocations.first.positionalArguments[0]
-          as List<Map<String, dynamic>>;
+      final payload =
+          upsertInvocations.first.positionalArguments[0]
+              as List<Map<String, dynamic>>;
       expect(payload.first['id'], 'tag-insert');
       expect(payload.first['user_id'], 'user-123');
       expect(upsertInvocations.first.namedArguments[#onConflict], 'id');
@@ -285,8 +306,9 @@ void main() {
           .where((i) => i.memberName == #upsert)
           .toList();
       expect(upsertInvocations, hasLength(1));
-      final payload = upsertInvocations.first.positionalArguments[0]
-          as List<Map<String, dynamic>>;
+      final payload =
+          upsertInvocations.first.positionalArguments[0]
+              as List<Map<String, dynamic>>;
       expect(payload.first['id'], 'note-update');
       expect(payload.first['user_id'], 'user-123');
     });
@@ -313,8 +335,9 @@ void main() {
     });
 
     test('replace_associations 执行 delete + insert 逻辑', () async {
-      when(() => mockSupabase.from('note_tags'))
-          .thenAnswer((_) => fakeQueryBuilder);
+      when(
+        () => mockSupabase.from('note_tags'),
+      ).thenAnswer((_) => fakeQueryBuilder);
 
       final item = SyncOutboxData(
         id: 4,
@@ -341,53 +364,60 @@ void main() {
           .where((i) => i.memberName == #update)
           .toList();
       expect(updateInvocations, hasLength(1));
-      expect(updateInvocations.first.positionalArguments[0],
-          containsPair('deleted_at', isA<String>()));
+      expect(
+        updateInvocations.first.positionalArguments[0],
+        containsPair('deleted_at', isA<String>()),
+      );
 
       // insert 被调用
       final insertInvocations = fakeQueryBuilder.invocations
           .where((i) => i.memberName == #insert)
           .toList();
       expect(insertInvocations, hasLength(1));
-      final inserted = insertInvocations.first.positionalArguments[0]
-          as List<Map<String, dynamic>>;
+      final inserted =
+          insertInvocations.first.positionalArguments[0]
+              as List<Map<String, dynamic>>;
       expect(inserted, hasLength(2));
     });
 
-    test('replace_associations with empty associations only calls update',
-        () async {
-      when(() => mockSupabase.from('task_tags'))
-          .thenAnswer((_) => fakeQueryBuilder);
+    test(
+      'replace_associations with empty associations only calls update',
+      () async {
+        when(
+          () => mockSupabase.from('task_tags'),
+        ).thenAnswer((_) => fakeQueryBuilder);
 
-      final item = SyncOutboxData(
-        id: 8,
-        targetTable: 'task_tags',
-        recordId: 'task-empty',
-        operation: 'replace_associations',
-        payload: jsonEncode({
-          'parent_id': 'task-empty',
-          'associations': <Map<String, dynamic>>[],
-        }),
-        createdAt: 0,
-        retryCount: 0,
-      );
+        final item = SyncOutboxData(
+          id: 8,
+          targetTable: 'task_tags',
+          recordId: 'task-empty',
+          operation: 'replace_associations',
+          payload: jsonEncode({
+            'parent_id': 'task-empty',
+            'associations': <Map<String, dynamic>>[],
+          }),
+          createdAt: 0,
+          retryCount: 0,
+        );
 
-      await engine.syncSingle(item);
+        await engine.syncSingle(item);
 
-      final updateInvocations = fakeQueryBuilder.invocations
-          .where((i) => i.memberName == #update)
-          .toList();
-      expect(updateInvocations, hasLength(1));
+        final updateInvocations = fakeQueryBuilder.invocations
+            .where((i) => i.memberName == #update)
+            .toList();
+        expect(updateInvocations, hasLength(1));
 
-      final insertInvocations = fakeQueryBuilder.invocations
-          .where((i) => i.memberName == #insert)
-          .toList();
-      expect(insertInvocations, isEmpty);
-    });
+        final insertInvocations = fakeQueryBuilder.invocations
+            .where((i) => i.memberName == #insert)
+            .toList();
+        expect(insertInvocations, isEmpty);
+      },
+    );
 
     test('replace_associations throws when parent_id is missing', () async {
-      when(() => mockSupabase.from('note_tags'))
-          .thenAnswer((_) => fakeQueryBuilder);
+      when(
+        () => mockSupabase.from('note_tags'),
+      ).thenAnswer((_) => fakeQueryBuilder);
 
       final item = SyncOutboxData(
         id: 9,
@@ -410,12 +440,15 @@ void main() {
   group('start', () {
     test('triggers sync when wifi connectivity is detected', () async {
       final controller = StreamController<List<ConnectivityResult>>();
-      when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => controller.stream);
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockConnectivity.onConnectivityChanged,
+      ).thenAnswer((_) => controller.stream);
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => []);
 
       engine.start();
       controller.add([ConnectivityResult.wifi]);
@@ -429,10 +462,12 @@ void main() {
 
     test('does not trigger sync when no useful connectivity', () async {
       final controller = StreamController<List<ConnectivityResult>>();
-      when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => controller.stream);
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async => []);
+      when(
+        () => mockConnectivity.onConnectivityChanged,
+      ).thenAnswer((_) => controller.stream);
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async => []);
 
       engine.start();
       controller.add([ConnectivityResult.none]);
@@ -447,10 +482,12 @@ void main() {
 
   group('triggerSync isProcessing', () {
     test('ignores concurrent calls when already processing', () async {
-      when(() => mockConnectionChecker.hasConnection)
-          .thenAnswer((_) async => true);
-      when(() => mockOutboxApi.getPending(limit: any(named: 'limit')))
-          .thenAnswer((_) async {
+      when(
+        () => mockConnectionChecker.hasConnection,
+      ).thenAnswer((_) async => true);
+      when(
+        () => mockOutboxApi.getPending(limit: any(named: 'limit')),
+      ).thenAnswer((_) async {
         await Future.delayed(const Duration(milliseconds: 50));
         return [];
       });
@@ -466,8 +503,9 @@ void main() {
   group('dispose', () {
     test('取消订阅和定时器', () {
       final controller = StreamController<List<ConnectivityResult>>();
-      when(() => mockConnectivity.onConnectivityChanged)
-          .thenAnswer((_) => controller.stream);
+      when(
+        () => mockConnectivity.onConnectivityChanged,
+      ).thenAnswer((_) => controller.stream);
 
       engine.start();
       expect(controller.hasListener, isTrue);

@@ -12,6 +12,7 @@ import 'package:flutter_planbook/discover/export/bloc/journal_export_bloc.dart';
 import 'package:flutter_planbook/discover/export/view/discover_journal_horizontal_view.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
 import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
+import 'package:flutter_planbook/discover/monthly/journal_monthly_bloc_manager.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:share_plus/share_plus.dart';
@@ -57,6 +58,13 @@ class _JournalExportNestedProviders extends StatelessWidget {
           ),
           dispose: (manager) => manager.dispose(),
         ),
+        RepositoryProvider(
+          create: (context) => JournalMonthlyBlocManager(
+            notesRepository: context.read(),
+            tasksRepository: context.read(),
+          ),
+          dispose: (manager) => manager.dispose(),
+        ),
       ],
       child: const _JournalExportControllerScope(),
     );
@@ -89,7 +97,8 @@ class _JournalExportControllerScopeState
   }
 
   void _prefetchRange(BuildContext context, JournalExportReady s) {
-    final manager = context.read<JournalDailyBlocManager>();
+    final dailyManager = context.read<JournalDailyBlocManager>();
+    final monthlyManager = context.read<JournalMonthlyBlocManager>();
     final span = s.endDate.diff(s.startDate, unit: Unit.day).toInt();
     final center = s.startDate.add(days: span ~/ 2);
     final startOfYear = center.startOf(Unit.year);
@@ -98,11 +107,20 @@ class _JournalExportControllerScopeState
         .diff(startOfYear, unit: Unit.day)
         .toInt();
     final radius = (span ~/ 2 + 2).clamp(0, 14);
-    manager.prefetchDaysAround(
+    dailyManager.prefetchDaysAround(
       centerDate: center,
       dayCount: dayCount,
       radius: radius,
     );
+
+    // 预加载导出区间涉及月份的 BLoC。
+    final startMonth = s.startDate.startOf(Unit.month);
+    final endMonth = s.endDate.startOf(Unit.month);
+    var month = startMonth;
+    while (!month.isAfter(endMonth)) {
+      monthlyManager.blocForMonth(month: month);
+      month = month.add(months: 1);
+    }
   }
 
   @override

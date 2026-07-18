@@ -65,8 +65,9 @@ final class AppActivityRedeemState extends Equatable {
       phase: phase ?? this.phase,
       status: status ?? this.status,
       imagePaths: imagePaths ?? this.imagePaths,
-      submissionId:
-          clearSubmission ? null : (submissionId ?? this.submissionId),
+      submissionId: clearSubmission
+          ? null
+          : (submissionId ?? this.submissionId),
       code: clearCode ? null : (code ?? this.code),
       redeemUrl: clearCode ? null : (redeemUrl ?? this.redeemUrl),
       rejectReason: clearRejectReason

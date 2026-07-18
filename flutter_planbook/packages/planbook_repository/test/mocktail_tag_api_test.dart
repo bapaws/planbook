@@ -7,8 +7,9 @@ class MockTagApi extends Mock implements DatabaseTagApi {}
 void main() {
   test('mocktail with DatabaseTagApi', () async {
     final mock = MockTagApi();
-    when(() => mock.getTotalCount(userId: any(named: 'userId')))
-        .thenAnswer((_) async => 5);
+    when(
+      () => mock.getTotalCount(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => 5);
     final result = await mock.getTotalCount(userId: null);
     expect(result, 5);
   });

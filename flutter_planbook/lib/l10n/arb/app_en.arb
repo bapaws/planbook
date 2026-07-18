@@ -90,6 +90,7 @@
   "terms": "Terms of Use",
   "photos": "Photos",
   "gallery": "Gallery",
+  "noMonthPhotos": "No photos this month",
   "camera": "Camera",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
@@ -209,6 +210,7 @@
   "completed": "Completed",
   "completionRate": "Completion Rate",
   "words": "Words",
+  "planned": "Planned",
   "time": "Time",
   "deleteNote": "Delete Note",
   "deleteNoteContent": "Are you sure you want to delete this note?",
@@ -329,6 +331,16 @@
   "gender": "Gender",
   "birthday": "Birthday",
   "bind": "Bind",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ Are you sure you want to delete your account? This action cannot be undone.",
   "deleteAccountHint": "Enter the text 'Delete Account' to confirm deletion",
   "male": "Male",
@@ -799,6 +811,84 @@
   },
   "productTitleLifetime": "Lifetime",
   "productTitleAnnual": "Annual",
-  "productTitleMonthly": "Monthly"
+  "productTitleYears": "{years, plural, =1{1 year} other{{years} years}}",
+  "@productTitleYears": {
+    "description": "Product title for an N-year subscription",
+    "placeholders": {
+      "years": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "productTitleMonths": "{months, plural, =1{1 month} other{{months} months}}",
+  "@productTitleMonths": {
+    "description": "Product title for an N-month subscription",
+    "placeholders": {
+      "months": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "productTitleMonthly": "Monthly",
+  "monthlyData": "Monthly Data",
+  "monthlyDescriptionPlannedTasks": "Planned {count, plural, =1 {1 task} other {{count} tasks}} this month.",
+  "@monthlyDescriptionPlannedTasks": {
+    "description": "Monthly data description: planned tasks",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "No planned tasks this month.",
+  "monthlyDescriptionNoTasks": "No tasks completed this month.",
+  "monthlyDescriptionTasksCompleted": "Completed {completed, plural, =1 {1 task} other {{completed} tasks}}",
+  "@monthlyDescriptionTasksCompleted": {
+    "description": "Monthly data description: completed tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "Priority breakdown: {breakdown}.",
+  "@monthlyDescriptionPriorityBreakdown": {
+    "description": "Monthly data description: priority breakdown prefix",
+    "placeholders": {
+      "breakdown": {
+        "type": "String",
+        "example": "2 important, 1 urgent"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "Wrote {count, plural, =1 {1 note} other {{count} notes}} this month, totaling {words, plural, =1 {1 word} other {{words} words}}.",
+  "@monthlyDescriptionNotesWritten": {
+    "description": "Monthly data description: notes written",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      },
+      "words": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "No notes written this month.",
+  "monthlyDescriptionTagsInvolved": "Tags involved: {tags}.",
+  "@monthlyDescriptionTagsInvolved": {
+    "description": "Monthly data description: tags involved prefix",
+    "placeholders": {
+      "tags": {
+        "type": "String",
+        "example": "work, life"
+      }
+    }
+  }
 
 }

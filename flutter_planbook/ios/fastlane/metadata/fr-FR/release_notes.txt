@@ -1,10 +1,8 @@
 Nouveautés :
-- Personnalisation des noms de quadrants
+- Prise en charge de la connexion WeChat
 - Correctifs de problèmes connus
 
 Mises à jour récentes :
+- Personnalisation des noms de quadrants
 - Prise en charge des widgets d’accueil
-- Synchronisation local d’abord
 - Couverture du journal et double toucher pour agrandir
-- Glisser-déposer des tâches dans les vues jour, semaine et mois
-- Associer les tâches au focus et aux synthèses

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:planbook_repository/users/users_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -12,7 +13,10 @@ class SignHomeCubit extends Cubit<SignHomeState> {
 
   final UsersRepository _usersRepository;
 
-  void onInitialized() {}
+  Future<void> onInitialized() async {
+    final installed = await _usersRepository.isWeChatInstalled();
+    emit(state.copyWith(isWeChatInstalled: installed));
+  }
 
   void backToWelcome() {
     emit(state.copyWith(status: SignHomeStatus.welcome));
@@ -57,6 +61,27 @@ class SignHomeCubit extends Cubit<SignHomeState> {
     final authResponse = await _usersRepository.signInWithGoogle();
     if (authResponse != null) {
       emit(state.copyWith(authResponse: authResponse));
+    }
+  }
+
+  Future<void> signInWithWeChat() async {
+    emit(state.copyWith(isWeChatLoading: true));
+    try {
+      final authResponse = await _usersRepository.signInWithWeChat();
+      if (authResponse != null) {
+        emit(
+          state.copyWith(
+            authResponse: authResponse,
+            isWeChatLoading: false,
+          ),
+        );
+      } else {
+        emit(state.copyWith(isWeChatLoading: false));
+      }
+    } on Exception catch (e) {
+      if (kDebugMode) print('signInWithWeChat 错误: $e');
+      emit(state.copyWith(isWeChatLoading: false));
+      rethrow;
     }
   }
 }

@@ -269,7 +269,9 @@ void main() {
         final oldTime = DateTime.now()
             .subtract(const Duration(days: 10))
             .millisecondsSinceEpoch;
-        await db.into(db.syncOutbox).insert(
+        await db
+            .into(db.syncOutbox)
+            .insert(
               SyncOutboxCompanion(
                 targetTable: const Value('tasks'),
                 recordId: const Value('old-task'),
@@ -282,7 +284,9 @@ void main() {
 
         // Insert a recent synced record
         final recentTime = DateTime.now().millisecondsSinceEpoch;
-        await db.into(db.syncOutbox).insert(
+        await db
+            .into(db.syncOutbox)
+            .insert(
               SyncOutboxCompanion(
                 targetTable: const Value('tasks'),
                 recordId: const Value('recent-task'),
@@ -294,7 +298,9 @@ void main() {
             );
 
         // Insert an unsynced old record
-        await db.into(db.syncOutbox).insert(
+        await db
+            .into(db.syncOutbox)
+            .insert(
               SyncOutboxCompanion(
                 targetTable: const Value('tasks'),
                 recordId: const Value('unsynced-old'),
@@ -309,7 +315,10 @@ void main() {
 
         final remaining = await db.select(db.syncOutbox).get();
         expect(remaining, hasLength(2));
-        expect(remaining.map((r) => r.recordId), containsAll(['recent-task', 'unsynced-old']));
+        expect(
+          remaining.map((r) => r.recordId),
+          containsAll(['recent-task', 'unsynced-old']),
+        );
       });
 
       test('returns 0 when no records to clean', () async {

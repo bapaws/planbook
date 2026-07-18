@@ -22,13 +22,37 @@ class TasksRepository {
   }) : _db = db,
        _tagApi = tagApi,
        _supabaseTaskApi = SupabaseTaskApi(sp: sp),
-       _dbTaskApi = DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _dbTaskInboxApi = DatabaseTaskInboxApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _dbTaskOverdueApi = DatabaseTaskOverdueApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _dbTaskTodayApi = DatabaseTaskTodayApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _dbTaskCompletionApi = DatabaseTaskCompletionApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
+       _dbTaskApi = DatabaseTaskApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       ),
+       _dbTaskInboxApi = DatabaseTaskInboxApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       ),
+       _dbTaskOverdueApi = DatabaseTaskOverdueApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       ),
+       _dbTaskTodayApi = DatabaseTaskTodayApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       ),
+       _dbTaskCompletionApi = DatabaseTaskCompletionApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       ),
        _dbTaskDelayApi = DatabaseTaskDelayApi(db: db, tagApi: tagApi),
-       _dbTaskUpdateApi = DatabaseTaskUpdateApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
+       _dbTaskUpdateApi = DatabaseTaskUpdateApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
+       );
 
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
@@ -411,6 +435,30 @@ class TasksRepository {
     return _dbTaskCompletionApi.getCompletedTaskCount(
       date: date,
       priority: priority,
+      userId: userId,
+    );
+  }
+
+  Stream<int> getCompletedTaskCountForMonth(
+    Jiffy date, {
+    TaskPriority? priority,
+  }) {
+    final startOfMonth = date.startOf(Unit.month);
+    final endOfMonth = date.endOf(Unit.month);
+    return _dbTaskCompletionApi.getCompletedTaskCountByDateRange(
+      startOfMonth,
+      endOfMonth,
+      priority: priority,
+      userId: userId,
+    );
+  }
+
+  Stream<int> getPlannedTaskCountForMonth(Jiffy date) {
+    final startOfMonth = date.startOf(Unit.month);
+    final endOfMonth = date.endOf(Unit.month);
+    return _dbTaskApi.getPlannedTaskCountByDateRange(
+      startOfMonth,
+      endOfMonth,
       userId: userId,
     );
   }

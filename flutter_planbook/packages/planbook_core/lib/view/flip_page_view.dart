@@ -270,17 +270,29 @@ class _FlipPageViewState extends State<FlipPageView>
 
   Widget _clipLeft(Widget child) {
     final theme = Theme.of(context);
-    final br = widget.borderRadius ?? BorderRadius.circular(24);
+    final br = widget.borderRadius ?? BorderRadius.circular(32);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topLeft: br.topLeft,
           bottomLeft: br.bottomLeft,
         ),
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-          strokeAlign: BorderSide.strokeAlignOutside,
-          width: 2,
+        border: Border(
+          left: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
+          top: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
+          bottom: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
         ),
       ),
       clipBehavior: Clip.hardEdge,
@@ -290,17 +302,29 @@ class _FlipPageViewState extends State<FlipPageView>
 
   Widget _clipRight(Widget child) {
     final theme = Theme.of(context);
-    final br = widget.borderRadius ?? BorderRadius.circular(24);
+    final br = widget.borderRadius ?? BorderRadius.circular(32);
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.only(
           topRight: br.topRight,
           bottomRight: br.bottomRight,
         ),
-        border: Border.all(
-          color: theme.colorScheme.surfaceContainerHighest,
-          strokeAlign: BorderSide.strokeAlignOutside,
-          width: 2,
+        border: Border(
+          right: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
+          top: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
+          bottom: BorderSide(
+            color: theme.colorScheme.surfaceContainerHighest,
+            strokeAlign: BorderSide.strokeAlignOutside,
+            width: 2,
+          ),
         ),
       ),
       clipBehavior: Clip.hardEdge,

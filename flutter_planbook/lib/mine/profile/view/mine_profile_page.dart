@@ -134,10 +134,15 @@ class _MineProfilePage extends StatelessWidget {
                         ),
                         title: Text(context.l10n.phoneNumber),
                         additionalInfo: Text(
-                          user?.phone ?? context.l10n.bind,
+                          user?.maskedPhone ?? context.l10n.bind,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.outline,
                           ),
+                        ),
+                        trailing: _buildCopyButton(
+                          context,
+                          value: user?.phone,
+                          successMessage: context.l10n.phoneCopied,
                         ),
                         onPressed: () =>
                             context.router.push(const MinePhoneRoute()),
@@ -150,10 +155,17 @@ class _MineProfilePage extends StatelessWidget {
                         ),
                         title: Text(context.l10n.email),
                         additionalInfo: Text(
-                          user?.email ?? context.l10n.bind,
+                          _emailDisplay(context, user),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.outline,
                           ),
+                        ),
+                        trailing: _buildCopyButton(
+                          context,
+                          value: _isWeChatEmail(user?.email)
+                              ? null
+                              : user?.email,
+                          successMessage: context.l10n.emailCopied,
                         ),
                         onPressed: () =>
                             context.router.push(const MineEmailRoute()),
@@ -173,6 +185,25 @@ class _MineProfilePage extends StatelessWidget {
                         ),
                         onPressed: () =>
                             context.router.push(const MinePasswordRoute()),
+                      ),
+                      SettingsRow(
+                        leading: const Icon(
+                          FontAwesomeIcons.weixin,
+                          color: Color(0xFF07C160),
+                          size: 18,
+                        ),
+                        title: Text(context.l10n.weChat),
+                        additionalInfo: Text(
+                          _isWeChatLinked(user)
+                              ? context.l10n.weChatLinked
+                              : context.l10n.bind,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                        onPressed: () {
+                          context.read<MineProfileCubit>().linkWeChat();
+                        },
                       ),
                     ],
                   ),
@@ -207,6 +238,53 @@ class _MineProfilePage extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  bool _isWeChatLinked(UserEntity? user) {
+    return user?.user.userMetadata?['provider'] == 'wechat';
+  }
+
+  bool _isWeChatEmail(String? email) {
+    if (email == null || email.isEmpty) return false;
+    return email.endsWith('@planbook.internal.bapaws.com');
+  }
+
+  String _emailDisplay(BuildContext context, UserEntity? user) {
+    final email = user?.email;
+    if (email == null || email.isEmpty || _isWeChatEmail(email)) {
+      return context.l10n.bind;
+    }
+    return user?.maskedEmail ?? context.l10n.bind;
+  }
+
+  Widget _buildCopyButton(
+    BuildContext context, {
+    required String? value,
+    required String successMessage,
+  }) {
+    final theme = Theme.of(context);
+    if (value == null || value.isEmpty) {
+      return const CupertinoListTileChevron();
+    }
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
+      minimumSize: Size.zero,
+      onPressed: () async {
+        await Clipboard.setData(ClipboardData(text: value));
+        if (!context.mounted) return;
+        unawaited(
+          Fluttertoast.showToast(
+            msg: successMessage,
+            gravity: ToastGravity.CENTER,
+          ),
+        );
+      },
+      child: Icon(
+        CupertinoIcons.doc_on_doc,
+        size: 20,
+        color: theme.colorScheme.primary,
       ),
     );
   }

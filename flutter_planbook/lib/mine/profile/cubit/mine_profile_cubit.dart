@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:planbook_core/data/page_status.dart';
@@ -127,6 +128,44 @@ class MineProfileCubit extends Cubit<MineProfileState> {
     emit(state.copyWith(status: PageStatus.loading));
     await _usersRepository.logout();
     emit(state.copyWith(status: PageStatus.dispose));
+  }
+
+  Future<void> linkWeChat() async {
+    emit(state.copyWith(status: PageStatus.loading));
+    try {
+      await _usersRepository.linkWeChat();
+      emit(
+        state.copyWith(
+          user: _usersRepository.user,
+          status: PageStatus.success,
+        ),
+      );
+    } on Exception catch (e) {
+      emit(state.copyWith(status: PageStatus.failure));
+      final message = _resolveLinkErrorMessage(e);
+      if (message != null) {
+        unawaited(
+          Fluttertoast.showToast(
+            msg: message,
+            gravity: ToastGravity.CENTER,
+          ),
+        );
+      }
+    }
+  }
+
+  String? _resolveLinkErrorMessage(Exception e) {
+    final message = e.toString();
+    if (message.contains('409') || message.contains('该微信已绑定其他账号')) {
+      return '该微信已绑定其他账号';
+    }
+    if (message.contains('WeChat is not installed')) {
+      return '未安装微信';
+    }
+    if (message.contains('cancelled')) {
+      return null;
+    }
+    return '微信绑定失败';
   }
 
   void onDeleted() {

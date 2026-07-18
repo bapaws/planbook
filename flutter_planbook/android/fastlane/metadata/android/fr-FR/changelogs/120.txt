@@ -1,4 +1,4 @@
-• Widgets d’accueil
-• Sync local d’abord
+• Connexion WeChat
+• Correctifs de bugs
 
-Récent : couverture & zoom du journal, glisser-déposer (jour/semaine/mois), focus & synthèses, correctifs
+Récent : noms de quadrants personnalisés, widgets d’accueil, couverture & zoom du journal

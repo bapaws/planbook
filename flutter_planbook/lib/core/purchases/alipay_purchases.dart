@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases_interface.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:planbook_repository/users/users_repository.dart';
@@ -5,7 +6,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tobias/tobias.dart';
 
 final class AlipayPurchases implements AppPurchasesInterface {
-  const AlipayPurchases();
+  AlipayPurchases();
+
+  List<StoreProduct>? _cachedStoreProducts;
+
   SupabaseClient? get _supabase => Supabase.instance.client;
 
   @override
@@ -76,13 +80,28 @@ final class AlipayPurchases implements AppPurchasesInterface {
 
   @override
   Future<List<StoreProduct>> getStoreProducts() async {
-    final response = await _supabase
-        ?.from('store_products')
-        .select()
-        .eq('is_enabled', true)
-        .isFilter('deleted_at', null)
-        .order('order', ascending: true);
-    return response?.map(StoreProduct.fromJson).toList() ?? [];
+    try {
+      final response = await _supabase
+          ?.from('store_products')
+          .select()
+          .eq('is_enabled', true)
+          .isFilter('deleted_at', null)
+          .order('order', ascending: true);
+      final products = response?.map(StoreProduct.fromJson).toList() ?? [];
+
+      // 仅当取到有效数据时才刷新缓存
+      if (products.isNotEmpty) {
+        _cachedStoreProducts = products;
+        return products;
+      }
+    } on Exception catch (e) {
+      // Supabase 异常时回退缓存，避免页面空白
+      if (kDebugMode) {
+        print('Alipay getStoreProducts error: $e');
+      }
+    }
+
+    return _cachedStoreProducts ?? [];
   }
 
   @override

@@ -323,87 +323,90 @@ void main() {
         });
 
         test(
-            'returns true when daysOfWeek and weeksOfMonth with weekNumber match',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.monthly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.dayWithWeekNumber(Weekday.monday, 1),
-            ],
-            weeksOfMonth: [1],
-          );
+          'returns true when daysOfWeek and weeksOfMonth with weekNumber match',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.monthly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.dayWithWeekNumber(Weekday.monday, 1),
+              ],
+              weeksOfMonth: [1],
+            );
 
-          // 2024-01-01 is the first Monday
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-01'),
-            ),
-            isTrue,
-          );
-          // 2024-01-08 is the second Monday
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-08'),
-            ),
-            isFalse,
-          );
-        });
-
-        test(
-            'returns true when daysOfWeek and weeksOfMonth without weekNumber match',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.monthly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.day(Weekday.monday),
-            ],
-            weeksOfMonth: [1],
-          );
-
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-01'),
-            ),
-            isTrue,
-          );
-        });
+            // 2024-01-01 is the first Monday
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-01'),
+              ),
+              isTrue,
+            );
+            // 2024-01-08 is the second Monday
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-08'),
+              ),
+              isFalse,
+            );
+          },
+        );
 
         test(
-            'returns true for last week of month when weeksOfMonth contains -1',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.monthly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.day(Weekday.monday),
-            ],
-            weeksOfMonth: [-1],
-          );
+          'returns true when daysOfWeek and weeksOfMonth without weekNumber match',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.monthly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.monday),
+              ],
+              weeksOfMonth: [1],
+            );
 
-          // 2024-01-29 is the last Monday of January 2024
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-29'),
-            ),
-            isTrue,
-          );
-          // 2024-01-01 is the first Monday
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-01'),
-            ),
-            isFalse,
-          );
-        });
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-01'),
+              ),
+              isTrue,
+            );
+          },
+        );
+
+        test(
+          'returns true for last week of month when weeksOfMonth contains -1',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.monthly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.monday),
+              ],
+              weeksOfMonth: [-1],
+            );
+
+            // 2024-01-29 is the last Monday of January 2024
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-29'),
+              ),
+              isTrue,
+            );
+            // 2024-01-01 is the first Monday
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-01'),
+              ),
+              isFalse,
+            );
+          },
+        );
 
         test('returns false when only daysOfWeek does not match', () {
           final rule = RecurrenceRule(
@@ -527,73 +530,77 @@ void main() {
         });
 
         test(
-            'returns true when daysOfWeek and weeksOfMonth match for yearly',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.yearly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.dayWithWeekNumber(Weekday.monday, 1),
-            ],
-            weeksOfMonth: [1],
-          );
+          'returns true when daysOfWeek and weeksOfMonth match for yearly',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.yearly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.dayWithWeekNumber(Weekday.monday, 1),
+              ],
+              weeksOfMonth: [1],
+            );
 
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-01'),
-            ),
-            isTrue,
-          );
-        });
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-01'),
+              ),
+              isTrue,
+            );
+          },
+        );
 
         test(
-            'returns true for last week when weeksOfMonth contains -1 for yearly',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.yearly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.day(Weekday.monday),
-            ],
-            weeksOfMonth: [-1],
-          );
+          'returns true for last week when weeksOfMonth contains -1 for yearly',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.yearly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.monday),
+              ],
+              weeksOfMonth: [-1],
+            );
 
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-29'),
-            ),
-            isTrue,
-          );
-        });
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-29'),
+              ),
+              isTrue,
+            );
+          },
+        );
 
-        test('returns false when only daysOfWeek does not match for yearly',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.yearly,
-            daysOfWeek: [
-              RecurrenceDayOfWeek.day(Weekday.monday),
-            ],
-          );
+        test(
+          'returns false when only daysOfWeek does not match for yearly',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.yearly,
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.monday),
+              ],
+            );
 
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-01'),
-            ),
-            isTrue,
-          );
-          expect(
-            RecurrenceRuleCalculator.shouldOccurOnDate(
-              rule: rule,
-              startDate: startDate,
-              targetDate: Jiffy.parse('2024-01-02'),
-            ),
-            isFalse,
-          );
-        });
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-01'),
+              ),
+              isTrue,
+            );
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: startDate,
+                targetDate: Jiffy.parse('2024-01-02'),
+              ),
+              isFalse,
+            );
+          },
+        );
       });
     });
 
@@ -692,28 +699,30 @@ void main() {
           expect(occurrences[4].format(pattern: 'yyyy-MM-dd'), '2024-01-09');
         });
 
-        test('adjusts to first matching date when rangeStart is not aligned',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.daily,
-            interval: 3,
-          );
-          final rangeStart = Jiffy.parse('2024-01-02');
-          final rangeEnd = Jiffy.parse('2024-01-10');
+        test(
+          'adjusts to first matching date when rangeStart is not aligned',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+              interval: 3,
+            );
+            final rangeStart = Jiffy.parse('2024-01-02');
+            final rangeEnd = Jiffy.parse('2024-01-10');
 
-          final occurrences = RecurrenceRuleCalculator.generateOccurrences(
-            rule: rule,
-            startDate: startDate,
-            rangeStart: rangeStart,
-            rangeEnd: rangeEnd,
-          );
+            final occurrences = RecurrenceRuleCalculator.generateOccurrences(
+              rule: rule,
+              startDate: startDate,
+              rangeStart: rangeStart,
+              rangeEnd: rangeEnd,
+            );
 
-          // 2024-01-01, 2024-01-04, 2024-01-07, 2024-01-10
-          expect(occurrences.length, 3);
-          expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-04');
-          expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-07');
-          expect(occurrences[2].format(pattern: 'yyyy-MM-dd'), '2024-01-10');
-        });
+            // 2024-01-01, 2024-01-04, 2024-01-07, 2024-01-10
+            expect(occurrences.length, 3);
+            expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-04');
+            expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-07');
+            expect(occurrences[2].format(pattern: 'yyyy-MM-dd'), '2024-01-10');
+          },
+        );
 
         test('stops at occurrence count limit', () {
           final rule = RecurrenceRule.withOccurrenceCount(
@@ -781,52 +790,54 @@ void main() {
         });
 
         test(
-            'adjusts to first matching week when rangeStart is not aligned',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.weekly,
-            interval: 2,
-          );
-          final rangeStart = Jiffy.parse('2024-01-15');
-          final rangeEnd = Jiffy.parse('2024-01-29');
+          'adjusts to first matching week when rangeStart is not aligned',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.weekly,
+              interval: 2,
+            );
+            final rangeStart = Jiffy.parse('2024-01-15');
+            final rangeEnd = Jiffy.parse('2024-01-29');
 
-          final occurrences = RecurrenceRuleCalculator.generateOccurrences(
-            rule: rule,
-            startDate: startDate,
-            rangeStart: rangeStart,
-            rangeEnd: rangeEnd,
-          );
+            final occurrences = RecurrenceRuleCalculator.generateOccurrences(
+              rule: rule,
+              startDate: startDate,
+              rangeStart: rangeStart,
+              rangeEnd: rangeEnd,
+            );
 
-          // startDate=2024-01-01, interval=2
-          // 2024-01-15 (weeksDiff=2) and 2024-01-29 (weeksDiff=4)
-          expect(occurrences.length, 2);
-          expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-15');
-          expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-29');
-        });
+            // startDate=2024-01-01, interval=2
+            // 2024-01-15 (weeksDiff=2) and 2024-01-29 (weeksDiff=4)
+            expect(occurrences.length, 2);
+            expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-15');
+            expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-29');
+          },
+        );
 
         test(
-            'adjusts from unaligned rangeStart with remainder for weekly without daysOfWeek',
-            () {
-          final rule = RecurrenceRule(
-            frequency: RecurrenceFrequency.weekly,
-            interval: 2,
-          );
-          // 2024-01-08 is 1 week from startDate, remainder=1 when interval=2
-          final rangeStart = Jiffy.parse('2024-01-08');
-          final rangeEnd = Jiffy.parse('2024-01-31');
+          'adjusts from unaligned rangeStart with remainder for weekly without daysOfWeek',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.weekly,
+              interval: 2,
+            );
+            // 2024-01-08 is 1 week from startDate, remainder=1 when interval=2
+            final rangeStart = Jiffy.parse('2024-01-08');
+            final rangeEnd = Jiffy.parse('2024-01-31');
 
-          final occurrences = RecurrenceRuleCalculator.generateOccurrences(
-            rule: rule,
-            startDate: startDate,
-            rangeStart: rangeStart,
-            rangeEnd: rangeEnd,
-          );
+            final occurrences = RecurrenceRuleCalculator.generateOccurrences(
+              rule: rule,
+              startDate: startDate,
+              rangeStart: rangeStart,
+              rangeEnd: rangeEnd,
+            );
 
-          // Adjusted to 2024-01-15 (weeksDiff=2), then 2024-01-29 (weeksDiff=4)
-          expect(occurrences.length, 2);
-          expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-15');
-          expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-29');
-        });
+            // Adjusted to 2024-01-15 (weeksDiff=2), then 2024-01-29 (weeksDiff=4)
+            expect(occurrences.length, 2);
+            expect(occurrences[0].format(pattern: 'yyyy-MM-dd'), '2024-01-15');
+            expect(occurrences[1].format(pattern: 'yyyy-MM-dd'), '2024-01-29');
+          },
+        );
 
         test('stops at occurrence count limit for weekly', () {
           final rule = RecurrenceRule.withOccurrenceCount(

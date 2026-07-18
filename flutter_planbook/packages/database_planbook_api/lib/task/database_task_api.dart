@@ -376,6 +376,41 @@ class DatabaseTaskApi {
     }
   }
 
+  Stream<int> getPlannedTaskCountByDateRange(
+    Jiffy from,
+    Jiffy to, {
+    String? userId,
+  }) {
+    final start = from.startOf(Unit.day).dateTime;
+    final end = to.endOf(Unit.day).dateTime;
+
+    var exp =
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
+
+    final inRange =
+        (db.tasks.startAt.isSmallerOrEqualValue(end) &
+            db.tasks.endAt.isBiggerOrEqualValue(start)) |
+        (db.tasks.dueAt.isBiggerOrEqualValue(start) &
+            db.tasks.dueAt.isSmallerOrEqualValue(end)) |
+        (db.tasks.recurrenceRule.isNotNull() &
+            db.tasks.startAt.isSmallerOrEqualValue(end));
+
+    exp &= inRange;
+
+    final column = db.tasks.id.count(distinct: true);
+    final query = db.selectOnly(db.tasks)
+      ..addColumns([column])
+      ..where(exp);
+
+    return query.watch().map(
+      (rows) => rows.firstOrNull?.read(column) ?? 0,
+    );
+  }
+
   Future<List<TaskEntity>> buildTaskEntities(
     List<TypedResult> rows, {
     Jiffy? occurrenceAt,
@@ -435,14 +470,15 @@ class DatabaseTaskApi {
           .then((value) => value.firstOrNull);
     } else {
       return db.transaction(() async {
-        final result = await (db.update(db.tasks)..where(
-              (t) => t.id.equals(taskId) & t.deletedAt.isNull(),
-            ))
-            .writeReturning(
-              TasksCompanion(
-                deletedAt: Value(Jiffy.now()),
-              ),
-            );
+        final result =
+            await (db.update(db.tasks)..where(
+                  (t) => t.id.equals(taskId) & t.deletedAt.isNull(),
+                ))
+                .writeReturning(
+                  TasksCompanion(
+                    deletedAt: Value(Jiffy.now()),
+                  ),
+                );
         final task = result.firstOrNull;
         if (task != null) {
           await outboxApi.enqueue(

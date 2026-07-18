@@ -18,8 +18,7 @@ class SequentialRotatingText extends StatefulWidget {
   final Duration interval;
 
   @override
-  State<SequentialRotatingText> createState() =>
-      _SequentialRotatingTextState();
+  State<SequentialRotatingText> createState() => _SequentialRotatingTextState();
 }
 
 class _SequentialRotatingTextState extends State<SequentialRotatingText> {

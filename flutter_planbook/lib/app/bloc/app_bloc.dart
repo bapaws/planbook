@@ -174,10 +174,11 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     // 远端全为默认值时无需回灌
     if (remote.every((e) => e.isDefault)) return;
     final local = _settingsRepository.quadrantConfigs;
-    if (local != null && const ListEquality<QuadrantConfigEntity>().equals(
-      local,
-      remote,
-    )) {
+    if (local != null &&
+        const ListEquality<QuadrantConfigEntity>().equals(
+          local,
+          remote,
+        )) {
       return;
     }
     unawaited(_settingsRepository.saveQuadrantConfigs(remote));

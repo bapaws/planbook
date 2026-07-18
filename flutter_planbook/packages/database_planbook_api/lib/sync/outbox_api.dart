@@ -23,7 +23,9 @@ class OutboxApi {
     required String payload,
   }) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    await _db.into(_db.syncOutbox).insert(
+    await _db
+        .into(_db.syncOutbox)
+        .insert(
           SyncOutboxCompanion(
             targetTable: Value(tableName),
             recordId: Value(recordId),
@@ -52,16 +54,16 @@ class OutboxApi {
   /// 标记为同步成功
   Future<void> markSynced(int outboxId) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    await (_db.update(_db.syncOutbox)
-          ..where((o) => o.id.equals(outboxId)))
-        .write(
-          SyncOutboxCompanion(
-            syncedAt: Value(now),
-            retryCount: const Value(0),
-            errorMessage: const Value(null),
-            nextRetryAt: const Value(null),
-          ),
-        );
+    await (_db.update(
+      _db.syncOutbox,
+    )..where((o) => o.id.equals(outboxId))).write(
+      SyncOutboxCompanion(
+        syncedAt: Value(now),
+        retryCount: const Value(0),
+        errorMessage: const Value(null),
+        nextRetryAt: const Value(null),
+      ),
+    );
   }
 
   /// 标记同步失败，更新重试计数和下次重试时间（指数退避）
@@ -73,15 +75,15 @@ class OutboxApi {
     final backoffSeconds = _backoffSeconds(retryCount);
     final nextRetry =
         DateTime.now().millisecondsSinceEpoch + backoffSeconds * 1000;
-    await (_db.update(_db.syncOutbox)
-          ..where((o) => o.id.equals(outboxId)))
-        .write(
-          SyncOutboxCompanion(
-            retryCount: Value(retryCount),
-            errorMessage: Value(error),
-            nextRetryAt: Value(nextRetry),
-          ),
-        );
+    await (_db.update(
+      _db.syncOutbox,
+    )..where((o) => o.id.equals(outboxId))).write(
+      SyncOutboxCompanion(
+        retryCount: Value(retryCount),
+        errorMessage: Value(error),
+        nextRetryAt: Value(nextRetry),
+      ),
+    );
   }
 
   /// 清理已同步且超过 [retainDays] 天的记录（防止 Outbox 无限膨胀）
@@ -89,11 +91,10 @@ class OutboxApi {
     final threshold = DateTime.now()
         .subtract(Duration(days: retainDays))
         .millisecondsSinceEpoch;
-    return (_db.delete(_db.syncOutbox)
-          ..where(
-            (o) =>
-                o.syncedAt.isNotNull() & o.syncedAt.isSmallerThanValue(threshold),
-          ))
+    return (_db.delete(_db.syncOutbox)..where(
+          (o) =>
+              o.syncedAt.isNotNull() & o.syncedAt.isSmallerThanValue(threshold),
+        ))
         .go();
   }
 

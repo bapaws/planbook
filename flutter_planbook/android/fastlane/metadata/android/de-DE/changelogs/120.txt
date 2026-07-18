@@ -1,4 +1,4 @@
-• Startbildschirm-Widgets
-• Local-First-Sync
+• WeChat-Login
+• Fehlerbehebungen
 
-Zuletzt: Journal-Titelbild & Zoom, Aufgaben ziehen (Tag/Woche/Monat), Fokus-/Zusammenfassungs-Links, Fixes
+Zuletzt: Quadrantennamen anpassen, Startbildschirm-Widgets, Journal-Titelbild & Zoom

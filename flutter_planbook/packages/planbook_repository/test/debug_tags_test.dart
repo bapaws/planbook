@@ -9,6 +9,7 @@ import 'package:planbook_repository/task/tags_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MockDatabaseTagApi extends Mock implements DatabaseTagApi {}
+
 class FakeAppDatabase implements AppDatabase {
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -16,12 +17,22 @@ class FakeAppDatabase implements AppDatabase {
     return null;
   }
 }
+
 class MockOutboxApi extends Mock implements OutboxApi {}
+
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
 void main() {
   setUpAll(() {
-    registerFallbackValue(Tag(id: 'fallback', name: 'Fallback', order: 0, level: 0, createdAt: Jiffy.now()));
+    registerFallbackValue(
+      Tag(
+        id: 'fallback',
+        name: 'Fallback',
+        order: 0,
+        level: 0,
+        createdAt: Jiffy.now(),
+      ),
+    );
   });
 
   test('debug', () async {
@@ -36,8 +47,9 @@ void main() {
       sp: mockSp,
     );
 
-    when(() => mockTagApi.getTotalCount(userId: any(named: 'userId')))
-        .thenAnswer((_) async => 5);
+    when(
+      () => mockTagApi.getTotalCount(userId: any(named: 'userId')),
+    ).thenAnswer((_) async => 5);
 
     final result = await repository.getTotalCount();
     expect(result, 5);

@@ -322,6 +322,16 @@
   "gender": "Género",
   "birthday": "Data de nascimento",
   "bind": "Associar",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ Tem a certeza de que quer eliminar a sua conta? Esta ação não pode ser desfeita.",
   "deleteAccountHint": "Introduza o texto 'Delete Account' para confirmar a eliminação",
   "male": "Masculino",
@@ -789,6 +799,8 @@
   },
   "productTitleLifetime": "Vitalício",
   "productTitleAnnual": "Anual",
+  "productTitleYears": "{years, plural, =1{1 ano} other{{years} anos}}",
+  "productTitleMonths": "{months, plural, =1{1 mês} other{{months} meses}}",
   "productTitleMonthly": "Mensal"
 
 }

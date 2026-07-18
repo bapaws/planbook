@@ -138,65 +138,68 @@ void main() {
         expect(result.originalTaskUpdated, isNull);
       });
 
-      test('recurring task with thisEventOnly mode: creates detached instance',
-          () {
-        final now = Jiffy.now().startOf(Unit.day);
-        final task = _sampleTask(
-          startAt: now,
-          recurrenceRule: RecurrenceRule(
-            frequency: RecurrenceFrequency.daily,
-          ),
-        );
-        final entity = TaskEntity(task: task);
-        final updatedTask = task.copyWith(title: 'Updated');
+      test(
+        'recurring task with thisEventOnly mode: creates detached instance',
+        () {
+          final now = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: now,
+            recurrenceRule: RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+            ),
+          );
+          final entity = TaskEntity(task: task);
+          final updatedTask = task.copyWith(title: 'Updated');
 
-        final result = api.prepareUpdate(
-          entity: entity,
-          updatedTask: updatedTask,
-          tags: null,
-          userId: null,
-          occurrenceAt: now,
-          editMode: RecurringTaskEditMode.thisEventOnly,
-        );
+          final result = api.prepareUpdate(
+            entity: entity,
+            updatedTask: updatedTask,
+            tags: null,
+            userId: null,
+            occurrenceAt: now,
+            editMode: RecurringTaskEditMode.thisEventOnly,
+          );
 
-        expect(result.isNewTask, isTrue);
-        expect(result.updatedTask.title, 'Updated');
-        expect(result.updatedTask.detachedFromTaskId, task.id);
-        expect(result.updatedTask.detachedRecurrenceAt, isNotNull);
-        expect(result.updatedTask.recurrenceRule, isNull);
-      });
+          expect(result.isNewTask, isTrue);
+          expect(result.updatedTask.title, 'Updated');
+          expect(result.updatedTask.detachedFromTaskId, task.id);
+          expect(result.updatedTask.detachedRecurrenceAt, isNotNull);
+          expect(result.updatedTask.recurrenceRule, isNull);
+        },
+      );
 
       test(
-          'recurring task with thisAndFutureEvents mode: splits recurrence',
-          () {
-        final now = Jiffy.now().startOf(Unit.day);
-        final task = _sampleTask(
-          startAt: now,
-          recurrenceRule: RecurrenceRule(
-            frequency: RecurrenceFrequency.daily,
-          ),
-        );
-        final entity = TaskEntity(task: task);
-        final updatedTask = task.copyWith(title: 'Updated');
+        'recurring task with thisAndFutureEvents mode: splits recurrence',
+        () {
+          final now = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: now,
+            recurrenceRule: RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+            ),
+          );
+          final entity = TaskEntity(task: task);
+          final updatedTask = task.copyWith(title: 'Updated');
 
-        final result = api.prepareUpdate(
-          entity: entity,
-          updatedTask: updatedTask,
-          tags: null,
-          userId: null,
-          occurrenceAt: now.add(days: 3),
-          editMode: RecurringTaskEditMode.thisAndFutureEvents,
-        );
+          final result = api.prepareUpdate(
+            entity: entity,
+            updatedTask: updatedTask,
+            tags: null,
+            userId: null,
+            occurrenceAt: now.add(days: 3),
+            editMode: RecurringTaskEditMode.thisAndFutureEvents,
+          );
 
-        expect(result.isNewTask, isTrue);
-        expect(result.updatedTask.title, 'Updated');
-        expect(result.originalTaskUpdated, isNotNull);
-        // 原始任务的重复规则应该设置了结束日期
-        expect(
-          result.originalTaskUpdated!.recurrenceRule!.recurrenceEnd,
-          isNotNull,
-        );
-      });
+          expect(result.isNewTask, isTrue);
+          expect(result.updatedTask.title, 'Updated');
+          expect(result.originalTaskUpdated, isNotNull);
+          // 原始任务的重复规则应该设置了结束日期
+          expect(
+            result.originalTaskUpdated!.recurrenceRule!.recurrenceEnd,
+            isNotNull,
+          );
+        },
+      );
 
       test('copies children for detach with new IDs', () {
         final now = Jiffy.now().startOf(Unit.day);
@@ -349,8 +352,9 @@ void main() {
         expect(storedTags.first.tagId, tag.id);
 
         final outbox = await db.select(db.syncOutbox).get();
-        final tagOutbox =
-            outbox.where((o) => o.targetTable == 'task_tags').toList();
+        final tagOutbox = outbox
+            .where((o) => o.targetTable == 'task_tags')
+            .toList();
         expect(tagOutbox, hasLength(1));
         expect(tagOutbox.first.operation, 'replace_associations');
       });
@@ -373,39 +377,41 @@ void main() {
         expect(fetchedChild!.parentId, parentTask.id);
       });
 
-      test('clears and regenerates occurrences when recurrence changes',
-          () async {
-        final now = Jiffy.now().startOf(Unit.day);
-        final task = _sampleTask(
-          startAt: now,
-          recurrenceRule: RecurrenceRule(
-            frequency: RecurrenceFrequency.daily,
-          ),
-        );
-        await baseApi.create(task: task);
-        await Future.delayed(const Duration(milliseconds: 200));
+      test(
+        'clears and regenerates occurrences when recurrence changes',
+        () async {
+          final now = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: now,
+            recurrenceRule: RecurrenceRule(
+              frequency: RecurrenceFrequency.daily,
+            ),
+          );
+          await baseApi.create(task: task);
+          await Future.delayed(const Duration(milliseconds: 200));
 
-        // 确认已有 occurrence
-        final occurrencesBefore = await (db.select(db.taskOccurrences)
-              ..where((o) => o.taskId.equals(task.id)))
-            .get();
-        expect(occurrencesBefore, isNotEmpty);
+          // 确认已有 occurrence
+          final occurrencesBefore = await (db.select(
+            db.taskOccurrences,
+          )..where((o) => o.taskId.equals(task.id))).get();
+          expect(occurrencesBefore, isNotEmpty);
 
-        // 修改重复规则
-        final updatedTask = task.copyWith(
-          recurrenceRule: Value(
-            RecurrenceRule(frequency: RecurrenceFrequency.weekly),
-          ),
-        );
-        await api.update(task: updatedTask);
-        await Future.delayed(const Duration(milliseconds: 200));
+          // 修改重复规则
+          final updatedTask = task.copyWith(
+            recurrenceRule: Value(
+              RecurrenceRule(frequency: RecurrenceFrequency.weekly),
+            ),
+          );
+          await api.update(task: updatedTask);
+          await Future.delayed(const Duration(milliseconds: 200));
 
-        final occurrencesAfter = await (db.select(db.taskOccurrences)
-              ..where((o) => o.taskId.equals(task.id)))
-            .get();
-        // 旧的 occurrences 应该被清除，新的会被生成
-        // 由于 weekly 从同样的 startAt 开始，可能数量不同
-      });
+          final occurrencesAfter = await (db.select(
+            db.taskOccurrences,
+          )..where((o) => o.taskId.equals(task.id))).get();
+          // 旧的 occurrences 应该被清除，新的会被生成
+          // 由于 weekly 从同样的 startAt 开始，可能数量不同
+        },
+      );
     });
 
     group('hasDetachedInstances', () {
@@ -440,8 +446,7 @@ void main() {
         await baseApi.create(task: detachedTask);
 
         // 软删除 detached task
-        await (db.update(db.tasks)
-              ..where((t) => t.id.equals(detachedTask.id)))
+        await (db.update(db.tasks)..where((t) => t.id.equals(detachedTask.id)))
             .write(TasksCompanion(deletedAt: Value(Jiffy.now())));
 
         expect(await api.hasDetachedInstances(task.id), isFalse);

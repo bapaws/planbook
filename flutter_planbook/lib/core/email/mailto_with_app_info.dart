@@ -13,7 +13,8 @@ Future<Uri> mailtoWithAppInfo(Uri mailto) async {
       ? tag
       : '$prevSubject — $tag';
 
-  final bodyIntro = 'App: ${info.appName}\n'
+  final bodyIntro =
+      'App: ${info.appName}\n'
       'Version: ${info.version}\n'
       'Build: ${info.buildNumber}\n\n';
   final prevBody = params['body'] ?? '';

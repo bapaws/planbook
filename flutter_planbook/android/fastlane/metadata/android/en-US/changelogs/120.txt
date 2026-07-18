@@ -1,4 +1,4 @@
-• Home screen widgets
-• Local-first sync
+• WeChat login support
+• Bug fixes and improvements
 
-Recent: journal cover & zoom, drag tasks in day/week/month views, link to focus & summaries, fixes
+Recent: custom quadrant names, home screen widgets, journal cover & zoom

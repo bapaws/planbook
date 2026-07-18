@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/core/view/sign_button.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -82,10 +83,17 @@ class SignWelcomePage extends StatelessWidget {
     }
   }
 
-  Future<void> _handleSignInWithGoogle(BuildContext context) async {
+  Future<void> _handleSignInWithWeChat(BuildContext context) async {
     final isAgreedToTerms = await _isAgreedToTerms(context);
-    if (isAgreedToTerms && context.mounted) {
-      await context.read<SignHomeCubit>().signInWithGoogle();
+    if (!isAgreedToTerms || !context.mounted) return;
+    try {
+      await context.read<SignHomeCubit>().signInWithWeChat();
+    } on Exception catch (_) {
+      if (!context.mounted) return;
+      await Fluttertoast.showToast(
+        msg: context.l10n.weChatLoginFailed,
+        gravity: ToastGravity.CENTER,
+      );
     }
   }
 
@@ -127,20 +135,45 @@ class SignWelcomePage extends StatelessWidget {
 
         const SizedBox(height: 48),
 
-        // 主登录按钮：中文环境用手机，其他用邮箱
-        SignButton(
-          text: l10n.useCodeLogin,
-          style: SignButtonStyle.filled,
-          onPressed: () {
-            if (isChineseLocale) {
-              _handleSignInWithCode(context);
-            } else {
-              _handleSignInWithEmail(context);
-            }
+        // 主登录按钮：已安装微信显示微信登录，否则显示验证码/邮箱登录
+        BlocSelector<
+          SignHomeCubit,
+          SignHomeState,
+          ({bool installed, bool loading})
+        >(
+          selector: (state) => (
+            installed: state.isWeChatInstalled,
+            loading: state.isWeChatLoading,
+          ),
+          builder: (context, weChatState) {
+            return Column(
+              children: [
+                if (weChatState.installed)
+                  SignButton(
+                    text: l10n.weChatLogin,
+                    style: SignButtonStyle.filled,
+                    backgroundColor: const Color(0xFF07C160),
+                    foregroundColor: Colors.white,
+                    isLoading: weChatState.loading,
+                    onPressed: () => _handleSignInWithWeChat(context),
+                  )
+                else
+                  SignButton(
+                    text: l10n.useCodeLogin,
+                    style: SignButtonStyle.filled,
+                    onPressed: () {
+                      if (isChineseLocale) {
+                        _handleSignInWithCode(context);
+                      } else {
+                        _handleSignInWithEmail(context);
+                      }
+                    },
+                  ),
+                const SizedBox(height: 16),
+              ],
+            );
           },
         ),
-
-        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           spacing: 16,
@@ -205,24 +238,6 @@ class SignWelcomePage extends StatelessWidget {
               ),
               onPressed: () => _handleSignInWithEmail(context),
             ),
-            // CupertinoButton(
-            //   padding: EdgeInsets.zero,
-            //   child: Container(
-            //     width: kMinInteractiveDimension,
-            //     height: kMinInteractiveDimension,
-            //     decoration: BoxDecoration(
-            //       borderRadius: BorderRadius.circular(kMinInteractiveDimension),
-            //       border: Border.all(
-            //         color: theme.colorScheme.surfaceContainerHighest,
-            //       ),
-            //     ),
-            //     child: Icon(
-            //       FontAwesomeIcons.google,
-            //       color: theme.colorScheme.onSurface,
-            //     ),
-            //   ),
-            //   onPressed: () => _handleSignInWithGoogle(context),
-            // ),
             CupertinoButton(
               padding: EdgeInsets.zero,
               child: Container(

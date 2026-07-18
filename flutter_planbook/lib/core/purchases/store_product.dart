@@ -108,13 +108,53 @@ final class StoreProduct extends Equatable {
   final IntroductoryPrice? introductoryPrice;
 
   bool get isLifetime => id.toLowerCase().contains('lifetime');
-  bool get isAnnual =>
-      id.toLowerCase().contains('yearly') ||
-      id.toLowerCase().contains('annual');
+
+  /// 解析 ISO-8601 订阅周期，例如 P1Y、P3Y、P1M
+  (int, Unit)? get subscriptionPeriodParts {
+    final period = subscriptionPeriod;
+    if (period == null) return null;
+    final match = RegExp(r'^P(\d+)([DWMY])$').firstMatch(period);
+    if (match == null) return null;
+    final amount = int.tryParse(match.group(1) ?? '');
+    if (amount == null) return null;
+    final unit = switch (match.group(2)) {
+      'D' => Unit.day,
+      'W' => Unit.week,
+      'M' => Unit.month,
+      'Y' => Unit.year,
+      _ => null,
+    };
+    if (unit == null) return null;
+    return (amount, unit);
+  }
+
+  bool get isAnnual {
+    final parts = subscriptionPeriodParts;
+    if (parts != null) return parts.$2 == Unit.year && parts.$1 >= 1;
+    // 兼容 RevenueCat / 旧数据：无 subscriptionPeriod 时按 ID 回退
+    return id.toLowerCase().contains('yearly') ||
+        id.toLowerCase().contains('annual');
+  }
+
   bool get isMonthly => id.toLowerCase().contains('monthly');
 
-  String displayTitle(AppLocalizations l10n) {
+  String displayTitle(AppLocalizations l10n, {bool preferDuration = false}) {
     if (isLifetime) return l10n.productTitleLifetime;
+
+    // 支付宝等国内渠道按实际时长显示：1年 / 3年 / 1个月
+    if (preferDuration) {
+      final parts = subscriptionPeriodParts;
+      if (parts != null) {
+        final (amount, unit) = parts;
+        return switch (unit) {
+          Unit.year => l10n.productTitleYears(amount),
+          Unit.month => l10n.productTitleMonths(amount),
+          _ => l10n.productTitleAnnual,
+        };
+      }
+    }
+
+    // iOS / Google Play 等自动续订渠道保持原有分类标签：年度 / 月度
     if (isAnnual) return l10n.productTitleAnnual;
     if (isMonthly) return l10n.productTitleMonthly;
     return title;
@@ -144,9 +184,9 @@ final class StoreProduct extends Equatable {
     'title': title,
     'description': description,
     'price': price,
-    'priceString': priceString,
-    'currencyCode': currencyCode,
-    'subscriptionPeriod': subscriptionPeriod,
+    'price_string': priceString,
+    'currency_code': currencyCode,
+    'subscription_period': subscriptionPeriod,
     'introductory_price': introductoryPrice?.toJson(),
   };
 
@@ -186,6 +226,14 @@ final class StoreProduct extends Equatable {
 
   @override
   String toString() {
-    return 'StoreProduct(identifier: $id, title: $title, description: $description, price: $price, priceString: $priceString, currencyCode: $currencyCode, subscriptionPeriod: $subscriptionPeriod, introductoryPrice: $introductoryPrice)';
+    return 'StoreProduct('
+        'identifier: $id, '
+        'title: $title, '
+        'description: $description, '
+        'price: $price, '
+        'priceString: $priceString, '
+        'currencyCode: $currencyCode, '
+        'subscriptionPeriod: $subscriptionPeriod, '
+        'introductoryPrice: $introductoryPrice)';
   }
 }

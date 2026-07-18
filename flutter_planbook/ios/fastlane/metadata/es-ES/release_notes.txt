@@ -1,10 +1,8 @@
 Novedades:
-- Personalización de nombres de cuadrantes
+- Inicio de sesión con WeChat
 - Corrección de algunos problemas conocidos
 
 Actualizaciones recientes:
+- Personalización de nombres de cuadrantes
 - Soporte para widgets de la pantalla de inicio
-- Sincronización local primero
 - Portada del diario y doble toque para ampliar
-- Arrastra tareas en las vistas de día, semana y mes
-- Asocia tareas al foco y a los resúmenes

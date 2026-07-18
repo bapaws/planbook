@@ -338,22 +338,61 @@ class DatabaseTaskCompletionApi extends DatabaseTaskApi {
         (userId == null
             ? db.taskActivities.userId.isNull()
             : db.taskActivities.userId.equals(userId));
-    final column = db.taskActivities.taskId.count(distinct: true);
-    final query = db.selectOnly(db.taskActivities)..addColumns([column]);
-
-    // 与今日计划统计一致，仅统计父任务，避免子任务被误计入收集箱完成数
-    query.join([
-      innerJoin(
-        db.tasks,
-        db.tasks.id.equalsExp(db.taskActivities.taskId),
-      ),
-    ]);
     exp &= db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
     if (priority != null) {
       exp &= db.tasks.priority.equals(priority.name);
     }
 
-    query.where(exp);
+    final column = db.taskActivities.taskId.count(distinct: true);
+    final query = db.selectOnly(db.taskActivities)
+      ..addColumns([column])
+      ..join([
+        innerJoin(
+          db.tasks,
+          db.tasks.id.equalsExp(db.taskActivities.taskId),
+        ),
+      ])
+      ..where(exp);
+
+    return query.watch().map(
+      (rows) => rows.firstOrNull?.read(column) ?? 0,
+    );
+  }
+
+  Stream<int> getCompletedTaskCountByDateRange(
+    Jiffy from,
+    Jiffy to, {
+    String? userId,
+    TaskPriority? priority,
+  }) {
+    final start = from.startOf(Unit.day).dateTime;
+    final end = to.endOf(Unit.day).dateTime;
+
+    var exp =
+        db.taskActivities.completedAt.isNotNull() &
+        db.taskActivities.completedAt.isBiggerOrEqualValue(start) &
+        db.taskActivities.completedAt.isSmallerOrEqualValue(end) &
+        db.taskActivities.deletedAt.isNull() &
+        db.taskActivities.taskId.isNotNull() &
+        (userId == null
+            ? db.taskActivities.userId.isNull()
+            : db.taskActivities.userId.equals(userId));
+
+    exp &= db.tasks.parentId.isNull() & db.tasks.deletedAt.isNull();
+    if (priority != null) {
+      exp &= db.tasks.priority.equals(priority.name);
+    }
+
+    final column = db.taskActivities.taskId.count(distinct: true);
+    final query = db.selectOnly(db.taskActivities)
+      ..addColumns([column])
+      ..join([
+        innerJoin(
+          db.tasks,
+          db.tasks.id.equalsExp(db.taskActivities.taskId),
+        ),
+      ])
+      ..where(exp);
 
     return query.watch().map(
       (rows) => rows.firstOrNull?.read(column) ?? 0,

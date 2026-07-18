@@ -322,6 +322,16 @@
   "gender": "Пол",
   "birthday": "Дата рождения",
   "bind": "Привязать",
+  "weChatLogin": "WeChat Login",
+  "weChatLoginFailed": "WeChat login failed. Please try again.",
+  "weChatNotInstalled": "WeChat is not installed.",
+  "weChatLink": "Link WeChat",
+  "weChat": "WeChat",
+  "phoneCopied": "Phone number copied",
+  "emailCopied": "Email copied",
+  "weChatLinked": "Linked",
+  "weChatLinkFailed": "Failed to link WeChat. Please try again.",
+  "weChatLinkConflict": "This WeChat account is already linked to another account.",
   "deleteAccountWarning": "‼️ Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.",
   "deleteAccountHint": "Введите текст 'Delete Account', чтобы подтвердить удаление",
   "male": "Мужской",
@@ -789,6 +799,8 @@
   },
   "productTitleLifetime": "Навсегда",
   "productTitleAnnual": "Годовой",
+  "productTitleYears": "{years, plural, =1{1 год} other{{years} лет}}",
+  "productTitleMonths": "{months, plural, =1{1 месяц} other{{months} месяцев}}",
   "productTitleMonthly": "Ежемесячный"
 
 }

@@ -11,9 +11,9 @@ class SettingsIconState extends Equatable {
 
   @override
   List<Object?> get props => [
-        status,
-        icon,
-      ];
+    status,
+    icon,
+  ];
 
   SettingsIconState copyWith({
     PageStatus? status,

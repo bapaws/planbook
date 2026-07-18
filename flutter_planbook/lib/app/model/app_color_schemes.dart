@@ -83,6 +83,23 @@ extension AppColorSchemesExtension on BuildContext {
       Theme.of(this).brightness == Brightness.dark
       ? AppColorSchemes.pinkDark
       : AppColorSchemes.pinkLight;
+
+  /// 按月份取配色（与思维导图月节点一致）
+  ColorScheme colorSchemeForMonth(int month) => switch (month) {
+    1 => blueColorScheme,
+    2 => amberColorScheme,
+    3 => yellowColorScheme,
+    4 => pinkColorScheme,
+    5 => orangeColorScheme,
+    6 => brownColorScheme,
+    7 => indigoColorScheme,
+    8 => tealColorScheme,
+    9 => cyanColorScheme,
+    10 => limeColorScheme,
+    11 => purpleColorScheme,
+    12 => greyColorScheme,
+    _ => greyColorScheme,
+  };
 }
 
 class AppColorSchemes {

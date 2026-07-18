@@ -4,10 +4,24 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluwx/fluwx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// 微信开放平台 App ID。
+/// 优先通过 `--dart-define=WECHAT_APP_ID=...` 注入；未注入时使用默认值。
+const _kWeChatAppId = String.fromEnvironment(
+  'WECHAT_APP_ID',
+  defaultValue: 'wx43f0daa78129a486',
+);
+
+/// iOS universal link，微信 SDK 注册需要。
+const _kWeChatUniversalLink = String.fromEnvironment(
+  'WECHAT_UNIVERSAL_LINK',
+  defaultValue: 'https://bapaws.github.io/',
+);
 
 class AppSupabase {
   AppSupabase._();
@@ -25,19 +39,15 @@ class AppSupabase {
   Stream<AuthState?> get onAuthStateChange =>
       _onAuthStateChangeController.stream;
 
+  final _fluwx = Fluwx();
+
   static Future<void> initialize() async {
     if (_supabase != null) return;
     Supabase supabase;
     if (kDebugMode) {
       supabase = await Supabase.initialize(
-        url: 'https://adzqytnvpuuqemfltavb.supabase.co',
-        anonKey:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
-            'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFke'
-            'nF5dG52cHV1cWVtZmx0YXZiIiwicm9sZSI6Im'
-            'Fub24iLCJpYXQiOjE3NzMwNjYzNzYsImV4cCI'
-            '6MjA4ODY0MjM3Nn0.'
-            'R9Ikyg9JDzEt40lH639jNb9K4e1pwBYQcqGt7Jtp6CI',
+        url: 'https://rejmbcwozhohcxfvquus.supabase.co',
+        anonKey: 'sb_publishable_DHbbqiD_EzFMRy-PFJVc8A_zwLnqog3',
         postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
       );
     } else {
@@ -66,6 +76,9 @@ class AppSupabase {
             instance._onAuthStateChangeController.addError(error);
           },
         );
+
+    // 注册微信 SDK，失败不应阻塞启动。
+    await instance.registerWeChat();
   }
 
   void dispose() {
@@ -248,5 +261,162 @@ class AppSupabase {
       ),
     );
     return authResponse;
+  }
+
+  // ==================== 微信登录相关 ====================
+
+  /// 注册微信 SDK。应在 [initialize] 之后尽早调用。
+  Future<void> registerWeChat() async {
+    if (_kWeChatAppId.isEmpty) {
+      if (kDebugMode) {
+        print('WECHAT_APP_ID 为空，跳过微信 SDK 注册');
+      }
+      return;
+    }
+    try {
+      await _fluwx.registerApi(
+        appId: _kWeChatAppId,
+        universalLink: _kWeChatUniversalLink,
+      );
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('微信 SDK 注册失败: $e');
+      }
+    }
+  }
+
+  /// 是否已安装微信。
+  Future<bool> isWeChatInstalled() async {
+    try {
+      return await _fluwx.isWeChatInstalled;
+    } on Exception catch (_) {
+      return false;
+    }
+  }
+
+  /// 调起微信授权登录，拿到 code 后调用后端 Edge Function 换取 Supabase session。
+  Future<AuthResponse?> signInWithWeChat() async {
+    if (_supabase == null) return null;
+    if (_kWeChatAppId.isEmpty) {
+      throw const AuthException('WECHAT_APP_ID 未配置');
+    }
+    final installed = await isWeChatInstalled();
+    if (!installed) {
+      throw const AuthException('WeChat is not installed.');
+    }
+
+    final code = await _requestWeChatAuthCode();
+    if (code == null || code.isEmpty) {
+      // 用户取消或授权失败，不作为错误抛出
+      return null;
+    }
+
+    final response = await _supabase?.client.functions.invoke(
+      'planbook-wechat-auth',
+      body: {'code': code},
+    );
+    if (response == null) {
+      throw const AuthException('WeChat auth response is null.');
+    }
+    if (response.status != 200) {
+      final error = (response.data as Map<String, dynamic>?)?['error'];
+      throw AuthException(error?.toString() ?? 'WeChat auth failed.');
+    }
+
+    final data = response.data as Map<String, dynamic>;
+    final tokenHash = data['token_hash'] as String?;
+    if (tokenHash == null || tokenHash.isEmpty) {
+      throw const AuthException('WeChat auth did not return token_hash.');
+    }
+
+    // 在客户端用 token_hash 建立 session，session token 不经过服务端响应传输。
+    final authResponse = await _supabase?.client.auth.verifyOTP(
+      tokenHash: tokenHash,
+      type: OtpType.email,
+    );
+    return authResponse;
+  }
+
+  /// 为当前已登录用户绑定微信。
+  Future<void> linkWeChat() async {
+    if (_supabase == null) return;
+    if (_kWeChatAppId.isEmpty) {
+      throw const AuthException('WECHAT_APP_ID 未配置');
+    }
+    final installed = await isWeChatInstalled();
+    if (!installed) {
+      throw const AuthException('WeChat is not installed.');
+    }
+    if (_supabase?.client.auth.currentSession == null) {
+      throw const AuthException('User is not signed in.');
+    }
+
+    final code = await _requestWeChatAuthCode();
+    if (code == null || code.isEmpty) {
+      throw const AuthException('WeChat authorization was cancelled.');
+    }
+
+    final response = await _supabase?.client.functions.invoke(
+      'planbook-wechat-link',
+      body: {'code': code},
+    );
+    if (response == null) {
+      throw const AuthException('WeChat link response is null.');
+    }
+    if (response.status == 409) {
+      throw const AuthException('该微信已绑定其他账号');
+    }
+    if (response.status != 200) {
+      final error = (response.data as Map<String, dynamic>?)?['error'];
+      throw AuthException(error?.toString() ?? 'WeChat link failed.');
+    }
+
+    // 刷新本地 session/user，使 user_metadata 中的微信信息生效。
+    try {
+      await _supabase?.client.auth.refreshSession();
+    } on Exception catch (_) {
+      // 即使刷新失败，绑定也已经成功，不阻塞流程。
+    }
+  }
+
+  /// 调起微信授权并返回 code；用户取消时返回 null。
+  Future<String?> _requestWeChatAuthCode() async {
+    final completer = Completer<String?>();
+    var isCompleted = false;
+    FluwxCancelable? cancelable;
+
+    void complete(String? value) {
+      if (isCompleted) return;
+      isCompleted = true;
+      cancelable?.cancel();
+      completer.complete(value);
+    }
+
+    cancelable = _fluwx.addSubscriber((response) {
+      if (response is WeChatAuthResponse) {
+        if (response.isSuccessful) {
+          final code = response.code;
+          complete(code?.isNotEmpty ?? false ? code : null);
+        } else {
+          complete(null);
+        }
+      }
+    });
+
+    try {
+      final launched = await _fluwx.authBy(
+        which: NormalAuth(scope: 'snsapi_userinfo'),
+      );
+      if (!launched) {
+        complete(null);
+      }
+    } on Exception catch (_) {
+      complete(null);
+    }
+
+    // 微信授权没有回调时兜底：30 秒后当作取消。
+    Future.delayed(const Duration(seconds: 30), () => complete(null));
+
+    return completer.future;
   }
 }

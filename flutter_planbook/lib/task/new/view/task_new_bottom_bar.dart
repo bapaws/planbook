@@ -157,16 +157,17 @@ class TaskNewBottomBar extends StatelessWidget {
                     ),
                     onPressed: () async {
                       final cubit = context.read<TaskNewCubit>();
-                      final recurrenceRule = await context.router.push(
+                      final result = await context.router.push(
                         TaskRecurrenceRoute(
                           initialRecurrenceRule: cubit.state.recurrenceRule,
                         ),
                       );
-                      if (recurrenceRule is! RecurrenceRule ||
-                          !context.mounted) {
-                        return;
+                      if (!context.mounted) return;
+                      if (result == false) {
+                        cubit.onRecurrenceRuleChanged(null);
+                      } else if (result is RecurrenceRule) {
+                        cubit.onRecurrenceRuleChanged(result);
                       }
-                      cubit.onRecurrenceRuleChanged(recurrenceRule);
                     },
                   );
                 },

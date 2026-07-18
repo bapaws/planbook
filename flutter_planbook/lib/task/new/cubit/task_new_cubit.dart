@@ -21,7 +21,11 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
   }) : _tasksRepository = tasksRepository,
        _taskActionService = taskActionService,
        super(
-         TaskNewState.fromData(task: initialTask, dueAt: dueAt, priority: priority),
+         TaskNewState.fromData(
+           task: initialTask,
+           dueAt: dueAt,
+           priority: priority,
+         ),
        );
 
   final TasksRepository _tasksRepository;

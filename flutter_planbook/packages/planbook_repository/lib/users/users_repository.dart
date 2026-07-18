@@ -30,6 +30,11 @@ class UsersRepository {
 
   bool get isExpired => session?.isExpired ?? true;
 
+  /// 是否已安装微信。
+  Future<bool> isWeChatInstalled() async {
+    return AppSupabase.instance.isWeChatInstalled();
+  }
+
   api.UserEntity? get user {
     final user = _supabase?.auth.currentUser;
     if (user == null) return null;
@@ -240,6 +245,23 @@ class UsersRepository {
     return response;
   }
 
+  Future<AuthResponse?> signInWithWeChat() async {
+    final response = await AppSupabase.instance.signInWithWeChat();
+    if (response?.user != null) {
+      await AppHomeWidget.saveWidgetData(
+        kUserId,
+        response!.user!.id,
+      );
+      await getUserProfile();
+    }
+    return response;
+  }
+
+  Future<void> linkWeChat() async {
+    await AppSupabase.instance.linkWeChat();
+    await getUserProfile(force: true);
+  }
+
   Future<UserEntity?> updateUser({
     String? email,
     String? phone,
@@ -265,6 +287,8 @@ class UsersRepository {
 
   Future<void> logout() async {
     await _supabase?.auth.signOut();
+    await _sp.remove(kUserProfile);
+    _onUserProfileChangeController.add(null);
     await AppHomeWidget.removeWidgetData(kUserId);
   }
 
@@ -273,6 +297,8 @@ class UsersRepository {
       final response = await _supabase?.functions.invoke('delete-account');
       if (response?.status == 200) {
         await _supabase?.auth.signOut();
+        await _sp.remove(kUserProfile);
+        _onUserProfileChangeController.add(null);
         await AppHomeWidget.removeWidgetData(kUserId);
       } else {
         throw Exception('Failed to delete user');

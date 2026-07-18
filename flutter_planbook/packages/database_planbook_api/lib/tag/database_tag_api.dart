@@ -21,9 +21,9 @@ class DatabaseTagApi {
       ..addColumns([db.tags.id.count()])
       ..where(
         db.tags.deletedAt.isNull() &
-        (userId == null
-            ? db.tags.userId.isNull()
-            : db.tags.userId.equals(userId)),
+            (userId == null
+                ? db.tags.userId.isNull()
+                : db.tags.userId.equals(userId)),
       );
     final result = await query.getSingleOrNull();
     return result?.read(db.tags.id.count()) ?? 0;
@@ -258,9 +258,9 @@ class DatabaseTagApi {
               : const Value.absent(),
         ),
       );
-      final updatedTag = await (db.select(db.tags)
-            ..where((t) => t.id.equals(id)))
-          .getSingle();
+      final updatedTag = await (db.select(
+        db.tags,
+      )..where((t) => t.id.equals(id))).getSingle();
       await _outboxApi.enqueue(
         tableName: 'tags',
         recordId: id,

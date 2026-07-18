@@ -83,6 +83,7 @@
   "terms": "使用條款",
   "photos": "照片",
   "gallery": "圖庫",
+  "noMonthPhotos": "本月還沒有照片",
   "camera": "相機",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb",
@@ -202,6 +203,7 @@
   "completed": "已完成",
   "completionRate": "完成率",
   "words": "字數",
+  "planned": "計劃",
   "time": "時間",
   "deleteNote": "刪除筆記",
   "deleteNoteContent": "確定要刪除此筆記嗎？",
@@ -322,6 +324,16 @@
   "gender": "性別",
   "birthday": "生日",
   "bind": "綁定",
+  "weChatLogin": "微信登入",
+  "weChatLoginFailed": "微信登入失敗，請重試",
+  "weChatNotInstalled": "未安裝微信",
+  "weChatLink": "綁定微信",
+  "weChat": "微信",
+  "phoneCopied": "手機號碼已複製",
+  "emailCopied": "郵箱已複製",
+  "weChatLinked": "已綁定",
+  "weChatLinkFailed": "微信綁定失敗，請重試",
+  "weChatLinkConflict": "該微信已綁定其他帳號",
   "deleteAccountWarning": "‼️ 您確定要刪除您的帳號嗎？此操作無法撤銷。",
   "deleteAccountHint": "輸入文字 '刪除帳號' 確認刪除",
   "male": "男",
@@ -788,6 +800,55 @@
   },
   "productTitleLifetime": "終身",
   "productTitleAnnual": "年度",
-  "productTitleMonthly": "月度"
+  "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
+  "productTitleMonths": "{months, plural, =1{1個月} other{{months}個月}}",
+  "productTitleMonthly": "月度",
+  "monthlyData": "月數據",
+  "monthlyDescriptionPlannedTasks": "本月計劃了 {count} 項任務。",
+  "@monthlyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "本月沒有計劃任務。",
+  "monthlyDescriptionNoTasks": "本月暫無已完成的任務。",
+  "monthlyDescriptionTasksCompleted": "完成了 {completed} 項任務",
+  "@monthlyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "按優先級分佈：{breakdown}。",
+  "@monthlyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "本月寫了 {count} 篇筆記，共 {words} 字。",
+  "@monthlyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "本月還沒有寫筆記。",
+  "monthlyDescriptionTagsInvolved": "涉及標籤：{tags}。",
+  "@monthlyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  }
 
 }

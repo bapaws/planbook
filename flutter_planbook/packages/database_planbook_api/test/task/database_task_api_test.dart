@@ -99,49 +99,54 @@ void main() {
         expect(outbox.first.operation, 'insert');
       });
 
-      test('creates task with taskTags and enqueues replace_associations',
-          () async {
-        final task = _sampleTask();
-        final tag = _sampleTagEntity();
-        final taskTags = api.generateTaskTags(
-          task: task,
-          tags: [tag],
-          userId: null,
-        );
+      test(
+        'creates task with taskTags and enqueues replace_associations',
+        () async {
+          final task = _sampleTask();
+          final tag = _sampleTagEntity();
+          final taskTags = api.generateTaskTags(
+            task: task,
+            tags: [tag],
+            userId: null,
+          );
 
-        await api.create(task: task, taskTags: taskTags);
+          await api.create(task: task, taskTags: taskTags);
 
-        final outbox = await db.select(db.syncOutbox).get();
-        expect(outbox, hasLength(2));
+          final outbox = await db.select(db.syncOutbox).get();
+          expect(outbox, hasLength(2));
 
-        final taskOutbox = outbox.firstWhere((o) => o.targetTable == 'tasks');
-        expect(taskOutbox.operation, 'insert');
+          final taskOutbox = outbox.firstWhere((o) => o.targetTable == 'tasks');
+          expect(taskOutbox.operation, 'insert');
 
-        final tagOutbox =
-            outbox.firstWhere((o) => o.targetTable == 'task_tags');
-        expect(tagOutbox.operation, 'replace_associations');
-        expect(tagOutbox.recordId, task.id);
-      });
+          final tagOutbox = outbox.firstWhere(
+            (o) => o.targetTable == 'task_tags',
+          );
+          expect(tagOutbox.operation, 'replace_associations');
+          expect(tagOutbox.recordId, task.id);
+        },
+      );
 
-      test('creates task with children and enqueues child outbox records',
-          () async {
-        final parentTask = _sampleTask();
-        final childTask = _sampleTask(
-          title: 'Child Task',
-          parentId: parentTask.id,
-          layer: 1,
-        );
+      test(
+        'creates task with children and enqueues child outbox records',
+        () async {
+          final parentTask = _sampleTask();
+          final childTask = _sampleTask(
+            title: 'Child Task',
+            parentId: parentTask.id,
+            layer: 1,
+          );
 
-        await api.create(task: parentTask, children: [childTask]);
+          await api.create(task: parentTask, children: [childTask]);
 
-        final fetchedChild = await api.getTaskById(childTask.id);
-        expect(fetchedChild, isNotNull);
-        expect(fetchedChild!.parentId, parentTask.id);
+          final fetchedChild = await api.getTaskById(childTask.id);
+          expect(fetchedChild, isNotNull);
+          expect(fetchedChild!.parentId, parentTask.id);
 
-        final outbox = await db.select(db.syncOutbox).get();
-        expect(outbox, hasLength(2));
-        expect(outbox.every((o) => o.targetTable == 'tasks'), isTrue);
-      });
+          final outbox = await db.select(db.syncOutbox).get();
+          expect(outbox, hasLength(2));
+          expect(outbox.every((o) => o.targetTable == 'tasks'), isTrue);
+        },
+      );
 
       test('pre-generates occurrences for recurring task', () async {
         final now = Jiffy.now().startOf(Unit.day);
@@ -157,10 +162,9 @@ void main() {
         // 等待异步的 preGenerateTaskOccurrences 完成
         await Future.delayed(const Duration(milliseconds: 200));
 
-        final occurrences =
-            await (db.select(db.taskOccurrences)
-                  ..where((o) => o.taskId.equals(task.id)))
-                .get();
+        final occurrences = await (db.select(
+          db.taskOccurrences,
+        )..where((o) => o.taskId.equals(task.id))).get();
         expect(occurrences, isNotEmpty);
       });
     });
@@ -215,9 +219,9 @@ void main() {
         await api.insertOrUpdate(task: task);
 
         // 直接软删除
-        await (db.update(db.tasks)
-              ..where((t) => t.id.equals(task.id)))
-            .write(TasksCompanion(deletedAt: Value(Jiffy.now())));
+        await (db.update(db.tasks)..where((t) => t.id.equals(task.id))).write(
+          TasksCompanion(deletedAt: Value(Jiffy.now())),
+        );
 
         final fetched = await api.getTaskById(task.id);
         expect(fetched, isNull);
@@ -242,9 +246,9 @@ void main() {
         expect(await api.getTotalCount(userId: null), 2);
 
         // 软删除 task1
-        await (db.update(db.tasks)
-              ..where((t) => t.id.equals(task1.id)))
-            .write(TasksCompanion(deletedAt: Value(Jiffy.now())));
+        await (db.update(db.tasks)..where((t) => t.id.equals(task1.id))).write(
+          TasksCompanion(deletedAt: Value(Jiffy.now())),
+        );
 
         expect(await api.getTotalCount(userId: null), 1);
       });
@@ -308,11 +312,14 @@ void main() {
 
         expect(result, hasLength(2));
 
-        final childTaskTag = result!.firstWhere((tt) => tt.tagId == childTag.id);
+        final childTaskTag = result!.firstWhere(
+          (tt) => tt.tagId == childTag.id,
+        );
         expect(childTaskTag.linkedTagId, isNull);
 
-        final parentTaskTag =
-            result.firstWhere((tt) => tt.tagId == parentTag.id);
+        final parentTaskTag = result.firstWhere(
+          (tt) => tt.tagId == parentTag.id,
+        );
         expect(parentTaskTag.linkedTagId, childTag.id);
       });
     });

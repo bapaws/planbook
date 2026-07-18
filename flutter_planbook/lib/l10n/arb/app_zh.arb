@@ -83,6 +83,7 @@
   "terms": "使用条款",
   "photos": "照片",
   "gallery": "图库",
+  "noMonthPhotos": "本月还没有照片",
   "camera": "相机",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
   "userAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/Vk5fwN4A6i2kyzksv98c4IFjnCb?from=from_copylink",
@@ -202,6 +203,7 @@
   "completed": "已完成",
   "completionRate": "完成率",
   "words": "字数",
+  "planned": "计划",
   "time": "时间",
   "deleteNote": "删除笔记",
   "deleteNoteContent": "确定要删除此笔记吗？",
@@ -322,6 +324,16 @@
   "gender": "性别",
   "birthday": "生日",
   "bind": "绑定",
+  "weChatLogin": "微信登录",
+  "weChatLoginFailed": "微信登录失败，请重试",
+  "weChatNotInstalled": "未安装微信",
+  "weChatLink": "绑定微信",
+  "weChat": "微信",
+  "phoneCopied": "手机号已复制",
+  "emailCopied": "邮箱已复制",
+  "weChatLinked": "已绑定",
+  "weChatLinkFailed": "微信绑定失败，请重试",
+  "weChatLinkConflict": "该微信已绑定其他账号",
   "deleteAccountWarning": "‼️ 您确定要删除您的账号吗？此操作无法撤销。",
   "deleteAccountHint": "输入文字 '删除账号' 确认删除",
   "male": "男",
@@ -785,5 +797,54 @@
   },
   "productTitleLifetime": "终身",
   "productTitleAnnual": "年度",
-  "productTitleMonthly": "月度"
+  "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
+  "productTitleMonths": "{months, plural, =1{1个月} other{{months}个月}}",
+  "productTitleMonthly": "月度",
+  "monthlyData": "月数据",
+  "monthlyDescriptionPlannedTasks": "本月计划了 {count} 项任务。",
+  "@monthlyDescriptionPlannedTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "本月没有计划任务。",
+  "monthlyDescriptionNoTasks": "本月暂无已完成的任务。",
+  "monthlyDescriptionTasksCompleted": "完成了 {completed} 项任务",
+  "@monthlyDescriptionTasksCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "按优先级分布：{breakdown}。",
+  "@monthlyDescriptionPriorityBreakdown": {
+    "placeholders": {
+      "breakdown": {
+        "type": "String"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "本月写了 {count} 篇笔记，共 {words} 字。",
+  "@monthlyDescriptionNotesWritten": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "words": {
+        "type": "int"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "本月还没有写笔记。",
+  "monthlyDescriptionTagsInvolved": "涉及标签：{tags}。",
+  "@monthlyDescriptionTagsInvolved": {
+    "placeholders": {
+      "tags": {
+        "type": "String"
+      }
+    }
+  }
 }

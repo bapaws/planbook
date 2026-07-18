@@ -279,6 +279,20 @@ class UserEntity extends Equatable {
     }
   }
 
+  /// 脱敏手机号，未设置时返回 null。
+  String? get maskedPhone {
+    final p = phone;
+    if (p == null || p.isEmpty) return null;
+    return _maskPhone(p);
+  }
+
+  /// 脱敏邮箱，未设置时返回 null。
+  String? get maskedEmail {
+    final e = email;
+    if (e == null || e.isEmpty) return null;
+    return _maskEmail(e);
+  }
+
   String? get displayName {
     if (profile?.username != null && profile!.username!.isNotEmpty) {
       return profile!.username!;

@@ -75,4 +75,3 @@ class RootTaskMonthTitleView extends StatelessWidget {
     return '${date.year}/${date.month}';
   }
 }
-

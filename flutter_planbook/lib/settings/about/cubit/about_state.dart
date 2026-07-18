@@ -22,8 +22,9 @@ class AboutState extends Equatable {
     return AboutState(
       appName: appName != null ? appName() : this.appName,
       appVersion: appVersion != null ? appVersion() : this.appVersion,
-      builderNumber:
-          builderNumber != null ? builderNumber() : this.builderNumber,
+      builderNumber: builderNumber != null
+          ? builderNumber()
+          : this.builderNumber,
     );
   }
 }

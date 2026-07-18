@@ -110,10 +110,10 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
     return Container(
       width: pageWidth + 32,
       height: pageHeight,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: TweenAnimationBuilder<double>(
         tween: Tween<double>(
-          end: isEnlarged ? 1.0 : 0.0,
+          end: isEnlarged ? 1.06 : 0.0,
         ),
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -148,7 +148,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
               kDiscoverJournalDailyPageWidth,
               kDiscoverJournalDailyPageHeight,
             ),
-            spacing: 1,
+            // spacing: 1,
             borderRadius: BorderRadius.circular(16),
             coverBuilder: widget.coverBuilder,
             backCoverBuilder: widget.backCoverBuilder,

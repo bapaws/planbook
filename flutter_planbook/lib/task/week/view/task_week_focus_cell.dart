@@ -68,18 +68,18 @@ class TaskWeekFocusCell extends StatelessWidget {
                   ),
                   child: isEmpty
                       ? onTaskDropped != null
-                          ? SequentialRotatingText(
-                              key: ValueKey(noteType),
-                              messages: [
+                            ? SequentialRotatingText(
+                                key: ValueKey(noteType),
+                                messages: [
+                                  noteType.getHintText(context.l10n),
+                                  context.l10n.taskFocusEmptyDragTaskHint,
+                                ],
+                                style: emptyStyle,
+                              )
+                            : Text(
                                 noteType.getHintText(context.l10n),
-                                context.l10n.taskFocusEmptyDragTaskHint,
-                              ],
-                              style: emptyStyle,
-                            )
-                          : Text(
-                              noteType.getHintText(context.l10n),
-                              style: emptyStyle,
-                            )
+                                style: emptyStyle,
+                              )
                       : Text(
                           note!.content!,
                           style: filledStyle,

@@ -1,10 +1,8 @@
 Neu in dieser Version:
-- Quadrantennamen anpassen
+- WeChat-Login unterstützt
 - Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
+- Quadrantennamen anpassen
 - Unterstützung für Startbildschirm-Widgets
-- Local-First-Synchronisation
 - Titelbild für das Journal, Doppeltippen zum Vergrößern
-- Aufgaben per Drag-and-drop in Tages-, Wochen- und Monatsansicht
-- Aufgaben mit Fokus und Zusammenfassungen verknüpfen
