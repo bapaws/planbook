@@ -1,6 +1,7 @@
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 
 class SupabaseTagApi {
   SupabaseTagApi({
@@ -13,6 +14,7 @@ class SupabaseTagApi {
   String? get userId => supabase?.auth.currentUser?.id;
 
   static const kLastGetTagsTimestamp = 'supabase__last_get_tags_timestamp__';
+  static const kLastGetTagsAttemptAt = 'supabase__last_get_tags_attempt_at__';
 
   Future<void> create({
     required Tag tag,
@@ -62,11 +64,13 @@ class SupabaseTagApi {
     if (supabase == null) return [];
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final lastTimestamp = _sp.getInt(kLastGetTagsTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
+    final lastAttempt = _sp.getInt(kLastGetTagsAttemptAt);
+    if (lastAttempt != null && timestamp - lastAttempt < 3000) {
       return [];
     }
+    await _sp.setInt(kLastGetTagsAttemptAt, timestamp);
 
+    final lastTimestamp = _sp.getInt(kLastGetTagsTimestamp);
     var builder = supabase!.from('tags').select();
     if (!force) {
       if (lastTimestamp != null) {
@@ -79,9 +83,14 @@ class SupabaseTagApi {
       }
     }
 
-    await _sp.setInt(kLastGetTagsTimestamp, timestamp);
-
     final response = await builder;
+
+    // 仅在有服务端时间戳时推进游标；空结果保持原游标，避免本机时钟偏快导致漏同步。
+    final maxTimestamp = maxTimestampFromSyncItems(response);
+    if (maxTimestamp != null) {
+      await _sp.setInt(kLastGetTagsTimestamp, maxTimestamp);
+    }
+
     return response.map(Tag.fromJson).toList();
   }
 }

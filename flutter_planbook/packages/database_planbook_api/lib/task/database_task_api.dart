@@ -27,6 +27,8 @@ class DatabaseTaskApi {
     'children_task_activities',
   );
 
+  Future<bool> hasPendingChanges(String taskId) => outboxApi.hasPending(taskId);
+
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.tasks, distinct: true)
       ..addColumns([db.tasks.id.count()])

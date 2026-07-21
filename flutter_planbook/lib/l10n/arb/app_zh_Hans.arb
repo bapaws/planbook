@@ -203,7 +203,6 @@
   "completed": "已完成",
   "completionRate": "完成率",
   "words": "字数",
-  "planned": "计划",
   "time": "时间",
   "deleteNote": "删除笔记",
   "deleteNoteContent": "确定要删除此笔记吗？",
@@ -545,6 +544,7 @@
     }
   },
   "editModeSelection": "编辑模式选择",
+  "deleteModeSelection": "删除模式选择",
   "allEvents": "所有事件",
   "thisAndFutureEvents": "此事件及未来事件",
   "thisEventOnly": "此事件",

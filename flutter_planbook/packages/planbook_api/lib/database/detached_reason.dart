@@ -10,7 +10,10 @@ enum DetachedReason {
   skipped,
 
   /// 修改该实例（时间、标题等）
-  modified;
+  modified,
+
+  /// 删除该实例（仅此事件）
+  deleted;
 
   /// 从字符串创建（用于数据库反序列化）
   static DetachedReason? fromString(String? value) {

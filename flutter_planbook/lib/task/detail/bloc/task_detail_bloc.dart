@@ -27,7 +27,8 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
        super(const TaskDetailState()) {
     on<TaskDetailRequested>(_onRequested);
     on<TaskDetailNotesRequested>(_onNotesRequested);
-    on<TaskDetailDeleted>(_onDeleted);
+    on<TaskDetailDeleteRequested>(_onDeleteRequested);
+    on<TaskDetailDeleteConfirmed>(_onDeleteConfirmed);
     on<TaskDetailTitleChanged>(_onTitleChanged);
     on<TaskDetailPriorityChanged>(_onPriorityChanged);
     on<TaskDetailTagsChanged>(_onTagsChanged);
@@ -79,13 +80,45 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     );
   }
 
-  Future<void> _onDeleted(
-    TaskDetailDeleted event,
+  Future<void> _onDeleteRequested(
+    TaskDetailDeleteRequested event,
     Emitter<TaskDetailState> emit,
   ) async {
-    final taskId = state.task?.id;
-    if (taskId == null) return;
-    await _taskActionService.deleteTask(taskId);
+    final task = state.task;
+    if (task == null) return;
+    if (task.recurrenceRule == null) {
+      emit(state.copyWith(showDeleteConfirmation: true));
+    } else {
+      emit(state.copyWith(showDeleteModeSelection: true));
+    }
+  }
+
+  Future<void> _onDeleteConfirmed(
+    TaskDetailDeleteConfirmed event,
+    Emitter<TaskDetailState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        showDeleteModeSelection: false,
+        showDeleteConfirmation: false,
+      ),
+    );
+    final task = state.task;
+    if (task == null) return;
+
+    final mode = event.mode;
+    if (mode == null) return;
+
+    if (task.recurrenceRule == null ||
+        mode == RecurringTaskDeleteMode.allEvents) {
+      await _taskActionService.deleteTask(task.id);
+    } else {
+      await _taskActionService.deleteRecurringTask(
+        entity: task,
+        mode: mode,
+        occurrenceAt: task.occurrence?.occurrenceAt,
+      );
+    }
     emit(state.copyWith(status: PageStatus.dispose));
   }
 

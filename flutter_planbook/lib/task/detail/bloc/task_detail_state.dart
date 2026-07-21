@@ -7,6 +7,8 @@ final class TaskDetailState extends Equatable {
     this.notes = const [],
     this.currentTaskNote,
     this.showEditModeSelection = false,
+    this.showDeleteModeSelection = false,
+    this.showDeleteConfirmation = false,
   });
 
   final PageStatus status;
@@ -14,6 +16,8 @@ final class TaskDetailState extends Equatable {
   final List<NoteEntity> notes;
 
   final bool showEditModeSelection;
+  final bool showDeleteModeSelection;
+  final bool showDeleteConfirmation;
 
   final NoteEntity? currentTaskNote;
 
@@ -26,6 +30,8 @@ final class TaskDetailState extends Equatable {
     notes,
     currentTaskNote,
     showEditModeSelection,
+    showDeleteModeSelection,
+    showDeleteConfirmation,
   ];
 
   TaskDetailState copyWith({
@@ -34,6 +40,8 @@ final class TaskDetailState extends Equatable {
     List<NoteEntity>? notes,
     NoteEntity? currentTaskNote,
     bool? showEditModeSelection,
+    bool? showDeleteModeSelection,
+    bool? showDeleteConfirmation,
   }) {
     return TaskDetailState(
       status: status ?? this.status,
@@ -42,6 +50,10 @@ final class TaskDetailState extends Equatable {
       currentTaskNote: currentTaskNote ?? this.currentTaskNote,
       showEditModeSelection:
           showEditModeSelection ?? this.showEditModeSelection,
+      showDeleteModeSelection:
+          showDeleteModeSelection ?? this.showDeleteModeSelection,
+      showDeleteConfirmation:
+          showDeleteConfirmation ?? this.showDeleteConfirmation,
     );
   }
 }

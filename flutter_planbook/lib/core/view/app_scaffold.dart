@@ -87,6 +87,7 @@ class AppScaffold extends StatelessWidget {
     this.endDrawerEnableOpenDragGesture = true,
     this.restorationId,
     this.background,
+    this.showBackground = true,
   });
 
   final Key? scaffoldKey;
@@ -117,36 +118,47 @@ class AppScaffold extends StatelessWidget {
 
   final List<Widget>? background;
 
+  /// 是否由 [AppPageScaffold] 渲染点阵背景。
+  /// 在已经由外层页面统一包了一层背景的场景中，应设为 `false`，
+  /// 避免多个 Tab 页各自渲染背景导致切换时叠加闪烁。
+  final bool showBackground;
+
   @override
   Widget build(BuildContext context) {
+    final scaffold = Scaffold(
+      key: scaffoldKey,
+      appBar: appBar,
+      body: body,
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
+      floatingActionButtonAnimator: floatingActionButtonAnimator,
+      persistentFooterButtons: persistentFooterButtons,
+      persistentFooterAlignment: persistentFooterAlignment,
+      drawer: drawer,
+      onDrawerChanged: onDrawerChanged,
+      endDrawer: endDrawer,
+      onEndDrawerChanged: onEndDrawerChanged,
+      bottomNavigationBar: bottomNavigationBar,
+      bottomSheet: bottomSheet,
+      backgroundColor: Colors.transparent,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
+      primary: primary,
+      drawerDragStartBehavior: drawerDragStartBehavior,
+      extendBody: extendBody,
+      extendBodyBehindAppBar: extendBodyBehindAppBar,
+      drawerScrimColor: drawerScrimColor,
+      drawerEdgeDragWidth: drawerEdgeDragWidth,
+      drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
+      endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
+      restorationId: restorationId,
+    );
+
+    if (!showBackground) {
+      return scaffold;
+    }
+
     return AppPageScaffold(
-      child: Scaffold(
-        key: scaffoldKey,
-        appBar: appBar,
-        body: body,
-        floatingActionButton: floatingActionButton,
-        floatingActionButtonLocation: floatingActionButtonLocation,
-        floatingActionButtonAnimator: floatingActionButtonAnimator,
-        persistentFooterButtons: persistentFooterButtons,
-        persistentFooterAlignment: persistentFooterAlignment,
-        drawer: drawer,
-        onDrawerChanged: onDrawerChanged,
-        endDrawer: endDrawer,
-        onEndDrawerChanged: onEndDrawerChanged,
-        bottomNavigationBar: bottomNavigationBar,
-        bottomSheet: bottomSheet,
-        backgroundColor: Colors.transparent,
-        resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        primary: primary,
-        drawerDragStartBehavior: drawerDragStartBehavior,
-        extendBody: extendBody,
-        extendBodyBehindAppBar: extendBodyBehindAppBar,
-        drawerScrimColor: drawerScrimColor,
-        drawerEdgeDragWidth: drawerEdgeDragWidth,
-        drawerEnableOpenDragGesture: drawerEnableOpenDragGesture,
-        endDrawerEnableOpenDragGesture: endDrawerEnableOpenDragGesture,
-        restorationId: restorationId,
-      ),
+      child: scaffold,
     );
   }
 }

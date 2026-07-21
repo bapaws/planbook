@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -127,15 +128,17 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
         }
       }
       // 编辑模式：更新现有的 note
-      final updatedNote = Note(
-        id: state.initialNote!.id,
+      // 使用 copyWith 保留未在编辑界面中修改的字段（type、focusAt 等）
+      final updatedNote = state.initialNote!.note.copyWith(
         title: state.title,
-        content: state.content.isEmpty ? null : state.content,
+        content: Value(
+          state.content.isEmpty ? null : state.content,
+        ),
         images: images,
-        taskId: state.task?.id,
+        taskId: Value(state.task?.id),
         createdAt: state.createdAt ?? state.initialNote!.createdAt,
-        updatedAt: Jiffy.now(),
-        deletedAt: state.initialNote!.deletedAt,
+        updatedAt: Value(Jiffy.now()),
+        deletedAt: Value(state.initialNote!.deletedAt),
       );
       await _notesRepository.update(
         note: updatedNote,

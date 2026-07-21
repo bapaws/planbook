@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
-import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -219,7 +218,7 @@ class _TaskListTileState extends State<TaskListTile>
             ),
             SlidableAction(
               onPressed: (context) {
-                _showDeleteConfirmationDialog();
+                widget.onDeleted?.call(_task);
               },
               backgroundColor: theme.colorScheme.errorContainer,
               foregroundColor: theme.colorScheme.error,
@@ -350,29 +349,5 @@ class _TaskListTileState extends State<TaskListTile>
 
   Future<void> _playCompletedSound() async {
     await context.read<TaskActionService>().playCompletedFeedback();
-  }
-
-  void _showDeleteConfirmationDialog() {
-    showCupertinoDialog<void>(
-      context: context,
-      builder: (context) => CupertinoAlertDialog(
-        title: Text(context.l10n.deleteTaskAlertTitle),
-        content: Text(context.l10n.deleteTaskAlertContent),
-        actions: [
-          CupertinoDialogAction(
-            child: Text(context.l10n.cancel),
-            onPressed: () => Navigator.pop(context),
-          ),
-          CupertinoDialogAction(
-            isDestructiveAction: true,
-            child: Text(context.l10n.delete),
-            onPressed: () {
-              widget.onDeleted?.call(_task);
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
   }
 }

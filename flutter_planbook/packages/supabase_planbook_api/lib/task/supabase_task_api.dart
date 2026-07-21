@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 
 class SupabaseTaskApi {
   SupabaseTaskApi({
@@ -17,6 +17,8 @@ class SupabaseTaskApi {
   String? get userId => supabase?.auth.currentUser?.id;
 
   static const kLastGetTasksTimestamp = 'supabase__last_get_tasks_timestamp__';
+  static const kLastGetTasksAttemptAt =
+      'supabase__last_get_tasks_attempt_at__';
 
   Future<void> create({
     required Task task,
@@ -70,11 +72,13 @@ class SupabaseTaskApi {
     if (supabase == null) return [];
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final lastTimestamp = _sp.getInt(kLastGetTasksTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
+    final lastAttempt = _sp.getInt(kLastGetTasksAttemptAt);
+    if (lastAttempt != null && timestamp - lastAttempt < 3000) {
       return [];
     }
+    await _sp.setInt(kLastGetTasksAttemptAt, timestamp);
 
+    final lastTimestamp = _sp.getInt(kLastGetTasksTimestamp);
     var builder = supabase!
         .from('tasks')
         .select(
@@ -91,9 +95,15 @@ class SupabaseTaskApi {
       }
     }
 
-    await _sp.setInt(kLastGetTasksTimestamp, timestamp);
+    final results = await builder;
 
-    return await builder;
+    // 仅在有服务端时间戳时推进游标；空结果保持原游标，避免本机时钟偏快导致漏同步。
+    final maxTimestamp = maxTimestampFromSyncItems(results);
+    if (maxTimestamp != null) {
+      await _sp.setInt(kLastGetTasksTimestamp, maxTimestamp);
+    }
+
+    return results;
   }
 
   Future<void> complete({

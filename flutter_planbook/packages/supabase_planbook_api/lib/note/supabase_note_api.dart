@@ -1,6 +1,7 @@
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 
 class SupabaseNoteApi {
   SupabaseNoteApi({
@@ -13,6 +14,8 @@ class SupabaseNoteApi {
   String? get userId => supabase?.auth.currentUser?.id;
 
   static const kLastGetNotesTimestamp = 'supabase__last_get_notes_timestamp__';
+  static const kLastGetNotesAttemptAt =
+      'supabase__last_get_notes_attempt_at__';
 
   Future<void> create({
     required Note note,
@@ -67,11 +70,13 @@ class SupabaseNoteApi {
     if (supabase == null) return [];
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final lastTimestamp = _sp.getInt(kLastGetNotesTimestamp);
-    if (lastTimestamp != null && timestamp - lastTimestamp < 3000) {
+    final lastAttempt = _sp.getInt(kLastGetNotesAttemptAt);
+    if (lastAttempt != null && timestamp - lastAttempt < 3000) {
       return [];
     }
+    await _sp.setInt(kLastGetNotesAttemptAt, timestamp);
 
+    final lastTimestamp = _sp.getInt(kLastGetNotesTimestamp);
     var builder = supabase!
         .from('notes')
         .select(
@@ -90,8 +95,14 @@ class SupabaseNoteApi {
       }
     }
 
-    await _sp.setInt(kLastGetNotesTimestamp, timestamp);
+    final results = await builder;
 
-    return await builder;
+    // 仅在有服务端时间戳时推进游标；空结果保持原游标，避免本机时钟偏快导致漏同步。
+    final maxTimestamp = maxTimestampFromSyncItems(results);
+    if (maxTimestamp != null) {
+      await _sp.setInt(kLastGetNotesTimestamp, maxTimestamp);
+    }
+
+    return results;
   }
 }

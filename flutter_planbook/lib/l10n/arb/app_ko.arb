@@ -82,6 +82,7 @@
   "privacy": "개인정보 처리방침",
   "terms": "이용 약관",
   "photos": "사진",
+  "noMonthPhotos": "이번 달 사진이 없습니다",
   "gallery": "갤러리",
   "camera": "카메라",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
@@ -543,6 +544,7 @@
     }
   },
   "editModeSelection": "편집 모드 선택",
+  "deleteModeSelection": "삭제 모드 선택",
   "allEvents": "모든 이벤트",
   "thisAndFutureEvents": "이 이벤트와 이후 이벤트",
   "thisEventOnly": "이 이벤트만",
@@ -801,6 +803,64 @@
   "productTitleAnnual": "연간",
   "productTitleYears": "{years, plural, =1{1년} other{{years}년}}",
   "productTitleMonths": "{months, plural, =1{1개월} other{{months}개월}}",
-  "productTitleMonthly": "월간"
+  "productTitleMonthly": "월간",
+  "monthlyData": "월간 데이터",
+  "monthlyDescriptionPlannedTasks": "이번 달 {count, plural, =1 {작업 1개} other {작업 {count}개}}를 계획했습니다.",
+  "@monthlyDescriptionPlannedTasks":   {
+    "description": "Monthly data description: planned tasks",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "이번 달 계획된 작업이 없습니다.",
+  "monthlyDescriptionNoTasks": "이번 달 완료된 작업이 없습니다.",
+  "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {작업 1개} other {작업 {completed}개}}를 완료했습니다",
+  "@monthlyDescriptionTasksCompleted":   {
+    "description": "Monthly data description: completed tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "우선순위 분포: {breakdown}.",
+  "@monthlyDescriptionPriorityBreakdown":   {
+    "description": "Monthly data description: priority breakdown prefix",
+    "placeholders": {
+      "breakdown": {
+        "type": "String",
+        "example": "2 important, 1 urgent"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "이번 달 {count, plural, =1 {노트 1개} other {노트 {count}개}}를 작성했으며, 총 {words, plural, =1 {1자} other {{words}자}}입니다.",
+  "@monthlyDescriptionNotesWritten":   {
+    "description": "Monthly data description: notes written",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      },
+      "words": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "이번 달 작성된 노트가 없습니다.",
+  "monthlyDescriptionTagsInvolved": "관련 태그: {tags}.",
+  "@monthlyDescriptionTagsInvolved":   {
+    "description": "Monthly data description: tags involved prefix",
+    "placeholders": {
+      "tags": {
+        "type": "String",
+        "example": "work, life"
+      }
+    }
+  }
 
 }

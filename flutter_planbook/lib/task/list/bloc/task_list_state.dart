@@ -9,6 +9,9 @@ final class TaskListState extends Equatable {
     this.currentTaskNote,
     this.priorityStyle = TaskPriorityStyle.solidColorBackground,
     this.expandedTaskIds = const {},
+    this.showDeleteModeSelection = false,
+    this.showDeleteConfirmation = false,
+    this.pendingDeleteTask,
   });
 
   final PageStatus status;
@@ -23,6 +26,10 @@ final class TaskListState extends Equatable {
   final TaskPriorityStyle priorityStyle;
   final NoteEntity? currentTaskNote;
 
+  final bool showDeleteModeSelection;
+  final bool showDeleteConfirmation;
+  final TaskEntity? pendingDeleteTask;
+
   @override
   List<Object?> get props => [
     status,
@@ -32,6 +39,9 @@ final class TaskListState extends Equatable {
     currentTaskNote,
     priorityStyle,
     expandedTaskIds,
+    showDeleteModeSelection,
+    showDeleteConfirmation,
+    pendingDeleteTask,
   ];
 
   TaskListState copyWith({
@@ -42,6 +52,9 @@ final class TaskListState extends Equatable {
     NoteEntity? currentTaskNote,
     TaskPriorityStyle? priorityStyle,
     Set<String>? expandedTaskIds,
+    bool? showDeleteModeSelection,
+    bool? showDeleteConfirmation,
+    ValueGetter<TaskEntity?>? pendingDeleteTask,
   }) {
     return TaskListState(
       status: status ?? this.status,
@@ -51,6 +64,13 @@ final class TaskListState extends Equatable {
       currentTaskNote: currentTaskNote ?? this.currentTaskNote,
       priorityStyle: priorityStyle ?? this.priorityStyle,
       expandedTaskIds: expandedTaskIds ?? this.expandedTaskIds,
+      showDeleteModeSelection:
+          showDeleteModeSelection ?? this.showDeleteModeSelection,
+      showDeleteConfirmation:
+          showDeleteConfirmation ?? this.showDeleteConfirmation,
+      pendingDeleteTask: pendingDeleteTask == null
+          ? this.pendingDeleteTask
+          : pendingDeleteTask(),
     );
   }
 }

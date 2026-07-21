@@ -5,6 +5,7 @@ import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
+import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/week/view/task_week_header.dart';
@@ -104,46 +105,50 @@ class TaskWeekCell extends StatelessWidget {
     return BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(
       selector: (state) => state.tasks,
       builder: (context, tasks) {
-        return ListView.builder(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          itemCount: tasks.length,
-          itemBuilder: (context, index) {
-            final task = tasks[index];
-            final nextTask = index < tasks.length - 1 ? tasks[index + 1] : null;
-            final tile = TaskListTile.week(
-              key: ValueKey(task),
-              task: task,
-              titleTextStyle: Theme.of(context).textTheme.bodySmall,
-              isExpanded: nextTask?.parentId == task.id,
-              onPressed: (t) => context.router.push(
-                TaskDetailRoute(
-                  taskId: t.id,
-                  occurrenceAt: t.occurrence?.occurrenceAt,
+        return TaskListDeleteDialogListener(
+          child: ListView.builder(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            itemCount: tasks.length,
+            itemBuilder: (context, index) {
+              final task = tasks[index];
+              final nextTask = index < tasks.length - 1
+                  ? tasks[index + 1]
+                  : null;
+              final tile = TaskListTile.week(
+                key: ValueKey(task),
+                task: task,
+                titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                isExpanded: nextTask?.parentId == task.id,
+                onPressed: (t) => context.router.push(
+                  TaskDetailRoute(
+                    taskId: t.id,
+                    occurrenceAt: t.occurrence?.occurrenceAt,
+                  ),
                 ),
-              ),
-              onCompleted: (t) => context.read<TaskListBloc>().add(
-                TaskListCompleted(task: t),
-              ),
-              onDeleted: (t) => context.read<TaskListBloc>().add(
-                TaskListDeleted(taskId: t.id),
-              ),
-              onEdited: (t) => context.router.push(
-                TaskDetailRoute(
-                  taskId: t.id,
-                  occurrenceAt: t.occurrence?.occurrenceAt,
+                onCompleted: (t) => context.read<TaskListBloc>().add(
+                  TaskListCompleted(task: t),
                 ),
-              ),
-              onExpanded: (t) => context.read<TaskListBloc>().add(
-                TaskListTaskExpanded(task: t),
-              ),
-            );
-            if (day == null) return tile;
-            return TaskDraggable(
-              task: task,
-              feedbackBuilder: _buildDragFeedback,
-              child: tile,
-            );
-          },
+                onDeleted: (t) => context.read<TaskListBloc>().add(
+                  TaskListDeleteRequested(task: t),
+                ),
+                onEdited: (t) => context.router.push(
+                  TaskDetailRoute(
+                    taskId: t.id,
+                    occurrenceAt: t.occurrence?.occurrenceAt,
+                  ),
+                ),
+                onExpanded: (t) => context.read<TaskListBloc>().add(
+                  TaskListTaskExpanded(task: t),
+                ),
+              );
+              if (day == null) return tile;
+              return TaskDraggable(
+                task: task,
+                feedbackBuilder: _buildDragFeedback,
+                child: tile,
+              );
+            },
+          ),
         );
       },
     );

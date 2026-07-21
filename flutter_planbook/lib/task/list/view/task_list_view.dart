@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
+import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
@@ -37,15 +38,17 @@ class TaskListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TaskSliverList(
-      tasks: tasks,
-      header: header,
-      onTaskPressed: onTaskPressed,
-      onTaskCompleted: onTaskCompleted,
-      onTaskDeleted: onTaskDeleted,
-      onTaskEdited: onTaskEdited,
-      onTaskDelayed: onTaskDelayed,
-      targetDay: targetDay,
+    return TaskListDeleteDialogListener(
+      child: TaskSliverList(
+        tasks: tasks,
+        header: header,
+        onTaskPressed: onTaskPressed,
+        onTaskCompleted: onTaskCompleted,
+        onTaskDeleted: onTaskDeleted,
+        onTaskEdited: onTaskEdited,
+        onTaskDelayed: onTaskDelayed,
+        targetDay: targetDay,
+      ),
     );
   }
 }
@@ -121,7 +124,7 @@ class TaskSliverList extends StatelessWidget {
                   onTaskDeleted!(task);
                 } else {
                   context.read<TaskListBloc>().add(
-                    TaskListDeleted(taskId: task.id),
+                    TaskListDeleteRequested(task: task),
                   );
                 }
               },

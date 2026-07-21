@@ -6,7 +6,7 @@ import 'package:planbook_api/planbook_api.dart';
 /// 负责将待同步的变更记录写入 `sync_outbox` 表。
 /// 所有业务写操作通过 DatabaseApi 内部自动调用此 API，Repository 层无感知。
 ///
-/// 注意：本 API 不接收事务参数。当在 [db.transaction] 回调内部调用 [enqueue] 时，
+/// 注意：本 API 不接收事务参数。当在 db.transaction 回调内部调用 enqueue 时，
 /// Drift 的嵌套事务机制会自动确保插入操作与外层事务处于同一原子事务中。
 class OutboxApi {
   OutboxApi({required AppDatabase db}) : _db = db;
@@ -15,7 +15,7 @@ class OutboxApi {
 
   /// 插入 Outbox 记录。
   ///
-  /// 应在 [db.transaction] 回调内部调用，以确保与业务写入同事务。
+  /// 应在 db.transaction 回调内部调用，以确保与业务写入同事务。
   Future<void> enqueue({
     required String tableName,
     required String recordId,
@@ -34,6 +34,19 @@ class OutboxApi {
             createdAt: Value(now),
           ),
         );
+  }
+
+  /// 检查指定记录是否存在未同步的 Outbox 记录。
+  Future<bool> hasPending(String recordId) async {
+    final result = await (_db.selectOnly(_db.syncOutbox)
+          ..addColumns([_db.syncOutbox.id.count()])
+          ..where(
+            _db.syncOutbox.recordId.equals(recordId) &
+                _db.syncOutbox.syncedAt.isNull(),
+          ))
+        .getSingleOrNull();
+    final count = result?.read(_db.syncOutbox.id.count()) ?? 0;
+    return count > 0;
   }
 
   /// 获取待同步的记录（按创建时间排序，支持批量）

@@ -82,6 +82,7 @@
   "privacy": "プライバシーポリシー",
   "terms": "利用規約",
   "photos": "写真",
+  "noMonthPhotos": "今月はまだ写真がありません",
   "gallery": "ギャラリー",
   "camera": "カメラ",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
@@ -543,6 +544,7 @@
     }
   },
   "editModeSelection": "編集範囲を選択",
+  "deleteModeSelection": "削除範囲を選択",
   "allEvents": "すべての予定",
   "thisAndFutureEvents": "今回以降の予定",
   "thisEventOnly": "今回のみ",
@@ -801,6 +803,64 @@
   "productTitleAnnual": "年額",
   "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
   "productTitleMonths": "{months, plural, =1{1ヶ月} other{{months}ヶ月}}",
-  "productTitleMonthly": "月額"
+  "productTitleMonthly": "月額",
+  "monthlyData": "月次データ",
+  "monthlyDescriptionPlannedTasks": "今月は {count, plural, =1 {1 件のタスク} other {{count} 件のタスク}}を予定しました。",
+  "@monthlyDescriptionPlannedTasks":   {
+    "description": "Monthly data description: planned tasks",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "今月は予定されたタスクがありません。",
+  "monthlyDescriptionNoTasks": "今月は完了したタスクがありません。",
+  "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {1 件のタスク} other {{completed} 件のタスク}}を完了しました",
+  "@monthlyDescriptionTasksCompleted":   {
+    "description": "Monthly data description: completed tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "優先度の内訳：{breakdown}",
+  "@monthlyDescriptionPriorityBreakdown":   {
+    "description": "Monthly data description: priority breakdown prefix",
+    "placeholders": {
+      "breakdown": {
+        "type": "String",
+        "example": "2 important, 1 urgent"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "今月は {count, plural, =1 {1 件のノート} other {{count} 件のノート}}を書き、合計 {words, plural, =1 {1 文字} other {{words} 文字}}です。",
+  "@monthlyDescriptionNotesWritten":   {
+    "description": "Monthly data description: notes written",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      },
+      "words": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "今月はまだノートを書いていません。",
+  "monthlyDescriptionTagsInvolved": "関連タグ：{tags}",
+  "@monthlyDescriptionTagsInvolved":   {
+    "description": "Monthly data description: tags involved prefix",
+    "placeholders": {
+      "tags": {
+        "type": "String",
+        "example": "work, life"
+      }
+    }
+  }
 
 }

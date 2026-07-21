@@ -19,19 +19,24 @@ class NotesRepository {
     required OutboxApi outboxApi,
     DatabaseNoteApi? dbNoteApi,
     DatabaseNoteTaskApi? dbNoteTaskApi,
+    DatabaseTaskApi? dbTaskApi,
   }) : _dbNoteApi =
            dbNoteApi ??
            DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
        _supabaseNoteApi = SupabaseNoteApi(sp: sp),
        _db = db,
        _tagApi = tagApi,
-       _dbNoteTaskApi = dbNoteTaskApi ?? DatabaseNoteTaskApi(db: db);
+       _dbNoteTaskApi = dbNoteTaskApi ?? DatabaseNoteTaskApi(db: db),
+       _dbTaskApi =
+           dbTaskApi ??
+           DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
 
   final DatabaseNoteApi _dbNoteApi;
 
   final SupabaseNoteApi _supabaseNoteApi;
   final AppDatabase _db;
   final DatabaseTagApi _tagApi;
+  final DatabaseTaskApi _dbTaskApi;
 
   final DatabaseNoteTaskApi _dbNoteTaskApi;
 
@@ -104,6 +109,11 @@ class NotesRepository {
     await _db.transaction(() async {
       for (final item in list) {
         final note = Note.fromJson(item);
+
+        // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
+        final hasPending = await _dbNoteApi.hasPendingChanges(note.id);
+        if (hasPending) continue;
+
         await _db.into(_db.notes).insertOnConflictUpdate(note);
 
         if (item['note_tags'] is List<dynamic>) {
@@ -125,6 +135,11 @@ class NotesRepository {
             final taskMap = map['task'] as Map<String, dynamic>?;
             if (taskMap == null) continue;
             final task = Task.fromJson(taskMap);
+
+            // 本地有待同步变更时保留本地任务，避免被 note 嵌套带下的远程副本覆盖。
+            final hasPendingTask = await _dbTaskApi.hasPendingChanges(task.id);
+            if (hasPendingTask) continue;
+
             await _db.into(_db.tasks).insertOnConflictUpdate(task);
           }
         }
@@ -251,7 +266,10 @@ class NotesRepository {
         var note = Note.fromJson(noteMap).copyWith(
           id: kDebugMode ? null : uuid.v4(),
         );
-        note = note.copyWith(createdAt: note.createdAt.add(days: diff));
+        note = note.copyWith(
+          createdAt: note.createdAt.add(days: diff),
+          focusAt: Value(note.focusAt?.add(days: diff)),
+        );
         final tagNames = List<String>.from(map['tags'] as List<dynamic>);
         final tags = await Future.wait(
           tagNames.map((name) => _tagApi.getTagEntityByName(name, userId)),

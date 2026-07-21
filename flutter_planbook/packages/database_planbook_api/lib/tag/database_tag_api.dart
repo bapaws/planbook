@@ -16,6 +16,8 @@ class DatabaseTagApi {
   final AppDatabase db;
   final OutboxApi _outboxApi;
 
+  Future<bool> hasPendingChanges(String tagId) => _outboxApi.hasPending(tagId);
+
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.tags, distinct: true)
       ..addColumns([db.tags.id.count()])

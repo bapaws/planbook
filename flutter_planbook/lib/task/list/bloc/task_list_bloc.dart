@@ -30,7 +30,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     // 四象限 UI 会错乱。
     on<TaskListRequested>(_onLoadRequested, transformer: restartable());
     on<TaskListCompleted>(_onCompleted);
-    on<TaskListDeleted>(_onDeleted);
+    on<TaskListDeleteRequested>(_onDeleteRequested);
+    on<TaskListDeleteConfirmed>(_onDeleteConfirmed);
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
     on<TaskListTaskDelayed>(_onTaskDelayed);
     on<TaskListTaskExpanded>(_onTaskExpanded);
@@ -142,11 +143,55 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     emit(state.copyWith(status: PageStatus.success));
   }
 
-  Future<void> _onDeleted(
-    TaskListDeleted event,
+  Future<void> _onDeleteRequested(
+    TaskListDeleteRequested event,
     Emitter<TaskListState> emit,
   ) async {
-    await _taskActionService.deleteTask(event.taskId);
+    final task = event.task;
+    if (task.recurrenceRule == null) {
+      emit(
+        state.copyWith(
+          showDeleteConfirmation: true,
+          pendingDeleteTask: () => task,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          showDeleteModeSelection: true,
+          pendingDeleteTask: () => task,
+        ),
+      );
+    }
+  }
+
+  Future<void> _onDeleteConfirmed(
+    TaskListDeleteConfirmed event,
+    Emitter<TaskListState> emit,
+  ) async {
+    final task = state.pendingDeleteTask;
+    emit(
+      state.copyWith(
+        showDeleteModeSelection: false,
+        showDeleteConfirmation: false,
+        pendingDeleteTask: () => null,
+      ),
+    );
+    if (task == null) return;
+
+    final mode = event.mode;
+    if (mode == null) return;
+
+    if (task.recurrenceRule == null ||
+        mode == RecurringTaskDeleteMode.allEvents) {
+      await _taskActionService.deleteTask(task.id);
+    } else {
+      await _taskActionService.deleteRecurringTask(
+        entity: task,
+        mode: mode,
+        occurrenceAt: task.occurrence?.occurrenceAt,
+      );
+    }
     emit(state.copyWith(status: PageStatus.success));
   }
 

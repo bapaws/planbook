@@ -116,10 +116,6 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     final id = event.userId;
     // 登录和这里都需要获取，两种逻辑相互独立
     await _onLimitFeatureRequested(userId: id);
-
-    final appUserId = await AppPurchases.instance.getAppUserID();
-    if (appUserId == id) return;
-
     final activeProductIdentifier = await AppPurchases.instance.logIn(id);
     emit(
       state.copyWith(

@@ -82,6 +82,7 @@
   "privacy": "Política de Privacidade",
   "terms": "Termos de Utilização",
   "photos": "Fotos",
+  "noMonthPhotos": "Nenhuma foto este mês",
   "gallery": "Galeria",
   "camera": "Câmara",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
@@ -543,6 +544,7 @@
     }
   },
   "editModeSelection": "Editar seleção do modo",
+  "deleteModeSelection": "Seleção do modo de exclusão",
   "allEvents": "Todos os eventos",
   "thisAndFutureEvents": "Este e eventos futuros",
   "thisEventOnly": "Apenas este evento",
@@ -801,6 +803,64 @@
   "productTitleAnnual": "Anual",
   "productTitleYears": "{years, plural, =1{1 ano} other{{years} anos}}",
   "productTitleMonths": "{months, plural, =1{1 mês} other{{months} meses}}",
-  "productTitleMonthly": "Mensal"
+  "productTitleMonthly": "Mensal",
+  "monthlyData": "Dados mensais",
+  "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 tarefa planejada este mês.} other {{count} tarefas planejadas este mês.}}",
+  "@monthlyDescriptionPlannedTasks":   {
+    "description": "Monthly data description: planned tasks",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "Nenhuma tarefa planejada este mês.",
+  "monthlyDescriptionNoTasks": "Nenhuma tarefa concluída este mês.",
+  "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {1 tarefa concluída} other {{completed} tarefas concluídas}}",
+  "@monthlyDescriptionTasksCompleted":   {
+    "description": "Monthly data description: completed tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "Distribuição por prioridade: {breakdown}.",
+  "@monthlyDescriptionPriorityBreakdown":   {
+    "description": "Monthly data description: priority breakdown prefix",
+    "placeholders": {
+      "breakdown": {
+        "type": "String",
+        "example": "2 important, 1 urgent"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "{count, plural, =1 {1 nota escrita} other {{count} notas escritas}} este mês, totalizando {words, plural, =1 {1 palavra} other {{words} palabras}}.",
+  "@monthlyDescriptionNotesWritten":   {
+    "description": "Monthly data description: notes written",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      },
+      "words": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "Nenhuma nota escrita este mês.",
+  "monthlyDescriptionTagsInvolved": "Tags envolvidas: {tags}.",
+  "@monthlyDescriptionTagsInvolved":   {
+    "description": "Monthly data description: tags involved prefix",
+    "placeholders": {
+      "tags": {
+        "type": "String",
+        "example": "work, life"
+      }
+    }
+  }
 
 }

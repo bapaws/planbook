@@ -110,8 +110,16 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
   }) async {
     final fromDate = JournalDate.fromJiffy(from.startOf(Unit.day));
     final toDate = JournalDate.fromJiffy(to.startOf(Unit.day));
-    final fromPage = fromDate.contentIndexStart;
+    var fromPage = fromDate.contentIndexStart;
     var toPage = toDate.contentIndexStart;
+
+    // 若开始日期是月初，则把 highlight 页包含进来。
+    if (fromDate.isDayPage && fromDate.day! == 1) {
+      fromPage = JournalDate.monthHighlight(
+        year: fromDate.year,
+        month: fromDate.month,
+      ).contentIndexStart;
+    }
 
     // 若结束日期是月末，则把 summary 页包含进来；否则展示到结束日期右半页。
     if (toDate.isDayPage && toDate.day! == toDate.monthStart.daysInMonth) {

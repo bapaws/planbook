@@ -19,9 +19,10 @@ class TasksRepository {
     required SharedPreferences sp,
     required AppDatabase db,
     required OutboxApi outboxApi,
+    SupabaseTaskApi? supabaseTaskApi,
   }) : _db = db,
        _tagApi = tagApi,
-       _supabaseTaskApi = SupabaseTaskApi(sp: sp),
+       _supabaseTaskApi = supabaseTaskApi ?? SupabaseTaskApi(sp: sp),
        _dbTaskApi = DatabaseTaskApi(
          db: db,
          tagApi: tagApi,
@@ -52,6 +53,11 @@ class TasksRepository {
          db: db,
          tagApi: tagApi,
          outboxApi: outboxApi,
+       ),
+       _dbTaskDeleteApi = DatabaseTaskDeleteApi(
+         db: db,
+         tagApi: tagApi,
+         outboxApi: outboxApi,
        );
 
   final AppDatabase _db;
@@ -64,6 +70,7 @@ class TasksRepository {
   final DatabaseTaskCompletionApi _dbTaskCompletionApi;
   final DatabaseTaskDelayApi _dbTaskDelayApi;
   final DatabaseTaskUpdateApi _dbTaskUpdateApi;
+  final DatabaseTaskDeleteApi _dbTaskDeleteApi;
 
   final SupabaseTaskApi _supabaseTaskApi;
 
@@ -213,8 +220,30 @@ class TasksRepository {
     await _db.transaction(() async {
       for (final item in list) {
         final task = Task.fromJson(item);
+
+        // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
+        final hasPending = await _dbTaskApi.hasPendingChanges(task.id);
+        if (hasPending) continue;
+
         syncedTasks.add(task);
         await _db.into(_db.tasks).insertOnConflictUpdate(task);
+
+        // 分离实例到达时，压制主系列对应日期的 occurrence，避免他机重复显示。
+        final detachedFromId = task.detachedFromTaskId;
+        final detachedAt = task.detachedRecurrenceAt;
+        if (detachedFromId != null && detachedAt != null) {
+          final parent =
+              await (_db.select(_db.tasks)
+                    ..where((t) => t.id.equals(detachedFromId)))
+                  .getSingleOrNull();
+          if (parent != null) {
+            await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
+              taskId: detachedFromId,
+              occurrenceAt: detachedAt,
+              task: parent,
+            );
+          }
+        }
 
         if (item['task_tags'] is List<dynamic>) {
           for (final taskTag in item['task_tags'] as List<dynamic>) {
@@ -406,6 +435,27 @@ class TasksRepository {
     unawaited(AppHomeWidget.refreshQuadrantWidgets());
   }
 
+  /// 根据删除模式删除重复任务
+  ///
+  /// [entity] 要删除的任务实体
+  /// [mode] 重复任务的删除模式
+  /// [occurrenceAt] 重复任务的发生时间（用于标识是哪个实例被删除）
+  ///
+  /// 返回：thisAndFutureEvents 模式下返回更新后的主任务，用于重新调度提醒
+  Future<Task?> deleteRecurringTask({
+    required TaskEntity entity,
+    required RecurringTaskDeleteMode mode,
+    Jiffy? occurrenceAt,
+  }) async {
+    final deletedTask = await _dbTaskDeleteApi.deleteTask(
+      entity: entity,
+      mode: mode,
+      occurrenceAt: occurrenceAt,
+    );
+    unawaited(AppHomeWidget.refreshQuadrantWidgets());
+    return deletedTask;
+  }
+
   /// 更新任务优先级（用于四象限视图拖动调整）
   Future<void> updateTaskPriority(
     TaskEntity entity,
@@ -535,7 +585,7 @@ class TasksRepository {
       final map = json as Map<String, dynamic>;
       final taskMap = map['task'] as Map<String, dynamic>;
       var task = Task.fromJson(taskMap).copyWith(
-        id: uuid.v4(),
+        id: kDebugMode ? null : uuid.v4(),
       );
       final startOfMonth = Jiffy.now().startOf(Unit.month);
       final diff = startOfMonth

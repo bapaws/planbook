@@ -210,7 +210,6 @@
   "completed": "Completed",
   "completionRate": "Completion Rate",
   "words": "Words",
-  "planned": "Planned",
   "time": "Time",
   "deleteNote": "Delete Note",
   "deleteNoteContent": "Are you sure you want to delete this note?",
@@ -555,6 +554,7 @@
     }
   },
   "editModeSelection": "Edit Mode Selection",
+  "deleteModeSelection": "Delete Mode Selection",
   "allEvents": "All Events",
   "thisAndFutureEvents": "This and Future Events",
   "thisEventOnly": "This Event Only",

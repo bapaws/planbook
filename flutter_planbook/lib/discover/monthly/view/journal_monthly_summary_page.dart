@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/model/app_color_schemes.dart';
+import 'package:flutter_planbook/discover/daily/view/journal_daily_focus_view.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/model/journal_date.dart';
 import 'package:flutter_planbook/discover/monthly/bloc/journal_monthly_bloc.dart';
 import 'package:flutter_planbook/discover/monthly/journal_monthly_bloc_manager.dart';
 import 'package:flutter_planbook/discover/monthly/view/journal_monthly_calendar_view.dart';
-import 'package:flutter_planbook/discover/monthly/view/journal_monthly_photo_wall.dart';
-import 'package:flutter_planbook/l10n/l10n.dart';
-import 'package:flutter_planbook/note/type/model/note_type_x.dart';
+import 'package:flutter_planbook/discover/monthly/view/journal_monthly_week_column.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -61,36 +61,98 @@ class _JournalMonthlySummaryContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final monthColorScheme = context.colorSchemeForMonth(month.month);
 
     return JournalPage(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(
+        isLeft ? kJournalPageSpacing : 0,
+        kJournalPageSpacing,
+        isLeft ? 0 : 0,
+        kJournalPageSpacing,
+      ),
       child: BlocBuilder<JournalMonthlyBloc, JournalMonthlyState>(
         builder: (context, state) {
-          final l10n = context.l10n;
           if (isLeft) {
-            return JournalMonthlyPhotoWall(images: state.images);
+            return JournalMonthlyCalendarView(
+              month: month,
+              dailyFocusNotes: state.dailyFocusNotes,
+              endWeekdayColumn: 5,
+              fillHeight: true,
+            );
           }
 
-          return Column(
+          return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '${month.month}${NoteType.monthlySummary.getTitle(l10n)}',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
+              Expanded(
+                flex: 2,
+                child: JournalMonthlyCalendarView(
+                  month: month,
+                  dailyFocusNotes: state.dailyFocusNotes,
+                  startWeekdayColumn: 6,
+                  fillHeight: true,
                 ),
               ),
-              const SizedBox(height: 12),
               Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => _editSummary(context, state),
-                  child: JournalMonthlyCalendarView(
-                    month: month,
-                    footerNote: state.summaryNote,
-                  ),
+                flex: 2,
+                child: JournalMonthlyWeekColumn(
+                  month: month,
+                  weeklyFocusNotes: state.weeklyFocusNotes,
+                ),
+              ),
+              Expanded(
+                flex: 6,
+                child: Column(
+                  children: [
+                    // 月度开篇：以完整月名作主视觉，避免数字被误读为日期
+                    const SizedBox(height: 56),
+                    Text(
+                      month.format(pattern: 'y'),
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: monthColorScheme.outline,
+                        letterSpacing: 4,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: double.infinity, height: 12),
+                    Container(
+                      width: 72,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: monthColorScheme.primary,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      month.MMMM,
+                      style: theme.textTheme.displayMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        height: 1,
+                        letterSpacing: 1.5,
+                        color: monthColorScheme.primary,
+                      ),
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => _editSummary(context, state),
+                      child: Container(
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                        constraints: const BoxConstraints(minHeight: 240),
+                        alignment: Alignment.topLeft,
+                        child: JournalDailyFocusView(
+                          note: state.summaryNote,
+                          noteType: NoteType.monthlySummary,
+                          colorScheme: monthColorScheme,
+                          maxLines: 20,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: monthColorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

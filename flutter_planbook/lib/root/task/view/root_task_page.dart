@@ -81,6 +81,7 @@ class _RootTaskPage extends StatelessWidget {
       drawer: const RootTaskDrawer(),
       drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
+      showBackground: false,
       appBar: AppBar(
         forceMaterialTransparency: true,
         leading: CupertinoButton(
@@ -204,7 +205,7 @@ class _RootTaskPage extends StatelessWidget {
                 ],
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.refresh,
+                  icon: FontAwesomeIcons.arrowsRotate,
                   iconColor: theme.colorScheme.primary,
                   title: context.l10n.refresh,
                   onTap: () {

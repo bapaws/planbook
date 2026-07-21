@@ -3,7 +3,7 @@ library;
 
 // export 'package:drift/drift.dart';
 export 'package:database_planbook_api/database_planbook_api.dart'
-    show RecurringTaskEditMode;
+    show RecurringTaskDeleteMode, RecurringTaskEditMode;
 export 'package:jiffy/jiffy.dart';
 export 'package:planbook_api/planbook_api.dart';
 

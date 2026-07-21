@@ -79,6 +79,7 @@ class _RootNotePage extends StatelessWidget {
       drawer: const RootNoteDrawer(),
       drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
+      showBackground: false,
       appBar: AppBar(
         forceMaterialTransparency: true,
         leading: CupertinoButton(

@@ -15,8 +15,17 @@ final class TaskDetailNotesRequested extends TaskDetailEvent {
   const TaskDetailNotesRequested();
 }
 
-final class TaskDetailDeleted extends TaskDetailEvent {
-  const TaskDetailDeleted();
+final class TaskDetailDeleteRequested extends TaskDetailEvent {
+  const TaskDetailDeleteRequested();
+}
+
+final class TaskDetailDeleteConfirmed extends TaskDetailEvent {
+  const TaskDetailDeleteConfirmed({this.mode});
+
+  final RecurringTaskDeleteMode? mode;
+
+  @override
+  List<Object?> get props => [mode];
 }
 
 final class TaskDetailTitleChanged extends TaskDetailEvent {

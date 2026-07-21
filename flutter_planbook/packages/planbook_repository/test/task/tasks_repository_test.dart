@@ -1,11 +1,15 @@
-import 'package:database_planbook_api/sync/outbox_api.dart';
-import 'package:database_planbook_api/tag/database_tag_api.dart';
+import 'package:database_planbook_api/database_planbook_api.dart';
+import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_repository/task/tasks_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/task/supabase_task_api.dart';
+
+class _MockSupabaseTaskApi extends Mock implements SupabaseTaskApi {}
 
 Task _testTask({
   required String id,
@@ -96,6 +100,172 @@ void main() {
 
       final entity = await repository.getTaskEntityById('task-3');
       expect(entity, isNull);
+    });
+
+    test('deleteRecurringTask thisEventOnly soft-deletes occurrence', () async {
+      final now = Jiffy.now().startOf(Unit.day);
+      final task =
+          _testTask(
+            id: 'recurring-delete-one',
+            title: 'Recurring',
+            startAt: now,
+          ).copyWith(
+            recurrenceRule: const Value(
+              RecurrenceRule(frequency: RecurrenceFrequency.daily),
+            ),
+          );
+      await repository.create(task: task);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final occurrenceAt = now.add(days: 2);
+      final entity = (await repository.getTaskEntityById(
+        task.id,
+        occurrenceAt: occurrenceAt,
+      ))!;
+      await repository.deleteRecurringTask(
+        entity: entity,
+        mode: RecurringTaskDeleteMode.thisEventOnly,
+        occurrenceAt: occurrenceAt,
+      );
+
+      final occurrences =
+          await (db.select(db.taskOccurrences)..where(
+                (to) => to.taskId.equals(task.id),
+              ))
+              .get();
+      final targetOccurrences = occurrences
+          .where(
+            (o) => o.occurrenceAt.isSame(occurrenceAt, unit: Unit.day),
+          )
+          .toList();
+      expect(targetOccurrences, hasLength(1));
+      expect(targetOccurrences.first.deletedAt, isNotNull);
+
+      final detached =
+          await (db.select(db.tasks)..where(
+                (t) => t.detachedFromTaskId.equals(task.id),
+              ))
+              .get();
+      expect(detached, hasLength(1));
+      expect(detached.first.deletedAt, isNotNull);
+      expect(detached.first.detachedReason, DetachedReason.deleted);
+    });
+
+    test(
+      'syncTasks soft-deletes parent occurrence for detached task',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final sp = await SharedPreferences.getInstance();
+        final outboxApi = OutboxApi(db: db);
+        final tagApi = DatabaseTagApi(db: db, outboxApi: outboxApi);
+        final mockSupabase = _MockSupabaseTaskApi();
+        final syncRepository = TasksRepository(
+          sp: sp,
+          tagApi: tagApi,
+          db: db,
+          outboxApi: outboxApi,
+          supabaseTaskApi: mockSupabase,
+        );
+
+        final now = Jiffy.now().startOf(Unit.day);
+        final parent =
+            _testTask(
+              id: 'parent-sync-detach',
+              title: 'Parent',
+              startAt: now,
+            ).copyWith(
+              recurrenceRule: const Value(
+                RecurrenceRule(frequency: RecurrenceFrequency.daily),
+              ),
+            );
+        await syncRepository.create(task: parent);
+
+        final occurrenceAt = now.add(days: 1);
+        final detached = Task(
+          id: 'detached-sync-1',
+          title: 'Detached',
+          layer: 0,
+          childCount: 0,
+          order: 0,
+          isAllDay: false,
+          alarms: const [],
+          detachedFromTaskId: parent.id,
+          detachedRecurrenceAt: occurrenceAt,
+          detachedReason: DetachedReason.deleted,
+          deletedAt: Jiffy.now(),
+          createdAt: Jiffy.now(),
+        );
+
+        when(
+          () => mockSupabase.getLatestTasks(force: any(named: 'force')),
+        ).thenAnswer((_) async => [detached.toJson()]);
+
+        await syncRepository.syncTasks(force: true);
+
+        final occurrences =
+            await (db.select(db.taskOccurrences)..where(
+                  (to) => to.taskId.equals(parent.id),
+                ))
+                .get();
+        final target = occurrences.where(
+          (o) => o.occurrenceAt.isSame(occurrenceAt, unit: Unit.day),
+        );
+        expect(target, hasLength(1));
+        expect(target.first.deletedAt, isNotNull);
+      },
+    );
+
+    test('deleteRecurringTask thisAndFutureEvents ends recurrence', () async {
+      final now = Jiffy.now().startOf(Unit.day);
+      final task =
+          _testTask(
+            id: 'recurring-delete-future',
+            title: 'Recurring',
+            startAt: now,
+          ).copyWith(
+            recurrenceRule: const Value(
+              RecurrenceRule(frequency: RecurrenceFrequency.daily),
+            ),
+          );
+      await repository.create(task: task);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final occurrenceAt = now.add(days: 3);
+      final entity = (await repository.getTaskEntityById(task.id))!;
+      final updatedTask = await repository.deleteRecurringTask(
+        entity: entity,
+        mode: RecurringTaskDeleteMode.thisAndFutureEvents,
+        occurrenceAt: occurrenceAt,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      expect(updatedTask, isNotNull);
+      expect(updatedTask!.recurrenceRule!.recurrenceEnd, isNotNull);
+    });
+
+    test('deleteRecurringTask allEvents deletes the task', () async {
+      final now = Jiffy.now().startOf(Unit.day);
+      final task =
+          _testTask(
+            id: 'recurring-delete-all',
+            title: 'Recurring',
+            startAt: now,
+          ).copyWith(
+            recurrenceRule: const Value(
+              RecurrenceRule(frequency: RecurrenceFrequency.daily),
+            ),
+          );
+      await repository.create(task: task);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final entity = (await repository.getTaskEntityById(task.id))!;
+      await repository.deleteRecurringTask(
+        entity: entity,
+        mode: RecurringTaskDeleteMode.allEvents,
+      );
+
+      final fetched = await repository.getTaskEntityById(task.id);
+      expect(fetched, isNull);
     });
 
     test('getStartDate returns null when no tasks', () async {

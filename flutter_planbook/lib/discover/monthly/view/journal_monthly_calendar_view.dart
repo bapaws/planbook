@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_planbook/discover/daily/view/journal_daily_focus_view.dart';
-import 'package:flutter_planbook/discover/daily/view/journal_daily_header.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -9,10 +6,6 @@ class JournalMonthlyCalendarView extends StatelessWidget {
   const JournalMonthlyCalendarView({
     required this.month,
     this.dailyFocusNotes = const [],
-    this.footerNote,
-    this.footerNoteType = NoteType.monthlySummary,
-    this.headerTitle,
-    this.headerColorScheme,
     this.startWeekdayColumn = 0,
     this.endWeekdayColumn = 6,
     this.fillHeight = false,
@@ -21,10 +14,7 @@ class JournalMonthlyCalendarView extends StatelessWidget {
 
   final Jiffy month;
   final List<Note?> dailyFocusNotes;
-  final Note? footerNote;
-  final NoteType footerNoteType;
-  final String? headerTitle;
-  final ColorScheme? headerColorScheme;
+
   final int startWeekdayColumn;
   final int endWeekdayColumn;
   final bool fillHeight;
@@ -49,35 +39,33 @@ class JournalMonthlyCalendarView extends StatelessWidget {
       final content = note?.content ?? '';
       final hasFocus = content.isNotEmpty;
 
-      return Container(
-        padding: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 6),
+            child: Text(
               '$day',
               style: theme.textTheme.bodySmall?.copyWith(
-                color: colorScheme.onSurface,
+                color: colorScheme.primary,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            if (hasFocus)
-              Expanded(
-                child: Text(
-                  content,
-                  maxLines: 8,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: 9,
-                    color: colorScheme.primary,
-                  ),
+          ),
+          if (hasFocus)
+            Expanded(
+              child: Text(
+                content,
+                maxLines: 8,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: 9,
+                  color: colorScheme.primary,
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       );
     }
 
@@ -97,15 +85,13 @@ class JournalMonthlyCalendarView extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        Widget grid;
         if (fillHeight) {
-          final headerSpace = headerTitle != null
-              ? kJournalDailyHeaderHeight + 12
-              : 0.0;
-          final availableHeight = (constraints.maxHeight - headerSpace).clamp(
-            0.0,
-            double.infinity,
-          );
+          final availableHeight =
+              constraints.maxHeight.clamp(
+                0.0,
+                double.infinity,
+              ) -
+              24;
           final cellWidth =
               (constraints.maxWidth - (columnCount - 1) * 4) / columnCount;
           final cellHeight = rowCount > 0
@@ -113,61 +99,28 @@ class JournalMonthlyCalendarView extends StatelessWidget {
               : availableHeight;
           final aspectRatio = cellHeight > 0 ? cellWidth / cellHeight : 1.1;
 
-          grid = Expanded(
-            child: GridView.count(
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: columnCount,
-              childAspectRatio: aspectRatio,
-              crossAxisSpacing: 4,
-              mainAxisSpacing: 4,
-              children: cells,
-            ),
-          );
-        } else {
-          grid = GridView.count(
-            shrinkWrap: true,
+          // 高度由 LayoutBuilder 约束 + aspectRatio 决定，
+          // 不能再包 Expanded（父级不是 Flex）。
+          return GridView.count(
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: columnCount,
-            childAspectRatio: 1.1,
+            childAspectRatio: aspectRatio,
             crossAxisSpacing: 4,
             mainAxisSpacing: 4,
+            padding: const EdgeInsets.symmetric(vertical: 12),
             children: cells,
           );
         }
 
-        final effectiveHeaderColorScheme = headerColorScheme ?? colorScheme;
-
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (headerTitle != null) ...[
-              JournalDailyHeader(
-                title: headerTitle!,
-                icon: Icon(
-                  FontAwesomeIcons.arrowsToDot,
-                  size: 14,
-                  color: effectiveHeaderColorScheme.primary,
-                ),
-                iconColor: effectiveHeaderColorScheme.onPrimaryContainer,
-                iconBackgroundColor:
-                    effectiveHeaderColorScheme.primaryContainer,
-                badgeColor: effectiveHeaderColorScheme.primaryContainer,
-                badgeTextColor: effectiveHeaderColorScheme.onPrimaryContainer,
-              ),
-              const SizedBox(height: 12),
-            ],
-            grid,
-            if (footerNote != null) ...[
-              const SizedBox(height: 12),
-              Expanded(
-                child: JournalDailyFocusView(
-                  note: footerNote,
-                  noteType: footerNoteType,
-                  colorScheme: colorScheme,
-                ),
-              ),
-            ],
-          ],
+        return GridView.count(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          crossAxisCount: columnCount,
+          childAspectRatio: 1.1,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          children: cells,
         );
       },
     );

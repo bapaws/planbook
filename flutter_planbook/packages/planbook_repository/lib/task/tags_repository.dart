@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
@@ -19,7 +18,6 @@ class TagsRepository {
   TagsRepository({
     required AppDatabase db,
     required DatabaseTagApi tagApi,
-    required OutboxApi outboxApi,
     required SharedPreferences sp,
   }) : _tagApi = tagApi,
        _db = db,
@@ -40,19 +38,21 @@ class TagsRepository {
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
   }) async* {
-    unawaited(_syncTags());
+    unawaited(syncTags());
     yield* _tagApi.getAllTags(
       notIncludeTagIds: notIncludeTagIds,
       userId: userId,
     );
   }
 
-  Future<void> _syncTags({
-    bool force = false,
-  }) async {
+  Future<void> syncTags({bool force = false}) async {
     final tags = await _supabaseTagApi.getLatestTags(force: force);
     await _db.transaction(() async {
       for (final tag in tags) {
+        // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
+        final hasPending = await _tagApi.hasPendingChanges(tag.id);
+        if (hasPending) continue;
+
         await _db.into(_db.tags).insertOnConflictUpdate(tag);
       }
     });
@@ -136,7 +136,7 @@ class TagsRepository {
       final color = tag.color?.toColor ?? material.Colors.yellow;
 
       await createTag(
-        id: uuid.v4(),
+        id: kDebugMode ? null : uuid.v4(),
         name: tag.name,
         lightColorScheme: ColorScheme.fromColorScheme(
           material.ColorScheme.fromSeed(

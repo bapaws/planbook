@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/activity/view/app_activity_alert_listener.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/discover/focus/bloc/discover_focus_bloc.dart';
@@ -62,15 +61,13 @@ class RootDiscoverPage extends StatelessWidget {
           },
         ),
       ],
-      child: AppActivityAlertListener(
-        child: AutoTabsRouter(
-          routes: const [
-            DiscoverJournalRoute(),
-            DiscoverFocusRoute(),
-            DiscoverSummaryRoute(),
-          ],
-          builder: (context, child) => _RootDiscoverPage(child: child),
-        ),
+      child: AutoTabsRouter(
+        routes: const [
+          DiscoverJournalRoute(),
+          DiscoverFocusRoute(),
+          DiscoverSummaryRoute(),
+        ],
+        builder: (context, child) => _RootDiscoverPage(child: child),
       ),
     );
   }
@@ -91,6 +88,7 @@ class _RootDiscoverPage extends StatelessWidget {
       drawer: const RootDiscoverDrawer(),
       drawerEdgeDragWidth: 72,
       backgroundColor: Colors.transparent,
+      showBackground: false,
       appBar: AppBar(
         forceMaterialTransparency: true,
         leading: CupertinoButton(

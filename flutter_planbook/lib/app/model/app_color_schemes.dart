@@ -90,14 +90,14 @@ extension AppColorSchemesExtension on BuildContext {
     2 => amberColorScheme,
     3 => yellowColorScheme,
     4 => pinkColorScheme,
-    5 => orangeColorScheme,
+    5 => greyColorScheme,
     6 => brownColorScheme,
     7 => indigoColorScheme,
     8 => tealColorScheme,
     9 => cyanColorScheme,
     10 => limeColorScheme,
     11 => purpleColorScheme,
-    12 => greyColorScheme,
+    12 => orangeColorScheme,
     _ => greyColorScheme,
   };
 }

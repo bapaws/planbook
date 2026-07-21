@@ -1,8 +1,6 @@
 import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
-import 'package:database_planbook_api/task/database_task_api.dart';
 import 'package:database_planbook_api/task/database_task_delay_api.dart';
-import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
@@ -51,14 +49,12 @@ void main() {
     late AppDatabase db;
     late OutboxApi outboxApi;
     late DatabaseTagApi tagApi;
-    late DatabaseTaskApi baseApi;
     late DatabaseTaskDelayApi api;
 
     setUp(() {
       db = createTestDatabase();
       outboxApi = OutboxApi(db: db);
       tagApi = DatabaseTagApi(db: db, outboxApi: outboxApi);
-      baseApi = DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
       api = DatabaseTaskDelayApi(db: db, tagApi: tagApi);
     });
 
@@ -146,6 +142,108 @@ void main() {
       });
     });
 
+    group('ensureSoftDeleteOccurrence', () {
+      test('marks existing occurrence as deleted', () async {
+        final taskId = const Uuid().v4();
+        final date = Jiffy.now().startOf(Unit.day);
+        final task = _sampleTask(id: taskId, startAt: date);
+
+        await db
+            .into(db.taskOccurrences)
+            .insert(
+              TaskOccurrence(
+                id: const Uuid().v4(),
+                taskId: taskId,
+                occurrenceAt: date,
+                createdAt: Jiffy.now(),
+              ),
+            );
+
+        await api.ensureSoftDeleteOccurrence(
+          taskId: taskId,
+          occurrenceAt: date,
+          task: task,
+        );
+
+        final occurrences = await db.select(db.taskOccurrences).get();
+        expect(occurrences, hasLength(1));
+        expect(occurrences.first.deletedAt, isNotNull);
+      });
+
+      test(
+        'inserts deleted placeholder when occurrence row is missing',
+        () async {
+          final date = Jiffy.now().startOf(Unit.day);
+          final task = _sampleTask(
+            startAt: Jiffy.parse('2024-01-01T10:00:00'),
+            endAt: Jiffy.parse('2024-01-01T12:00:00'),
+            dueAt: Jiffy.parse('2024-01-01T14:00:00'),
+          );
+
+          await api.ensureSoftDeleteOccurrence(
+            taskId: task.id,
+            occurrenceAt: date,
+            task: task,
+          );
+
+          final occurrences = await (db.select(
+            db.taskOccurrences,
+          )..where((to) => to.taskId.equals(task.id))).get();
+          expect(occurrences, hasLength(1));
+          expect(occurrences.first.deletedAt, isNotNull);
+          expect(
+            occurrences.first.occurrenceAt.isSame(date, unit: Unit.day),
+            isTrue,
+          );
+        },
+      );
+
+      test('only affects occurrence on the same day', () async {
+        final taskId = const Uuid().v4();
+        final today = Jiffy.now().startOf(Unit.day);
+        final tomorrow = today.add(days: 1);
+        final task = _sampleTask(id: taskId, startAt: today);
+
+        await db
+            .into(db.taskOccurrences)
+            .insert(
+              TaskOccurrence(
+                id: const Uuid().v4(),
+                taskId: taskId,
+                occurrenceAt: today,
+                createdAt: Jiffy.now(),
+              ),
+            );
+        await db
+            .into(db.taskOccurrences)
+            .insert(
+              TaskOccurrence(
+                id: const Uuid().v4(),
+                taskId: taskId,
+                occurrenceAt: tomorrow,
+                createdAt: Jiffy.now(),
+              ),
+            );
+
+        await api.ensureSoftDeleteOccurrence(
+          taskId: taskId,
+          occurrenceAt: today,
+          task: task,
+        );
+
+        final occurrences = await db.select(db.taskOccurrences).get();
+        final todayOcc = occurrences.firstWhere(
+          (o) => o.occurrenceAt.isSame(today),
+        );
+        final tomorrowOcc = occurrences.firstWhere(
+          (o) => o.occurrenceAt.isSame(tomorrow),
+        );
+
+        expect(todayOcc.deletedAt, isNotNull);
+        expect(tomorrowOcc.deletedAt, isNull);
+      });
+    });
+
     group('prepareDelayTask', () {
       test('non-recurring task: shifts dueAt/startAt/endAt', () {
         final baseDate = Jiffy.parse('2024-01-01');
@@ -204,7 +302,7 @@ void main() {
         final baseDate = Jiffy.parse('2024-01-01');
         final task = _sampleTask(
           startAt: baseDate,
-          recurrenceRule: RecurrenceRule(
+          recurrenceRule: const RecurrenceRule(
             frequency: RecurrenceFrequency.daily,
           ),
         );
@@ -228,7 +326,7 @@ void main() {
         final baseDate = Jiffy.parse('2024-01-01');
         final task = _sampleTask(
           startAt: baseDate,
-          recurrenceRule: RecurrenceRule(
+          recurrenceRule: const RecurrenceRule(
             frequency: RecurrenceFrequency.daily,
           ),
         );
@@ -256,7 +354,7 @@ void main() {
 
       test('throws when recurring task has no occurrence date', () {
         final task = _sampleTask(
-          recurrenceRule: RecurrenceRule(
+          recurrenceRule: const RecurrenceRule(
             frequency: RecurrenceFrequency.daily,
           ),
         );

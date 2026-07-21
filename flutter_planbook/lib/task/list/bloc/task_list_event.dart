@@ -74,13 +74,22 @@ final class TaskListCompleted extends TaskListEvent {
   List<Object?> get props => [task];
 }
 
-final class TaskListDeleted extends TaskListEvent {
-  const TaskListDeleted({required this.taskId});
+final class TaskListDeleteRequested extends TaskListEvent {
+  const TaskListDeleteRequested({required this.task});
 
-  final String taskId;
+  final TaskEntity task;
 
   @override
-  List<Object?> get props => [taskId];
+  List<Object?> get props => [task];
+}
+
+final class TaskListDeleteConfirmed extends TaskListEvent {
+  const TaskListDeleteConfirmed({this.mode});
+
+  final RecurringTaskDeleteMode? mode;
+
+  @override
+  List<Object?> get props => [mode];
 }
 
 final class TaskListNoteCreated extends TaskListEvent {

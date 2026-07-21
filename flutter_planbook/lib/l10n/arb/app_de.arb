@@ -82,6 +82,7 @@
   "privacy": "Datenschutzerklärung",
   "terms": "Nutzungsbedingungen",
   "photos": "Fotos",
+  "noMonthPhotos": "Keine Fotos diesen Monat",
   "gallery": "Galerie",
   "camera": "Kamera",
   "privacyAgreementUrl": "https://uxsyr9xrl46.feishu.cn/wiki/IBcdwbHN1iJx8EkvSEEcUZqlnKg?from=from_copylink",
@@ -543,6 +544,7 @@
     }
   },
   "editModeSelection": "Bearbeitungsmodus auswählen",
+  "deleteModeSelection": "Löschmodus auswählen",
   "allEvents": "Alle Ereignisse",
   "thisAndFutureEvents": "Dieses und zukünftige Ereignisse",
   "thisEventOnly": "Nur dieses Ereignis",
@@ -801,5 +803,63 @@
   "productTitleAnnual": "Jährlich",
   "productTitleYears": "{years, plural, =1{1 Jahr} other{{years} Jahre}}",
   "productTitleMonths": "{months, plural, =1{1 Monat} other{{months} Monate}}",
-  "productTitleMonthly": "Monatlich"
+  "productTitleMonthly": "Monatlich",
+  "monthlyData": "Monatsdaten",
+  "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 geplante Aufgabe diesen Monat.} other {{count} geplante Aufgaben diesen Monat.}}",
+  "@monthlyDescriptionPlannedTasks":   {
+    "description": "Monthly data description: planned tasks",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "monthlyDescriptionNoPlannedTasks": "Keine geplanten Aufgaben diesen Monat.",
+  "monthlyDescriptionNoTasks": "Diesen Monat keine Aufgaben erledigt.",
+  "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {1 Aufgabe erledigt} other {{completed} Aufgaben erledigt}}",
+  "@monthlyDescriptionTasksCompleted":   {
+    "description": "Monthly data description: completed tasks",
+    "placeholders": {
+      "completed": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "monthlyDescriptionPriorityBreakdown": "Prioritätenverteilung: {breakdown}.",
+  "@monthlyDescriptionPriorityBreakdown":   {
+    "description": "Monthly data description: priority breakdown prefix",
+    "placeholders": {
+      "breakdown": {
+        "type": "String",
+        "example": "2 important, 1 urgent"
+      }
+    }
+  },
+  "monthlyDescriptionNotesWritten": "{count, plural, =1 {1 Notiz} other {{count} Notizen}} diesen Monat geschrieben, insgesamt {words, plural, =1 {1 Wort} other {{words} Wörter}}.",
+  "@monthlyDescriptionNotesWritten":   {
+    "description": "Monthly data description: notes written",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "4"
+      },
+      "words": {
+        "type": "int",
+        "example": "120"
+      }
+    }
+  },
+  "monthlyDescriptionNoNotesWritten": "Diesen Monat keine Notizen geschrieben.",
+  "monthlyDescriptionTagsInvolved": "Verwendete Tags: {tags}.",
+  "@monthlyDescriptionTagsInvolved":   {
+    "description": "Monthly data description: tags involved prefix",
+    "placeholders": {
+      "tags": {
+        "type": "String",
+        "example": "work, life"
+      }
+    }
+  }
 }

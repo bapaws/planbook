@@ -72,6 +72,75 @@ class DatabaseTaskDelayApi {
         );
   }
 
+  /// 将指定日期的 TaskOccurrence 标记为已删除，若该日期不存在则插入一条已删除的占位行
+  ///
+  /// 用于用户直接删除某个 occurrence 的场景，确保该日期不再显示。
+  Future<void> ensureSoftDeleteOccurrence({
+    required String taskId,
+    required Jiffy occurrenceAt,
+    required Task task,
+  }) async {
+    final startOfDay = occurrenceAt.startOf(Unit.day);
+    final endOfDay = occurrenceAt.endOf(Unit.day);
+
+    final updatedCount =
+        await (db.update(db.taskOccurrences)..where(
+              (to) =>
+                  to.taskId.equals(taskId) &
+                  to.occurrenceAt.isBiggerOrEqualValue(startOfDay.dateTime) &
+                  to.occurrenceAt.isSmallerOrEqualValue(endOfDay.dateTime) &
+                  to.deletedAt.isNull(),
+            ))
+            .write(
+              TaskOccurrencesCompanion(
+                deletedAt: Value(Jiffy.now()),
+              ),
+            );
+
+    // 如果该日期还没有 occurrence 行，插入一条已删除的占位行，避免继续显示
+    if (updatedCount == 0) {
+      await _insertDeletedOccurrence(
+        taskId: taskId,
+        occurrenceAt: startOfDay,
+        task: task,
+      );
+    }
+  }
+
+  Future<void> _insertDeletedOccurrence({
+    required String taskId,
+    required Jiffy occurrenceAt,
+    required Task task,
+  }) async {
+    final referenceTime = task.startAt ?? task.dueAt;
+    Jiffy? occurrenceStartAt;
+    Jiffy? occurrenceEndAt;
+    Jiffy? occurrenceDueAt;
+
+    if (referenceTime != null) {
+      final daysDiff = occurrenceAt
+          .startOf(Unit.day)
+          .diff(referenceTime.startOf(Unit.day), unit: Unit.day)
+          .toInt();
+      occurrenceStartAt = task.startAt?.add(days: daysDiff);
+      occurrenceEndAt = task.endAt?.add(days: daysDiff);
+      occurrenceDueAt = task.dueAt?.add(days: daysDiff);
+    }
+
+    await db
+        .into(db.taskOccurrences)
+        .insert(
+          TaskOccurrencesCompanion.insert(
+            taskId: Value(taskId),
+            occurrenceAt: occurrenceAt,
+            startAt: Value(occurrenceStartAt),
+            endAt: Value(occurrenceEndAt),
+            dueAt: Value(occurrenceDueAt),
+            deletedAt: Value(Jiffy.now()),
+          ),
+        );
+  }
+
   /// 准备延迟任务的数据（不保存到数据库）
   ///
   /// 对于非重复任务：计算延迟后的时间

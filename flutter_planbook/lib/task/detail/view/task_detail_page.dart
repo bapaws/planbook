@@ -20,6 +20,7 @@ import 'package:flutter_planbook/task/detail/view/task_detail_new_subtask_button
 import 'package:flutter_planbook/task/detail/view/task_detail_repeat_view.dart';
 import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
+import 'package:flutter_planbook/task/list/view/task_delete_dialog.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -76,6 +77,39 @@ class TaskDetailPage extends StatelessWidget {
               );
             },
           ),
+          BlocListener<TaskDetailBloc, TaskDetailState>(
+            listenWhen: (previous, current) =>
+                previous.showDeleteModeSelection !=
+                    current.showDeleteModeSelection ||
+                previous.showDeleteConfirmation !=
+                    current.showDeleteConfirmation,
+            listener: (context, state) async {
+              if (state.showDeleteModeSelection) {
+                final task = state.task;
+                final hasOccurrence = task?.occurrence?.occurrenceAt != null;
+                final mode = await showDeleteModeSelectionDialog(
+                  context,
+                  hasOccurrence: hasOccurrence,
+                );
+                if (context.mounted) {
+                  context.read<TaskDetailBloc>().add(
+                    TaskDetailDeleteConfirmed(mode: mode),
+                  );
+                }
+              } else if (state.showDeleteConfirmation) {
+                final confirmed = await showDeleteConfirmationDialog(context);
+                if (context.mounted) {
+                  context.read<TaskDetailBloc>().add(
+                    TaskDetailDeleteConfirmed(
+                      mode: confirmed
+                          ? RecurringTaskDeleteMode.allEvents
+                          : null,
+                    ),
+                  );
+                }
+              }
+            },
+          ),
         ],
         child: const _TaskDetailPage(),
       ),
@@ -115,7 +149,7 @@ class _TaskDetailPage extends StatelessWidget {
                 isDestructive: true,
                 onTap: () {
                   context.read<TaskDetailBloc>().add(
-                    const TaskDetailDeleted(),
+                    const TaskDetailDeleteRequested(),
                   );
                 },
               ),

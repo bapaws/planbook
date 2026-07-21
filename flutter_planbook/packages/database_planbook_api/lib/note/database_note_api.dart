@@ -19,6 +19,9 @@ class DatabaseNoteApi {
   final DatabaseTagApi tagApi;
   final OutboxApi _outboxApi;
 
+  Future<bool> hasPendingChanges(String noteId) =>
+      _outboxApi.hasPending(noteId);
+
   Future<int> getTotalCount({required String? userId}) async {
     final query = db.selectOnly(db.notes, distinct: true)
       ..addColumns([db.notes.id.count()])

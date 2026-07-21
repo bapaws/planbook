@@ -8,6 +8,7 @@ export 'tag/database_tag_api.dart';
 export 'task/database_task_api.dart';
 export 'task/database_task_completion_api.dart';
 export 'task/database_task_delay_api.dart';
+export 'task/database_task_delete_api.dart';
 export 'task/database_task_inbox_api.dart';
 export 'task/database_task_overdue_api.dart';
 export 'task/database_task_today_api.dart';

@@ -44,10 +44,24 @@ class _PrivacyConsentPageState extends State<PrivacyConsentPage> {
     final theme = Theme.of(context);
     final l10n = context.l10n;
 
+    final brightness = MediaQuery.platformBrightnessOf(context);
+    final isDark = brightness == Brightness.dark;
+    final backgroundAsset = isDark
+        ? 'assets/images/bg_dot_tile_dark.png'
+        : 'assets/images/bg_dot_tile_light.png';
+
     return PopScope(
       canPop: false,
-      child: Scaffold(
-        body: SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+          image: DecorationImage(
+            image: AssetImage(backgroundAsset),
+            scale: 3,
+            repeat: ImageRepeat.repeat,
+          ),
+        ),
+        child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(

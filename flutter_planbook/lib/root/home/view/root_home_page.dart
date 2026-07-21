@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
@@ -132,30 +133,15 @@ class _RootHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AutoTabsRouter(
-      routes: const [
-        RootTaskRoute(),
-        RootDiscoverRoute(),
-        RootNoteRoute(),
-      ],
-      builder: (context, child) {
-        return Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            child,
-            const Positioned(
-              left: 24,
-              right: 24,
-              bottom: 22,
-              child: RootHomeBottomBar(),
-            ),
-          ],
-        );
-      },
-      transitionBuilder: (context, child, animation) {
-        return FadeTransition(
-          opacity: animation,
-          child: Stack(
+    return AppPageScaffold(
+      child: AutoTabsRouter(
+        routes: const [
+          RootTaskRoute(),
+          RootDiscoverRoute(),
+          RootNoteRoute(),
+        ],
+        builder: (context, child) {
+          return Stack(
             alignment: Alignment.bottomCenter,
             children: [
               child,
@@ -166,9 +152,15 @@ class _RootHomePage extends StatelessWidget {
                 child: RootHomeBottomBar(),
               ),
             ],
-          ),
-        );
-      },
+          );
+        },
+        transitionBuilder: (context, child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+      ),
     );
   }
 }

@@ -72,6 +72,16 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       _syncEngine.triggerSync();
+
+      // 应用回到前台时除了排空本地 Outbox，还要主动拉取远程变更，
+      // 避免其他设备的修改因增量游标问题而无法同步到本机。
+      // 游标已修复为服务端时间，这里用普通增量同步即可，无需 force。
+      final userId = this.state.user?.id;
+      if (userId != null && userId.isNotEmpty) {
+        unawaited(_tasksRepository.syncTasks());
+        unawaited(_notesRepository.syncNotes());
+        unawaited(_tagsRepository.syncTags());
+      }
     }
   }
 

@@ -66,6 +66,39 @@ class TaskActionService {
     unawaited(AlarmNotificationService.instance.cancelForTask(taskId));
   }
 
+  /// 删除重复任务实例，根据 [mode] 处理：
+  /// - thisEventOnly: 软删除该 occurrence，不取消主任务提醒
+  /// - thisAndFutureEvents: 结束原重复规则，取消并重新调度提醒
+  /// - allEvents: 软删除主任务，取消该任务所有提醒
+  Future<void> deleteRecurringTask({
+    required TaskEntity entity,
+    required RecurringTaskDeleteMode mode,
+    Jiffy? occurrenceAt,
+  }) async {
+    final updatedTask = await _tasksRepository.deleteRecurringTask(
+      entity: entity,
+      mode: mode,
+      occurrenceAt: occurrenceAt,
+    );
+
+    switch (mode) {
+      case RecurringTaskDeleteMode.thisEventOnly:
+        // 不取消主任务提醒；该日 occurrence 仅不在列表显示
+        return;
+      case RecurringTaskDeleteMode.thisAndFutureEvents:
+        unawaited(AlarmNotificationService.instance.cancelForTask(entity.id));
+        if (updatedTask != null) {
+          unawaited(
+            AlarmNotificationService.instance.scheduleForTask(updatedTask),
+          );
+        }
+        return;
+      case RecurringTaskDeleteMode.allEvents:
+        unawaited(AlarmNotificationService.instance.cancelForTask(entity.id));
+        return;
+    }
+  }
+
   /// 任务被更新（标题 / 时间 / 重复规则等）后，重新调度本地提醒。
   ///
   /// fire-and-forget，调用方无需 await。

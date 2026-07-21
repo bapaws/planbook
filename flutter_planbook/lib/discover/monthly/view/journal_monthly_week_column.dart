@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/discover/daily/view/journal_daily_header.dart';
+import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:flutter_planbook/discover/monthly/view/journal_monthly_calendar_view.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
@@ -18,21 +17,15 @@ class JournalMonthlyWeekColumn extends StatelessWidget {
   const JournalMonthlyWeekColumn({
     required this.month,
     required this.weeklyFocusNotes,
-    this.headerTitle,
-    this.headerColorScheme,
+
     super.key,
   });
 
   final Jiffy month;
   final List<Note?> weeklyFocusNotes;
-  final String? headerTitle;
-  final ColorScheme? headerColorScheme;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final effectiveHeaderColorScheme = headerColorScheme ?? colorScheme;
     final startOfMonth = month.startOf(Unit.month);
     final daysInMonth = startOfMonth.daysInMonth;
     final firstWeekday = startOfMonth.dateTime.weekday;
@@ -45,13 +38,12 @@ class JournalMonthlyWeekColumn extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final headerSpace = headerTitle != null
-            ? kJournalDailyHeaderHeight + 12
-            : 0.0;
-        final availableHeight = (constraints.maxHeight - headerSpace).clamp(
-          0.0,
-          double.infinity,
-        );
+        final availableHeight =
+            constraints.maxHeight.clamp(
+              0.0,
+              double.infinity,
+            ) -
+            24;
         final rowHeight = rowCount > 0
             ? (availableHeight - (rowCount - 1) * 4) / rowCount
             : availableHeight;
@@ -59,41 +51,21 @@ class JournalMonthlyWeekColumn extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (headerTitle != null) ...[
-              JournalDailyHeader(
-                title: headerTitle!,
-                icon: Icon(
-                  FontAwesomeIcons.arrowsToDot,
-                  size: 14,
-                  color: effectiveHeaderColorScheme.primary,
+            const SizedBox(height: 12),
+            for (var row = 0; row < rowCount; row++) ...[
+              if (row > 0) const SizedBox(height: 4),
+              SizedBox(
+                width: constraints.maxWidth,
+                height: rowHeight,
+                child: _WeekFocusCell(
+                  weekStart: firstMonday.add(weeks: row),
+                  note: row < weeklyFocusNotes.length
+                      ? weeklyFocusNotes[row]
+                      : null,
                 ),
-                iconColor: effectiveHeaderColorScheme.onPrimaryContainer,
-                iconBackgroundColor:
-                    effectiveHeaderColorScheme.primaryContainer,
-                badgeColor: effectiveHeaderColorScheme.primaryContainer,
-                badgeTextColor: effectiveHeaderColorScheme.onPrimaryContainer,
               ),
-              const SizedBox(height: 12),
             ],
-            Expanded(
-              child: Column(
-                children: [
-                  for (var row = 0; row < rowCount; row++) ...[
-                    if (row > 0) const SizedBox(height: 4),
-                    SizedBox(
-                      width: constraints.maxWidth,
-                      height: rowHeight,
-                      child: _WeekFocusCell(
-                        weekStart: firstMonday.add(weeks: row),
-                        note: row < weeklyFocusNotes.length
-                            ? weeklyFocusNotes[row]
-                            : null,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
+            const SizedBox(height: 12),
           ],
         );
       },
@@ -123,7 +95,7 @@ class _WeekFocusCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = NoteType.weeklyFocus.getColorScheme(context);
+    final colorScheme = context.colorSchemeForMonth(weekStart.month);
     final l10n = context.l10n;
     final content = note?.content ?? '';
     final hasFocus = content.isNotEmpty;

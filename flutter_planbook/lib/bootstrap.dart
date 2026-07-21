@@ -128,7 +128,37 @@ class _BootstrapAppState extends State<_BootstrapApp> {
       ),
       home: _needsConsent
           ? PrivacyConsentPage(onAccepted: _onConsentAccepted)
-          : const Scaffold(body: SizedBox.shrink()),
+          : const _BootstrapLoadingPage(),
+    );
+  }
+}
+
+/// 启动初始化完成前的占位页，背景和 AppScaffold 保持一致（点状图片），
+/// 避免在进入 SplashPage 前出现纯色闪烁。
+class _BootstrapLoadingPage extends StatelessWidget {
+  const _BootstrapLoadingPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final brightness = MediaQuery.platformBrightnessOf(context);
+    final isDark = brightness == Brightness.dark;
+    final backgroundAsset = isDark
+        ? 'assets/images/bg_dot_tile_dark.png'
+        : 'assets/images/bg_dot_tile_light.png';
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+        image: DecorationImage(
+          image: AssetImage(backgroundAsset),
+          scale: 3,
+          repeat: ImageRepeat.repeat,
+        ),
+      ),
+      child: const Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SizedBox.shrink(),
+      ),
     );
   }
 }
@@ -154,7 +184,6 @@ Future<Widget> _initApp() async {
     db: db,
     sp: sp,
     tagApi: tagApi,
-    outboxApi: outboxApi,
   );
   final tasksRepository = TasksRepository(
     sp: sp,

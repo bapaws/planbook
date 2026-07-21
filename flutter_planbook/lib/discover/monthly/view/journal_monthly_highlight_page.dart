@@ -65,7 +65,7 @@ class _JournalMonthlyHighlightContent extends StatelessWidget {
 
     return JournalPage(
       padding: EdgeInsets.fromLTRB(
-        isLeft ? kJournalPageSpacing : 0,
+        isLeft ? 0 : 0,
         kJournalPageSpacing,
         isLeft ? 0 : kJournalPageSpacing,
         kJournalPageSpacing,
@@ -79,54 +79,51 @@ class _JournalMonthlyHighlightContent extends StatelessWidget {
                 Expanded(
                   flex: 6,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // 月度开篇：以完整月名作主视觉，避免数字被误读为日期
-                      Column(
-                        children: [
-                          const SizedBox(height: 64),
-                          Text(
-                            month.format(pattern: 'y'),
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                              color: monthColorScheme.outline,
-                              letterSpacing: 4,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(width: double.infinity, height: 12),
-                          Container(
-                            width: 72,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: monthColorScheme.primary,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            month.MMMM,
-                            style: theme.textTheme.displayMedium?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              height: 1,
-                              letterSpacing: 1.5,
-                              color: monthColorScheme.primary,
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 56),
+                      Text(
+                        month.format(pattern: 'y'),
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: monthColorScheme.outline,
+                          letterSpacing: 4,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(width: double.infinity, height: 12),
+                      Container(
+                        width: 72,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: monthColorScheme.primary,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        month.MMMM,
+                        style: theme.textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          height: 1,
+                          letterSpacing: 1.5,
+                          color: monthColorScheme.primary,
+                        ),
                       ),
                       const Spacer(),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => _editFocus(context, state),
-                        child: ConstrainedBox(
+                        child: Container(
+                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
                           constraints: const BoxConstraints(minHeight: 240),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: JournalDailyFocusView(
-                              note: state.focusNote,
-                              noteType: NoteType.monthlyFocus,
-                              colorScheme: monthColorScheme,
-                              maxLines: 20,
+                          alignment: Alignment.topLeft,
+                          child: JournalDailyFocusView(
+                            note: state.focusNote,
+                            noteType: NoteType.monthlyFocus,
+                            colorScheme: monthColorScheme,
+                            maxLines: 20,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: monthColorScheme.primary,
                             ),
                           ),
                         ),
@@ -134,9 +131,9 @@ class _JournalMonthlyHighlightContent extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Spacer(),
+                // const Spacer(),
                 Expanded(
-                  flex: 3,
+                  flex: 2,
                   child: JournalMonthlyWeekColumn(
                     month: month,
                     weeklyFocusNotes: state.weeklyFocusNotes,
@@ -159,8 +156,6 @@ class _JournalMonthlyHighlightContent extends StatelessWidget {
             month: month,
             dailyFocusNotes: state.dailyFocusNotes,
             startWeekdayColumn: 1,
-            // headerTitle: NoteType.dailyFocus.getTitle(l10n),
-            headerColorScheme: context.yellowColorScheme,
             fillHeight: true,
           );
         },
