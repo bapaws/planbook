@@ -7,10 +7,14 @@ import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
+import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
+import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
 import 'package:flutter_planbook/task/week/view/task_week_cell.dart';
 import 'package:flutter_planbook/task/week/view/task_week_focus_cell.dart';
+import 'package:flutter_planbook/task/week/view/task_week_list_view.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -22,16 +26,23 @@ class TaskWeekPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TaskWeekBloc, TaskWeekState>(
       builder: (context, state) {
-        return _TaskWeekPage(weekDays: state.weekDays);
+        return _TaskWeekPage(
+          weekDays: state.weekDays,
+          viewMode: state.viewMode,
+        );
       },
     );
   }
 }
 
 class _TaskWeekPage extends StatelessWidget {
-  const _TaskWeekPage({required this.weekDays});
+  const _TaskWeekPage({
+    required this.weekDays,
+    required this.viewMode,
+  });
 
   final List<Jiffy> weekDays;
+  final TaskWeekViewMode viewMode;
 
   static const spacing = 8.0;
 
@@ -41,9 +52,41 @@ class _TaskWeekPage extends StatelessWidget {
         MediaQuery.of(context).orientation == Orientation.landscape;
     return AnimatedSwitcher(
       duration: Durations.medium1,
-      child: isLandscape
+      child: viewMode == TaskWeekViewMode.list
+          ? _buildListLayout(context)
+          : isLandscape
           ? _buildLandscapeLayout(context)
           : _buildPortraitLayout(context),
+    );
+  }
+
+  Widget _buildListLayout(BuildContext context) {
+    final rootTaskState = context.read<RootTaskBloc>().state;
+    return BlocSelector<RootTaskBloc, RootTaskState, bool>(
+      selector: (state) => state.showSourcePanel,
+      builder: (context, showSourcePanel) {
+        final trailing = showSourcePanel
+            ? BlocProvider(
+                key: const ValueKey('week_source_panel'),
+                create: (context) =>
+                    TaskSourcePanelBloc(
+                      tasksRepository: context.read(),
+                      tagsRepository: context.read(),
+                    )..add(
+                      TaskSourcePanelLoaded(
+                        isCompleted: context.read<RootTaskBloc>().isCompleted,
+                        selectedTagIds: rootTaskState.selectedTagIds,
+                      ),
+                    ),
+                child: const TaskSourcePanel(),
+              )
+            : null;
+        return TaskWeekListView(
+          key: const ValueKey('week_list_view'),
+          weekDays: weekDays,
+          trailing: trailing,
+        );
+      },
     );
   }
 

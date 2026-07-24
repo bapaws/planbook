@@ -1,8 +1,7 @@
 Neu in dieser Version:
-- WeChat-Login unterstützt
+- Neuer Fokus-Monatskalender im Journal
 - Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
 - Quadrantennamen anpassen
 - Unterstützung für Startbildschirm-Widgets
-- Titelbild für das Journal, Doppeltippen zum Vergrößern

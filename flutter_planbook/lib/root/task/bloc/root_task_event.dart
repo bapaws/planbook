@@ -53,6 +53,15 @@ final class RootTaskShowCompletedChanged extends RootTaskEvent {
   List<Object?> get props => [showCompleted];
 }
 
+final class RootTaskSourcePanelVisibilityChanged extends RootTaskEvent {
+  const RootTaskSourcePanelVisibilityChanged({this.showSourcePanel});
+
+  final bool? showSourcePanel;
+
+  @override
+  List<Object?> get props => [showSourcePanel];
+}
+
 final class RootTaskPriorityStyleRequested extends RootTaskEvent {
   const RootTaskPriorityStyleRequested();
 }

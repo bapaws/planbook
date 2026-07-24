@@ -5,6 +5,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/today/view/task_focus_header_view.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:jiffy/jiffy.dart';
@@ -92,11 +93,10 @@ class TaskWeekFocusCell extends StatelessWidget {
       ),
     );
 
-    if (onTaskDropped == null) return Expanded(child: child);
     return Expanded(
-      child: DragTarget<TaskEntity>(
-        onAcceptWithDetails: (details) => onTaskDropped!(details.data),
-        builder: (context, candidateData, rejectedData) => child,
+      child: TaskDragTarget(
+        onAccept: onTaskDropped,
+        child: child,
       ),
     );
   }

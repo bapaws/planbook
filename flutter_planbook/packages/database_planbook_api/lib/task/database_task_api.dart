@@ -505,4 +505,78 @@ class DatabaseTaskApi {
             .getSingleOrNull();
     return row?.createdAt;
   }
+
+  /// 获取指定标签下的任务
+  Stream<List<TaskEntity>> getTaskEntitiesByTag({
+    required String tagId,
+    bool? isCompleted,
+    String? userId,
+  }) {
+    return getTaskEntitiesByTags(
+      tagIds: [tagId],
+      isCompleted: isCompleted,
+      userId: userId,
+    );
+  }
+
+  /// 获取指定多个标签下的任务（命中任一标签即可）
+  Stream<List<TaskEntity>> getTaskEntitiesByTags({
+    required List<String> tagIds,
+    bool? isCompleted,
+    String? userId,
+  }) {
+    if (tagIds.isEmpty) {
+      return Stream.value(const []);
+    }
+
+    var exp =
+        db.tasks.parentId.isNull() &
+        db.tasks.deletedAt.isNull() &
+        (userId == null
+            ? db.tasks.userId.isNull()
+            : db.tasks.userId.equals(userId));
+
+    if (isCompleted != null) {
+      exp &= isCompleted
+          ? db.taskActivities.id.isNotNull()
+          : db.taskActivities.id.isNull();
+    }
+
+    final query =
+        db.select(db.tasks).join([
+            innerJoin(
+              db.taskTags,
+              db.taskTags.taskId.equalsExp(db.tasks.id) &
+                  db.taskTags.tagId.isIn(tagIds) &
+                  db.taskTags.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              db.taskActivities,
+              db.taskActivities.taskId.equalsExp(db.tasks.id) &
+                  db.taskActivities.occurrenceAt.isNull() &
+                  db.taskActivities.completedAt.isNotNull() &
+                  db.taskActivities.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTasks,
+              childrenTasks.parentId.equalsExp(db.tasks.id) &
+                  childrenTasks.deletedAt.isNull(),
+            ),
+            leftOuterJoin(
+              childrenTaskActivities,
+              childrenTaskActivities.taskId.equalsExp(childrenTasks.id) &
+                  childrenTaskActivities.occurrenceAt.isNull() &
+                  childrenTaskActivities.completedAt.isNotNull() &
+                  childrenTaskActivities.deletedAt.isNull(),
+            ),
+          ])
+          ..where(exp)
+          ..orderBy([
+            OrderingTerm.asc(db.tasks.order),
+            OrderingTerm.desc(db.taskActivities.completedAt.datetime),
+            OrderingTerm.asc(db.tasks.createdAt.datetime),
+          ]);
+
+    return query.watch().asyncMap(buildTaskEntities);
+  }
 }

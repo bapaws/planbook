@@ -152,6 +152,10 @@
   "noteTitleHint": "ノートのタイトルを入力",
   "noteContentHint": "ノートの内容を入力",
   "selectTags": "タグを選択",
+  "selectTag": "タグを選択",
+  "selectSource": "ソースを選択",
+  "hide": "非表示",
+  "taskEmptySourcePanel": "このソースにタスクはありません",
   "notLoggedIn": "未ログイン",
   "joinedDaysAgo": "{days}日前に参加",
   "@joinedDaysAgo": {
@@ -178,6 +182,7 @@
   "priority": "優先度",
   "selectViewType": "表示形式を選択",
   "quadrant": "象限",
+  "timeBlock": "タイムブロック",
   "quadrantCustomize": "象限をカスタマイズ",
   "quadrantName": "名前",
   "resetToDefault": "デフォルトに戻す",

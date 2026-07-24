@@ -111,22 +111,18 @@ class _TaskListTileState extends State<TaskListTile>
         final endAt = _task.occurrence!.endAt;
         if (endAt != null && endAt.isBefore(now)) {
           _isOverdue = true;
-          _isOverdueNow = true;
         } else {
           final occurrenceAt =
               _task.occurrence!.dueAt ?? _task.occurrence!.occurrenceAt;
           _isOverdue = occurrenceAt.isBefore(today);
-          _isOverdueNow = false;
         }
       } else {
         final endAt = _task.endAt;
         if (endAt != null && endAt.isBefore(now)) {
           _isOverdue = true;
-          _isOverdueNow = true;
         } else {
           final occurrenceAt = _task.dueAt ?? _task.occurrenceAt;
           _isOverdue = occurrenceAt != null && occurrenceAt.isBefore(today);
-          _isOverdueNow = false;
         }
       }
     } else {
@@ -140,7 +136,6 @@ class _TaskListTileState extends State<TaskListTile>
   bool _isExpanded = false;
 
   bool _isOverdue = false;
-  bool _isOverdueNow = false;
 
   Size get minimumSize => Size.square(
     _task.parentId == null

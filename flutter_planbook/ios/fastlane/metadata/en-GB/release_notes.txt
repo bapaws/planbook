@@ -1,8 +1,7 @@
 What's New:
-- Support WeChat login
+- New focus monthly calendar in Journal
 - Fixes for known issues
 
 Recent updates:
-- Customize Eisenhower quadrant names
+- Customise Eisenhower quadrant names
 - Home screen widgets
-- Journal cover and double-tap to zoom

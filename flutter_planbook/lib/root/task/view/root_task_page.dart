@@ -15,6 +15,7 @@ import 'package:flutter_planbook/root/task/view/root_task_week_title_view.dart';
 import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -128,6 +129,7 @@ class _RootTaskPage extends StatelessWidget {
         ),
         actions: [
           const AppActivityNoticeAppBarActions(),
+          _buildViewTypeSwitcher(context, tab),
           PullDownButton(
             itemBuilder: (context) {
               final activeIndex = context.tabsRouter.activeIndex;
@@ -135,7 +137,7 @@ class _RootTaskPage extends StatelessWidget {
               final bloc = context.read<RootTaskBloc>();
               final theme = Theme.of(context);
               return [
-                if (tab != RootTaskTab.week && tab != RootTaskTab.month) ...[
+                if (tab == RootTaskTab.inbox || tab == RootTaskTab.overdue) ...[
                   PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
                   PullDownMenuItem.selectable(
                     icon: FontAwesomeIcons.list,
@@ -163,7 +165,7 @@ class _RootTaskPage extends StatelessWidget {
                 if (tab != RootTaskTab.overdue ||
                     tab == RootTaskTab.day ||
                     tab == RootTaskTab.month) ...[
-                  if (tab != RootTaskTab.week && tab != RootTaskTab.month)
+                  if (tab == RootTaskTab.inbox || tab == RootTaskTab.overdue)
                     const PullDownMenuDivider.large(),
                   PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
                 ],
@@ -203,6 +205,17 @@ class _RootTaskPage extends StatelessWidget {
                     },
                   ),
                 ],
+                if (tab == RootTaskTab.day || tab == RootTaskTab.week)
+                  PullDownMenuItem(
+                    icon: FontAwesomeIcons.tableColumns,
+                    iconColor: theme.colorScheme.primary,
+                    title: bloc.state.showSourcePanel
+                        ? context.l10n.hideSourcePanel
+                        : context.l10n.showSourcePanel,
+                    onTap: () => context.read<RootTaskBloc>().add(
+                      const RootTaskSourcePanelVisibilityChanged(),
+                    ),
+                  ),
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
                   icon: FontAwesomeIcons.arrowsRotate,
@@ -227,6 +240,132 @@ class _RootTaskPage extends StatelessWidget {
       ),
       body: child,
     );
+  }
+
+  Widget _buildViewTypeSwitcher(BuildContext context, RootTaskTab tab) {
+    final theme = Theme.of(context);
+    return switch (tab) {
+      RootTaskTab.day =>
+        BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
+          selector: (state) => state.viewType,
+          builder: (context, viewType) => PullDownButton(
+            itemBuilder: (context) => [
+              PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
+              PullDownMenuItem.selectable(
+                icon: FontAwesomeIcons.tags,
+                iconColor: theme.colorScheme.primary,
+                title: context.l10n.tagList,
+                selected: viewType == RootTaskViewType.list,
+                onTap: () => context.read<RootTaskBloc>().add(
+                  const RootTaskViewTypeChanged(
+                    viewType: RootTaskViewType.list,
+                  ),
+                ),
+              ),
+              PullDownMenuItem.selectable(
+                icon: FontAwesomeIcons.solidFlag,
+                iconColor: theme.colorScheme.primary,
+                title: context.l10n.quadrant,
+                selected: viewType == RootTaskViewType.priority,
+                onTap: () => context.read<RootTaskBloc>().add(
+                  const RootTaskViewTypeChanged(
+                    viewType: RootTaskViewType.priority,
+                  ),
+                ),
+              ),
+              PullDownMenuItem.selectable(
+                icon: FontAwesomeIcons.tableCells,
+                iconColor: theme.colorScheme.primary,
+                title: context.l10n.timeBlock,
+                selected: viewType == RootTaskViewType.timeBlock,
+                onTap: () => context.read<RootTaskBloc>().add(
+                  const RootTaskViewTypeChanged(
+                    viewType: RootTaskViewType.timeBlock,
+                  ),
+                ),
+              ),
+            ],
+            buttonBuilder: (context, showMenu) => GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onLongPress: showMenu,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size.square(kMinInteractiveDimension),
+                onPressed: () {
+                  final next = switch (viewType) {
+                    RootTaskViewType.list => RootTaskViewType.priority,
+                    RootTaskViewType.priority => RootTaskViewType.timeBlock,
+                    RootTaskViewType.timeBlock => RootTaskViewType.list,
+                  };
+                  context.read<RootTaskBloc>().add(
+                    RootTaskViewTypeChanged(viewType: next),
+                  );
+                },
+                child: Icon(
+                  switch (viewType) {
+                    RootTaskViewType.list => FontAwesomeIcons.tags,
+                    RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
+                    RootTaskViewType.timeBlock => FontAwesomeIcons.tableCells,
+                  },
+                ),
+              ),
+            ),
+          ),
+        ),
+      RootTaskTab.week =>
+        BlocSelector<TaskWeekBloc, TaskWeekState, TaskWeekViewMode>(
+          selector: (state) => state.viewMode,
+          builder: (context, viewMode) => PullDownButton(
+            itemBuilder: (context) => [
+              PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
+              PullDownMenuItem.selectable(
+                icon: FontAwesomeIcons.tableCells,
+                iconColor: theme.colorScheme.primary,
+                title: context.l10n.octant,
+                selected: viewMode == TaskWeekViewMode.grid,
+                onTap: () => context.read<TaskWeekBloc>().add(
+                  const TaskWeekViewModeChanged(
+                    viewMode: TaskWeekViewMode.grid,
+                  ),
+                ),
+              ),
+              PullDownMenuItem.selectable(
+                icon: FontAwesomeIcons.listUl,
+                iconColor: theme.colorScheme.primary,
+                title: context.l10n.list,
+                selected: viewMode == TaskWeekViewMode.list,
+                onTap: () => context.read<TaskWeekBloc>().add(
+                  const TaskWeekViewModeChanged(
+                    viewMode: TaskWeekViewMode.list,
+                  ),
+                ),
+              ),
+            ],
+            buttonBuilder: (context, showMenu) => GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onLongPress: showMenu,
+              child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                minimumSize: const Size.square(kMinInteractiveDimension),
+                onPressed: () {
+                  final next = viewMode == TaskWeekViewMode.grid
+                      ? TaskWeekViewMode.list
+                      : TaskWeekViewMode.grid;
+                  context.read<TaskWeekBloc>().add(
+                    TaskWeekViewModeChanged(viewMode: next),
+                  );
+                },
+                child: Icon(
+                  viewMode == TaskWeekViewMode.grid
+                      ? FontAwesomeIcons.tableCells
+                      : FontAwesomeIcons.listUl,
+                ),
+              ),
+            ),
+          ),
+        ),
+      _ => const SizedBox.shrink(),
+    };
   }
 
   // Widget _buildBody(BuildContext context) {

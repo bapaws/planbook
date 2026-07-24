@@ -1,8 +1,7 @@
 Nouveautés :
-- Prise en charge de la connexion WeChat
+- Nouveau calendrier mensuel Focus dans le Journal
 - Correctifs de problèmes connus
 
 Mises à jour récentes :
 - Personnalisation des noms de quadrants
 - Prise en charge des widgets d’accueil
-- Couverture du journal et double toucher pour agrandir

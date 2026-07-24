@@ -1,8 +1,7 @@
 Novedades:
-- Inicio de sesión con WeChat
+- Nuevo calendario mensual de enfoque en el Diario
 - Corrección de algunos problemas conocidos
 
 Actualizaciones recientes:
 - Personalización de nombres de cuadrantes
 - Soporte para widgets de la pantalla de inicio
-- Portada del diario y doble toque para ampliar

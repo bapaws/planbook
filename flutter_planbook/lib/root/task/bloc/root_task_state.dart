@@ -3,6 +3,7 @@ part of 'root_task_bloc.dart';
 enum RootTaskViewType {
   list,
   priority,
+  timeBlock,
 }
 
 final class RootTaskState extends Equatable {
@@ -10,6 +11,7 @@ final class RootTaskState extends Equatable {
     this.status = PageStatus.initial,
     this.viewType = RootTaskViewType.list,
     this.showCompleted = true,
+    this.showSourcePanel = true,
     this.selectedTagIds = const {},
     this.taskCounts = const {},
     this.dailyTaskCounts = const {},
@@ -25,6 +27,7 @@ final class RootTaskState extends Equatable {
 
   final RootTaskViewType viewType;
   final bool showCompleted;
+  final bool showSourcePanel;
 
   final TaskPriorityStyle priorityStyle;
 
@@ -47,6 +50,7 @@ final class RootTaskState extends Equatable {
     status,
     viewType,
     showCompleted,
+    showSourcePanel,
     selectedTagIds,
     taskCounts,
     dailyTaskCounts,
@@ -58,6 +62,7 @@ final class RootTaskState extends Equatable {
     PageStatus? status,
     RootTaskViewType? viewType,
     bool? showCompleted,
+    bool? showSourcePanel,
     Set<String>? selectedTagIds,
     Map<TaskListMode, int>? taskCounts,
     Map<int, int>? dailyTaskCounts,
@@ -68,6 +73,7 @@ final class RootTaskState extends Equatable {
       status: status ?? this.status,
       viewType: viewType ?? this.viewType,
       showCompleted: showCompleted ?? this.showCompleted,
+      showSourcePanel: showSourcePanel ?? this.showSourcePanel,
       selectedTagIds: selectedTagIds ?? this.selectedTagIds,
       taskCounts: taskCounts ?? this.taskCounts,
       dailyTaskCounts: dailyTaskCounts ?? this.dailyTaskCounts,

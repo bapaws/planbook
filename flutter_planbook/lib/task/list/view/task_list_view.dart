@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
@@ -20,6 +21,7 @@ class TaskListView extends StatelessWidget {
     this.header,
     this.onTaskDelayed,
     this.targetDay,
+    this.onTaskDropped,
     super.key,
   });
 
@@ -36,6 +38,9 @@ class TaskListView extends StatelessWidget {
   /// 当前列表对应的日期；非 null 时支持将任务拖入/拖出以改期（天视图等）
   final Jiffy? targetDay;
 
+  /// 当外部任务被拖放到该列表区域时回调；为 null 时不接收投放
+  final ValueChanged<TaskEntity>? onTaskDropped;
+
   @override
   Widget build(BuildContext context) {
     return TaskListDeleteDialogListener(
@@ -48,6 +53,7 @@ class TaskListView extends StatelessWidget {
         onTaskEdited: onTaskEdited,
         onTaskDelayed: onTaskDelayed,
         targetDay: targetDay,
+        onTaskDropped: onTaskDropped,
       ),
     );
   }
@@ -63,6 +69,7 @@ class TaskSliverList extends StatelessWidget {
     this.onTaskEdited,
     this.onTaskDelayed,
     this.targetDay,
+    this.onTaskDropped,
     super.key,
   });
 
@@ -78,9 +85,12 @@ class TaskSliverList extends StatelessWidget {
   /// 当前列表对应的日期；非 null 时支持拖拽改期
   final Jiffy? targetDay;
 
+  /// 当外部任务被拖放到该列表区域时回调；为 null 时不接收投放
+  final ValueChanged<TaskEntity>? onTaskDropped;
+
   @override
   Widget build(BuildContext context) {
-    return MultiSliver(
+    final sliver = MultiSliver(
       pushPinnedChildren: true,
       children: [
         if (header != null && tasks.isNotEmpty)
@@ -158,6 +168,11 @@ class TaskSliverList extends StatelessWidget {
           },
         ),
       ],
+    );
+
+    return SliverTaskDragTarget(
+      onAccept: onTaskDropped,
+      sliver: sliver,
     );
   }
 

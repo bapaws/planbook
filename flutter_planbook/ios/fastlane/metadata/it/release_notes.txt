@@ -1,8 +1,7 @@
 Novità di questa versione:
-- Accesso con WeChat
+- Nuovo calendario mensile Focus nel Diario
 - Risolti alcuni problemi noti
 
 Aggiornamenti recenti:
 - Personalizzazione dei nomi dei quadranti
 - Supporto ai widget della schermata Home
-- Copertina del diario e doppio tocco per ingrandire

@@ -143,6 +143,7 @@ class AppRouter extends RootStackRouter {
     _buildModalBottomSheetRoute(TaskDatePickerRoute.page),
     _buildModalBottomSheetRoute(TaskDurationRoute.page),
     _buildModalBottomSheetRoute(TaskRecurrenceRoute.page),
+    _buildModalBottomSheetRoute(TaskSourcePanelPickerRoute.page),
 
     _buildModalBottomSheetRoute(
       NoteNewTypeRoute.page,

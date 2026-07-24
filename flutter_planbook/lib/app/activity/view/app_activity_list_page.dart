@@ -30,6 +30,7 @@ class AppActivityListPage extends StatelessWidget {
       body: BlocBuilder<AppActivityBloc, AppActivityState>(
         builder: (context, state) {
           return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             itemCount: state.activities.length,
             itemBuilder: (context, index) {
               final activity = state.activities[index];

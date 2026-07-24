@@ -7,6 +7,7 @@ final class TaskWeekState extends Equatable {
     this.focusNote,
     this.summaryNote,
     this.isCalendarExpanded = false,
+    this.viewMode = TaskWeekViewMode.grid,
   });
 
   final PageStatus status;
@@ -15,6 +16,7 @@ final class TaskWeekState extends Equatable {
   final Note? focusNote;
   final Note? summaryNote;
   final bool isCalendarExpanded;
+  final TaskWeekViewMode viewMode;
 
   /// 获取一周的日期列表（从周一到周日）
   List<Jiffy> get weekDays {
@@ -29,6 +31,7 @@ final class TaskWeekState extends Equatable {
     focusNote,
     summaryNote,
     isCalendarExpanded,
+    viewMode,
   ];
 
   TaskWeekState copyWith({
@@ -37,6 +40,7 @@ final class TaskWeekState extends Equatable {
     ValueGetter<Note?>? focusNote,
     ValueGetter<Note?>? summaryNote,
     bool? isCalendarExpanded,
+    TaskWeekViewMode? viewMode,
   }) {
     return TaskWeekState(
       status: status ?? this.status,
@@ -44,6 +48,7 @@ final class TaskWeekState extends Equatable {
       focusNote: focusNote != null ? focusNote() : this.focusNote,
       summaryNote: summaryNote != null ? summaryNote() : this.summaryNote,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
+      viewMode: viewMode ?? this.viewMode,
     );
   }
 }

@@ -92,10 +92,11 @@ void main() {
         expect(occurrences, hasLength(1));
         expect(occurrences.first.deletedAt, isNotNull);
 
-        final detached = await (db.select(db.tasks)..where(
-              (t) => t.detachedFromTaskId.equals(task.id),
-            ))
-            .get();
+        final detached =
+            await (db.select(db.tasks)..where(
+                  (t) => t.detachedFromTaskId.equals(task.id),
+                ))
+                .get();
         expect(detached, hasLength(1));
         expect(detached.first.deletedAt, isNotNull);
         expect(detached.first.detachedReason, DetachedReason.deleted);
@@ -158,10 +159,11 @@ void main() {
             isTrue,
           );
 
-          final detached = await (db.select(db.tasks)..where(
-                (t) => t.detachedFromTaskId.equals(task.id),
-              ))
-              .get();
+          final detached =
+              await (db.select(db.tasks)..where(
+                    (t) => t.detachedFromTaskId.equals(task.id),
+                  ))
+                  .get();
           expect(detached, hasLength(1));
           expect(detached.first.deletedAt, isNotNull);
           expect(detached.first.detachedReason, DetachedReason.deleted);

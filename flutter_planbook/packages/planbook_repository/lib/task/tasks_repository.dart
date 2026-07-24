@@ -232,10 +232,9 @@ class TasksRepository {
         final detachedFromId = task.detachedFromTaskId;
         final detachedAt = task.detachedRecurrenceAt;
         if (detachedFromId != null && detachedAt != null) {
-          final parent =
-              await (_db.select(_db.tasks)
-                    ..where((t) => t.id.equals(detachedFromId)))
-                  .getSingleOrNull();
+          final parent = await (_db.select(
+            _db.tasks,
+          )..where((t) => t.id.equals(detachedFromId))).getSingleOrNull();
           if (parent != null) {
             await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
               taskId: detachedFromId,
@@ -366,6 +365,29 @@ class TasksRepository {
       ),
       TaskListMode.tag => throw UnimplementedError(),
     };
+  }
+
+  /// 获取指定标签下的任务
+  Stream<List<TaskEntity>> getTaskEntitiesByTag({
+    required String tagId,
+    bool? isCompleted,
+  }) {
+    return getTaskEntitiesByTags(
+      tagIds: [tagId],
+      isCompleted: isCompleted,
+    );
+  }
+
+  /// 获取指定多个标签下的任务（命中任一标签即可）
+  Stream<List<TaskEntity>> getTaskEntitiesByTags({
+    required List<String> tagIds,
+    bool? isCompleted,
+  }) {
+    return _dbTaskApi.getTaskEntitiesByTags(
+      tagIds: tagIds,
+      isCompleted: isCompleted,
+      userId: userId,
+    );
   }
 
   /// 获取所有今天需要执行的任务，包括今天未完成和已完成任务
@@ -527,14 +549,16 @@ class TasksRepository {
   ///
   /// [entity] 要延迟的任务实体
   /// [delayTo] 延迟到的目标时间
-  Future<void> delayTask({
+  ///
+  /// 返回延迟后的任务实体；如果是重复任务生成的新分离实例，返回新实例。
+  Future<TaskEntity?> delayTask({
     required TaskEntity entity,
     required Jiffy delayTo,
   }) async {
     if (entity.dueAt == null &&
         entity.startAt == null &&
         entity.endAt == null) {
-      return;
+      return null;
     }
 
     final result = _dbTaskDelayApi.prepareDelayTask(
@@ -573,6 +597,7 @@ class TasksRepository {
       );
     }
     unawaited(AppHomeWidget.refreshQuadrantWidgets());
+    return _dbTaskApi.getTaskEntityById(result.task.id);
   }
 
   Future<void> createDefaultTasks({required String languageCode}) async {

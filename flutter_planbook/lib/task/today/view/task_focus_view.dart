@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/today/view/task_focus_header_view.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
@@ -106,10 +107,9 @@ class TaskFocusView extends StatelessWidget {
         ),
       ),
     );
-    if (onTaskDropped == null) return content;
-    return DragTarget<TaskEntity>(
-      onAcceptWithDetails: (details) => onTaskDropped!(details.data),
-      builder: (context, candidateData, rejectedData) => content,
+    return TaskDragTarget(
+      onAccept: onTaskDropped,
+      child: content,
     );
   }
 }

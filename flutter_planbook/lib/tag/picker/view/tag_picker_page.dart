@@ -14,11 +14,13 @@ class TagPickerPage extends StatelessWidget {
   const TagPickerPage({
     required this.selectedTags,
     required this.onSelected,
+    this.mode = TagListMode.multiSelect,
     super.key,
   });
 
   final List<TagEntity> selectedTags;
   final ValueChanged<List<TagEntity>> onSelected;
+  final TagListMode mode;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,7 @@ class TagPickerPage extends StatelessWidget {
       create: (context) =>
           TagListBloc(
               tagsRepository: context.read(),
-              mode: TagListMode.multiSelect,
+              mode: mode,
             )
             ..add(const TagListRequested())
             ..add(TagListMultiSelected(tags: selectedTags)),

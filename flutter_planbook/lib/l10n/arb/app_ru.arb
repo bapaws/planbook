@@ -152,6 +152,10 @@
   "noteTitleHint": "Введите заголовок заметки",
   "noteContentHint": "Введите текст заметки",
   "selectTags": "Выбрать теги",
+  "selectTag": "Выбрать метку",
+  "selectSource": "Выбрать источник",
+  "hide": "Скрыть",
+  "taskEmptySourcePanel": "В этом источнике нет задач",
   "notLoggedIn": "Не выполнен вход",
   "joinedDaysAgo": "С нами {days} дн. назад",
   "@joinedDaysAgo": {
@@ -178,6 +182,7 @@
   "priority": "Приоритет",
   "selectViewType": "Выбрать вид",
   "quadrant": "Квадрант",
+  "timeBlock": "Временной блок",
   "quadrantCustomize": "Настроить квадранты",
   "quadrantName": "Название",
   "resetToDefault": "Сбросить по умолчанию",

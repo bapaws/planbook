@@ -29,6 +29,9 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
     on<RootTaskViewTypeChanged>(_onViewTypeChanged);
     on<RootTaskShowCompletedChanged>(_onShowCompletedChanged);
+    on<RootTaskSourcePanelVisibilityChanged>(
+      _onSourcePanelVisibilityChanged,
+    );
     on<RootTaskPriorityStyleRequested>(_onPriorityStyleRequested);
 
     on<RootTaskDailyTaskCountRequested>(
@@ -47,10 +50,14 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
   @override
   RootTaskState? fromJson(Map<String, dynamic> json) {
+    final viewType = RootTaskViewType.values.byName(json['viewType'] as String);
+    final showSourcePanel = json['showSourcePanel'] as bool? ?? true;
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
-      viewType: RootTaskViewType.values.byName(json['viewType'] as String),
+      viewType: viewType,
       showCompleted: json['showCompleted'] as bool,
+      showSourcePanel:
+          viewType == RootTaskViewType.timeBlock || showSourcePanel,
       tabFocusNoteTypes: json['tabFocusNoteTypes'] == null
           ? const {
               RootTaskTab.day: NoteType.dailyFocus,
@@ -74,6 +81,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       'status': state.status.name,
       'viewType': state.viewType.name,
       'showCompleted': state.showCompleted,
+      'showSourcePanel': state.showSourcePanel,
       'tabFocusNoteTypes': jsonEncode(
         state.tabFocusNoteTypes.map(
           (key, value) => MapEntry(key.name, value?.name),
@@ -140,7 +148,13 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
         event.viewType ??
         RootTaskViewType.values[(state.viewType.index + 1) %
             RootTaskViewType.values.length];
-    emit(state.copyWith(viewType: newViewType));
+    emit(
+      state.copyWith(
+        viewType: newViewType,
+        showSourcePanel:
+            newViewType == RootTaskViewType.timeBlock || state.showSourcePanel,
+      ),
+    );
   }
 
   Future<void> _onShowCompletedChanged(
@@ -150,6 +164,17 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     emit(
       state.copyWith(
         showCompleted: event.showCompleted ?? !state.showCompleted,
+      ),
+    );
+  }
+
+  Future<void> _onSourcePanelVisibilityChanged(
+    RootTaskSourcePanelVisibilityChanged event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        showSourcePanel: event.showSourcePanel ?? !state.showSourcePanel,
       ),
     );
   }

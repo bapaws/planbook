@@ -27,7 +27,7 @@ class TaskOverduePage extends StatelessWidget {
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
         child: switch (state.viewType) {
-          RootTaskViewType.list =>
+          RootTaskViewType.list || RootTaskViewType.timeBlock =>
             state.taskCounts[TaskListMode.overdue] == 0
                 ? AppEmptyTaskView(
                     title: context.l10n.taskEmptyOverdue,

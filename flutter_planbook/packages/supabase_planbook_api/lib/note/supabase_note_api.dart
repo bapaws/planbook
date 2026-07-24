@@ -14,8 +14,7 @@ class SupabaseNoteApi {
   String? get userId => supabase?.auth.currentUser?.id;
 
   static const kLastGetNotesTimestamp = 'supabase__last_get_notes_timestamp__';
-  static const kLastGetNotesAttemptAt =
-      'supabase__last_get_notes_attempt_at__';
+  static const kLastGetNotesAttemptAt = 'supabase__last_get_notes_attempt_at__';
 
   Future<void> create({
     required Note note,

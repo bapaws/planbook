@@ -152,6 +152,10 @@
   "noteTitleHint": "Saisir le titre de la note",
   "noteContentHint": "Saisir le contenu de la note",
   "selectTags": "Sélectionner des tags",
+  "selectTag": "Sélectionner une étiquette",
+  "selectSource": "Sélectionner la source",
+  "hide": "Masquer",
+  "taskEmptySourcePanel": "Aucune tâche dans cette source",
   "notLoggedIn": "Non connecté",
   "joinedDaysAgo": "Inscrit il y a {days} jours",
   "@joinedDaysAgo": {
@@ -178,6 +182,7 @@
   "priority": "Priorité",
   "selectViewType": "Sélectionner le type de vue",
   "quadrant": "Quadrant",
+  "timeBlock": "Bloc de temps",
   "quadrantCustomize": "Personnaliser les quadrants",
   "quadrantName": "Nom",
   "resetToDefault": "Réinitialiser",

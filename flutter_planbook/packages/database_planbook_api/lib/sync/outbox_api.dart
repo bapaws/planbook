@@ -38,13 +38,14 @@ class OutboxApi {
 
   /// 检查指定记录是否存在未同步的 Outbox 记录。
   Future<bool> hasPending(String recordId) async {
-    final result = await (_db.selectOnly(_db.syncOutbox)
-          ..addColumns([_db.syncOutbox.id.count()])
-          ..where(
-            _db.syncOutbox.recordId.equals(recordId) &
-                _db.syncOutbox.syncedAt.isNull(),
-          ))
-        .getSingleOrNull();
+    final result =
+        await (_db.selectOnly(_db.syncOutbox)
+              ..addColumns([_db.syncOutbox.id.count()])
+              ..where(
+                _db.syncOutbox.recordId.equals(recordId) &
+                    _db.syncOutbox.syncedAt.isNull(),
+              ))
+            .getSingleOrNull();
     final count = result?.read(_db.syncOutbox.id.count()) ?? 0;
     return count > 0;
   }

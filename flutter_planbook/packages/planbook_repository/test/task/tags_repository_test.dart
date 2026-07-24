@@ -1,4 +1,3 @@
-import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jiffy/jiffy.dart';
@@ -22,8 +21,6 @@ class FakeAppDatabase implements AppDatabase {
   @override
   dynamic noSuchMethod(Invocation invocation) => null;
 }
-
-class MockOutboxApi extends Mock implements OutboxApi {}
 
 class MockSharedPreferences extends Mock implements SharedPreferences {}
 
@@ -110,7 +107,6 @@ ColorScheme _testColorScheme(int color) {
 void main() {
   late MockDatabaseTagApi mockTagApi;
   late FakeAppDatabase mockDb;
-  late MockOutboxApi mockOutboxApi;
   late MockSharedPreferences mockSp;
   late TagsRepository repository;
 
@@ -121,12 +117,10 @@ void main() {
   setUp(() {
     mockTagApi = MockDatabaseTagApi();
     mockDb = FakeAppDatabase();
-    mockOutboxApi = MockOutboxApi();
     mockSp = MockSharedPreferences();
     repository = TagsRepository(
       db: mockDb,
       tagApi: mockTagApi,
-      outboxApi: mockOutboxApi,
       sp: mockSp,
     );
   });

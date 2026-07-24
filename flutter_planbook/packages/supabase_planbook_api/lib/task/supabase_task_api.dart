@@ -17,8 +17,7 @@ class SupabaseTaskApi {
   String? get userId => supabase?.auth.currentUser?.id;
 
   static const kLastGetTasksTimestamp = 'supabase__last_get_tasks_timestamp__';
-  static const kLastGetTasksAttemptAt =
-      'supabase__last_get_tasks_attempt_at__';
+  static const kLastGetTasksAttemptAt = 'supabase__last_get_tasks_attempt_at__';
 
   Future<void> create({
     required Task task,

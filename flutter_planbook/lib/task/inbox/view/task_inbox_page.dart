@@ -61,7 +61,8 @@ class _TaskInboxPage extends StatelessWidget {
                     previous.viewType != current.viewType ||
                     previous.priorityStyle != current.priorityStyle,
                 builder: (context, state) => switch (state.viewType) {
-                  RootTaskViewType.list => const _TaskInboxListPage(),
+                  RootTaskViewType.list ||
+                  RootTaskViewType.timeBlock => const _TaskInboxListPage(),
                   RootTaskViewType.priority => TaskPriorityPage(
                     style: state.priorityStyle,
                     mode: TaskListMode.inbox,

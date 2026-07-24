@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
+import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
@@ -36,6 +37,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     on<TaskListTaskDelayed>(_onTaskDelayed);
     on<TaskListTaskExpanded>(_onTaskExpanded);
     on<TaskListPriorityChanged>(_onPriorityChanged);
+    on<TaskListTaskScheduled>(_onTaskScheduled, transformer: sequential());
+    on<TaskListTaskTimeBlocked>(_onTaskTimeBlocked, transformer: sequential());
+    on<TaskListTaskAllDayScheduled>(
+      _onTaskAllDayScheduled,
+      transformer: sequential(),
+    );
   }
 
   final TasksRepository _tasksRepository;
@@ -297,6 +304,133 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       event.task,
       event.targetPriority,
     );
+    emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onTaskScheduled(
+    TaskListTaskScheduled event,
+    Emitter<TaskListState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    final task = event.task;
+    final targetDate = event.targetDate.startOf(Unit.day);
+
+    final hasDate =
+        task.startAt != null || task.dueAt != null || task.endAt != null;
+
+    if (!hasDate) {
+      // 无日期任务：设置为当天全天任务并更新优先级
+      await _tasksRepository.update(
+        task: task.task.copyWith(
+          startAt: Value(targetDate),
+          endAt: Value(targetDate.endOf(Unit.day)),
+          isAllDay: true,
+          priority: Value(event.targetPriority),
+        ),
+        tags: event.tags ?? task.tags,
+        children: task.children.isEmpty ? null : task.children,
+      );
+    } else {
+      // 有日期任务：先延迟到当天，再更新优先级
+      final delayed = await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: targetDate,
+      );
+      final entityToUpdate = delayed ?? task;
+      if (entityToUpdate.priority != event.targetPriority ||
+          event.tags != null) {
+        await _tasksRepository.update(
+          task: entityToUpdate.task.copyWith(
+            priority: Value(event.targetPriority),
+          ),
+          tags: event.tags ?? entityToUpdate.tags,
+        );
+      }
+    }
+    emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onTaskTimeBlocked(
+    TaskListTaskTimeBlocked event,
+    Emitter<TaskListState> emit,
+  ) async {
+    emit(state.copyWith(status: PageStatus.loading));
+    final task = event.task;
+    final startAt = event.startAt;
+    final endAt = event.endAt;
+
+    if (task.recurrenceRule != null) {
+      // 重复任务：先创建/获取 detached 实例，再更新时间
+      final delayed = await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: startAt.startOf(Unit.day),
+      );
+      if (delayed != null) {
+        await _tasksRepository.update(
+          task: delayed.task.copyWith(
+            startAt: Value(startAt),
+            endAt: Value(endAt),
+            isAllDay: false,
+          ),
+          tags: delayed.tags,
+        );
+      }
+    } else {
+      await _tasksRepository.update(
+        task: task.task.copyWith(
+          startAt: Value(startAt),
+          endAt: Value(endAt),
+          isAllDay: false,
+        ),
+        tags: task.tags,
+      );
+    }
+    emit(state.copyWith(status: PageStatus.success));
+  }
+
+  Future<void> _onTaskAllDayScheduled(
+    TaskListTaskAllDayScheduled event,
+    Emitter<TaskListState> emit,
+  ) async {
+    final task = event.task;
+    final targetDate = event.date.startOf(Unit.day);
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+    if (task.isAllDay &&
+        taskDay != null &&
+        taskDay.isSame(targetDate, unit: Unit.day)) {
+      return;
+    }
+
+    emit(state.copyWith(status: PageStatus.loading));
+
+    if (task.recurrenceRule != null) {
+      final delayed = await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: targetDate,
+      );
+      if (delayed != null) {
+        await _tasksRepository.update(
+          task: delayed.task.copyWith(
+            startAt: Value(targetDate),
+            endAt: Value(targetDate.endOf(Unit.day)),
+            isAllDay: true,
+          ),
+          tags: delayed.tags,
+        );
+      }
+    } else {
+      await _tasksRepository.update(
+        task: task.task.copyWith(
+          startAt: Value(targetDate),
+          endAt: Value(targetDate.endOf(Unit.day)),
+          isAllDay: true,
+        ),
+        tags: task.tags,
+        children: task.children.isEmpty ? null : task.children,
+      );
+    }
     emit(state.copyWith(status: PageStatus.success));
   }
 

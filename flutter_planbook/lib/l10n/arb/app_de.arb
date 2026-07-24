@@ -152,6 +152,10 @@
   "noteTitleHint": "Notiztitel eingeben",
   "noteContentHint": "Notizinhalt eingeben",
   "selectTags": "Tags auswählen",
+  "selectTag": "Tag auswählen",
+  "selectSource": "Quelle auswählen",
+  "hide": "Ausblenden",
+  "taskEmptySourcePanel": "Keine Aufgaben in dieser Quelle",
   "notLoggedIn": "Nicht angemeldet",
   "joinedDaysAgo": "Vor {days} Tagen beigetreten",
   "@joinedDaysAgo": {
@@ -178,6 +182,7 @@
   "priority": "Priorität",
   "selectViewType": "Ansicht auswählen",
   "quadrant": "Quadrant",
+  "timeBlock": "Zeitblock",
   "quadrantCustomize": "Quadranten anpassen",
   "quadrantName": "Name",
   "resetToDefault": "Auf Standard zurücksetzen",

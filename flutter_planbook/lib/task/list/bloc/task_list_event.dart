@@ -137,3 +137,51 @@ final class TaskListPriorityChanged extends TaskListEvent {
   @override
   List<Object?> get props => [task, targetPriority];
 }
+
+final class TaskListTaskScheduled extends TaskListEvent {
+  const TaskListTaskScheduled({
+    required this.task,
+    required this.targetPriority,
+    required this.targetDate,
+    this.tags,
+  });
+
+  final TaskEntity task;
+  final TaskPriority targetPriority;
+  final Jiffy targetDate;
+
+  /// 指定更新后的标签列表；为 null 时保持原标签
+  final List<TagEntity>? tags;
+
+  @override
+  List<Object?> get props => [task, targetPriority, targetDate, tags];
+}
+
+final class TaskListTaskTimeBlocked extends TaskListEvent {
+  const TaskListTaskTimeBlocked({
+    required this.task,
+    required this.startAt,
+    required this.endAt,
+  });
+
+  final TaskEntity task;
+  final Jiffy startAt;
+  final Jiffy endAt;
+
+  @override
+  List<Object?> get props => [task, startAt, endAt];
+}
+
+/// 将任务设为指定日期的全天任务（时间块全天区投放）
+final class TaskListTaskAllDayScheduled extends TaskListEvent {
+  const TaskListTaskAllDayScheduled({
+    required this.task,
+    required this.date,
+  });
+
+  final TaskEntity task;
+  final Jiffy date;
+
+  @override
+  List<Object?> get props => [task, date];
+}
