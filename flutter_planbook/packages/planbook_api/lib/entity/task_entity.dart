@@ -77,7 +77,7 @@ class TaskEntity extends Equatable {
     List<TaskTag>? taskTags,
     List<TagEntity>? tags,
     TaskOccurrence? occurrence,
-    TaskActivity? activity,
+    TaskActivity? Function()? activity,
     List<TaskEntity>? children,
   }) {
     return TaskEntity(
@@ -85,7 +85,7 @@ class TaskEntity extends Equatable {
       taskTags: taskTags ?? this.taskTags,
       tags: tags ?? this.tags,
       occurrence: occurrence ?? this.occurrence,
-      activity: activity ?? this.activity,
+      activity: activity == null ? this.activity : activity(),
       children: children ?? this.children,
     );
   }

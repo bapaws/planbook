@@ -242,7 +242,9 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       );
       if (index != null && index != -1) {
         final newChildren = [...state.task!.children];
-        newChildren[index] = newChildren[index].copyWith(activity: activity);
+        newChildren[index] = newChildren[index].copyWith(
+          activity: () => activity,
+        );
         emit(state.copyWith(task: state.task!.copyWith(children: newChildren)));
       }
     }
@@ -250,7 +252,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
       state.copyWith(
         status: PageStatus.success,
         task: state.task?.copyWith(
-          activity: activities.firstWhereOrNull(
+          activity: () => activities.firstWhereOrNull(
             (e) => e.taskId == state.task?.id,
           ),
         ),

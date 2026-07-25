@@ -64,6 +64,26 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
     if (oldWidget.item.task.isCompleted != item.task.isCompleted) {
       _isCompleted = item.task.isCompleted;
     }
+
+    // 当 BLoC 下发新的任务时间后，再清除临时调整几何，避免弹回旧尺寸。
+    if (_resizeTop != null || _resizeHeight != null) {
+      final oldStart = oldWidget.item.task.startAt;
+      final oldEnd = oldWidget.item.task.endAt;
+      final newStart = item.task.startAt;
+      final newEnd = item.task.endAt;
+      final taskChanged = oldWidget.item.task.id != item.task.id;
+      final startChanged =
+          oldStart == null ||
+          newStart == null ||
+          !oldStart.isSame(newStart, unit: Unit.minute);
+      final endChanged =
+          oldEnd == null ||
+          newEnd == null ||
+          !oldEnd.isSame(newEnd, unit: Unit.minute);
+      if (taskChanged || startChanged || endChanged) {
+        _clearResizeState();
+      }
+    }
   }
 
   @override
@@ -73,6 +93,18 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
 
     final availableWidth = widget.parentWidth * item.widthFactor;
     final left = widget.parentWidth * (item.columnIndex / item.columnCount);
+    // 正在调时长时必须保留热区，否则缩到阈值以下会把 GestureDetector
+    // 从树上拆掉，触发 cancel，之后再也无法拖边缘。
+    final isResizing = _resizeTop != null;
+    final isShort =
+        !isResizing &&
+        _displayHeight < TaskTimeBlockMetrics.minHeightForResizeHandles;
+    // 高块 / 拖拽中：上下都能调；矮块闲置：只留底边以便拉长，其余留给长按拖动
+    final showTopHandle = !isShort;
+    const showBottomHandle = true;
+    final handleHeight = isShort
+        ? 10.0
+        : TaskTimeBlockMetrics.resizeHandleHeight;
 
     return Positioned(
       top: _displayTop,
@@ -80,6 +112,7 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
       width: availableWidth,
       height: _displayHeight,
       child: Stack(
+        clipBehavior: Clip.none,
         children: [
           Positioned.fill(
             child: LongPressDraggable<TaskEntity>(
@@ -132,36 +165,36 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
               ),
             ),
           ),
-          // 上边缘：调整开始时间（结束不变）
-          Positioned(
-            top: 0,
-            left: 0,
-            right: _completeHitSize,
-            height: TaskTimeBlockMetrics.resizeHandleHeight,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onVerticalDragStart: (_) => _beginResize(),
-              onVerticalDragUpdate: _onTopResizeUpdate,
-              onVerticalDragEnd: (_) => _commitResize(),
-              onVerticalDragCancel: _cancelResize,
-              child: const SizedBox(height: 12),
+          if (showTopHandle)
+            Positioned(
+              top: 0,
+              left: 0,
+              right: _completeHitSize,
+              height: handleHeight,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onVerticalDragStart: (_) => _beginResize(),
+                onVerticalDragUpdate: _onTopResizeUpdate,
+                onVerticalDragEnd: (_) => _commitResize(),
+                onVerticalDragCancel: _cancelResize,
+                child: SizedBox(height: handleHeight),
+              ),
             ),
-          ),
-          // 下边缘：调整结束时间（开始不变）
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: TaskTimeBlockMetrics.resizeHandleHeight,
-            child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onVerticalDragStart: (_) => _beginResize(),
-              onVerticalDragUpdate: _onBottomResizeUpdate,
-              onVerticalDragEnd: (_) => _commitResize(),
-              onVerticalDragCancel: _cancelResize,
-              child: const SizedBox(height: 12),
+          if (showBottomHandle)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: handleHeight,
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onVerticalDragStart: (_) => _beginResize(),
+                onVerticalDragUpdate: _onBottomResizeUpdate,
+                onVerticalDragEnd: (_) => _commitResize(),
+                onVerticalDragCancel: _cancelResize,
+                child: SizedBox(height: handleHeight),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -245,7 +278,7 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
     var newTop = TaskTimeBlockMetrics.snapPixels(originTop + _accumDy);
     newTop = newTop.clamp(
       0.0,
-      bottom - TaskTimeBlockMetrics.minSnapHeight,
+      bottom - TaskTimeBlockMetrics.minResizeHeight,
     );
     final newHeight = bottom - newTop;
 
@@ -268,7 +301,7 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
     var newHeight = TaskTimeBlockMetrics.snapPixels(originHeight + _accumDy);
     final maxHeight = TaskTimeBlockMetrics.gridHeight - originTop;
     newHeight = newHeight.clamp(
-      TaskTimeBlockMetrics.minSnapHeight,
+      TaskTimeBlockMetrics.minResizeHeight,
       maxHeight,
     );
 
@@ -300,9 +333,11 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
         !startAt.isSame(originalStart, unit: Unit.minute) ||
         !endAt.isSame(originalEnd, unit: Unit.minute);
 
-    _resetResizeState();
     context.read<TaskTimeBlockBloc>().add(const TaskTimeBlockHoverCleared());
-    if (!changed) return;
+    if (!changed) {
+      _resetResizeState();
+      return;
+    }
 
     context.read<TaskListBloc>().add(
       TaskListTaskTimeBlocked(
@@ -311,6 +346,7 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
         endAt: endAt,
       ),
     );
+    // 不立即清除 _resizeTop/_resizeHeight，保持新几何直到 BLoC 下发新 item。
   }
 
   void _cancelResize() {
@@ -326,6 +362,15 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
       _originHeight = null;
       _accumDy = 0;
     });
+  }
+
+  /// 不触发 setState 的清除；在 didUpdateWidget 中 BLoC 已驱动重建时使用。
+  void _clearResizeState() {
+    _resizeTop = null;
+    _resizeHeight = null;
+    _originTop = null;
+    _originHeight = null;
+    _accumDy = 0;
   }
 
   void _openTaskDetail(BuildContext context) {

@@ -61,7 +61,7 @@ class TaskWeekListView extends StatelessWidget {
                     );
                     return CustomScrollView(
                       slivers: [
-                        // const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                        // const SliverToBoxAdapter(child: SizedBox(height:16)),
                         for (final day in weekDays)
                           _buildDayGroup(context, day, crossAxisCount),
                         _buildBottomSafeAreaSliver(context),
@@ -360,6 +360,9 @@ class _TaskWeekListDayTasksSliver extends StatelessWidget {
     return TaskDraggable(
       task: task,
       feedbackBuilder: _buildDragFeedback,
+      onDragCompleted: (task) => context.read<TaskListBloc>().add(
+        TaskListTaskDragCompleted(task: task),
+      ),
       child: tile,
     );
   }

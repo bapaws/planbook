@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
-import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 
@@ -67,37 +66,6 @@ class RootTaskWeekTitleView extends StatelessWidget {
                   size: 12,
                   color: theme.colorScheme.primary,
                 ),
-              ),
-            ),
-          ),
-        ),
-        CupertinoButton(
-          padding: const EdgeInsets.all(8),
-          minimumSize: const Size.square(
-            kMinInteractiveDimensionCupertino,
-          ),
-          onPressed: () {
-            context.read<TaskWeekBloc>().add(
-              const TaskWeekViewModeChanged(),
-            );
-          },
-          child: Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(
-                kMinInteractiveDimension,
-              ),
-            ),
-            child: BlocSelector<TaskWeekBloc, TaskWeekState, TaskWeekViewMode>(
-              selector: (state) => state.viewMode,
-              builder: (context, viewMode) => Icon(
-                viewMode == TaskWeekViewMode.grid
-                    ? FontAwesomeIcons.listUl
-                    : FontAwesomeIcons.tableCells,
-                size: 12,
-                color: theme.colorScheme.primary,
               ),
             ),
           ),

@@ -304,6 +304,58 @@ void main() {
       expect(childEntity.task.layer, 1);
     });
 
+    test('delayTask preserves completion for recurring task', () async {
+      final now = Jiffy.now().startOf(Unit.day);
+      final task =
+          _testTask(
+            id: 'recurring-completed',
+            title: 'Recurring Completed',
+            startAt: now,
+          ).copyWith(
+            recurrenceRule: const Value(
+              RecurrenceRule(frequency: RecurrenceFrequency.daily),
+            ),
+          );
+      await repository.create(task: task);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+
+      final occurrenceAt = now.add(days: 2);
+      await db
+          .into(db.taskActivities)
+          .insert(
+            TaskActivitiesCompanion.insert(
+              taskId: const Value('recurring-completed'),
+              occurrenceAt: Value(occurrenceAt),
+              completedAt: Value(Jiffy.now()),
+              activityType: const Value('completed'),
+            ),
+          );
+
+      final entity = await repository.getTaskEntityById(
+        'recurring-completed',
+        occurrenceAt: occurrenceAt,
+      );
+      expect(entity, isNotNull);
+      expect(entity!.isCompleted, isTrue);
+
+      final delayed = await repository.delayTask(
+        entity: entity,
+        delayTo: now.add(days: 3),
+      );
+      expect(delayed, isNotNull);
+      expect(delayed!.isCompleted, isTrue);
+
+      final originalActivity =
+          await (db.select(db.taskActivities)
+                ..where((ta) => ta.taskId.equals('recurring-completed'))
+                ..where(
+                  (ta) => ta.occurrenceAt.equals(occurrenceAt.dateTime),
+                ))
+              .getSingleOrNull();
+      expect(originalActivity, isNotNull);
+      expect(originalActivity!.deletedAt, isNotNull);
+    });
+
     test('updateTaskPriority changes priority', () async {
       final task = _testTask(
         id: 'task-5',

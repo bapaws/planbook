@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -22,12 +23,12 @@ typedef TaskDragTargetBuilder =
 /// 通用任务投放目标。
 ///
 /// 统一封装 `DragTarget<TaskEntity>` 样板代码，供任务显示区域复用：
-/// - 日期格 / 列表日格（现 [TaskDropArea]）
-/// - 四象限（现 [TaskPriorityDropArea]）
+/// - 日期格 / 列表日格（现 `TaskDropArea`）
+/// - 四象限（现 `TaskPriorityDropArea`）
 /// - 重点 / 总结卡片
 /// - Source Panel
-/// - 时间块（需要 [onAcceptWithDetails] 取 offset）
-/// - 列表整区 overlay（见 [SliverTaskDragTarget]）
+/// - 时间块（需要 `onAcceptWithDetails` 取 offset）
+/// - 列表整区 overlay（见 `SliverTaskDragTarget`）
 ///
 /// 用法：
 /// ```dart
@@ -68,7 +69,7 @@ typedef TaskDragTargetBuilder =
 /// 两者都提供时只调用 [onAcceptWithDetails]。
 ///
 /// 业务语义（改日期 / 改优先级 / 打标签等）由调用方在回调里处理；
-/// 现有的 [TaskDropArea]、[TaskPriorityDropArea] 可在 review 后改为内部复用本组件。
+/// 现有的 `TaskDropArea`、`TaskPriorityDropArea` 可在 review 后改为内部复用本组件。
 class TaskDragTarget extends StatelessWidget {
   const TaskDragTarget({
     required this.child,
@@ -78,6 +79,7 @@ class TaskDragTarget extends StatelessWidget {
     this.onMove,
     this.onLeave,
     this.builder,
+    this.operation = TaskDragOperation.move,
     super.key,
   });
 
@@ -103,6 +105,9 @@ class TaskDragTarget extends StatelessWidget {
   /// 自定义 builder；默认直接展示 [child]。
   final TaskDragTargetBuilder? builder;
 
+  /// 目标被接受后执行的业务操作，用于通知源组件是否应从列表中移除任务。
+  final TaskDragOperation operation;
+
   @override
   Widget build(BuildContext context) {
     final accept = onAccept;
@@ -116,6 +121,7 @@ class TaskDragTarget extends StatelessWidget {
       onMove: onMove,
       onLeave: onLeave,
       onAcceptWithDetails: (details) {
+        TaskDragOperationNotifier.instance.operation = operation;
         if (acceptWithDetails != null) {
           acceptWithDetails(details);
         } else {
@@ -135,7 +141,7 @@ class TaskDragTarget extends StatelessWidget {
 /// [TaskDragTarget]，覆盖整个列表滚动范围以接收投放。
 /// Overlay 默认不绘制内容（[SizedBox.shrink]），不挡住下方列表交互。
 ///
-/// 用法（对齐 [TaskListView.onTaskDropped]）：
+/// 用法（对齐 `TaskListView.onTaskDropped`）：
 /// ```dart
 /// SliverTaskDragTarget(
 ///   onAccept: onTaskDropped,
@@ -151,6 +157,7 @@ class SliverTaskDragTarget extends StatelessWidget {
     this.onAcceptWithDetails,
     this.onWillAcceptWithDetails,
     this.overlayBuilder,
+    this.operation = TaskDragOperation.move,
     super.key,
   });
 
@@ -173,6 +180,9 @@ class SliverTaskDragTarget extends StatelessWidget {
   /// 需要悬停高亮时传入，注意不要挡住下方列表的点击（优先用半透明装饰）。
   final TaskDragTargetBuilder? overlayBuilder;
 
+  /// 目标被接受后执行的业务操作。
+  final TaskDragOperation operation;
+
   @override
   Widget build(BuildContext context) {
     if (onAccept == null && onAcceptWithDetails == null) {
@@ -188,6 +198,7 @@ class SliverTaskDragTarget extends StatelessWidget {
             onAcceptWithDetails: onAcceptWithDetails,
             onWillAcceptWithDetails: onWillAcceptWithDetails,
             builder: overlayBuilder,
+            operation: operation,
             child: const SizedBox.shrink(),
           ),
         ),

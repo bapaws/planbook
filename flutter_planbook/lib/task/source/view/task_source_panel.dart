@@ -14,7 +14,6 @@ import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
 import 'package:flutter_planbook/task/source/model/task_source_panel_type.dart';
 import 'package:flutter_planbook/task/source/picker/model/task_source_panel_picker_result.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 /// 右侧任务列
@@ -87,22 +86,22 @@ class _TaskSourcePanelView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<TaskSourcePanelBloc, TaskSourcePanelState>(
                 builder: (context, state) {
-                  if (state.status.isLoading && state.tasks.isEmpty) {
-                    return const Center(
-                      child: CupertinoActivityIndicator(),
-                    );
-                  }
-                  if (state.tasks.isEmpty) {
-                    return Center(
-                      child: Text(
-                        context.l10n.taskEmptySourcePanel,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.outline,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }
+                  // if (state.status.isLoading && state.tasks.isEmpty) {
+                  //   return const Center(
+                  //     child: CupertinoActivityIndicator(),
+                  //   );
+                  // }
+                  // if (state.tasks.isEmpty) {
+                  //   return Center(
+                  //     child: Text(
+                  //       context.l10n.taskEmptySourcePanel,
+                  //       style: theme.textTheme.bodySmall?.copyWith(
+                  //         color: theme.colorScheme.outline,
+                  //       ),
+                  //       textAlign: TextAlign.center,
+                  //     ),
+                  //   );
+                  // }
                   return ListView.separated(
                     itemCount: state.tasks.length,
                     separatorBuilder: (context, index) {
@@ -111,9 +110,16 @@ class _TaskSourcePanelView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final task = state.tasks[index];
                       return TaskDraggable(
+                        key: ValueKey(task),
                         task: task,
                         feedbackBuilder: _buildDragFeedback,
+                        onDragCompleted: (task) {
+                          context.read<TaskSourcePanelBloc>().add(
+                            TaskSourcePanelTaskDragCompleted(task),
+                          );
+                        },
                         child: TaskListTile.week(
+                          key: ValueKey(task),
                           task: task,
                           onPressed: (task) => _openTaskDetail(context, task),
                           onEdited: (task) => _openTaskEdit(context, task),

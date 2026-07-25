@@ -84,3 +84,13 @@ final class TaskSourcePanelTaskDropped extends TaskSourcePanelEvent {
   @override
   List<Object?> get props => [task];
 }
+
+/// 拖拽被接受后，Source Panel 同步移除任务。
+final class TaskSourcePanelTaskDragCompleted extends TaskSourcePanelEvent {
+  const TaskSourcePanelTaskDragCompleted(this.task);
+
+  final TaskEntity task;
+
+  @override
+  List<Object?> get props => [task];
+}

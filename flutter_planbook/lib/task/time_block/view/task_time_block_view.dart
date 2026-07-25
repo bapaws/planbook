@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
@@ -29,10 +32,21 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
   late final ScrollController _scrollController;
   final GlobalKey _gridKey = GlobalKey();
 
+  /// 拖拽自动滚动
+  Timer? _autoScrollTimer;
+  double _autoScrollVelocity = 0;
+
+  /// DragTarget 反馈位置（用于落点预览）
+  Offset? _lastDragFeedbackOffset;
+
+  /// 手指全局坐标（仅用于触发上下自动滚动）
+  Offset? _pointerGlobal;
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_handlePointerEvent);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToCurrentTime();
     });
@@ -40,8 +54,20 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
 
   @override
   void dispose() {
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(
+      _handlePointerEvent,
+    );
+    _stopAutoScroll();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _handlePointerEvent(PointerEvent event) {
+    if (event is PointerDownEvent ||
+        event is PointerMoveEvent ||
+        event is PointerHoverEvent) {
+      _pointerGlobal = event.position;
+    }
   }
 
   /// 打开时滚动到当前时刻附近（约在视口 1/3 处）
@@ -87,6 +113,7 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
                           },
                         ),
                       ),
+                      const SizedBox(width: 8),
                     ],
                   ),
                   const _TaskTimeBlockCurrentTimeOverlay(),
@@ -95,8 +122,8 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
               ),
             ),
             SizedBox(
-              height: kRootBottomBarHeight +
-                  MediaQuery.of(context).padding.bottom,
+              height:
+                  kRootBottomBarHeight + MediaQuery.of(context).padding.bottom,
             ),
           ],
         ),
@@ -105,16 +132,24 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
   }
 
   void _onDragMove(DragTargetDetails<TaskEntity> details) {
+    _lastDragFeedbackOffset = details.offset;
     final minutes = _snapMinutesFromGlobalOffset(details.offset);
-    if (minutes == null) return;
-    context.read<TaskTimeBlockBloc>().add(TaskTimeBlockHoverUpdated(minutes));
+    if (minutes != null) {
+      context.read<TaskTimeBlockBloc>().add(TaskTimeBlockHoverUpdated(minutes));
+    }
+    // 自动滚动只看手指位置，不看反馈块顶部
+    _updateAutoScroll(_pointerGlobal ?? details.offset);
   }
 
   void _clearHover() {
+    _stopAutoScroll();
+    _lastDragFeedbackOffset = null;
     context.read<TaskTimeBlockBloc>().add(const TaskTimeBlockHoverCleared());
   }
 
   void _onTaskDropped(TaskEntity task, Offset offset) {
+    _stopAutoScroll();
+    _lastDragFeedbackOffset = null;
     final minutes = _snapMinutesFromGlobalOffset(offset);
     if (minutes == null) return;
 
@@ -134,11 +169,90 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
 
   /// 将全局坐标转为对齐后的分钟数（仅做坐标转换，不处理业务数据）
   int? _snapMinutesFromGlobalOffset(Offset globalOffset) {
-    final renderBox =
-        _gridKey.currentContext?.findRenderObject() as RenderBox?;
+    final renderBox = _gridKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return null;
     final localOffset = renderBox.globalToLocal(globalOffset);
     return TaskTimeBlockMetrics.snapMinutesFromLocalDy(localOffset.dy);
+  }
+
+  /// 根据手指相对视口位置，决定向上 / 向下自动滚动
+  void _updateAutoScroll(Offset pointerGlobal) {
+    if (!_scrollController.hasClients) return;
+
+    final scrollContext =
+        _scrollController.position.context.notificationContext;
+    final box = scrollContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return;
+
+    final localY = box.globalToLocal(pointerGlobal).dy;
+    final height = box.size.height;
+    const topEdge = TaskTimeBlockMetrics.autoScrollEdgeExtent;
+    // 底部热区 = 基础边缘 + 导航栏 + 安全区 + 额外余量
+    final bottomEdge =
+        TaskTimeBlockMetrics.autoScrollEdgeExtent +
+        TaskTimeBlockMetrics.autoScrollBottomExtraExtent +
+        kRootBottomBarHeight +
+        MediaQuery.of(context).padding.bottom;
+    const maxStep = TaskTimeBlockMetrics.autoScrollMaxStep;
+
+    var velocity = 0.0;
+    if (localY < topEdge) {
+      // 越靠近顶部滚得越快（负值 = 向上）
+      velocity = -maxStep * (1 - (localY / topEdge).clamp(0.0, 1.0));
+    } else if (localY > height - bottomEdge) {
+      final t = ((localY - (height - bottomEdge)) / bottomEdge).clamp(0.0, 1.0);
+      velocity = maxStep * t;
+    }
+
+    if (velocity == 0) {
+      _stopAutoScroll();
+      return;
+    }
+    _autoScrollVelocity = velocity;
+    _startAutoScroll();
+  }
+
+  void _startAutoScroll() {
+    if (_autoScrollTimer != null) return;
+    _autoScrollTimer = Timer.periodic(const Duration(milliseconds: 16), (_) {
+      if (!mounted || !_scrollController.hasClients) {
+        _stopAutoScroll();
+        return;
+      }
+      final position = _scrollController.position;
+      final next = (position.pixels + _autoScrollVelocity).clamp(
+        0.0,
+        position.maxScrollExtent,
+      );
+      if (next == position.pixels) {
+        _stopAutoScroll();
+        return;
+      }
+      _scrollController.jumpTo(next);
+
+      // 内容移动后，仍按反馈块位置刷新落点预览
+      final feedback = _lastDragFeedbackOffset;
+      if (feedback != null) {
+        final minutes = _snapMinutesFromGlobalOffset(feedback);
+        if (minutes != null) {
+          context.read<TaskTimeBlockBloc>().add(
+            TaskTimeBlockHoverUpdated(minutes),
+          );
+        }
+      }
+
+      // 手指可能仍停在边缘，按最新触点维持/调整滚动速度
+      final pointer = _pointerGlobal;
+      if (pointer != null) {
+        _updateAutoScroll(pointer);
+      }
+    });
+  }
+
+  void _stopAutoScroll() {
+    _autoScrollTimer?.cancel();
+    _autoScrollTimer = null;
+    _autoScrollVelocity = 0;
   }
 }
 

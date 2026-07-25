@@ -168,7 +168,13 @@ List<TaskTimeBlockLayoutItem> buildTaskTimeBlockLayoutItems({
 }
 
 /// 解析任务时长（分钟）；无效时回退默认时长
+///
+/// 全天任务（侧栏日期/全天来源）的 endAt 通常是当天结束，
+/// 投放时间块时不应保留该跨度，改用默认 1 小时。
 int resolveTaskDurationMinutes(TaskEntity task) {
+  if (task.isAllDay) {
+    return TaskTimeBlockMetrics.defaultDurationMinutes;
+  }
   final start = task.startAt;
   final end = task.endAt;
   if (start != null && end != null) {

@@ -65,6 +65,16 @@ final class TaskListDayAllRequested extends TaskListRequested {
   }
 }
 
+/// 拖拽被接受后，源列表同步移除任务的事件。
+final class TaskListTaskDragCompleted extends TaskListEvent {
+  const TaskListTaskDragCompleted({required this.task});
+
+  final TaskEntity task;
+
+  @override
+  List<Object?> get props => [task];
+}
+
 final class TaskListCompleted extends TaskListEvent {
   const TaskListCompleted({required this.task});
 

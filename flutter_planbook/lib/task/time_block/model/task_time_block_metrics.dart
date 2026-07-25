@@ -9,6 +9,9 @@ abstract final class TaskTimeBlockMetrics {
   /// 拖拽落点对齐粒度（分钟）
   static const int snapMinutes = 5;
 
+  /// 上下边缘调整时长时的最短时长（分钟）；对齐粒度仍为 [snapMinutes]
+  static const int minResizeDurationMinutes = 15;
+
   /// 时间轴起始小时
   static const int startHour = 0;
 
@@ -21,6 +24,18 @@ abstract final class TaskTimeBlockMetrics {
   /// 上下边缘拖拽热区高度
   static const double resizeHandleHeight = 14;
 
+  /// 矮于此高度时不启用边缘调时长，优先长按拖动改开始时间
+  static const double minHeightForResizeHandles = hourHeight * 0.5;
+
+  /// 拖拽靠近视口上下边缘多少像素内触发自动滚动
+  static const double autoScrollEdgeExtent = 72;
+
+  /// 底部额外热区（在导航栏/安全区之上再扩大，便于触发向下滚）
+  static const double autoScrollBottomExtraExtent = 96;
+
+  /// 自动滚动每帧最大位移（约 16ms 一帧）
+  static const double autoScrollMaxStep = 12;
+
   /// 默认任务时长（分钟）
   static const int defaultDurationMinutes = 60;
 
@@ -32,6 +47,10 @@ abstract final class TaskTimeBlockMetrics {
 
   /// 最小块对应的像素高度（对齐粒度）
   static const double minSnapHeight = snapMinutes / 60 * hourHeight;
+
+  /// 边缘调时长时的最短块高（对应 [minResizeDurationMinutes]）
+  static const double minResizeHeight =
+      minResizeDurationMinutes / 60 * hourHeight;
 
   /// 预生成的整点标签（00:00 … 23:00）
   static final List<String> hourLabels = [

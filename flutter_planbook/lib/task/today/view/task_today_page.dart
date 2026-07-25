@@ -1,8 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
@@ -191,7 +189,7 @@ class TaskTodayPage extends StatelessWidget {
                                 firstChild: const TaskSourcePanel(
                                   key: ValueKey('source-panel'),
                                 ),
-                                secondChild: const _TaskSourcePanelHandle(
+                                secondChild: const SizedBox.shrink(
                                   key: ValueKey('source-panel-handle'),
                                 ),
                                 crossFadeState: showSourcePanel
@@ -233,39 +231,6 @@ class TaskTodayPage extends StatelessWidget {
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _TaskSourcePanelHandle extends StatelessWidget {
-  const _TaskSourcePanelHandle({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
-      onPressed: () => context.read<RootTaskBloc>().add(
-        const RootTaskSourcePanelVisibilityChanged(showSourcePanel: true),
-      ),
-      child: Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.only(right: 8),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 12),
-        decoration: BoxDecoration(
-          color: context.blueColorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: context.blueColorScheme.surfaceContainerHighest,
-          ),
-        ),
-        child: Icon(
-          CupertinoIcons.chevron_left,
-          size: 14,
-          color: colorScheme.primary,
-        ),
       ),
     );
   }

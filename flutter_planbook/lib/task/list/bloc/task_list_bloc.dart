@@ -10,6 +10,7 @@ import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'task_list_event.dart';
 part 'task_list_state.dart';
@@ -30,17 +31,27 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     // 同一事件会进两个 handler，出现 getTaskEntities 与 getAllTodayTaskEntities 两套流竞态，
     // 四象限 UI 会错乱。
     on<TaskListRequested>(_onLoadRequested, transformer: restartable());
-    on<TaskListCompleted>(_onCompleted);
+    on<TaskListCompleted>(_onCompleted, transformer: sequential());
     on<TaskListDeleteRequested>(_onDeleteRequested);
-    on<TaskListDeleteConfirmed>(_onDeleteConfirmed);
+    on<TaskListDeleteConfirmed>(_onDeleteConfirmed, transformer: sequential());
     on<TaskListNoteCreated>(_onNoteCreated, transformer: sequential());
-    on<TaskListTaskDelayed>(_onTaskDelayed);
+    on<TaskListTaskDelayed>(_onTaskDelayed, transformer: sequential());
     on<TaskListTaskExpanded>(_onTaskExpanded);
-    on<TaskListPriorityChanged>(_onPriorityChanged);
+    on<TaskListPriorityChanged>(
+      _onPriorityChanged,
+      transformer: sequential(),
+    );
     on<TaskListTaskScheduled>(_onTaskScheduled, transformer: sequential());
-    on<TaskListTaskTimeBlocked>(_onTaskTimeBlocked, transformer: sequential());
+    on<TaskListTaskTimeBlocked>(
+      _onTaskTimeBlocked,
+      transformer: sequential(),
+    );
     on<TaskListTaskAllDayScheduled>(
       _onTaskAllDayScheduled,
+      transformer: sequential(),
+    );
+    on<TaskListTaskDragCompleted>(
+      _onTaskDragCompleted,
       transformer: sequential(),
     );
   }
@@ -52,6 +63,15 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   final TaskPriority? priority;
 
   Set<String> _selectedTagIds = {};
+
+  /// 当前列表的单个标签过滤（与 [_selectedTagIds] 不同，这是列表自身的 tagId）。
+  String? _tagId;
+
+  /// 刚被目标事件处理过的任务 ID。
+  ///
+  /// 用于区分「同 BLoC 内拖拽」（目标事件已更新列表）和「跨 BLoC 拖拽」
+  /// （源列表需要在 onDragCompleted 时自己移除）。
+  final Set<String> _justDroppedTaskIds = {};
 
   Future<void> _onLoadRequested(
     TaskListRequested event,
@@ -69,8 +89,15 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     Emitter<TaskListState> emit,
   ) async {
     _selectedTagIds = event.selectedTagIds;
+    _tagId = event.tagId;
     final date = event.date ?? state.date ?? Jiffy.now();
-    emit(state.copyWith(status: PageStatus.loading, date: date));
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        date: date,
+        isCompleted: () => event.isCompleted,
+      ),
+    );
     final stream = _tasksRepository.getTaskEntities(
       mode: _mode,
       date: date,
@@ -85,8 +112,15 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     Emitter<TaskListState> emit,
   ) async {
     _selectedTagIds = event.selectedTagIds;
+    _tagId = event.tagId;
     final date = event.date ?? state.date ?? Jiffy.now();
-    emit(state.copyWith(status: PageStatus.loading, date: date));
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        date: date,
+        isCompleted: () => event.isCompleted,
+      ),
+    );
     final stream = _tasksRepository.getAllTodayTaskEntities(
       mode: _mode,
       day: date,
@@ -98,6 +132,88 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   }
 
   TaskListState _onTasksDataChanged(List<TaskEntity> tasks) {
+    final processedTasks = _applyOptimisticOperations(tasks);
+    final displayedTasks = _buildDisplayedTasks(processedTasks);
+
+    // 计算未完成任务数时仍用原始 stream 数据，避免乐观添加/移除影响计数。
+    final uncompletedTasks = _selectedTagIds.isEmpty
+        ? tasks
+        : tasks
+              .where(
+                (task) =>
+                    task.tags.any((tag) => _selectedTagIds.contains(tag.id)),
+              )
+              .toList();
+
+    // 移除已经反映到 stream 中的乐观操作。
+    // 对于重复任务，repository 会创建新 ID 的分离实例，原 ID 从 stream 中消失，
+    // 此时也应清除旧 ID 的乐观更新，避免旧任务和新任务同时显示。
+    final remainingRemovedIds = state.optimisticRemovedTaskIds
+        .where((id) => tasks.any((t) => t.id == id))
+        .toSet();
+    final remainingUpdatedTasks = state.optimisticUpdatedTasks.where(
+      (updated) {
+        final streamTask = tasks.firstWhereOrNull(
+          (t) => t.id == updated.id,
+        );
+        if (streamTask == null) return false;
+        return !_tasksMatch(streamTask, updated);
+      },
+    ).toList();
+
+    return state.copyWith(
+      status: PageStatus.success,
+      tasks: displayedTasks,
+      uncompletedTaskCount: uncompletedTasks
+          .where((task) => !task.isCompleted)
+          .length,
+      optimisticRemovedTaskIds: remainingRemovedIds,
+      optimisticUpdatedTasks: remainingUpdatedTasks,
+    );
+  }
+
+  /// 将当前乐观操作应用到 stream 数据上。
+  List<TaskEntity> _applyOptimisticOperations(List<TaskEntity> tasks) {
+    var processedTasks = tasks;
+
+    // 先应用更新：stream 中的旧任务被乐观版本替换；不存在的任务若满足查询条件则追加。
+    for (final updated in state.optimisticUpdatedTasks) {
+      final index = processedTasks.indexWhere((t) => t.id == updated.id);
+      if (index != -1) {
+        processedTasks = [...processedTasks]..[index] = updated;
+      } else if (_taskMatchesCurrentQuery(updated)) {
+        processedTasks = [...processedTasks, updated];
+      }
+    }
+
+    // 再应用移除。
+    if (state.optimisticRemovedTaskIds.isNotEmpty) {
+      processedTasks = processedTasks
+          .where((t) => !state.optimisticRemovedTaskIds.contains(t.id))
+          .toList();
+    }
+
+    return processedTasks;
+  }
+
+  /// 判断两个任务在关键属性上是否一致（用于确认 stream 已反映乐观更新）。
+  bool _tasksMatch(TaskEntity a, TaskEntity b) {
+    return a.priority == b.priority &&
+        _sameMinute(a.startAt, b.startAt) &&
+        _sameMinute(a.endAt, b.endAt) &&
+        _sameMinute(a.dueAt, b.dueAt) &&
+        a.isAllDay == b.isAllDay &&
+        a.isCompleted == b.isCompleted;
+  }
+
+  bool _sameMinute(Jiffy? a, Jiffy? b) {
+    if (a == null && b == null) return true;
+    if (a == null || b == null) return false;
+    return a.isSame(b, unit: Unit.minute);
+  }
+
+  /// 将原始任务列表按当前选中的标签和展开状态展开为显示列表。
+  List<TaskEntity> _buildDisplayedTasks(List<TaskEntity> tasks) {
     final filteredTasks = _selectedTagIds.isEmpty
         ? tasks
         : tasks
@@ -116,21 +232,106 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         displayedTasks.add(task);
       }
     }
-    return state.copyWith(
-      status: PageStatus.success,
-      tasks: displayedTasks,
-      uncompletedTaskCount: filteredTasks
-          .where((task) => !task.isCompleted)
-          .length,
+    return displayedTasks;
+  }
+
+  /// 用 [newTask] 替换列表中相同 ID 的任务；不存在则追加。
+  /// 如果 [newTask] 不再满足当前列表查询条件，则改为移除。
+  List<TaskEntity> _optimisticTasksWith(TaskEntity newTask) {
+    if (!_taskMatchesCurrentQuery(newTask)) {
+      return _removeTask(state.tasks, newTask.id);
+    }
+    return _replaceTask(state.tasks, newTask);
+  }
+
+  /// 更新乐观更新列表中的任务；已存在则替换，不存在则追加。
+  List<TaskEntity> _optimisticUpdatedTasksWith(TaskEntity updated) {
+    final index = state.optimisticUpdatedTasks.indexWhere(
+      (t) => t.id == updated.id,
     );
+    if (index == -1) return [...state.optimisticUpdatedTasks, updated];
+    return [...state.optimisticUpdatedTasks]..[index] = updated;
+  }
+
+  /// 判断任务是否满足当前列表的查询条件（mode / date / priority / tag / 完成状态）。
+  bool _taskMatchesCurrentQuery(TaskEntity task) {
+    if (priority != null && task.priority != priority) return false;
+    if (_tagId != null && !task.tags.any((t) => t.id == _tagId)) return false;
+    if (state.isCompleted != null && task.isCompleted != state.isCompleted) {
+      return false;
+    }
+
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+
+    switch (_mode) {
+      case TaskListMode.inbox:
+        if (task.startAt != null || task.dueAt != null || task.endAt != null) {
+          return false;
+        }
+      case TaskListMode.today:
+        final date = state.date;
+        if (date == null) return true;
+        if (taskDay == null || !taskDay.isSame(date, unit: Unit.day)) {
+          return false;
+        }
+      case TaskListMode.overdue:
+        final date = state.date ?? Jiffy.now();
+        if (taskDay == null || !taskDay.isBefore(date, unit: Unit.day)) {
+          return false;
+        }
+      case TaskListMode.tag:
+        throw UnimplementedError();
+    }
+    return true;
+  }
+
+  /// 用 [newTask] 替换列表中相同 ID 的任务；不存在则追加。
+  List<TaskEntity> _replaceTask(List<TaskEntity> tasks, TaskEntity newTask) {
+    final index = tasks.indexWhere((t) => t.id == newTask.id);
+    if (index == -1) return [...tasks, newTask];
+    return [...tasks]..[index] = newTask;
+  }
+
+  /// 从列表中移除指定 ID 的任务。
+  List<TaskEntity> _removeTask(List<TaskEntity> tasks, String taskId) {
+    return tasks.where((t) => t.id != taskId).toList();
   }
 
   Future<void> _onCompleted(
     TaskListCompleted event,
     Emitter<TaskListState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
     final task = event.task;
+    // 完成按钮是切换：当前未完成则完成，当前已完成则取消完成。
+    final isCompleting = !task.isCompleted;
+
+    // 根据切换方向构造乐观任务实体。
+    final optimisticTask = isCompleting
+        ? task.copyWith(
+            activity: () => TaskActivity(
+              id: const Uuid().v4(),
+              createdAt: Jiffy.now(),
+              taskId: task.id,
+              occurrenceAt: task.occurrence?.occurrenceAt,
+              completedAt: Jiffy.now(),
+              activityType: 'completed',
+            ),
+          )
+        : task.copyWith(activity: () => null);
+
+    // 按当前列表的完成状态过滤决定是更新还是移除。
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(optimisticTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(optimisticTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          task.id,
+        }),
+      ),
+    );
+
     var occurrenceAt = task.occurrence?.occurrenceAt;
     if (task.parentId != null) {
       final parentTask = state.tasks.firstWhereOrNull(
@@ -147,7 +348,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     for (final activity in activities) {
       add(TaskListNoteCreated(activity: activity));
     }
-    emit(state.copyWith(status: PageStatus.success));
   }
 
   Future<void> _onDeleteRequested(
@@ -189,6 +389,17 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     final mode = event.mode;
     if (mode == null) return;
 
+    // 同步乐观移除
+    emit(
+      state.copyWith(
+        tasks: _removeTask(state.tasks, task.id),
+        optimisticRemovedTaskIds: {
+          ...state.optimisticRemovedTaskIds,
+          task.id,
+        },
+      ),
+    );
+
     if (task.recurrenceRule == null ||
         mode == RecurringTaskDeleteMode.allEvents) {
       await _taskActionService.deleteTask(task.id);
@@ -199,7 +410,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         occurrenceAt: task.occurrence?.occurrenceAt,
       );
     }
-    emit(state.copyWith(status: PageStatus.success));
   }
 
   Future<void> _onNoteCreated(
@@ -249,12 +459,30 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         delayTo = Jiffy.now();
       }
     }
-    emit(state.copyWith(status: PageStatus.loading));
+
+    // 同步乐观更新日期
+    final updatedTask = event.task.copyWith(
+      task: event.task.task.copyWith(
+        startAt: Value(delayTo),
+        endAt: event.task.endAt != null
+            ? Value(delayTo.endOf(Unit.day))
+            : const Value(null),
+        dueAt: event.task.dueAt != null ? Value(delayTo) : const Value(null),
+      ),
+    );
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(updatedTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+      ),
+    );
+    _justDroppedTaskIds.add(event.task.id);
+
     await _tasksRepository.delayTask(
       entity: event.task,
       delayTo: delayTo,
     );
-    emit(state.copyWith(status: PageStatus.success));
+    _justDroppedTaskIds.remove(event.task.id);
   }
 
   Future<void> _onTaskExpanded(
@@ -299,21 +527,50 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     Emitter<TaskListState> emit,
   ) async {
     if (event.task.priority == event.targetPriority) return;
-    emit(state.copyWith(status: PageStatus.loading));
+
+    // 同步乐观更新优先级
+    final updatedTask = event.task.copyWith(
+      task: event.task.task.copyWith(priority: Value(event.targetPriority)),
+    );
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(updatedTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+      ),
+    );
+    _justDroppedTaskIds.add(event.task.id);
+
     await _tasksRepository.updateTaskPriority(
       event.task,
       event.targetPriority,
     );
-    emit(state.copyWith(status: PageStatus.success));
+    _justDroppedTaskIds.remove(event.task.id);
   }
 
   Future<void> _onTaskScheduled(
     TaskListTaskScheduled event,
     Emitter<TaskListState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
     final task = event.task;
     final targetDate = event.targetDate.startOf(Unit.day);
+
+    // 同步乐观更新：任务移动到目标日期并设置优先级
+    final updatedTask = task.copyWith(
+      task: task.task.copyWith(
+        startAt: Value(targetDate),
+        endAt: Value(targetDate.endOf(Unit.day)),
+        isAllDay: true,
+        priority: Value(event.targetPriority),
+      ),
+      tags: event.tags ?? task.tags,
+    );
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(updatedTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+      ),
+    );
+    _justDroppedTaskIds.add(task.id);
 
     final hasDate =
         task.startAt != null || task.dueAt != null || task.endAt != null;
@@ -347,17 +604,41 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         );
       }
     }
-    emit(state.copyWith(status: PageStatus.success));
+    _justDroppedTaskIds.remove(task.id);
   }
 
   Future<void> _onTaskTimeBlocked(
     TaskListTaskTimeBlocked event,
     Emitter<TaskListState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
     final task = event.task;
     final startAt = event.startAt;
     final endAt = event.endAt;
+
+    // 时间块布局优先使用 occurrence 的 startAt/endAt，
+    // 所以重复任务实例需要同步更新 occurrence，否则乐观位置会弹回旧位置。
+    final occurrence = task.occurrence;
+    final updatedOccurrence = occurrence?.copyWith(
+      startAt: Value(startAt),
+      endAt: Value(endAt),
+    );
+
+    // 同步乐观更新时间
+    final updatedTask = task.copyWith(
+      task: task.task.copyWith(
+        startAt: Value(startAt),
+        endAt: Value(endAt),
+        isAllDay: false,
+      ),
+      occurrence: updatedOccurrence,
+    );
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(updatedTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+      ),
+    );
+    _justDroppedTaskIds.add(task.id);
 
     if (task.recurrenceRule != null) {
       // 重复任务：先创建/获取 detached 实例，再更新时间
@@ -385,7 +666,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         tags: task.tags,
       );
     }
-    emit(state.copyWith(status: PageStatus.success));
+    _justDroppedTaskIds.remove(task.id);
   }
 
   Future<void> _onTaskAllDayScheduled(
@@ -403,7 +684,16 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       return;
     }
 
-    emit(state.copyWith(status: PageStatus.loading));
+    // 同步乐观更新为全天任务
+    final updatedTask = task.copyWith(
+      task: task.task.copyWith(
+        startAt: Value(targetDate),
+        endAt: Value(targetDate.endOf(Unit.day)),
+        isAllDay: true,
+      ),
+    );
+    emit(state.copyWith(tasks: _optimisticTasksWith(updatedTask)));
+    _justDroppedTaskIds.add(task.id);
 
     if (task.recurrenceRule != null) {
       final delayed = await _tasksRepository.delayTask(
@@ -431,7 +721,30 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         children: task.children.isEmpty ? null : task.children,
       );
     }
-    emit(state.copyWith(status: PageStatus.success));
+    _justDroppedTaskIds.remove(task.id);
+  }
+
+  /// 拖拽被接受后，源列表同步移除任务。
+  ///
+  /// 如果该任务刚被同 BLoC 内的目标事件处理过（同列表内拖拽），
+  /// 目标事件已经更新了状态，这里不再重复移除。
+  Future<void> _onTaskDragCompleted(
+    TaskListTaskDragCompleted event,
+    Emitter<TaskListState> emit,
+  ) async {
+    if (_justDroppedTaskIds.remove(event.task.id)) {
+      // 同 BLoC 内拖拽，目标事件已处理，无需移除。
+      return;
+    }
+    emit(
+      state.copyWith(
+        tasks: _removeTask(state.tasks, event.task.id),
+        optimisticRemovedTaskIds: {
+          ...state.optimisticRemovedTaskIds,
+          event.task.id,
+        },
+      ),
+    );
   }
 
   Future<void> _requestReview() async {

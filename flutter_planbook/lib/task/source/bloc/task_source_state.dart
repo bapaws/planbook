@@ -10,6 +10,8 @@ final class TaskSourcePanelState extends Equatable {
     this.isVisible = true,
     this.status = PageStatus.initial,
     this.tasks = const [],
+    this.optimisticRemovedTaskIds = const {},
+    this.optimisticUpdatedTasks = const [],
   });
 
   final TaskSourcePanelType sourceType;
@@ -21,6 +23,12 @@ final class TaskSourcePanelState extends Equatable {
   final PageStatus status;
   final List<TaskEntity> tasks;
 
+  /// 乐观移除的任务 ID；用于在 stream 尚未反映变更前保持任务不可见。
+  final Set<String> optimisticRemovedTaskIds;
+
+  /// 乐观更新的任务；用于在 stream 尚未反映变更前覆盖旧数据。
+  final List<TaskEntity> optimisticUpdatedTasks;
+
   @override
   List<Object?> get props => [
     sourceType,
@@ -31,6 +39,8 @@ final class TaskSourcePanelState extends Equatable {
     isVisible,
     status,
     tasks,
+    optimisticRemovedTaskIds,
+    optimisticUpdatedTasks,
   ];
 
   TaskSourcePanelState copyWith({
@@ -42,6 +52,8 @@ final class TaskSourcePanelState extends Equatable {
     bool? isVisible,
     PageStatus? status,
     List<TaskEntity>? tasks,
+    Set<String>? optimisticRemovedTaskIds,
+    List<TaskEntity>? optimisticUpdatedTasks,
   }) {
     return TaskSourcePanelState(
       sourceType: sourceType ?? this.sourceType,
@@ -52,6 +64,10 @@ final class TaskSourcePanelState extends Equatable {
       isVisible: isVisible ?? this.isVisible,
       status: status ?? this.status,
       tasks: tasks ?? this.tasks,
+      optimisticRemovedTaskIds:
+          optimisticRemovedTaskIds ?? this.optimisticRemovedTaskIds,
+      optimisticUpdatedTasks:
+          optimisticUpdatedTasks ?? this.optimisticUpdatedTasks,
     );
   }
 }

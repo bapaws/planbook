@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -91,11 +92,15 @@ Widget defaultDragFeedbackBuilder(
 ///
 /// 将 [child] 包在 Draggable 内，data 为 [task]；
 /// [feedbackBuilder] 为 null 时使用 defaultDragFeedbackBuilder。
+///
+/// 当拖拽被 [TaskDragTarget] 接受且目标操作类型为 [TaskDragOperation.move] 时，
+/// 会调用 [onDragCompleted]，通常用于向源 BLoC 派发乐观移除事件。
 class TaskDraggable extends StatelessWidget {
   const TaskDraggable({
     required this.task,
     required this.child,
     this.feedbackBuilder,
+    this.onDragCompleted,
     this.childWhenDraggingOpacity = 0.5,
     super.key,
   });
@@ -105,6 +110,9 @@ class TaskDraggable extends StatelessWidget {
 
   /// 拖拽时显示的反馈组件；为 null 时用 [defaultDragFeedbackBuilder]
   final Widget Function(BuildContext context, TaskEntity task)? feedbackBuilder;
+
+  /// 拖拽被接受（move 操作）后的回调，用于同步更新源列表。
+  final ValueChanged<TaskEntity>? onDragCompleted;
 
   /// 拖拽过程中原位的透明度，默认 0.5
   final double childWhenDraggingOpacity;
@@ -122,6 +130,12 @@ class TaskDraggable extends StatelessWidget {
         opacity: childWhenDraggingOpacity,
         child: child,
       ),
+      onDragCompleted: () {
+        final operation = TaskDragOperationNotifier.instance.take();
+        if (operation == TaskDragOperation.move) {
+          onDragCompleted?.call(task);
+        }
+      },
       child: child,
     );
   }

@@ -69,7 +69,7 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
     for (final activity in sortedActivities) {
       TaskEntity? currentTask;
       if (activity.taskId == newTask.id) {
-        currentTask = newTask = newTask.copyWith(activity: activity);
+        currentTask = newTask = newTask.copyWith(activity: () => activity);
       } else {
         final index = newTask.children.indexWhere(
           (child) => child.id == activity.taskId,
@@ -77,7 +77,7 @@ class TaskDoneCubit extends Cubit<TaskDoneState> {
         if (index != -1) {
           final newChildren = [...newTask.children];
           currentTask = newChildren[index] = newChildren[index].copyWith(
-            activity: activity,
+            activity: () => activity,
           );
           newTask = newTask.copyWith(children: newChildren);
         }

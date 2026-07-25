@@ -574,20 +574,50 @@ class TasksRepository {
 
     if (result.isNewTask) {
       // 重复任务创建了新的分离实例
-      await _dbTaskApi.create(
-        task: result.task,
-        taskTags: taskTags,
-        children: result.children,
-      );
-
-      // 将原始任务在该日期的 occurrence 标记为 deleted，避免重复显示
-      if (result.originalTaskId != null &&
-          result.originalOccurrenceAt != null) {
-        await _dbTaskDelayApi.softDeleteOccurrence(
-          taskId: result.originalTaskId!,
-          occurrenceAt: result.originalOccurrenceAt!,
+      await _db.transaction(() async {
+        await _dbTaskApi.create(
+          task: result.task,
+          taskTags: taskTags,
+          children: result.children,
         );
-      }
+
+        // 将原始任务在该日期的 occurrence 标记为 deleted，避免重复显示
+        if (result.originalTaskId != null &&
+            result.originalOccurrenceAt != null) {
+          await _dbTaskDelayApi.softDeleteOccurrence(
+            taskId: result.originalTaskId!,
+            occurrenceAt: result.originalOccurrenceAt!,
+          );
+        }
+
+        // 如果原始实例已完成，将完成状态同步到新的分离实例，
+        // 并软删除原实例的完成记录，避免完成数重复统计。
+        final originalActivity = entity.activity;
+        if (originalActivity != null &&
+            originalActivity.completedAt != null &&
+            originalActivity.deletedAt == null) {
+          final now = Jiffy.now();
+          final newActivity = TaskActivity(
+            id: const Uuid().v4(),
+            userId: userId,
+            taskId: result.task.id,
+            completedAt: originalActivity.completedAt,
+            activityType: originalActivity.activityType ?? 'completed',
+            startAt: originalActivity.startAt,
+            endAt: originalActivity.endAt,
+            duration: originalActivity.duration,
+            createdAt: now,
+          );
+          final deletedOriginalActivity = originalActivity.copyWith(
+            deletedAt: Value(now),
+            updatedAt: Value(now),
+          );
+          await _dbTaskCompletionApi.completeTaskByActivities([
+            newActivity,
+            deletedOriginalActivity,
+          ]);
+        }
+      });
     } else {
       // 非重复任务更新了时间
       await _dbTaskUpdateApi.update(

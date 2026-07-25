@@ -12,6 +12,9 @@ final class TaskListState extends Equatable {
     this.showDeleteModeSelection = false,
     this.showDeleteConfirmation = false,
     this.pendingDeleteTask,
+    this.isCompleted,
+    this.optimisticRemovedTaskIds = const {},
+    this.optimisticUpdatedTasks = const [],
   });
 
   final PageStatus status;
@@ -30,6 +33,14 @@ final class TaskListState extends Equatable {
   final bool showDeleteConfirmation;
   final TaskEntity? pendingDeleteTask;
 
+  final bool? isCompleted;
+
+  /// 乐观移除的任务 ID；用于在 stream 尚未反映变更前保持任务不可见。
+  final Set<String> optimisticRemovedTaskIds;
+
+  /// 乐观更新的任务；用于在 stream 尚未反映变更前覆盖旧数据。
+  final List<TaskEntity> optimisticUpdatedTasks;
+
   @override
   List<Object?> get props => [
     status,
@@ -42,6 +53,9 @@ final class TaskListState extends Equatable {
     showDeleteModeSelection,
     showDeleteConfirmation,
     pendingDeleteTask,
+    isCompleted,
+    optimisticRemovedTaskIds,
+    optimisticUpdatedTasks,
   ];
 
   TaskListState copyWith({
@@ -55,6 +69,9 @@ final class TaskListState extends Equatable {
     bool? showDeleteModeSelection,
     bool? showDeleteConfirmation,
     ValueGetter<TaskEntity?>? pendingDeleteTask,
+    ValueGetter<bool?>? isCompleted,
+    Set<String>? optimisticRemovedTaskIds,
+    List<TaskEntity>? optimisticUpdatedTasks,
   }) {
     return TaskListState(
       status: status ?? this.status,
@@ -71,6 +88,11 @@ final class TaskListState extends Equatable {
       pendingDeleteTask: pendingDeleteTask == null
           ? this.pendingDeleteTask
           : pendingDeleteTask(),
+      isCompleted: isCompleted == null ? this.isCompleted : isCompleted(),
+      optimisticRemovedTaskIds:
+          optimisticRemovedTaskIds ?? this.optimisticRemovedTaskIds,
+      optimisticUpdatedTasks:
+          optimisticUpdatedTasks ?? this.optimisticUpdatedTasks,
     );
   }
 }

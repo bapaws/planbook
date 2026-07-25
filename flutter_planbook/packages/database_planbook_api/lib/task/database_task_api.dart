@@ -438,7 +438,7 @@ class DatabaseTaskApi {
       final activity = row.readTableOrNull(db.taskActivities);
       if (activity != null) {
         tasks[task.id] = tasks[task.id]!.copyWith(
-          activity: activity,
+          activity: () => activity,
         );
       }
 

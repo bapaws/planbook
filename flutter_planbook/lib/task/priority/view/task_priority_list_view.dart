@@ -124,6 +124,11 @@ class TaskPriorityListView extends StatelessWidget {
                       return TaskDraggable(
                         task: task,
                         feedbackBuilder: _buildDragFeedback,
+                        onDragCompleted: (task) {
+                          context.read<TaskListBloc>().add(
+                            TaskListTaskDragCompleted(task: task),
+                          );
+                        },
                         child: tile,
                       );
                     },
