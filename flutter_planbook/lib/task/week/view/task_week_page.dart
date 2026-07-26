@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
-import 'package:flutter_planbook/app/model/app_color_schemes.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
@@ -10,6 +9,7 @@ import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
 import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
+import 'package:flutter_planbook/task/week/model/task_week_day_color.dart';
 import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
 import 'package:flutter_planbook/task/week/view/task_week_cell.dart';
@@ -26,9 +26,14 @@ class TaskWeekPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<TaskWeekBloc, TaskWeekState>(
       builder: (context, state) {
-        return _TaskWeekPage(
-          weekDays: state.weekDays,
-          viewMode: state.viewMode,
+        return BlocSelector<RootTaskBloc, RootTaskState, TaskWeekViewMode>(
+          selector: (rootState) => rootState.weekViewMode,
+          builder: (context, viewMode) {
+            return _TaskWeekPage(
+              weekDays: state.weekDays,
+              viewMode: viewMode,
+            );
+          },
         );
       },
     );
@@ -276,29 +281,8 @@ class _TaskWeekPage extends StatelessWidget {
         title: day.E,
         subtitle: day.date.toString(),
         day: day,
-        colorScheme: _getColorScheme(context, day),
+        colorScheme: context.colorSchemeForWeekDay(day),
       ),
     );
-  }
-
-  ColorScheme _getColorScheme(BuildContext context, Jiffy day) {
-    switch (day.dateTime.weekday) {
-      case DateTime.monday:
-        return context.greyColorScheme;
-      case DateTime.tuesday:
-        return context.indigoColorScheme;
-      case DateTime.wednesday:
-        return context.pinkColorScheme;
-      case DateTime.thursday:
-        return context.purpleColorScheme;
-      case DateTime.friday:
-        return context.blueColorScheme;
-      case DateTime.saturday:
-        return context.redColorScheme;
-      case DateTime.sunday:
-        return context.amberColorScheme;
-      default:
-        return context.brownColorScheme;
-    }
   }
 }

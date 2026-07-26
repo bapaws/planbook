@@ -460,15 +460,59 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       }
     }
 
-    // 同步乐观更新日期
-    final updatedTask = event.task.copyWith(
-      task: event.task.task.copyWith(
-        startAt: Value(delayTo),
-        endAt: event.task.endAt != null
-            ? Value(delayTo.endOf(Unit.day))
-            : const Value(null),
-        dueAt: event.task.dueAt != null ? Value(delayTo) : const Value(null),
+    final task = event.task;
+    final occurrence = task.occurrence;
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+    final daysDiff = taskDay != null
+        ? delayTo.diff(taskDay, unit: Unit.day).toInt()
+        : null;
+
+    // 重复任务实例需要同步更新 occurrence，否则乐观位置仍停留在原日期。
+    final updatedOccurrence = occurrence?.copyWith(
+      occurrenceAt: delayTo,
+      startAt: Value(
+        daysDiff != null && occurrence.startAt != null
+            ? occurrence.startAt!.add(days: daysDiff)
+            : delayTo,
       ),
+      endAt: Value(
+        daysDiff != null && occurrence.endAt != null
+            ? occurrence.endAt!.add(days: daysDiff)
+            : delayTo.endOf(Unit.day),
+      ),
+      dueAt: Value(
+        daysDiff != null && occurrence.dueAt != null
+            ? occurrence.dueAt!.add(days: daysDiff)
+            : null,
+      ),
+    );
+
+    final hasDate =
+        task.startAt != null || task.dueAt != null || task.endAt != null;
+
+    // 同步乐观更新日期
+    final updatedTask = task.copyWith(
+      task: task.task.copyWith(
+        startAt: Value(
+          daysDiff != null && task.task.startAt != null
+              ? task.task.startAt!.add(days: daysDiff)
+              : delayTo,
+        ),
+        endAt: Value(
+          daysDiff != null && task.task.endAt != null
+              ? task.task.endAt!.add(days: daysDiff)
+              : delayTo.endOf(Unit.day),
+        ),
+        dueAt: Value(
+          daysDiff != null && task.task.dueAt != null
+              ? task.task.dueAt!.add(days: daysDiff)
+              : null,
+        ),
+        isAllDay: !hasDate || task.task.isAllDay,
+      ),
+      occurrence: updatedOccurrence,
     );
     emit(
       state.copyWith(
@@ -476,13 +520,28 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
       ),
     );
-    _justDroppedTaskIds.add(event.task.id);
+    _justDroppedTaskIds.add(task.id);
 
-    await _tasksRepository.delayTask(
-      entity: event.task,
-      delayTo: delayTo,
-    );
-    _justDroppedTaskIds.remove(event.task.id);
+    if (!hasDate) {
+      // 无日期任务：直接设置日期
+      await _tasksRepository.update(
+        task: updatedTask.task,
+        tags: task.tags,
+        children: task.children.isEmpty ? null : task.children,
+      );
+    } else if (task.recurrenceRule != null) {
+      // 重复任务：创建分离实例
+      await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: delayTo,
+      );
+    } else {
+      await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: delayTo,
+      );
+    }
+    _justDroppedTaskIds.remove(task.id);
   }
 
   Future<void> _onTaskExpanded(

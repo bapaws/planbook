@@ -8,6 +8,7 @@ import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_header.dart';
 import 'package:flutter_planbook/task/list/view/task_list_view.dart';
@@ -107,7 +108,7 @@ class TaskTodayPage extends StatelessWidget {
                               .selectedTagIds,
                         ),
                       );
-                  if (context.read<RootTaskBloc>().state.viewType ==
+                  if (context.read<RootTaskBloc>().state.dayViewType ==
                       RootTaskViewType.timeBlock) {
                     bloc.add(
                       TaskSourcePanelSourceChanged(
@@ -138,8 +139,8 @@ class TaskTodayPage extends StatelessWidget {
                     ),
                     BlocListener<RootTaskBloc, RootTaskState>(
                       listenWhen: (previous, current) =>
-                          previous.viewType != current.viewType &&
-                          current.viewType == RootTaskViewType.timeBlock &&
+                          previous.dayViewType != current.dayViewType &&
+                          current.dayViewType == RootTaskViewType.timeBlock &&
                           previous.showSourcePanel == false &&
                           current.showSourcePanel == true,
                       listener: (context, state) {
@@ -155,7 +156,7 @@ class TaskTodayPage extends StatelessWidget {
                   ],
                   child: BlocBuilder<RootTaskBloc, RootTaskState>(
                     buildWhen: (previous, current) =>
-                        previous.viewType != current.viewType ||
+                        previous.dayViewType != current.dayViewType ||
                         previous.priorityStyle != current.priorityStyle,
                     builder: (context, rootTaskState) => Row(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -163,7 +164,7 @@ class TaskTodayPage extends StatelessWidget {
                         Expanded(
                           child: AnimatedSwitcher(
                             duration: Durations.medium1,
-                            child: switch (rootTaskState.viewType) {
+                            child: switch (rootTaskState.dayViewType) {
                               RootTaskViewType.list => const _TaskTodayListPage(
                                 key: ValueKey('today-list'),
                               ),
@@ -183,18 +184,22 @@ class TaskTodayPage extends StatelessWidget {
                         BlocSelector<RootTaskBloc, RootTaskState, bool>(
                           selector: (state) => state.showSourcePanel,
                           builder: (context, showSourcePanel) =>
-                              AnimatedCrossFade(
+                              AnimatedSwitcher(
                                 duration: Durations.medium1,
-                                alignment: Alignment.centerRight,
-                                firstChild: const TaskSourcePanel(
-                                  key: ValueKey('source-panel'),
-                                ),
-                                secondChild: const SizedBox.shrink(
-                                  key: ValueKey('source-panel-handle'),
-                                ),
-                                crossFadeState: showSourcePanel
-                                    ? CrossFadeState.showFirst
-                                    : CrossFadeState.showSecond,
+                                transitionBuilder: (child, animation) {
+                                  return SizeTransition(
+                                    axis: Axis.horizontal,
+                                    sizeFactor: animation,
+                                    child: child,
+                                  );
+                                },
+                                child: showSourcePanel
+                                    ? const TaskSourcePanel(
+                                        key: ValueKey('source-panel'),
+                                      )
+                                    : const SizedBox.shrink(
+                                        key: ValueKey('source-panel-handle'),
+                                      ),
                               ),
                         ),
                       ],
@@ -250,24 +255,62 @@ class _TaskTodayListPage extends StatelessWidget {
             final filteredTags = selectedTagIds.isEmpty
                 ? tags
                 : tags.where((t) => selectedTagIds.contains(t.id)).toList();
+            // 仅选中一个标签时，空白区投放归属该标签；否则归属「无标签」日列表。
+            final blankDropTag =
+                filteredTags.length == 1 && selectedTagIds.isNotEmpty
+                ? filteredTags.first
+                : null;
             return CustomScrollView(
               slivers: [
                 if (selectedTagIds.isEmpty) _buildTaskList(context),
                 for (final tag in filteredTags)
                   _buildTaskList(context, tag: tag),
-                SliverToBoxAdapter(
-                  child: SizedBox(
-                    height:
-                        16 +
-                        kRootBottomBarHeight +
-                        MediaQuery.of(context).padding.bottom,
-                  ),
-                ),
+                _buildBlankDropSliver(context, tag: blankDropTag),
               ],
             );
           },
         );
       },
+    );
+  }
+
+  /// 列表内容不足一屏时，剩余空白仍可接收拖放。
+  Widget _buildBlankDropSliver(BuildContext context, {TagEntity? tag}) {
+    final bottomInset =
+        16 + kRootBottomBarHeight + MediaQuery.of(context).padding.bottom;
+    return TaskListBlocProvider(
+      key: ValueKey('blank-drop-${tag?.id ?? 'day'}'),
+      requestEvent: () => TaskListRequested(
+        date: context.read<TaskTodayBloc>().state.date,
+        tagId: tag?.id,
+      ),
+      child: BlocListener<TaskTodayBloc, TaskTodayState>(
+        listenWhen: (previous, current) => previous.date != current.date,
+        listener: (context, state) {
+          context.read<TaskListBloc>().add(
+            TaskListRequested(
+              date: state.date,
+              tagId: tag?.id,
+            ),
+          );
+        },
+        child: Builder(
+          builder: (context) {
+            return SliverFillRemaining(
+              hasScrollBody: false,
+              child: TaskDragTarget(
+                onAccept: (task) =>
+                    _scheduleTaskToList(context, task, tag: tag),
+                // 铺满剩余视口；底部留白避免被底部栏挡住
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: bottomInset),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 

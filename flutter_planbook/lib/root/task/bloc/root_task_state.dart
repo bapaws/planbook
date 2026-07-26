@@ -9,7 +9,8 @@ enum RootTaskViewType {
 final class RootTaskState extends Equatable {
   const RootTaskState({
     this.status = PageStatus.initial,
-    this.viewType = RootTaskViewType.list,
+    this.dayViewType = RootTaskViewType.list,
+    this.weekViewMode = TaskWeekViewMode.grid,
     this.showCompleted = true,
     this.showSourcePanel = true,
     this.selectedTagIds = const {},
@@ -25,7 +26,11 @@ final class RootTaskState extends Equatable {
 
   final PageStatus status;
 
-  final RootTaskViewType viewType;
+  /// 天/收集箱/过期：列表 / 四象限 / 时间块
+  final RootTaskViewType dayViewType;
+
+  /// 周：八宫格 / 列表
+  final TaskWeekViewMode weekViewMode;
   final bool showCompleted;
   final bool showSourcePanel;
 
@@ -48,7 +53,8 @@ final class RootTaskState extends Equatable {
   @override
   List<Object?> get props => [
     status,
-    viewType,
+    dayViewType,
+    weekViewMode,
     showCompleted,
     showSourcePanel,
     selectedTagIds,
@@ -60,7 +66,8 @@ final class RootTaskState extends Equatable {
 
   RootTaskState copyWith({
     PageStatus? status,
-    RootTaskViewType? viewType,
+    RootTaskViewType? dayViewType,
+    TaskWeekViewMode? weekViewMode,
     bool? showCompleted,
     bool? showSourcePanel,
     Set<String>? selectedTagIds,
@@ -71,7 +78,8 @@ final class RootTaskState extends Equatable {
   }) {
     return RootTaskState(
       status: status ?? this.status,
-      viewType: viewType ?? this.viewType,
+      dayViewType: dayViewType ?? this.dayViewType,
+      weekViewMode: weekViewMode ?? this.weekViewMode,
       showCompleted: showCompleted ?? this.showCompleted,
       showSourcePanel: showSourcePanel ?? this.showSourcePanel,
       selectedTagIds: selectedTagIds ?? this.selectedTagIds,

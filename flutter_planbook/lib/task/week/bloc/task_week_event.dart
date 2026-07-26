@@ -38,15 +38,6 @@ final class TaskWeekCalendarToggled extends TaskWeekEvent {
   const TaskWeekCalendarToggled();
 }
 
-final class TaskWeekViewModeChanged extends TaskWeekEvent {
-  const TaskWeekViewModeChanged({this.viewMode});
-
-  final TaskWeekViewMode? viewMode;
-
-  @override
-  List<Object?> get props => [viewMode];
-}
-
 final class TaskWeekNoteTaskAppended extends TaskWeekEvent {
   const TaskWeekNoteTaskAppended({
     required this.task,

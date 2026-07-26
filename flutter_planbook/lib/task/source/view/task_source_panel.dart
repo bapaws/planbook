@@ -74,7 +74,6 @@ class _TaskSourcePanelView extends StatelessWidget {
                 color: isHovering
                     ? theme.colorScheme.primary
                     : context.blueColorScheme.surfaceContainerHighest,
-                width: isHovering ? 2 : 1,
               ),
             ),
             child: child,
@@ -86,22 +85,6 @@ class _TaskSourcePanelView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<TaskSourcePanelBloc, TaskSourcePanelState>(
                 builder: (context, state) {
-                  // if (state.status.isLoading && state.tasks.isEmpty) {
-                  //   return const Center(
-                  //     child: CupertinoActivityIndicator(),
-                  //   );
-                  // }
-                  // if (state.tasks.isEmpty) {
-                  //   return Center(
-                  //     child: Text(
-                  //       context.l10n.taskEmptySourcePanel,
-                  //       style: theme.textTheme.bodySmall?.copyWith(
-                  //         color: theme.colorScheme.outline,
-                  //       ),
-                  //       textAlign: TextAlign.center,
-                  //     ),
-                  //   );
-                  // }
                   return ListView.separated(
                     itemCount: state.tasks.length,
                     separatorBuilder: (context, index) {

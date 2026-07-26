@@ -35,13 +35,22 @@ final class RootTaskTaskCountRequested extends RootTaskEvent {
   List<Object?> get props => [mode];
 }
 
-final class RootTaskViewTypeChanged extends RootTaskEvent {
-  const RootTaskViewTypeChanged({this.viewType});
+final class RootTaskDayViewTypeChanged extends RootTaskEvent {
+  const RootTaskDayViewTypeChanged({this.dayViewType});
 
-  final RootTaskViewType? viewType;
+  final RootTaskViewType? dayViewType;
 
   @override
-  List<Object?> get props => [viewType];
+  List<Object?> get props => [dayViewType];
+}
+
+final class RootTaskWeekViewModeChanged extends RootTaskEvent {
+  const RootTaskWeekViewModeChanged({this.weekViewMode});
+
+  final TaskWeekViewMode? weekViewMode;
+
+  @override
+  List<Object?> get props => [weekViewMode];
 }
 
 final class RootTaskShowCompletedChanged extends RootTaskEvent {

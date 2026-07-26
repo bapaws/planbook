@@ -46,7 +46,7 @@ class TaskDropArea extends StatelessWidget {
       Unit.day,
     );
     final targetDayStart = targetDay.startOf(Unit.day);
-    if (taskDay == null || taskDay.isSame(targetDayStart, unit: Unit.day)) {
+    if (taskDay != null && taskDay.isSame(targetDayStart, unit: Unit.day)) {
       return;
     }
     context.read<TaskListBloc>().add(

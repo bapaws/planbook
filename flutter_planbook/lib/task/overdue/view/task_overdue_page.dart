@@ -21,12 +21,12 @@ class TaskOverduePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<RootTaskBloc, RootTaskState>(
       buildWhen: (previous, current) =>
-          previous.viewType != current.viewType ||
+          previous.dayViewType != current.dayViewType ||
           previous.taskCounts != current.taskCounts ||
           previous.priorityStyle != current.priorityStyle,
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
-        child: switch (state.viewType) {
+        child: switch (state.dayViewType) {
           RootTaskViewType.list || RootTaskViewType.timeBlock =>
             state.taskCounts[TaskListMode.overdue] == 0
                 ? AppEmptyTaskView(

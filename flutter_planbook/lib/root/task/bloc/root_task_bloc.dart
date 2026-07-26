@@ -4,6 +4,7 @@ import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -27,7 +28,8 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       transformer: concurrent(),
     );
 
-    on<RootTaskViewTypeChanged>(_onViewTypeChanged);
+    on<RootTaskDayViewTypeChanged>(_onDayViewTypeChanged);
+    on<RootTaskWeekViewModeChanged>(_onWeekViewModeChanged);
     on<RootTaskShowCompletedChanged>(_onShowCompletedChanged);
     on<RootTaskSourcePanelVisibilityChanged>(
       _onSourcePanelVisibilityChanged,
@@ -50,14 +52,21 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
   @override
   RootTaskState? fromJson(Map<String, dynamic> json) {
-    final viewType = RootTaskViewType.values.byName(json['viewType'] as String);
+    // 兼容旧键 viewType
+    final dayViewTypeName =
+        (json['dayViewType'] ?? json['viewType']) as String;
+    final dayViewType = RootTaskViewType.values.byName(dayViewTypeName);
     final showSourcePanel = json['showSourcePanel'] as bool? ?? true;
+    final weekViewModeName = json['weekViewMode'] as String?;
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
-      viewType: viewType,
+      dayViewType: dayViewType,
+      weekViewMode: weekViewModeName == null
+          ? TaskWeekViewMode.grid
+          : TaskWeekViewMode.values.byName(weekViewModeName),
       showCompleted: json['showCompleted'] as bool,
       showSourcePanel:
-          viewType == RootTaskViewType.timeBlock || showSourcePanel,
+          dayViewType == RootTaskViewType.timeBlock || showSourcePanel,
       tabFocusNoteTypes: json['tabFocusNoteTypes'] == null
           ? const {
               RootTaskTab.day: NoteType.dailyFocus,
@@ -79,7 +88,8 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   Map<String, dynamic>? toJson(RootTaskState state) {
     return {
       'status': state.status.name,
-      'viewType': state.viewType.name,
+      'dayViewType': state.dayViewType.name,
+      'weekViewMode': state.weekViewMode.name,
       'showCompleted': state.showCompleted,
       'showSourcePanel': state.showSourcePanel,
       'tabFocusNoteTypes': jsonEncode(
@@ -140,21 +150,33 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     );
   }
 
-  Future<void> _onViewTypeChanged(
-    RootTaskViewTypeChanged event,
+  Future<void> _onDayViewTypeChanged(
+    RootTaskDayViewTypeChanged event,
     Emitter<RootTaskState> emit,
   ) async {
     final newViewType =
-        event.viewType ??
-        RootTaskViewType.values[(state.viewType.index + 1) %
+        event.dayViewType ??
+        RootTaskViewType.values[(state.dayViewType.index + 1) %
             RootTaskViewType.values.length];
     emit(
       state.copyWith(
-        viewType: newViewType,
+        dayViewType: newViewType,
         showSourcePanel:
             newViewType == RootTaskViewType.timeBlock || state.showSourcePanel,
       ),
     );
+  }
+
+  Future<void> _onWeekViewModeChanged(
+    RootTaskWeekViewModeChanged event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    final newViewMode =
+        event.weekViewMode ??
+        (state.weekViewMode == TaskWeekViewMode.grid
+            ? TaskWeekViewMode.list
+            : TaskWeekViewMode.grid);
+    emit(state.copyWith(weekViewMode: newViewMode));
   }
 
   Future<void> _onShowCompletedChanged(

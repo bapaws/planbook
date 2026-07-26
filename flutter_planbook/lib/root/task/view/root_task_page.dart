@@ -143,10 +143,10 @@ class _RootTaskPage extends StatelessWidget {
                     icon: FontAwesomeIcons.list,
                     iconColor: theme.colorScheme.primary,
                     title: context.l10n.list,
-                    selected: bloc.state.viewType == RootTaskViewType.list,
+                    selected: bloc.state.dayViewType == RootTaskViewType.list,
                     onTap: () => context.read<RootTaskBloc>().add(
-                      const RootTaskViewTypeChanged(
-                        viewType: RootTaskViewType.list,
+                      const RootTaskDayViewTypeChanged(
+                        dayViewType: RootTaskViewType.list,
                       ),
                     ),
                   ),
@@ -154,10 +154,11 @@ class _RootTaskPage extends StatelessWidget {
                     icon: FontAwesomeIcons.solidFlag,
                     iconColor: theme.colorScheme.primary,
                     title: context.l10n.quadrant,
-                    selected: bloc.state.viewType == RootTaskViewType.priority,
+                    selected:
+                        bloc.state.dayViewType == RootTaskViewType.priority,
                     onTap: () => context.read<RootTaskBloc>().add(
-                      const RootTaskViewTypeChanged(
-                        viewType: RootTaskViewType.priority,
+                      const RootTaskDayViewTypeChanged(
+                        dayViewType: RootTaskViewType.priority,
                       ),
                     ),
                   ),
@@ -247,18 +248,18 @@ class _RootTaskPage extends StatelessWidget {
     return switch (tab) {
       RootTaskTab.day =>
         BlocSelector<RootTaskBloc, RootTaskState, RootTaskViewType>(
-          selector: (state) => state.viewType,
-          builder: (context, viewType) => PullDownButton(
+          selector: (state) => state.dayViewType,
+          builder: (context, dayViewType) => PullDownButton(
             itemBuilder: (context) => [
               PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.tags,
+                icon: FontAwesomeIcons.hashtag,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.tagList,
-                selected: viewType == RootTaskViewType.list,
+                selected: dayViewType == RootTaskViewType.list,
                 onTap: () => context.read<RootTaskBloc>().add(
-                  const RootTaskViewTypeChanged(
-                    viewType: RootTaskViewType.list,
+                  const RootTaskDayViewTypeChanged(
+                    dayViewType: RootTaskViewType.list,
                   ),
                 ),
               ),
@@ -266,21 +267,21 @@ class _RootTaskPage extends StatelessWidget {
                 icon: FontAwesomeIcons.solidFlag,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.quadrant,
-                selected: viewType == RootTaskViewType.priority,
+                selected: dayViewType == RootTaskViewType.priority,
                 onTap: () => context.read<RootTaskBloc>().add(
-                  const RootTaskViewTypeChanged(
-                    viewType: RootTaskViewType.priority,
+                  const RootTaskDayViewTypeChanged(
+                    dayViewType: RootTaskViewType.priority,
                   ),
                 ),
               ),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.tableCells,
+                icon: FontAwesomeIcons.tableList,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.timeBlock,
-                selected: viewType == RootTaskViewType.timeBlock,
+                selected: dayViewType == RootTaskViewType.timeBlock,
                 onTap: () => context.read<RootTaskBloc>().add(
-                  const RootTaskViewTypeChanged(
-                    viewType: RootTaskViewType.timeBlock,
+                  const RootTaskDayViewTypeChanged(
+                    dayViewType: RootTaskViewType.timeBlock,
                   ),
                 ),
               ),
@@ -292,51 +293,52 @@ class _RootTaskPage extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 minimumSize: const Size.square(kMinInteractiveDimension),
                 onPressed: () {
-                  final next = switch (viewType) {
+                  final next = switch (dayViewType) {
                     RootTaskViewType.list => RootTaskViewType.priority,
                     RootTaskViewType.priority => RootTaskViewType.timeBlock,
                     RootTaskViewType.timeBlock => RootTaskViewType.list,
                   };
                   context.read<RootTaskBloc>().add(
-                    RootTaskViewTypeChanged(viewType: next),
+                    RootTaskDayViewTypeChanged(dayViewType: next),
                   );
                 },
                 child: Icon(
-                  switch (viewType) {
-                    RootTaskViewType.list => FontAwesomeIcons.tags,
+                  switch (dayViewType) {
+                    RootTaskViewType.list => FontAwesomeIcons.hashtag,
                     RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
-                    RootTaskViewType.timeBlock => FontAwesomeIcons.tableCells,
+                    RootTaskViewType.timeBlock => FontAwesomeIcons.tableList,
                   },
+                  size: 18,
                 ),
               ),
             ),
           ),
         ),
       RootTaskTab.week =>
-        BlocSelector<TaskWeekBloc, TaskWeekState, TaskWeekViewMode>(
-          selector: (state) => state.viewMode,
+        BlocSelector<RootTaskBloc, RootTaskState, TaskWeekViewMode>(
+          selector: (state) => state.weekViewMode,
           builder: (context, viewMode) => PullDownButton(
             itemBuilder: (context) => [
               PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.tableCells,
+                icon: FontAwesomeIcons.gripVertical,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.octant,
                 selected: viewMode == TaskWeekViewMode.grid,
-                onTap: () => context.read<TaskWeekBloc>().add(
-                  const TaskWeekViewModeChanged(
-                    viewMode: TaskWeekViewMode.grid,
+                onTap: () => context.read<RootTaskBloc>().add(
+                  const RootTaskWeekViewModeChanged(
+                    weekViewMode: TaskWeekViewMode.grid,
                   ),
                 ),
               ),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.listUl,
+                icon: FontAwesomeIcons.list,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.list,
                 selected: viewMode == TaskWeekViewMode.list,
-                onTap: () => context.read<TaskWeekBloc>().add(
-                  const TaskWeekViewModeChanged(
-                    viewMode: TaskWeekViewMode.list,
+                onTap: () => context.read<RootTaskBloc>().add(
+                  const RootTaskWeekViewModeChanged(
+                    weekViewMode: TaskWeekViewMode.list,
                   ),
                 ),
               ),
@@ -351,14 +353,15 @@ class _RootTaskPage extends StatelessWidget {
                   final next = viewMode == TaskWeekViewMode.grid
                       ? TaskWeekViewMode.list
                       : TaskWeekViewMode.grid;
-                  context.read<TaskWeekBloc>().add(
-                    TaskWeekViewModeChanged(viewMode: next),
+                  context.read<RootTaskBloc>().add(
+                    RootTaskWeekViewModeChanged(weekViewMode: next),
                   );
                 },
                 child: Icon(
                   viewMode == TaskWeekViewMode.grid
-                      ? FontAwesomeIcons.tableCells
-                      : FontAwesomeIcons.listUl,
+                      ? FontAwesomeIcons.gripVertical
+                      : FontAwesomeIcons.list,
+                  size: 18,
                 ),
               ),
             ),

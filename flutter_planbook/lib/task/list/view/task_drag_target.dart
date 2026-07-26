@@ -139,7 +139,7 @@ class TaskDragTarget extends StatelessWidget {
 ///
 /// 用 [SliverStack] + [SliverPositioned.fill] 在 [sliver] 上方叠一层
 /// [TaskDragTarget]，覆盖整个列表滚动范围以接收投放。
-/// Overlay 默认不绘制内容（[SizedBox.shrink]），不挡住下方列表交互。
+/// Overlay 默认 [SizedBox.expand]（铺满 sliver 范围以接收投放，不绘制内容）。
 ///
 /// 用法（对齐 `TaskListView.onTaskDropped`）：
 /// ```dart
@@ -175,7 +175,7 @@ class SliverTaskDragTarget extends StatelessWidget {
   /// 可选：决定是否接受该次投放。
   final DragTargetWillAcceptWithDetails<TaskEntity>? onWillAcceptWithDetails;
 
-  /// 自定义 overlay UI；默认 [SizedBox.shrink]（不可见，只接 drop）。
+  /// 自定义 overlay UI；默认 [SizedBox.expand]（铺满范围，只接 drop）。
   ///
   /// 需要悬停高亮时传入，注意不要挡住下方列表的点击（优先用半透明装饰）。
   final TaskDragTargetBuilder? overlayBuilder;
@@ -199,7 +199,7 @@ class SliverTaskDragTarget extends StatelessWidget {
             onWillAcceptWithDetails: onWillAcceptWithDetails,
             builder: overlayBuilder,
             operation: operation,
-            child: const SizedBox.shrink(),
+            child: const SizedBox.expand(),
           ),
         ),
       ],

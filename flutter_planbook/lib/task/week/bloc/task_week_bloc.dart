@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
-import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
@@ -28,7 +27,6 @@ class TaskWeekBloc extends Bloc<TaskWeekEvent, TaskWeekState> {
       transformer: restartable(),
     );
     on<TaskWeekCalendarToggled>(_onCalendarToggled);
-    on<TaskWeekViewModeChanged>(_onViewModeChanged);
     on<TaskWeekNoteTaskAppended>(_onNoteTaskAppended);
   }
 
@@ -78,18 +76,6 @@ class TaskWeekBloc extends Bloc<TaskWeekEvent, TaskWeekState> {
     Emitter<TaskWeekState> emit,
   ) async {
     emit(state.copyWith(isCalendarExpanded: !state.isCalendarExpanded));
-  }
-
-  Future<void> _onViewModeChanged(
-    TaskWeekViewModeChanged event,
-    Emitter<TaskWeekState> emit,
-  ) async {
-    final newViewMode =
-        event.viewMode ??
-        (state.viewMode == TaskWeekViewMode.grid
-            ? TaskWeekViewMode.list
-            : TaskWeekViewMode.grid);
-    emit(state.copyWith(viewMode: newViewMode));
   }
 
   Future<void> _onNoteTaskAppended(

@@ -58,9 +58,9 @@ class _TaskInboxPage extends StatelessWidget {
               )
             : BlocBuilder<RootTaskBloc, RootTaskState>(
                 buildWhen: (previous, current) =>
-                    previous.viewType != current.viewType ||
+                    previous.dayViewType != current.dayViewType ||
                     previous.priorityStyle != current.priorityStyle,
-                builder: (context, state) => switch (state.viewType) {
+                builder: (context, state) => switch (state.dayViewType) {
                   RootTaskViewType.list ||
                   RootTaskViewType.timeBlock => const _TaskInboxListPage(),
                   RootTaskViewType.priority => TaskPriorityPage(
