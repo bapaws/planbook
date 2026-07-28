@@ -39,6 +39,14 @@ Build release AAB and upload to Play internal testing
 
 Deploy a new version to the Google Play
 
+### android metadata
+
+```sh
+[bundle exec] fastlane android metadata
+```
+
+Upload Play Store metadata only (changelogs, description, etc.)
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.
