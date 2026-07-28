@@ -16,7 +16,7 @@ class TaskTimeBlockGrid extends StatelessWidget {
             decoration: BoxDecoration(
               border: Border(
                 top: BorderSide(
-                  color: theme.dividerColor.withValues(alpha: 0.5),
+                  color: theme.colorScheme.surfaceContainerHighest,
                   width: i == 0 ? 1 : 0.5,
                 ),
               ),

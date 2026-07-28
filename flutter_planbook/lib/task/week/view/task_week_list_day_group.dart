@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
@@ -7,15 +9,18 @@ import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/week/model/task_week_day_color.dart';
+import 'package:flutter_planbook/task/week/model/task_week_list_demo_data.dart';
 import 'package:flutter_planbook/task/week/view/task_week_list_day_header.dart';
 import 'package:flutter_planbook/task/week/view/task_week_list_day_tasks.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:planbook_api/entity/task_entity.dart';
 
 /// 周列表中单日分组：左侧日期头 + 右侧任务网格，整组可接收拖放。
 class TaskWeekListDayGroup extends StatelessWidget {
   const TaskWeekListDayGroup({
     required this.day,
     required this.crossAxisCount,
+    this.isDemo = false,
     super.key,
   });
 
@@ -25,9 +30,25 @@ class TaskWeekListDayGroup extends StatelessWidget {
   final Jiffy day;
   final int crossAxisCount;
 
+  /// 是否为演示模式（非会员）
+  final bool isDemo;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorSchemeForWeekDay(day);
+
+    // 非会员：无 TaskListBloc，直接渲染演示任务
+    if (isDemo) {
+      final demoTasks = buildTaskWeekListDemoTasks(day, context.l10n);
+      return _TaskWeekListDayGroupBody(
+        day: day,
+        colorScheme: colorScheme,
+        crossAxisCount: crossAxisCount,
+        isDemo: true,
+        demoTasks: demoTasks,
+      );
+    }
+
     return TaskListBlocProvider(
       requestEvent: () => TaskListDayAllRequested(
         date: day,
@@ -50,40 +71,56 @@ class _TaskWeekListDayGroupBody extends StatelessWidget {
     required this.day,
     required this.colorScheme,
     required this.crossAxisCount,
+    this.isDemo = false,
+    this.demoTasks = const [],
   });
 
   final Jiffy day;
   final ColorScheme colorScheme;
   final int crossAxisCount;
+  final bool isDemo;
+  final List<TaskEntity> demoTasks;
 
   @override
   Widget build(BuildContext context) {
-    return TaskListDeleteDialogListener(
-      child: SliverPadding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        // 投放区包住整日 CrossAxisGroup：任务少时右侧比日期头矮，
-        // 仅包任务 sliver 会漏掉日期头旁的视觉空白。
-        sliver: SliverTaskDragTarget(
-          onAccept: (task) => TaskDropArea.moveTaskToDay(context, task, day),
-          sliver: SliverCrossAxisGroup(
-            slivers: [
-              SliverConstrainedCrossAxis(
-                maxExtent: TaskWeekListDayGroup.dayHeaderExtent,
-                sliver: SliverToBoxAdapter(
-                  child: TaskWeekListDayHeader(
-                    day: day,
-                    colorScheme: colorScheme,
-                  ),
+    final content = SliverPadding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      // 投放区包住整日 CrossAxisGroup：任务少时右侧比日期头矮，
+      // 仅包任务 sliver 会漏掉日期头旁的视觉空白。
+      sliver: SliverTaskDragTarget(
+        onAccept: (task) {
+          // 演示模式下任何投放操作都进入付费墙
+          if (isDemo) {
+            context.router.push(const AppPurchasesRoute());
+            return;
+          }
+          TaskDropArea.moveTaskToDay(context, task, day);
+        },
+        sliver: SliverCrossAxisGroup(
+          slivers: [
+            SliverConstrainedCrossAxis(
+              maxExtent: TaskWeekListDayGroup.dayHeaderExtent,
+              sliver: SliverToBoxAdapter(
+                child: TaskWeekListDayHeader(
+                  day: day,
+                  colorScheme: colorScheme,
+                  isDemo: isDemo,
                 ),
               ),
-              TaskWeekListDayTasksSliver(
-                colorScheme: colorScheme,
-                crossAxisCount: crossAxisCount,
-              ),
-            ],
-          ),
+            ),
+            TaskWeekListDayTasksSliver(
+              colorScheme: colorScheme,
+              crossAxisCount: crossAxisCount,
+              isDemo: isDemo,
+              demoTasks: demoTasks,
+            ),
+          ],
         ),
       ),
     );
+
+    if (isDemo) return content;
+
+    return TaskListDeleteDialogListener(child: content);
   }
 }

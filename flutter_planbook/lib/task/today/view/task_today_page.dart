@@ -183,24 +183,26 @@ class TaskTodayPage extends StatelessWidget {
                         ),
                         BlocSelector<RootTaskBloc, RootTaskState, bool>(
                           selector: (state) => state.showSourcePanel,
-                          builder: (context, showSourcePanel) =>
-                              AnimatedSwitcher(
-                                duration: Durations.medium1,
-                                transitionBuilder: (child, animation) {
-                                  return SizeTransition(
-                                    axis: Axis.horizontal,
-                                    sizeFactor: animation,
-                                    child: child,
-                                  );
-                                },
-                                child: showSourcePanel
-                                    ? const TaskSourcePanel(
-                                        key: ValueKey('source-panel'),
-                                      )
-                                    : const SizedBox.shrink(
-                                        key: ValueKey('source-panel-handle'),
-                                      ),
-                              ),
+                          builder: (context, showSourcePanel) {
+                            // 时间块演示模式也展示侧栏，投放操作由 View 内 isDemo 引导付费
+                            return AnimatedSwitcher(
+                              duration: Durations.medium1,
+                              transitionBuilder: (child, animation) {
+                                return SizeTransition(
+                                  axis: Axis.horizontal,
+                                  sizeFactor: animation,
+                                  child: child,
+                                );
+                              },
+                              child: showSourcePanel
+                                  ? const TaskSourcePanel(
+                                      key: ValueKey('source-panel'),
+                                    )
+                                  : const SizedBox.shrink(
+                                      key: ValueKey('source-panel-handle'),
+                                    ),
+                            );
+                          },
                         ),
                       ],
                     ),

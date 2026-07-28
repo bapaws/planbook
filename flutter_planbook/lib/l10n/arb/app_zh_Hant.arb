@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "任務開始前的提醒",
   "iKnow": "我知道了",
   "unlockPro": "解鎖所有進階功能。",
+  "timeBlockDemoBannerTitle": "這些是演示資料，升級 PRO 解鎖全部高級功能",
+  "timeBlockDemoTaskStandup": "團隊晨會",
+  "timeBlockDemoTaskDeepWork": "深度工作",
+  "timeBlockDemoTaskMeeting": "客戶會議",
+  "timeBlockDemoTaskWorkout": "運動健身",
   "freeTrial": "免費試用 {days} 天",
   "tryFree": "免費試用",
   "general": "一般",
@@ -859,5 +864,4 @@
       }
     }
   }
-
 }

@@ -1,4 +1,6 @@
-• Inicio de sesión con WeChat
+• Vista de bloques horarios del día
+• Barra lateral de tareas
+• Vista de lista semanal
 • Corrección de errores
 
-Reciente: nombres de cuadrantes personalizados, widgets de inicio, portada y zoom del diario
+Reciente: nuevo calendario mensual de enfoque en el Diario, nombres de cuadrantes personalizados, widgets de inicio

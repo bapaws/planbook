@@ -12,33 +12,50 @@ class TaskWeekListDayTasksSliver extends StatelessWidget {
   const TaskWeekListDayTasksSliver({
     required this.colorScheme,
     required this.crossAxisCount,
+    this.isDemo = false,
+    this.demoTasks = const [],
     super.key,
   });
 
   final ColorScheme colorScheme;
   final int crossAxisCount;
 
+  /// 是否为演示模式（非会员）
+  final bool isDemo;
+
+  /// 演示模式下使用的任务列表
+  final List<TaskEntity> demoTasks;
+
   @override
   Widget build(BuildContext context) {
+    if (isDemo) {
+      return _buildTasksGrid(context, demoTasks);
+    }
+
     return BlocSelector<TaskListBloc, TaskListState, List<TaskEntity>>(
       selector: (state) => state.tasks,
-      builder: (context, tasks) => tasks.isEmpty
-          ? const SliverToBoxAdapter(child: SizedBox(height: 64))
-          : SliverGrid(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                crossAxisSpacing: 4,
-                mainAxisExtent: 36,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) => _buildTaskTile(
-                  context,
-                  tasks[index],
-                  index < tasks.length - 1 ? tasks[index + 1] : null,
-                ),
-                childCount: tasks.length,
-              ),
-            ),
+      builder: _buildTasksGrid,
+    );
+  }
+
+  Widget _buildTasksGrid(BuildContext context, List<TaskEntity> tasks) {
+    if (tasks.isEmpty) {
+      return const SliverToBoxAdapter(child: SizedBox(height: 64));
+    }
+    return SliverGrid(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        crossAxisSpacing: 4,
+        mainAxisExtent: 36,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) => _buildTaskTile(
+          context,
+          tasks[index],
+          index < tasks.length - 1 ? tasks[index + 1] : null,
+        ),
+        childCount: tasks.length,
+      ),
     );
   }
 
@@ -47,6 +64,21 @@ class TaskWeekListDayTasksSliver extends StatelessWidget {
     TaskEntity task,
     TaskEntity? nextTask,
   ) {
+    // 演示模式：拦截交互，引导付费
+    if (isDemo) {
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => context.router.push(const AppPurchasesRoute()),
+        child: AbsorbPointer(
+          child: TaskListTile.week(
+            key: ValueKey(task),
+            task: task,
+            isExpanded: nextTask?.parentId == task.id,
+          ),
+        ),
+      );
+    }
+
     final tile = TaskListTile.week(
       key: ValueKey(task),
       task: task,

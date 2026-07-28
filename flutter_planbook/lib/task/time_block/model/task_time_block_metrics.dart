@@ -39,6 +39,9 @@ abstract final class TaskTimeBlockMetrics {
   /// 默认任务时长（分钟）
   static const int defaultDurationMinutes = 60;
 
+  /// 网格顶部额外高度
+  static const double gridTopExtraHeight = 7;
+
   /// 网格总高度
   static const double gridHeight = (endHour - startHour) * hourHeight;
 

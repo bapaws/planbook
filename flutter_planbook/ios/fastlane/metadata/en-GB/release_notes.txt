@@ -1,7 +1,10 @@
 What's New:
-- New focus monthly calendar in Journal
-- Fixes for known issues
+- Day time-block view
+- Task sidebar
+- Week list view
+- Bug fixes and improvements
 
 Recent updates:
+- New focus monthly calendar in Journal
 - Customise Eisenhower quadrant names
 - Home screen widgets

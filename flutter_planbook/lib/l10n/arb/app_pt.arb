@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "Lembretes antes do início da tarefa",
   "iKnow": "Entendi",
   "unlockPro": "Desbloqueie todas as funcionalidades premium.",
+  "timeBlockDemoBannerTitle": "These are demo data. Upgrade to PRO to unlock all premium features.",
+  "timeBlockDemoTaskStandup": "Team Standup",
+  "timeBlockDemoTaskDeepWork": "Deep Work",
+  "timeBlockDemoTaskMeeting": "Client Meeting",
+  "timeBlockDemoTaskWorkout": "Workout",
   "freeTrial": "Teste gratuito por {days} dias",
   "tryFree": "Experimentar grátis",
   "general": "Geral",
@@ -179,10 +184,14 @@
   "hideCompleted": "Ocultar concluídas",
   "showFocusNote": "Mostrar foco/resumo",
   "hideFocusNote": "Ocultar foco/resumo",
+  "showSourcePanel": "Mostrar barra lateral de tarefas",
+  "hideSourcePanel": "Ocultar barra lateral de tarefas",
   "priority": "Prioridade",
   "selectViewType": "Selecionar tipo de vista",
   "quadrant": "Quadrante",
   "timeBlock": "Bloco de tempo",
+  "tagList": "Lista de tags",
+  "octant": "Octante",
   "quadrantCustomize": "Personalizar quadrantes",
   "quadrantName": "Nome",
   "resetToDefault": "Redefinir para padrão",
@@ -811,7 +820,7 @@
   "productTitleMonthly": "Mensal",
   "monthlyData": "Dados mensais",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 tarefa planejada este mês.} other {{count} tarefas planejadas este mês.}}",
-  "@monthlyDescriptionPlannedTasks":   {
+  "@monthlyDescriptionPlannedTasks": {
     "description": "Monthly data description: planned tasks",
     "placeholders": {
       "count": {
@@ -823,7 +832,7 @@
   "monthlyDescriptionNoPlannedTasks": "Nenhuma tarefa planejada este mês.",
   "monthlyDescriptionNoTasks": "Nenhuma tarefa concluída este mês.",
   "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {1 tarefa concluída} other {{completed} tarefas concluídas}}",
-  "@monthlyDescriptionTasksCompleted":   {
+  "@monthlyDescriptionTasksCompleted": {
     "description": "Monthly data description: completed tasks",
     "placeholders": {
       "completed": {
@@ -833,7 +842,7 @@
     }
   },
   "monthlyDescriptionPriorityBreakdown": "Distribuição por prioridade: {breakdown}.",
-  "@monthlyDescriptionPriorityBreakdown":   {
+  "@monthlyDescriptionPriorityBreakdown": {
     "description": "Monthly data description: priority breakdown prefix",
     "placeholders": {
       "breakdown": {
@@ -843,7 +852,7 @@
     }
   },
   "monthlyDescriptionNotesWritten": "{count, plural, =1 {1 nota escrita} other {{count} notas escritas}} este mês, totalizando {words, plural, =1 {1 palavra} other {{words} palabras}}.",
-  "@monthlyDescriptionNotesWritten":   {
+  "@monthlyDescriptionNotesWritten": {
     "description": "Monthly data description: notes written",
     "placeholders": {
       "count": {
@@ -858,7 +867,7 @@
   },
   "monthlyDescriptionNoNotesWritten": "Nenhuma nota escrita este mês.",
   "monthlyDescriptionTagsInvolved": "Tags envolvidas: {tags}.",
-  "@monthlyDescriptionTagsInvolved":   {
+  "@monthlyDescriptionTagsInvolved": {
     "description": "Monthly data description: tags involved prefix",
     "placeholders": {
       "tags": {
@@ -867,5 +876,4 @@
       }
     }
   }
-
 }

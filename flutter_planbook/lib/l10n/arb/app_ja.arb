@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "タスク開始前のリマインダー",
   "iKnow": "わかりました",
   "unlockPro": "すべてのプレミアム機能を解放。",
+  "timeBlockDemoBannerTitle": "These are demo data. Upgrade to PRO to unlock all premium features.",
+  "timeBlockDemoTaskStandup": "Team Standup",
+  "timeBlockDemoTaskDeepWork": "Deep Work",
+  "timeBlockDemoTaskMeeting": "Client Meeting",
+  "timeBlockDemoTaskWorkout": "Workout",
   "freeTrial": "{days}日間無料トライアル",
   "tryFree": "無料で試す",
   "general": "一般",
@@ -179,10 +184,14 @@
   "hideCompleted": "完了済みを非表示",
   "showFocusNote": "フォーカス/サマリーを表示",
   "hideFocusNote": "フォーカス/サマリーを非表示",
+  "showSourcePanel": "タスクサイドバーを表示",
+  "hideSourcePanel": "タスクサイドバーを非表示",
   "priority": "優先度",
   "selectViewType": "表示形式を選択",
   "quadrant": "象限",
   "timeBlock": "タイムブロック",
+  "tagList": "タグ一覧",
+  "octant": "八分割",
   "quadrantCustomize": "象限をカスタマイズ",
   "quadrantName": "名前",
   "resetToDefault": "デフォルトに戻す",
@@ -811,7 +820,7 @@
   "productTitleMonthly": "月額",
   "monthlyData": "月次データ",
   "monthlyDescriptionPlannedTasks": "今月は {count, plural, =1 {1 件のタスク} other {{count} 件のタスク}}を予定しました。",
-  "@monthlyDescriptionPlannedTasks":   {
+  "@monthlyDescriptionPlannedTasks": {
     "description": "Monthly data description: planned tasks",
     "placeholders": {
       "count": {
@@ -823,7 +832,7 @@
   "monthlyDescriptionNoPlannedTasks": "今月は予定されたタスクがありません。",
   "monthlyDescriptionNoTasks": "今月は完了したタスクがありません。",
   "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {1 件のタスク} other {{completed} 件のタスク}}を完了しました",
-  "@monthlyDescriptionTasksCompleted":   {
+  "@monthlyDescriptionTasksCompleted": {
     "description": "Monthly data description: completed tasks",
     "placeholders": {
       "completed": {
@@ -833,7 +842,7 @@
     }
   },
   "monthlyDescriptionPriorityBreakdown": "優先度の内訳：{breakdown}",
-  "@monthlyDescriptionPriorityBreakdown":   {
+  "@monthlyDescriptionPriorityBreakdown": {
     "description": "Monthly data description: priority breakdown prefix",
     "placeholders": {
       "breakdown": {
@@ -843,7 +852,7 @@
     }
   },
   "monthlyDescriptionNotesWritten": "今月は {count, plural, =1 {1 件のノート} other {{count} 件のノート}}を書き、合計 {words, plural, =1 {1 文字} other {{words} 文字}}です。",
-  "@monthlyDescriptionNotesWritten":   {
+  "@monthlyDescriptionNotesWritten": {
     "description": "Monthly data description: notes written",
     "placeholders": {
       "count": {
@@ -858,7 +867,7 @@
   },
   "monthlyDescriptionNoNotesWritten": "今月はまだノートを書いていません。",
   "monthlyDescriptionTagsInvolved": "関連タグ：{tags}",
-  "@monthlyDescriptionTagsInvolved":   {
+  "@monthlyDescriptionTagsInvolved": {
     "description": "Monthly data description: tags involved prefix",
     "placeholders": {
       "tags": {
@@ -867,5 +876,4 @@
       }
     }
   }
-
 }

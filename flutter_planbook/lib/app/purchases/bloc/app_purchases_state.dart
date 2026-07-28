@@ -25,7 +25,7 @@ class AppPurchasesState extends Equatable {
   final String? savePercentId;
   final int? savePercent;
 
-  bool get isPremium => activeProductId != null;
+  bool get isPremium => !kDebugMode && activeProductId != null;
   bool get isLifetime =>
       activeProductId?.toLowerCase().contains('lifetime') ?? false;
 

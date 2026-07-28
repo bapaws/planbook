@@ -17,7 +17,8 @@ part 'task_time_block_state.dart';
 class TaskTimeBlockBloc extends Bloc<TaskTimeBlockEvent, TaskTimeBlockState> {
   TaskTimeBlockBloc({
     required Jiffy date,
-  }) : super(TaskTimeBlockState.initial(date: date)) {
+    bool isDemo = false,
+  }) : super(TaskTimeBlockState.initial(date: date, isDemo: isDemo)) {
     on<TaskTimeBlockStarted>(_onStarted, transformer: restartable());
     on<TaskTimeBlockTasksUpdated>(_onTasksUpdated, transformer: restartable());
     on<TaskTimeBlockHoverUpdated>(_onHoverUpdated);

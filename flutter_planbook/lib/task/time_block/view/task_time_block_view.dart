@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_planbook/task/time_block/bloc/task_time_block_bloc.dart'
 import 'package:flutter_planbook/task/time_block/model/task_time_block_layout_item.dart';
 import 'package:flutter_planbook/task/time_block/model/task_time_block_metrics.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_current_time_line.dart';
+import 'package:flutter_planbook/task/time_block/view/task_time_block_demo_banner.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_drag_indicator.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_grid.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_item.dart';
@@ -22,7 +24,13 @@ import 'package:planbook_api/entity/task_entity.dart';
 ///
 /// 布局与时钟数据由 [TaskTimeBlockBloc] 预计算，本组件只负责渲染与手势坐标转换。
 class TaskTimeBlockView extends StatefulWidget {
-  const TaskTimeBlockView({super.key});
+  const TaskTimeBlockView({
+    this.isDemo = false,
+    super.key,
+  });
+
+  /// 是否为演示模式（非会员）
+  final bool isDemo;
 
   @override
   State<TaskTimeBlockView> createState() => _TaskTimeBlockViewState();
@@ -87,48 +95,75 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
 
   @override
   Widget build(BuildContext context) {
-    return TaskListDeleteDialogListener(
-      child: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
+    final bottomBarHeight =
+        kRootBottomBarHeight + MediaQuery.of(context).padding.bottom;
+    final child = SingleChildScrollView(
+      controller: _scrollController,
+      child: SizedBox(
+        height:
+            (widget.isDemo ? TaskTimeBlockMetrics.hourHeight : 0) +
+            TaskTimeBlockMetrics.gridTopExtraHeight +
+            TaskTimeBlockMetrics.gridHeight +
+            bottomBarHeight,
+        child: Stack(
+          clipBehavior: Clip.none,
           children: [
-            SizedBox(
-              height: TaskTimeBlockMetrics.gridHeight,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Row(
+            Row(
+              children: [
+                const TaskTimeBlockLabels(),
+                Expanded(
+                  child: Column(
                     children: [
-                      const TaskTimeBlockLabels(),
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            return _TaskTimeBlockGridArea(
-                              gridKey: _gridKey,
-                              gridWidth: constraints.maxWidth,
-                              onDragMove: _onDragMove,
-                              onClearHover: _clearHover,
-                              onTaskDropped: _onTaskDropped,
-                            );
-                          },
-                        ),
+                      const SizedBox(
+                        height: TaskTimeBlockMetrics.gridTopExtraHeight,
                       ),
-                      const SizedBox(width: 8),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return _TaskTimeBlockGridArea(
+                            gridKey: _gridKey,
+                            gridWidth: constraints.maxWidth,
+                            isDemo: widget.isDemo,
+                            onDragMove: _onDragMove,
+                            onClearHover: _clearHover,
+                            onTaskDropped: _onTaskDropped,
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        height:
+                            (widget.isDemo
+                                ? TaskTimeBlockMetrics.hourHeight
+                                : 0) +
+                            bottomBarHeight,
+                      ),
                     ],
                   ),
-                  const _TaskTimeBlockCurrentTimeOverlay(),
-                  const _TaskTimeBlockHoverOverlay(),
-                ],
-              ),
+                ),
+                const SizedBox(width: 8),
+              ],
             ),
-            SizedBox(
-              height:
-                  kRootBottomBarHeight + MediaQuery.of(context).padding.bottom,
-            ),
+            const _TaskTimeBlockCurrentTimeOverlay(),
+            const _TaskTimeBlockHoverOverlay(),
           ],
         ),
       ),
     );
+
+    if (widget.isDemo) {
+      return Stack(
+        children: [
+          child,
+          Positioned(
+            bottom: bottomBarHeight,
+            left: 0,
+            right: 8,
+            child: const AppDemoBanner(),
+          ),
+        ],
+      );
+    }
+
+    return TaskListDeleteDialogListener(child: child);
   }
 
   void _onDragMove(DragTargetDetails<TaskEntity> details) {
@@ -155,6 +190,12 @@ class _TaskTimeBlockViewState extends State<TaskTimeBlockView> {
 
     final timeBlockBloc = context.read<TaskTimeBlockBloc>()
       ..add(const TaskTimeBlockHoverCleared());
+
+    // 演示模式下任何投放操作都进入付费墙
+    if (widget.isDemo) {
+      context.router.push(const AppPurchasesRoute());
+      return;
+    }
 
     final startAt = timeBlockBloc.state.dayStart.add(minutes: minutes);
     final endAt = startAt.add(minutes: resolveTaskDurationMinutes(task));
@@ -261,6 +302,7 @@ class _TaskTimeBlockGridArea extends StatelessWidget {
   const _TaskTimeBlockGridArea({
     required this.gridKey,
     required this.gridWidth,
+    required this.isDemo,
     required this.onDragMove,
     required this.onClearHover,
     required this.onTaskDropped,
@@ -268,6 +310,7 @@ class _TaskTimeBlockGridArea extends StatelessWidget {
 
   final GlobalKey gridKey;
   final double gridWidth;
+  final bool isDemo;
   final void Function(DragTargetDetails<TaskEntity> details) onDragMove;
   final VoidCallback onClearHover;
   final void Function(TaskEntity task, Offset offset) onTaskDropped;
@@ -296,6 +339,7 @@ class _TaskTimeBlockGridArea extends StatelessWidget {
                   item: item,
                   dayStart: data.dayStart,
                   parentWidth: gridWidth,
+                  isDemo: isDemo,
                 ),
             ],
           ),

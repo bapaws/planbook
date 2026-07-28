@@ -19,12 +19,16 @@ class TaskTimeBlockItem extends StatefulWidget {
     required this.item,
     required this.dayStart,
     required this.parentWidth,
+    this.isDemo = false,
     super.key,
   });
 
   final TaskTimeBlockLayoutItem item;
   final Jiffy dayStart;
   final double parentWidth;
+
+  /// 是否为演示模式；演示模式下只读，点击跳转付费墙
+  final bool isDemo;
 
   @override
   State<TaskTimeBlockItem> createState() => _TaskTimeBlockItemState();
@@ -106,97 +110,107 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
         ? 10.0
         : TaskTimeBlockMetrics.resizeHandleHeight;
 
+    final content = Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Positioned.fill(
+          child: LongPressDraggable<TaskEntity>(
+            data: item.task,
+            feedback: Material(
+              elevation: 4,
+              borderRadius: BorderRadius.circular(6),
+              child: Container(
+                width: availableWidth,
+                height: _displayHeight,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  item.task.title,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            childWhenDragging: Opacity(
+              opacity: 0.3,
+              child: _buildBlockContent(colorScheme),
+            ),
+            child: GestureDetector(
+              onTap: () => _openTaskDetail(context),
+              child: _buildBlockContent(colorScheme),
+            ),
+          ),
+        ),
+        // 右上角完成按钮（与列表任务同款图标）
+        Positioned(
+          top: 0,
+          right: 0,
+          child: CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size(_completeHitSize, _completeHitSize),
+            onPressed: _toggleCompleted,
+            child: Icon(
+              _isCompleted
+                  ? CupertinoIcons.checkmark_circle_fill
+                  : CupertinoIcons.circle,
+              size: _completeIconSize,
+              color: _isCompleted ? colorScheme.outline : colorScheme.primary,
+            ),
+          ),
+        ),
+        if (showTopHandle)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: _completeHitSize,
+            height: handleHeight,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragStart: (_) => _beginResize(),
+              onVerticalDragUpdate: _onTopResizeUpdate,
+              onVerticalDragEnd: (_) => _commitResize(),
+              onVerticalDragCancel: _cancelResize,
+              child: SizedBox(height: handleHeight),
+            ),
+          ),
+        if (showBottomHandle)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: handleHeight,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onVerticalDragStart: (_) => _beginResize(),
+              onVerticalDragUpdate: _onBottomResizeUpdate,
+              onVerticalDragEnd: (_) => _commitResize(),
+              onVerticalDragCancel: _cancelResize,
+              child: SizedBox(height: handleHeight),
+            ),
+          ),
+      ],
+    );
+
     return Positioned(
       top: _displayTop,
       left: left,
       width: availableWidth,
       height: _displayHeight,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned.fill(
-            child: LongPressDraggable<TaskEntity>(
-              data: item.task,
-              feedback: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(6),
-                child: Container(
-                  width: availableWidth,
-                  height: _displayHeight,
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    item.task.title,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onPrimaryContainer,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
+      child: widget.isDemo
+          ? GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => context.router.push(const AppPurchasesRoute()),
+              child: AbsorbPointer(
+                child: content,
               ),
-              childWhenDragging: Opacity(
-                opacity: 0.3,
-                child: _buildBlockContent(colorScheme),
-              ),
-              child: GestureDetector(
-                onTap: () => _openTaskDetail(context),
-                child: _buildBlockContent(colorScheme),
-              ),
-            ),
-          ),
-          // 右上角完成按钮（与列表任务同款图标）
-          Positioned(
-            top: 0,
-            right: 0,
-            child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              minimumSize: const Size(_completeHitSize, _completeHitSize),
-              onPressed: _toggleCompleted,
-              child: Icon(
-                _isCompleted
-                    ? CupertinoIcons.checkmark_circle_fill
-                    : CupertinoIcons.circle,
-                size: _completeIconSize,
-                color: _isCompleted ? colorScheme.outline : colorScheme.primary,
-              ),
-            ),
-          ),
-          if (showTopHandle)
-            Positioned(
-              top: 0,
-              left: 0,
-              right: _completeHitSize,
-              height: handleHeight,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onVerticalDragStart: (_) => _beginResize(),
-                onVerticalDragUpdate: _onTopResizeUpdate,
-                onVerticalDragEnd: (_) => _commitResize(),
-                onVerticalDragCancel: _cancelResize,
-                child: SizedBox(height: handleHeight),
-              ),
-            ),
-          if (showBottomHandle)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: handleHeight,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onVerticalDragStart: (_) => _beginResize(),
-                onVerticalDragUpdate: _onBottomResizeUpdate,
-                onVerticalDragEnd: (_) => _commitResize(),
-                onVerticalDragCancel: _cancelResize,
-                child: SizedBox(height: handleHeight),
-              ),
-            ),
-        ],
-      ),
+            )
+          : content,
     );
   }
 

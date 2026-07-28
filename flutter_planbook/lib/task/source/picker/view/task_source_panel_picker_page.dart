@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_date_picker.dart';
+import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
@@ -135,10 +137,38 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
   }
 
   Widget _buildSourceTypeTile(BuildContext context) {
-    Widget segmentLabel(String text) {
+    final isPremium = context.select<AppPurchasesBloc, bool>(
+      (bloc) => bloc.state.isPremium,
+    );
+    final theme = Theme.of(context);
+
+    Widget segmentLabel(String text, {bool showPro = false}) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(text),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            Flexible(
+              child: Text(
+                text,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            if (showPro) ...[
+              const SizedBox(width: 2),
+              AppProView(
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w800,
+                  fontSize: 10,
+                ),
+              ),
+            ],
+          ],
+        ),
       );
     }
 
@@ -150,12 +180,25 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
           groupValue: _tab,
           children: {
             TaskSourcePanelTab.inbox: segmentLabel(context.l10n.inbox),
-            TaskSourcePanelTab.tag: segmentLabel(context.l10n.tag),
-            TaskSourcePanelTab.date: segmentLabel(context.l10n.date),
+            TaskSourcePanelTab.tag: segmentLabel(
+              context.l10n.tag,
+              showPro: !isPremium,
+            ),
+            TaskSourcePanelTab.date: segmentLabel(
+              context.l10n.date,
+              showPro: !isPremium,
+            ),
             TaskSourcePanelTab.hide: segmentLabel(context.l10n.hide),
           },
           onValueChanged: (value) {
             if (value == null) return;
+            // 标签 / 日期为 PRO 功能，非会员直接进入付费页
+            if (!isPremium &&
+                (value == TaskSourcePanelTab.tag ||
+                    value == TaskSourcePanelTab.date)) {
+              context.router.push(const AppPurchasesRoute());
+              return;
+            }
             setState(() {
               _tab = value;
             });

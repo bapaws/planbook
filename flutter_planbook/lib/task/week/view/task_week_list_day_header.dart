@@ -13,18 +13,29 @@ class TaskWeekListDayHeader extends StatelessWidget {
   const TaskWeekListDayHeader({
     required this.day,
     required this.colorScheme,
+    this.isDemo = false,
     super.key,
   });
 
   final Jiffy day;
   final ColorScheme colorScheme;
 
+  /// 是否为演示模式（非会员）
+  final bool isDemo;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isToday = day.isSame(Jiffy.now(), unit: Unit.day);
     return TaskDragTarget(
-      onAccept: (task) => TaskDropArea.moveTaskToDay(context, task, day),
+      onAccept: (task) {
+        // 演示模式下任何投放操作都进入付费墙
+        if (isDemo) {
+          context.router.push(const AppPurchasesRoute());
+          return;
+        }
+        TaskDropArea.moveTaskToDay(context, task, day);
+      },
       builder: (context, child, candidateData) {
         return GestureDetector(
           behavior: HitTestBehavior.opaque,

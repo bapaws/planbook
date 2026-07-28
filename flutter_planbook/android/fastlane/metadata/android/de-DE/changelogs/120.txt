@@ -1,4 +1,6 @@
-• WeChat-Login
+• Tagesansicht mit Zeitblöcken
+• Aufgaben-Seitenleiste
+• Wochenlistenansicht
 • Fehlerbehebungen
 
-Zuletzt: Quadrantennamen anpassen, Startbildschirm-Widgets, Journal-Titelbild & Zoom
+Zuletzt: Neuer Fokus-Monatskalender im Journal, Quadrantennamen anpassen, Startbildschirm-Widgets

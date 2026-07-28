@@ -58,18 +58,18 @@ class _TaskSourcePanelView extends StatelessWidget {
           final isHovering = candidateData.isNotEmpty;
           return Container(
             margin: EdgeInsets.only(
-              right: 8,
               bottom:
-                  kRootBottomBarHeight + MediaQuery.of(context).padding.bottom,
+                  kRootBottomBarItemHeight +
+                  MediaQuery.of(context).padding.bottom,
             ),
-            width: MediaQuery.of(context).size.width * 0.32,
+            width: (MediaQuery.of(context).size.width * 0.32).ceilToDouble(),
             constraints: const BoxConstraints(
               minWidth: 136,
               maxWidth: 260,
             ),
             decoration: BoxDecoration(
               color: context.blueColorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isHovering
                     ? theme.colorScheme.primary

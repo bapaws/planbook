@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
@@ -67,29 +68,38 @@ class _TaskWeekPage extends StatelessWidget {
 
   Widget _buildListLayout(BuildContext context) {
     final rootTaskState = context.read<RootTaskBloc>().state;
-    return BlocSelector<RootTaskBloc, RootTaskState, bool>(
-      selector: (state) => state.showSourcePanel,
-      builder: (context, showSourcePanel) {
-        final trailing = showSourcePanel
-            ? BlocProvider(
-                key: const ValueKey('week_source_panel'),
-                create: (context) =>
-                    TaskSourcePanelBloc(
-                      tasksRepository: context.read(),
-                      tagsRepository: context.read(),
-                    )..add(
-                      TaskSourcePanelLoaded(
-                        isCompleted: context.read<RootTaskBloc>().isCompleted,
-                        selectedTagIds: rootTaskState.selectedTagIds,
-                      ),
-                    ),
-                child: const TaskSourcePanel(),
-              )
-            : null;
-        return TaskWeekListView(
-          key: const ValueKey('week_list_view'),
-          weekDays: weekDays,
-          trailing: trailing,
+    return BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
+      selector: (state) => state.isPremium,
+      builder: (context, isPremium) {
+        return BlocSelector<RootTaskBloc, RootTaskState, bool>(
+          selector: (state) => state.showSourcePanel,
+          builder: (context, showSourcePanel) {
+            // 演示模式也展示侧栏，投放操作由 isDemo 引导付费
+            final trailing = showSourcePanel
+                ? BlocProvider(
+                    key: const ValueKey('week_source_panel'),
+                    create: (context) =>
+                        TaskSourcePanelBloc(
+                          tasksRepository: context.read(),
+                          tagsRepository: context.read(),
+                        )..add(
+                          TaskSourcePanelLoaded(
+                            isCompleted: context
+                                .read<RootTaskBloc>()
+                                .isCompleted,
+                            selectedTagIds: rootTaskState.selectedTagIds,
+                          ),
+                        ),
+                    child: const TaskSourcePanel(),
+                  )
+                : null;
+            return TaskWeekListView(
+              key: ValueKey(isPremium ? 'week_list_view' : 'week_list_demo'),
+              weekDays: weekDays,
+              trailing: trailing,
+              isDemo: !isPremium,
+            );
+          },
         );
       },
     );

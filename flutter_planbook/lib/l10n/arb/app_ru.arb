@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "Напоминания перед началом задачи",
   "iKnow": "Понятно",
   "unlockPro": "Откройте все премиум-возможности.",
+  "timeBlockDemoBannerTitle": "These are demo data. Upgrade to PRO to unlock all premium features.",
+  "timeBlockDemoTaskStandup": "Team Standup",
+  "timeBlockDemoTaskDeepWork": "Deep Work",
+  "timeBlockDemoTaskMeeting": "Client Meeting",
+  "timeBlockDemoTaskWorkout": "Workout",
   "freeTrial": "Бесплатный пробный период {days} дней",
   "tryFree": "Попробовать бесплатно",
   "general": "Общие",
@@ -179,10 +184,14 @@
   "hideCompleted": "Скрыть выполненные",
   "showFocusNote": "Показать фокус/итоги",
   "hideFocusNote": "Скрыть фокус/итоги",
+  "showSourcePanel": "Показать боковую панель задач",
+  "hideSourcePanel": "Скрыть боковую панель задач",
   "priority": "Приоритет",
   "selectViewType": "Выбрать вид",
   "quadrant": "Квадрант",
   "timeBlock": "Временной блок",
+  "tagList": "Список тегов",
+  "octant": "Октант",
   "quadrantCustomize": "Настроить квадранты",
   "quadrantName": "Название",
   "resetToDefault": "Сбросить по умолчанию",
@@ -811,7 +820,7 @@
   "productTitleMonthly": "Ежемесячный",
   "monthlyData": "Месячные данные",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {Запланирована 1 задача} other {Запланировано {count} задач}} в этом месяце.",
-  "@monthlyDescriptionPlannedTasks":   {
+  "@monthlyDescriptionPlannedTasks": {
     "description": "Monthly data description: planned tasks",
     "placeholders": {
       "count": {
@@ -823,7 +832,7 @@
   "monthlyDescriptionNoPlannedTasks": "В этом месяце нет запланированных задач.",
   "monthlyDescriptionNoTasks": "В этом месяце нет выполненных задач.",
   "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {Выполнена 1 задача} other {Выполнено {completed} задач}}",
-  "@monthlyDescriptionTasksCompleted":   {
+  "@monthlyDescriptionTasksCompleted": {
     "description": "Monthly data description: completed tasks",
     "placeholders": {
       "completed": {
@@ -833,7 +842,7 @@
     }
   },
   "monthlyDescriptionPriorityBreakdown": "Распределение по приоритетам: {breakdown}.",
-  "@monthlyDescriptionPriorityBreakdown":   {
+  "@monthlyDescriptionPriorityBreakdown": {
     "description": "Monthly data description: priority breakdown prefix",
     "placeholders": {
       "breakdown": {
@@ -843,7 +852,7 @@
     }
   },
   "monthlyDescriptionNotesWritten": "В этом месяце написано {count, plural, =1 {1 заметка} other {{count} заметок}}, всего {words, plural, =1 {1 слово} other {{words} слов}}.",
-  "@monthlyDescriptionNotesWritten":   {
+  "@monthlyDescriptionNotesWritten": {
     "description": "Monthly data description: notes written",
     "placeholders": {
       "count": {
@@ -858,7 +867,7 @@
   },
   "monthlyDescriptionNoNotesWritten": "В этом месяце заметок не написано.",
   "monthlyDescriptionTagsInvolved": "Задействованные теги: {tags}.",
-  "@monthlyDescriptionTagsInvolved":   {
+  "@monthlyDescriptionTagsInvolved": {
     "description": "Monthly data description: tags involved prefix",
     "placeholders": {
       "tags": {
@@ -867,5 +876,4 @@
       }
     }
   }
-
 }

@@ -17,14 +17,11 @@ class TaskTimeBlockLabels extends StatelessWidget {
               height: TaskTimeBlockMetrics.hourHeight,
               child: Align(
                 alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    label,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.outline,
-                      fontSize: 10,
-                    ),
+                child: Text(
+                  label,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                    fontSize: 10,
                   ),
                 ),
               ),

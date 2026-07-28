@@ -12,9 +12,13 @@ final class TaskTimeBlockState extends Equatable {
     this.currentTimeMinutes,
     this.currentTimeLabel,
     this.currentTimeTop,
+    this.isDemo = false,
   });
 
-  factory TaskTimeBlockState.initial({required Jiffy date}) {
+  factory TaskTimeBlockState.initial({
+    required Jiffy date,
+    bool isDemo = false,
+  }) {
     final dayStart = date.startOf(Unit.day);
     final now = Jiffy.now();
     final isToday = now.isSame(dayStart, unit: Unit.day);
@@ -34,6 +38,7 @@ final class TaskTimeBlockState extends Equatable {
       currentTimeTop: currentMinutes == null
           ? null
           : TaskTimeBlockMetrics.topFromMinutes(currentMinutes),
+      isDemo: isDemo,
     );
   }
 
@@ -54,6 +59,9 @@ final class TaskTimeBlockState extends Equatable {
   final String? currentTimeLabel;
   final double? currentTimeTop;
 
+  /// 是否正在展示演示数据（非会员）
+  final bool isDemo;
+
   @override
   List<Object?> get props => [
     date,
@@ -66,6 +74,7 @@ final class TaskTimeBlockState extends Equatable {
     currentTimeMinutes,
     currentTimeLabel,
     currentTimeTop,
+    isDemo,
   ];
 
   TaskTimeBlockState copyWith({
@@ -79,6 +88,7 @@ final class TaskTimeBlockState extends Equatable {
     ValueGetter<int?>? currentTimeMinutes,
     ValueGetter<String?>? currentTimeLabel,
     ValueGetter<double?>? currentTimeTop,
+    bool? isDemo,
   }) {
     return TaskTimeBlockState(
       date: date ?? this.date,
@@ -97,6 +107,7 @@ final class TaskTimeBlockState extends Equatable {
       currentTimeTop: currentTimeTop != null
           ? currentTimeTop()
           : this.currentTimeTop,
+      isDemo: isDemo ?? this.isDemo,
     );
   }
 }

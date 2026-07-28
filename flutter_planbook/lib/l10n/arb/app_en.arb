@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "Reminders before task start",
   "iKnow": "I Know",
   "unlockPro": "Unlock all premium features.",
+  "timeBlockDemoBannerTitle": "These are demo data. Upgrade to PRO to unlock all premium features.",
+  "timeBlockDemoTaskStandup": "Team Standup",
+  "timeBlockDemoTaskDeepWork": "Deep Work",
+  "timeBlockDemoTaskMeeting": "Client Meeting",
+  "timeBlockDemoTaskWorkout": "Workout",
   "freeTrial": "Free trial for {days} days",
   "@freeTrial": {
     "placeholders": {
@@ -899,5 +904,4 @@
       }
     }
   }
-
 }

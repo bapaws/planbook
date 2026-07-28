@@ -7,6 +7,7 @@ import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/source/view/task_source_panel.dart'
     show TaskSourcePanel;
+import 'package:flutter_planbook/task/time_block/view/task_time_block_demo_banner.dart';
 import 'package:flutter_planbook/task/today/view/task_focus_view.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
@@ -18,10 +19,12 @@ import 'package:planbook_repository/planbook_repository.dart';
 ///
 /// 顶部展示本周重点与本周总结，下方按天分组：左侧日期、右侧任务。
 /// [trailing] 显示在日列表右侧（例如 [TaskSourcePanel]）。
+/// 非会员以演示数据展示，并引导升级 PRO。
 class TaskWeekListView extends StatelessWidget {
   const TaskWeekListView({
     required this.weekDays,
     this.trailing,
+    this.isDemo = false,
     super.key,
   });
 
@@ -30,8 +33,13 @@ class TaskWeekListView extends StatelessWidget {
   /// 日列表右侧附加面板（需自行提供对应 Bloc）
   final Widget? trailing;
 
+  /// 是否为演示模式（非会员）
+  final bool isDemo;
+
   @override
   Widget build(BuildContext context) {
+    final bottomBarHeight =
+        kRootBottomBarHeight + MediaQuery.of(context).padding.bottom;
     return Column(
       children: [
         _buildCalendar(context),
@@ -44,20 +52,39 @@ class TaskWeekListView extends StatelessWidget {
               Expanded(
                 // 列数只随视口宽度变化，提到外层算一次，避免每天 SliverLayoutBuilder
                 // 在滚动几何变化时反复重建整组 Grid。
+                // banner 只盖左侧列表，不覆盖侧栏（与时间块一致）。
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final crossAxisCount = taskWeekListCrossAxisCount(
                       constraints.maxWidth -
                           TaskWeekListDayGroup.dayHeaderExtent,
                     );
-                    return CustomScrollView(
+                    final list = CustomScrollView(
                       slivers: [
                         for (final day in weekDays)
                           TaskWeekListDayGroup(
                             day: day,
                             crossAxisCount: crossAxisCount,
+                            isDemo: isDemo,
                           ),
                         _buildBottomSafeAreaSliver(context),
+                        // 演示 banner 浮在底部，额外留出高度避免遮挡末尾任务
+                        if (isDemo)
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 56),
+                          ),
+                      ],
+                    );
+                    if (!isDemo) return list;
+                    return Stack(
+                      children: [
+                        list,
+                        Positioned(
+                          bottom: bottomBarHeight,
+                          left: 0,
+                          right: 8,
+                          child: const AppDemoBanner(),
+                        ),
                       ],
                     );
                   },

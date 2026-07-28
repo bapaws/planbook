@@ -32,6 +32,11 @@
   "taskReminderChannelDescription": "작업 시작 전 알림",
   "iKnow": "알겠어요",
   "unlockPro": "모든 프리미엄 기능 잠금 해제",
+  "timeBlockDemoBannerTitle": "These are demo data. Upgrade to PRO to unlock all premium features.",
+  "timeBlockDemoTaskStandup": "Team Standup",
+  "timeBlockDemoTaskDeepWork": "Deep Work",
+  "timeBlockDemoTaskMeeting": "Client Meeting",
+  "timeBlockDemoTaskWorkout": "Workout",
   "freeTrial": "{days}일 무료 체험",
   "tryFree": "무료로 사용해보기",
   "general": "일반",
@@ -179,10 +184,14 @@
   "hideCompleted": "완료 항목 숨기기",
   "showFocusNote": "포커스/요약 보기",
   "hideFocusNote": "포커스/요약 숨기기",
+  "showSourcePanel": "작업 사이드바 표시",
+  "hideSourcePanel": "작업 사이드바 숨기기",
   "priority": "우선순위",
   "selectViewType": "보기 유형 선택",
   "quadrant": "사분면",
   "timeBlock": "시간 블록",
+  "tagList": "태그 목록",
+  "octant": "팔분면",
   "quadrantCustomize": "사분면 사용자화",
   "quadrantName": "이름",
   "resetToDefault": "기본값으로 재설정",
@@ -811,7 +820,7 @@
   "productTitleMonthly": "월간",
   "monthlyData": "월간 데이터",
   "monthlyDescriptionPlannedTasks": "이번 달 {count, plural, =1 {작업 1개} other {작업 {count}개}}를 계획했습니다.",
-  "@monthlyDescriptionPlannedTasks":   {
+  "@monthlyDescriptionPlannedTasks": {
     "description": "Monthly data description: planned tasks",
     "placeholders": {
       "count": {
@@ -823,7 +832,7 @@
   "monthlyDescriptionNoPlannedTasks": "이번 달 계획된 작업이 없습니다.",
   "monthlyDescriptionNoTasks": "이번 달 완료된 작업이 없습니다.",
   "monthlyDescriptionTasksCompleted": "{completed, plural, =1 {작업 1개} other {작업 {completed}개}}를 완료했습니다",
-  "@monthlyDescriptionTasksCompleted":   {
+  "@monthlyDescriptionTasksCompleted": {
     "description": "Monthly data description: completed tasks",
     "placeholders": {
       "completed": {
@@ -833,7 +842,7 @@
     }
   },
   "monthlyDescriptionPriorityBreakdown": "우선순위 분포: {breakdown}.",
-  "@monthlyDescriptionPriorityBreakdown":   {
+  "@monthlyDescriptionPriorityBreakdown": {
     "description": "Monthly data description: priority breakdown prefix",
     "placeholders": {
       "breakdown": {
@@ -843,7 +852,7 @@
     }
   },
   "monthlyDescriptionNotesWritten": "이번 달 {count, plural, =1 {노트 1개} other {노트 {count}개}}를 작성했으며, 총 {words, plural, =1 {1자} other {{words}자}}입니다.",
-  "@monthlyDescriptionNotesWritten":   {
+  "@monthlyDescriptionNotesWritten": {
     "description": "Monthly data description: notes written",
     "placeholders": {
       "count": {
@@ -858,7 +867,7 @@
   },
   "monthlyDescriptionNoNotesWritten": "이번 달 작성된 노트가 없습니다.",
   "monthlyDescriptionTagsInvolved": "관련 태그: {tags}.",
-  "@monthlyDescriptionTagsInvolved":   {
+  "@monthlyDescriptionTagsInvolved": {
     "description": "Monthly data description: tags involved prefix",
     "placeholders": {
       "tags": {
@@ -867,5 +876,4 @@
       }
     }
   }
-
 }
