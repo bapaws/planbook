@@ -57,7 +57,8 @@ class _TaskSourcePanelView extends StatelessWidget {
         builder: (context, child, candidateData) {
           final isHovering = candidateData.isNotEmpty;
           return Container(
-            margin: EdgeInsets.only(
+            margin: EdgeInsetsDirectional.only(
+              end: 8,
               bottom:
                   kRootBottomBarItemHeight +
                   MediaQuery.of(context).padding.bottom,
