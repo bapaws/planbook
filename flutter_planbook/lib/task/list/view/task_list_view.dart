@@ -22,6 +22,7 @@ class TaskListView extends StatelessWidget {
     this.onTaskDelayed,
     this.targetDay,
     this.onTaskDropped,
+    this.onWillAcceptDropped,
     super.key,
   });
 
@@ -41,6 +42,9 @@ class TaskListView extends StatelessWidget {
   /// 当外部任务被拖放到该列表区域时回调；为 null 时不接收投放
   final ValueChanged<TaskEntity>? onTaskDropped;
 
+  /// 列表 overlay 是否接受投放；用于拒绝「已在列表内且无实际变更」的原地松手。
+  final DragTargetWillAcceptWithDetails<TaskEntity>? onWillAcceptDropped;
+
   @override
   Widget build(BuildContext context) {
     return TaskListDeleteDialogListener(
@@ -54,6 +58,7 @@ class TaskListView extends StatelessWidget {
         onTaskDelayed: onTaskDelayed,
         targetDay: targetDay,
         onTaskDropped: onTaskDropped,
+        onWillAcceptDropped: onWillAcceptDropped,
       ),
     );
   }
@@ -70,6 +75,7 @@ class TaskSliverList extends StatelessWidget {
     this.onTaskDelayed,
     this.targetDay,
     this.onTaskDropped,
+    this.onWillAcceptDropped,
     super.key,
   });
 
@@ -87,6 +93,9 @@ class TaskSliverList extends StatelessWidget {
 
   /// 当外部任务被拖放到该列表区域时回调；为 null 时不接收投放
   final ValueChanged<TaskEntity>? onTaskDropped;
+
+  /// 列表 overlay 是否接受投放。
+  final DragTargetWillAcceptWithDetails<TaskEntity>? onWillAcceptDropped;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +184,7 @@ class TaskSliverList extends StatelessWidget {
 
     return SliverTaskDragTarget(
       onAccept: onTaskDropped,
+      onWillAcceptWithDetails: onWillAcceptDropped,
       sliver: sliver,
     );
   }

@@ -301,6 +301,8 @@ class _TaskTodayListPage extends StatelessWidget {
             return SliverFillRemaining(
               hasScrollBody: false,
               child: TaskDragTarget(
+                onWillAcceptWithDetails: (details) =>
+                    _wouldScheduleTaskToList(context, details.data, tag: tag),
                 onAccept: (task) =>
                     _scheduleTaskToList(context, task, tag: tag),
                 // 铺满剩余视口；底部留白避免被底部栏挡住
@@ -338,6 +340,8 @@ class _TaskTodayListPage extends StatelessWidget {
             tasks: state.tasks,
             header: tag != null ? TaskListHeader(tag: tag) : null,
             targetDay: state.date,
+            onWillAcceptDropped: (details) =>
+                _wouldScheduleTaskToList(context, details.data, tag: tag),
             onTaskDropped: (task) {
               _scheduleTaskToList(context, task, tag: tag);
             },
@@ -345,6 +349,21 @@ class _TaskTodayListPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  /// 是否应接受投放到当前列表。
+  ///
+  /// 需要追加标签时始终接受；否则若任务已在列表中（原地松手）则拒绝，
+  /// 避免 DragTarget 接受后触发源列表乐观移除。
+  bool _wouldScheduleTaskToList(
+    BuildContext context,
+    TaskEntity task, {
+    TagEntity? tag,
+  }) {
+    final needsTag = tag != null && !task.tags.any((t) => t.id == tag.id);
+    if (needsTag) return true;
+    final tasks = context.read<TaskListBloc>().state.tasks;
+    return !tasks.any((t) => t.id == task.id);
   }
 
   void _scheduleTaskToList(

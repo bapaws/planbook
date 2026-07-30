@@ -135,7 +135,11 @@ class TaskSourcePanelBloc
       case TaskSourcePanelInbox():
         final isInbox =
             task.startAt == null && task.endAt == null && task.dueAt == null;
-        if (isInbox) return;
+        if (isInbox) {
+          // 无变更：仍登记，避免并发的 DragCompleted 误删。
+          _justDroppedTaskIds.add(task.id);
+          return;
+        }
         final updatedTask = task.copyWith(
           task: task.task.copyWith(
             startAt: const Value(null),

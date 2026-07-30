@@ -28,6 +28,8 @@ class TaskWeekListDayHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final isToday = day.isSame(Jiffy.now(), unit: Unit.day);
     return TaskDragTarget(
+      onWillAcceptWithDetails: (details) =>
+          TaskDropArea.wouldMoveToDay(details.data, day),
       onAccept: (task) {
         // 演示模式下任何投放操作都进入付费墙
         if (isDemo) {

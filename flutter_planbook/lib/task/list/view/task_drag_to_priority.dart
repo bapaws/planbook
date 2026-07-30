@@ -5,6 +5,9 @@ import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 /// 可接收拖拽任务的“优先级格子”区域，用于四象限视图
+///
+/// 与日期投放区相同：相同优先级在 willAccept 阶段拒绝，
+/// 避免原地松手被当成 move 而乐观移除。
 class TaskPriorityDropArea extends StatelessWidget {
   const TaskPriorityDropArea({
     required this.child,
@@ -19,18 +22,22 @@ class TaskPriorityDropArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final priority = targetPriority;
     return TaskDragTarget(
-      onAccept: targetPriority == null
+      onWillAcceptWithDetails: priority == null
+          ? null
+          : (details) => details.data.priority != priority,
+      onAccept: priority == null
           ? null
           : (task) {
-              if (task.priority == targetPriority) return;
+              if (task.priority == priority) return;
               final bloc = context.read<TaskListBloc>();
               final targetDate = bloc.state.date;
               if (targetDate != null) {
                 bloc.add(
                   TaskListTaskScheduled(
                     task: task,
-                    targetPriority: targetPriority!,
+                    targetPriority: priority,
                     targetDate: targetDate,
                   ),
                 );
@@ -38,7 +45,7 @@ class TaskPriorityDropArea extends StatelessWidget {
                 bloc.add(
                   TaskListPriorityChanged(
                     task: task,
-                    targetPriority: targetPriority!,
+                    targetPriority: priority,
                   ),
                 );
               }

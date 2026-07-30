@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/core/model/task_priority_x.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_planbook/task/time_block/bloc/task_time_block_bloc.dart';
 import 'package:flutter_planbook/task/time_block/model/task_time_block_layout_item.dart';
@@ -141,6 +142,16 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
               opacity: 0.3,
               child: _buildBlockContent(colorScheme),
             ),
+            // 与 TaskDraggable 一致：move 被外部目标接受后乐观移除，
+            // 避免拖到侧栏后残影闪回原位。
+            onDragCompleted: () {
+              final operation = TaskDragOperationNotifier.instance.take();
+              if (operation != TaskDragOperation.move) return;
+              if (!context.mounted) return;
+              context.read<TaskListBloc>().add(
+                TaskListTaskDragCompleted(task: item.task),
+              );
+            },
             child: GestureDetector(
               onTap: () => _openTaskDetail(context),
               child: _buildBlockContent(colorScheme),

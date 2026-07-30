@@ -11,6 +11,9 @@ import 'package:planbook_api/entity/task_entity.dart';
 ///
 /// 当 [targetDay] 非 null 时，将 [child] 包在 [TaskDragTarget] 内，
 /// 有任务拖入且目标日期与任务当前日期不同时调用 [moveTaskToDay]。
+///
+/// 同日投放在 willAccept 阶段拒绝，避免标记为 move
+/// 后触发源列表乐观移除（长按未移动就释放时的消失问题）。
 class TaskDropArea extends StatelessWidget {
   const TaskDropArea({
     required this.child,
@@ -25,12 +28,30 @@ class TaskDropArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final day = targetDay;
     return TaskDragTarget(
-      onAccept: targetDay == null
+      onWillAcceptWithDetails: day == null
           ? null
-          : (task) => TaskDropArea.moveTaskToDay(context, task, targetDay!),
+          : (details) => TaskDropArea.wouldMoveToDay(details.data, day),
+      onAccept: day == null
+          ? null
+          : (task) => TaskDropArea.moveTaskToDay(context, task, day),
       child: child,
     );
+  }
+
+  /// 任务拖到 [targetDay] 是否会产生实际改期。
+  ///
+  /// 同日返回 false，供 willAccept 拒绝无效投放。
+  static bool wouldMoveToDay(TaskEntity task, Jiffy targetDay) {
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+    final targetDayStart = targetDay.startOf(Unit.day);
+    if (taskDay != null && taskDay.isSame(targetDayStart, unit: Unit.day)) {
+      return false;
+    }
+    return true;
   }
 
   /// 派发事件将任务移动到指定日期（拖到其他天时调用）
@@ -42,15 +63,14 @@ class TaskDropArea extends StatelessWidget {
     TaskEntity task,
     Jiffy targetDay,
   ) {
-    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
-      Unit.day,
-    );
-    final targetDayStart = targetDay.startOf(Unit.day);
-    if (taskDay != null && taskDay.isSame(targetDayStart, unit: Unit.day)) {
+    if (!wouldMoveToDay(task, targetDay)) {
       return;
     }
     context.read<TaskListBloc>().add(
-      TaskListTaskDelayed(task: task, delayTo: targetDayStart),
+      TaskListTaskDelayed(
+        task: task,
+        delayTo: targetDay.startOf(Unit.day),
+      ),
     );
   }
 }

@@ -88,6 +88,8 @@ class _TaskWeekListDayGroupBody extends StatelessWidget {
       // 投放区包住整日 CrossAxisGroup：任务少时右侧比日期头矮，
       // 仅包任务 sliver 会漏掉日期头旁的视觉空白。
       sliver: SliverTaskDragTarget(
+        onWillAcceptWithDetails: (details) =>
+            TaskDropArea.wouldMoveToDay(details.data, day),
         onAccept: (task) {
           // 演示模式下任何投放操作都进入付费墙
           if (isDemo) {

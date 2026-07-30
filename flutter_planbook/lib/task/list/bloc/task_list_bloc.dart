@@ -212,6 +212,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     return a.isSame(b, unit: Unit.minute);
   }
 
+  bool _sameTagIds(List<TagEntity> a, List<TagEntity> b) {
+    if (a.length != b.length) return false;
+    final ids = b.map((t) => t.id).toSet();
+    return a.every((t) => ids.contains(t.id));
+  }
+
   /// 将原始任务列表按当前选中的标签和展开状态展开为显示列表。
   List<TaskEntity> _buildDisplayedTasks(List<TaskEntity> tasks) {
     final filteredTasks = _selectedTagIds.isEmpty
@@ -449,6 +455,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
           (event.task.occurrenceAt ?? event.task.startAt ?? event.task.dueAt)
               ?.startOf(Unit.day);
       if (taskDay != null && taskDay.isSame(delayTo, unit: Unit.day)) {
+        // 同日无变更：仍登记，避免并发的 DragCompleted 误删。
+        _justDroppedTaskIds.add(event.task.id);
         return;
       }
     } else {
@@ -585,7 +593,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListPriorityChanged event,
     Emitter<TaskListState> emit,
   ) async {
-    if (event.task.priority == event.targetPriority) return;
+    if (event.task.priority == event.targetPriority) {
+      // 无变更：仍登记，避免并发的 DragCompleted 误删。
+      _justDroppedTaskIds.add(event.task.id);
+      return;
+    }
 
     // 同步乐观更新优先级
     final updatedTask = event.task.copyWith(
@@ -612,6 +624,19 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     final task = event.task;
     final targetDate = event.targetDate.startOf(Unit.day);
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+    final sameDay =
+        taskDay != null && taskDay.isSame(targetDate, unit: Unit.day);
+    final samePriority = task.priority == event.targetPriority;
+    final tagsUnchanged =
+        event.tags == null || _sameTagIds(event.tags!, task.tags);
+    if (sameDay && samePriority && tagsUnchanged) {
+      // 无实际变更：仍登记，避免并发的 DragCompleted 误删。
+      _justDroppedTaskIds.add(task.id);
+      return;
+    }
 
     // 同步乐观更新：任务移动到目标日期并设置优先级
     final updatedTask = task.copyWith(
@@ -674,6 +699,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     final startAt = event.startAt;
     final endAt = event.endAt;
 
+    // 先登记，避免随后的 DragCompleted 在网格内改期时误删。
+    _justDroppedTaskIds.add(task.id);
+
     // 时间块布局优先使用 occurrence 的 startAt/endAt，
     // 所以重复任务实例需要同步更新 occurrence，否则乐观位置会弹回旧位置。
     final occurrence = task.occurrence;
@@ -697,7 +725,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
       ),
     );
-    _justDroppedTaskIds.add(task.id);
 
     if (task.recurrenceRule != null) {
       // 重复任务：先创建/获取 detached 实例，再更新时间
@@ -740,6 +767,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     if (task.isAllDay &&
         taskDay != null &&
         taskDay.isSame(targetDate, unit: Unit.day)) {
+      // 无变更：仍登记，避免并发的 DragCompleted 误删。
+      _justDroppedTaskIds.add(task.id);
       return;
     }
 

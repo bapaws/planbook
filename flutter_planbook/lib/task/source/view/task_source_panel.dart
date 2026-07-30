@@ -24,6 +24,34 @@ import 'package:planbook_repository/planbook_repository.dart';
 class TaskSourcePanel extends StatelessWidget {
   const TaskSourcePanel({super.key});
 
+  /// 投放到当前数据源是否会产生实际变更。
+  ///
+  /// 无变更时返回 false，供 willAccept 拒绝，避免原地松手触发乐观移除。
+  static bool wouldAcceptDrop(
+    TaskSourcePanelType sourceType,
+    TaskEntity task,
+  ) {
+    switch (sourceType) {
+      case TaskSourcePanelInbox():
+        return task.startAt != null || task.endAt != null || task.dueAt != null;
+      case TaskSourcePanelTag(tags: final tags):
+        final existingIds = task.tags.map((t) => t.id).toSet();
+        return tags.any((tag) => !existingIds.contains(tag.id));
+      case TaskSourcePanelDate(date: final date):
+        return TaskDropArea.wouldMoveToDay(task, date);
+      case TaskSourcePanelAllDay(date: final date):
+        final targetDate = date.startOf(Unit.day);
+        final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
+            ?.startOf(Unit.day);
+        if (task.isAllDay &&
+            taskDay != null &&
+            taskDay.isSame(targetDate, unit: Unit.day)) {
+          return false;
+        }
+        return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return const _TaskSourcePanelView();
@@ -49,6 +77,13 @@ class _TaskSourcePanelView extends StatelessWidget {
         );
       },
       child: TaskDragTarget(
+        onWillAcceptWithDetails: (details) {
+          final state = context.read<TaskSourcePanelBloc>().state;
+          return TaskSourcePanel.wouldAcceptDrop(
+            state.sourceType,
+            details.data,
+          );
+        },
         onAccept: (task) {
           context.read<TaskSourcePanelBloc>().add(
             TaskSourcePanelTaskDropped(task),
@@ -57,8 +92,8 @@ class _TaskSourcePanelView extends StatelessWidget {
         builder: (context, child, candidateData) {
           final isHovering = candidateData.isNotEmpty;
           return Container(
-            margin: EdgeInsetsDirectional.only(
-              end: 8,
+            margin: EdgeInsets.only(
+              right: 8,
               bottom:
                   kRootBottomBarItemHeight +
                   MediaQuery.of(context).padding.bottom,
@@ -221,8 +256,9 @@ class _SourcePanelTitle extends StatelessWidget {
       TaskSourcePanelInbox() => l10n.inbox,
       TaskSourcePanelTag(tags: final tags) =>
         tags.map((t) => t.name).join(', '),
-      TaskSourcePanelDate(date: final date) => date.MMMd,
-      TaskSourcePanelAllDay() => l10n.allDay,
+      TaskSourcePanelDate(date: final date) => date.Md,
+      // 与日期源一致带上 MMMd，避免只显示「全天」看不出是哪一天
+      TaskSourcePanelAllDay(date: final date) => '${date.Md}(${l10n.allDay})',
     };
   }
 
