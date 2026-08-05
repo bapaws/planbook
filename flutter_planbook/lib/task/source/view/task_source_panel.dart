@@ -18,7 +18,7 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 /// 右侧任务列
 ///
-/// 显示收集箱 / 指定标签 / 指定日期 / 全天任务，支持与主视图双向拖拽。
+/// 显示收集箱 / 指定标签 / 指定日期（全部/全天/非全天），支持与主视图双向拖拽。
 ///
 /// 需在上层提供 [TaskSourcePanelBloc]。
 class TaskSourcePanel extends StatelessWidget {
@@ -37,18 +37,19 @@ class TaskSourcePanel extends StatelessWidget {
       case TaskSourcePanelTag(tags: final tags):
         final existingIds = task.tags.map((t) => t.id).toSet();
         return tags.any((tag) => !existingIds.contains(tag.id));
-      case TaskSourcePanelDate(date: final date):
-        return TaskDropArea.wouldMoveToDay(task, date);
-      case TaskSourcePanelAllDay(date: final date):
-        final targetDate = date.startOf(Unit.day);
-        final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
-            ?.startOf(Unit.day);
-        if (task.isAllDay &&
-            taskDay != null &&
-            taskDay.isSame(targetDate, unit: Unit.day)) {
-          return false;
+      case TaskSourcePanelDate(date: final date, filter: final filter):
+        if (filter == TaskSourcePanelDateFilter.allDay) {
+          final targetDate = date.startOf(Unit.day);
+          final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
+              ?.startOf(Unit.day);
+          if (task.isAllDay &&
+              taskDay != null &&
+              taskDay.isSame(targetDate, unit: Unit.day)) {
+            return false;
+          }
+          return true;
         }
-        return true;
+        return TaskDropArea.wouldMoveToDay(task, date);
     }
   }
 
@@ -244,8 +245,11 @@ class _SourcePanelTitle extends StatelessWidget {
     final icon = switch (sourceType) {
       TaskSourcePanelInbox() => CupertinoIcons.tray,
       TaskSourcePanelTag() => CupertinoIcons.tag,
+      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.allDay) =>
+        CupertinoIcons.sun_max,
+      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.notAllDay) =>
+        CupertinoIcons.clock,
       TaskSourcePanelDate() => CupertinoIcons.calendar,
-      TaskSourcePanelAllDay() => CupertinoIcons.sun_max,
     };
     return Icon(icon, size: 14, color: colorScheme.primary);
   }
@@ -256,9 +260,21 @@ class _SourcePanelTitle extends StatelessWidget {
       TaskSourcePanelInbox() => l10n.inbox,
       TaskSourcePanelTag(tags: final tags) =>
         tags.map((t) => t.name).join(', '),
-      TaskSourcePanelDate(date: final date) => date.Md,
-      // 与日期源一致带上 MMMd，避免只显示「全天」看不出是哪一天
-      TaskSourcePanelAllDay(date: final date) => '${date.Md}(${l10n.allDay})',
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.all,
+      ) =>
+        date.Md,
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.allDay,
+      ) =>
+        '${date.Md}(${l10n.allDay})',
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.notAllDay,
+      ) =>
+        '${date.Md}(${l10n.notAllDay})',
     };
   }
 

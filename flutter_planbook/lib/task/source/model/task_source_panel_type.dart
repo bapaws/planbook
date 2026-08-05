@@ -25,24 +25,32 @@ final class TaskSourcePanelTag extends TaskSourcePanelType {
   List<Object?> get props => [tags];
 }
 
-/// 指定日期数据源
-final class TaskSourcePanelDate extends TaskSourcePanelType {
-  const TaskSourcePanelDate(this.date);
+/// 指定日期任务的显示范围
+enum TaskSourcePanelDateFilter {
+  /// 当天全部任务
+  all,
 
-  final Jiffy date;
+  /// 仅全天任务
+  allDay,
 
-  @override
-  List<Object?> get props => [date];
+  /// 仅非全天（有具体时间）任务
+  notAllDay,
 }
 
-/// 指定日期的全天任务数据源（由时间块「全部」入口切换）
-final class TaskSourcePanelAllDay extends TaskSourcePanelType {
-  const TaskSourcePanelAllDay(this.date);
+/// 指定日期数据源
+final class TaskSourcePanelDate extends TaskSourcePanelType {
+  const TaskSourcePanelDate(
+    this.date, {
+    this.filter = TaskSourcePanelDateFilter.all,
+  });
 
   final Jiffy date;
 
+  /// 日期下的任务过滤范围
+  final TaskSourcePanelDateFilter filter;
+
   @override
-  List<Object?> get props => [date];
+  List<Object?> get props => [date, filter];
 }
 
 /// 用于切换控件的占位数据源，不携带具体标签/日期

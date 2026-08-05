@@ -25,14 +25,24 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
        _usersRepository = usersRepository,
        super(const AppPurchasesState()) {
     on<AppPurchasesRequested>(_onRequested, transformer: restartable());
-    on<AppPurchasesUserRequested>(_onUserRequested);
-    on<AppPurchasesRestored>(_onRestored);
-    on<AppPurchasesLogin>(_onLogin);
+    on<AppPurchasesUserRequested>(_onUserRequested, transformer: sequential());
+    // 购买/恢复是提交型操作：丢弃进行中的重复事件，防止连点导致双扣
+    on<AppPurchasesRestored>(_onRestored, transformer: droppable());
+    on<AppPurchasesLogin>(_onLogin, transformer: sequential());
 
-    on<AppPurchasesProductSelected>(_onProductSelected);
-    on<AppPurchasesPurchased>(_onPurchased);
-    on<AppPurchasesSupportUsFullPrice>(_onSupportUsFullPrice);
-    on<AppPurchasesAgreedToConditions>(_onAgreedToConditions);
+    on<AppPurchasesProductSelected>(
+      _onProductSelected,
+      transformer: sequential(),
+    );
+    on<AppPurchasesPurchased>(_onPurchased, transformer: droppable());
+    on<AppPurchasesSupportUsFullPrice>(
+      _onSupportUsFullPrice,
+      transformer: droppable(),
+    );
+    on<AppPurchasesAgreedToConditions>(
+      _onAgreedToConditions,
+      transformer: sequential(),
+    );
   }
 
   final TasksRepository _tasksRepository;
@@ -66,7 +76,13 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesRequested event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        isRestoreFailure: false,
+        entitlementJustGranted: false,
+      ),
+    );
 
     final fetchedProducts = (await AppPurchases.instance.getStoreProducts())
         .sorted((a, b) => a.price.compareTo(b.price));
@@ -84,10 +100,12 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     emit(
       state.copyWith(
         status: PageStatus.success,
-        activeProductId: kDebugMode ? 'lifetime' : activeProductIdentifier,
+        activeProductId: () =>
+            kDebugMode ? 'lifetime' : activeProductIdentifier,
         storeProducts: storeProducts,
         selectedStoreProduct: selectedStoreProduct,
         savePercentId: selectedStoreProduct?.id,
+        entitlementJustGranted: false,
       ),
     );
   }
@@ -100,10 +118,17 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
       _usersRepository.onAuthStateChange,
       onData: (user) {
         final id = user?.session?.user.id;
-        if (id == null || id == state.userId) return state;
+        // 登出时必须清空会员信息，否则下一位登录用户会继承上一位的会员状态
+        if (id == null) {
+          return state.copyWith(
+            userId: () => null,
+            activeProductId: () => null,
+          );
+        }
+        if (id == state.userId) return state;
         add(AppPurchasesLogin(userId: id));
         return state.copyWith(
-          userId: id,
+          userId: () => id,
         );
       },
     );
@@ -119,7 +144,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     final activeProductIdentifier = await AppPurchases.instance.logIn(id);
     emit(
       state.copyWith(
-        activeProductId: activeProductIdentifier,
+        activeProductId: () => activeProductIdentifier,
       ),
     );
   }
@@ -128,12 +153,32 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesRestored event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        isRestoreFailure: false,
+        entitlementJustGranted: false,
+      ),
+    );
     final activeProductIdentifier = await AppPurchases.instance.restore();
+    if (activeProductIdentifier == null) {
+      // 恢复不到任何购买记录必须明确失败并反馈，
+      // 无条件 success 会让已付款但未到账的用户得不到任何提示
+      emit(
+        state.copyWith(
+          status: PageStatus.failure,
+          isRestoreFailure: true,
+          activeProductId: () => null,
+          entitlementJustGranted: false,
+        ),
+      );
+      return;
+    }
     emit(
       state.copyWith(
         status: PageStatus.success,
-        activeProductId: activeProductIdentifier,
+        activeProductId: () => activeProductIdentifier,
+        entitlementJustGranted: true,
       ),
     );
   }
@@ -157,21 +202,41 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     AppPurchasesPurchased event,
     Emitter<AppPurchasesState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        isRestoreFailure: false,
+        entitlementJustGranted: false,
+      ),
+    );
     final storeProduct =
         state.selectedStoreProduct ??
         state.storeProducts.firstWhereOrNull((e) => e.isAnnual) ??
-        state.storeProducts.first;
+        state.storeProducts.firstWhereOrNull((e) => true);
+
+    // 商品列表还没加载出来时直接失败，而不是抛 StateError
+    if (storeProduct == null) {
+      emit(
+        state.copyWith(
+          status: PageStatus.failure,
+          entitlementJustGranted: false,
+        ),
+      );
+      return;
+    }
 
     final activeProductIdentifier = await AppPurchases.instance.purchase(
       storeProduct,
+      chinaPayMethod: event.chinaPayMethod,
     );
+    // 失败时不传 activeProductId（copyWith 保留原值）：
+    // 一次失败的购买不能清掉已有的有效会员
+    final granted = activeProductIdentifier != null;
     emit(
       state.copyWith(
-        status: activeProductIdentifier == null
-            ? PageStatus.failure
-            : PageStatus.success,
-        activeProductId: activeProductIdentifier,
+        status: granted ? PageStatus.success : PageStatus.failure,
+        activeProductId: granted ? () => activeProductIdentifier : null,
+        entitlementJustGranted: granted,
       ),
     );
   }
@@ -186,9 +251,12 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     final activeProductIdentifier = await AppPurchases.instance.purchase(
       selectedStoreProduct,
     );
+    // 与 _onPurchased 同理：失败保留已有会员状态
+    final granted = activeProductIdentifier != null;
     emit(
       state.copyWith(
-        activeProductId: activeProductIdentifier,
+        activeProductId: granted ? () => activeProductIdentifier : null,
+        entitlementJustGranted: granted,
       ),
     );
   }

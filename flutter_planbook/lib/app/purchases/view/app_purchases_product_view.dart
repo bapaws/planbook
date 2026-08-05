@@ -54,7 +54,7 @@ class AppPurchasesProductView extends StatelessWidget {
                 Text(
                   product.displayTitle(
                     context.l10n,
-                    preferDuration: AppPurchases.instance.isAndroidChina,
+                    preferDuration: AppPurchases.instance.usesChinaPay,
                   ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.outline,

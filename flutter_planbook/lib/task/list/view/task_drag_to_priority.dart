@@ -33,7 +33,9 @@ class TaskPriorityDropArea extends StatelessWidget {
               if (task.priority == priority) return;
               final bloc = context.read<TaskListBloc>();
               final targetDate = bloc.state.date;
-              if (targetDate != null) {
+              // 仅「今日」四象限：改优先级时可落到该日（例如从侧栏拖入）。
+              // 收集箱/逾期只改优先级，避免无日期任务被写成当天任务。
+              if (targetDate != null && bloc.mode == TaskListMode.today) {
                 bloc.add(
                   TaskListTaskScheduled(
                     task: task,

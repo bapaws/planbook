@@ -14,6 +14,7 @@ import 'package:flutter_planbook/app/privacy/view/privacy_consent_page.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
+import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
@@ -22,7 +23,6 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/supabase_planbook_api.dart';
 
@@ -97,7 +97,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   }
 
   Future<void> _completeBootstrap() async {
-    await _initPurchases();
+    await AppPurchases.initialize(enableChinaPay: AppChannel.isAndroidChina);
     await AppSupabase.initialize();
 
     HydratedBloc.storage = await HydratedStorage.build(
@@ -290,32 +290,6 @@ Future<Widget> _initApp() async {
       child: const App(),
     ),
   );
-}
-
-/// Initial the RevenueCat SDK
-Future<void> _initPurchases() async {
-  await Purchases.setProxyURL('https://api.rc-backup.com/');
-  await Purchases.setLogLevel(LogLevel.error);
-
-  /// Dvelopment use same id
-  PurchasesConfiguration configuration;
-  if (Platform.isAndroid) {
-    configuration = PurchasesConfiguration('goog_jlxqPffDOplzoFISIizzxwRdFFk');
-    // if (buildingForAmazon) {
-    //   // use your preferred way to determine if this build is for Amazon store
-    //   // checkout our MagicWeather sample for a suggestion
-    //   configuration = AmazonConfiguration(
-    //     <revenuecat_project_amazon_api_key>,
-    //   );
-    // }
-  } else if (Platform.isIOS) {
-    configuration = PurchasesConfiguration('appl_aNYCwAWkYYxFFPdqMBTWIXzIzko')
-      ..userDefaultsSuiteName = kAppGroupId;
-  } else {
-    throw UnimplementedError();
-  }
-
-  await Purchases.configure(configuration);
 }
 
 Future<void> _migrationDatabasePath(SharedPreferences sp) async {

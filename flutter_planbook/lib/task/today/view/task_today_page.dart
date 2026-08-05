@@ -19,6 +19,7 @@ import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/today/view/task_focus_view.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 @RoutePage()
@@ -27,111 +28,113 @@ class TaskTodayPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TaskTodayBloc, TaskTodayState>(
-      builder: (context, todayState) {
-        return Column(
-          children: [
-            AppCalendarView<TaskEntity>(
-              date: todayState.date,
-              calendarFormat: todayState.calendarFormat,
-              // eventLoader: (day) {
-              //   final date = Jiffy.parseFromDateTime(day);
-              //   final count = todayState.taskCounts[date.dateKey];
-              //   if (count == null) {
-              //     context.read<TaskTodayBloc>().add(
-              //       TaskTodayTaskCountRequested(date),
-              //     );
-              //     return [];
-              //   }
-              //   return [];
-              // },
-              onDateSelected: (date) {
-                context.read<TaskTodayBloc>().add(
-                  TaskTodayDateSelected(
-                    date: date,
-                    isCompleted: context.read<RootTaskBloc>().isCompleted,
-                  ),
-                );
-              },
+    // 侧栏 BLoC 放在 Today builder 外，避免任务计数等更新触发重建时被重新 create，
+    // 从而把用户选的「某日/全天」重置成当天全天。
+    return BlocProvider(
+      create: (context) {
+        final todayDate = context.read<TaskTodayBloc>().state.date;
+        final bloc =
+            TaskSourcePanelBloc(
+              tasksRepository: context.read(),
+              tagsRepository: context.read(),
+            )..add(
+              TaskSourcePanelLoaded(
+                isCompleted: context.read<RootTaskBloc>().isCompleted,
+                selectedTagIds: context
+                    .read<RootTaskBloc>()
+                    .state
+                    .selectedTagIds,
+              ),
+            );
+        if (context.read<RootTaskBloc>().state.dayViewType ==
+            RootTaskViewType.timeBlock) {
+          bloc.add(
+            TaskSourcePanelSourceChanged(
+              TaskSourcePanelDate(
+                todayDate,
+                filter: TaskSourcePanelDateFilter.allDay,
+              ),
             ),
-            BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
-              selector: (state) =>
-                  state.tabFocusNoteTypes[RootTaskTab.day] ??
-                  NoteType.dailyFocus,
-              builder: (context, noteType) {
-                final bloc = context.read<TaskTodayBloc>();
-                final note = noteType.isFocus
-                    ? bloc.state.focusNote
-                    : bloc.state.summaryNote;
-                return TaskFocusView(
-                  note: note,
-                  noteType: noteType,
-                  onTap: () {
-                    final focusAt = context.read<TaskTodayBloc>().state.date;
-                    context.router.push(
-                      NoteNewTypeRoute(
-                        initialNote: note,
-                        type: noteType,
-                        focusAt: focusAt,
-                      ),
-                    );
-                  },
-                  onMindMapTapped: () {
-                    _addDiscoverEvent(context, noteType);
-                    _navigateToRootDiscover(context, noteType);
-                  },
-                  onTaskDropped: (task) {
-                    context.read<TaskTodayBloc>().add(
-                      TaskTodayNoteTaskAppended(
-                        task: task,
-                        noteType: noteType,
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: BlocProvider(
-                create: (context) {
-                  final bloc =
-                      TaskSourcePanelBloc(
-                        tasksRepository: context.read(),
-                        tagsRepository: context.read(),
-                      )..add(
-                        TaskSourcePanelLoaded(
-                          isCompleted: context.read<RootTaskBloc>().isCompleted,
-                          selectedTagIds: context
-                              .read<RootTaskBloc>()
-                              .state
-                              .selectedTagIds,
+          );
+        }
+        return bloc;
+      },
+      child: BlocBuilder<TaskTodayBloc, TaskTodayState>(
+        builder: (context, todayState) {
+          return Column(
+            children: [
+              AppCalendarView<TaskEntity>(
+                date: todayState.date,
+                calendarFormat: todayState.calendarFormat,
+                onDateSelected: (date) {
+                  context.read<TaskTodayBloc>().add(
+                    TaskTodayDateSelected(
+                      date: date,
+                      isCompleted: context.read<RootTaskBloc>().isCompleted,
+                    ),
+                  );
+                },
+              ),
+              BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
+                selector: (state) =>
+                    state.tabFocusNoteTypes[RootTaskTab.day] ??
+                    NoteType.dailyFocus,
+                builder: (context, noteType) {
+                  final bloc = context.read<TaskTodayBloc>();
+                  final note = noteType.isFocus
+                      ? bloc.state.focusNote
+                      : bloc.state.summaryNote;
+                  return TaskFocusView(
+                    note: note,
+                    noteType: noteType,
+                    onTap: () {
+                      final focusAt = context.read<TaskTodayBloc>().state.date;
+                      context.router.push(
+                        NoteNewTypeRoute(
+                          initialNote: note,
+                          type: noteType,
+                          focusAt: focusAt,
                         ),
                       );
-                  if (context.read<RootTaskBloc>().state.dayViewType ==
-                      RootTaskViewType.timeBlock) {
-                    bloc.add(
-                      TaskSourcePanelSourceChanged(
-                        TaskSourcePanelAllDay(todayState.date),
-                      ),
-                    );
-                  }
-                  return bloc;
+                    },
+                    onMindMapTapped: () {
+                      _addDiscoverEvent(context, noteType);
+                      _navigateToRootDiscover(context, noteType);
+                    },
+                    onTaskDropped: (task) {
+                      context.read<TaskTodayBloc>().add(
+                        TaskTodayNoteTaskAppended(
+                          task: task,
+                          noteType: noteType,
+                        ),
+                      );
+                    },
+                  );
                 },
+              ),
+              const SizedBox(height: 8),
+              Expanded(
                 child: MultiBlocListener(
                   listeners: [
                     BlocListener<TaskTodayBloc, TaskTodayState>(
                       listenWhen: (previous, current) =>
-                          previous.date != current.date,
+                          !previous.date.isSame(current.date, unit: Unit.day),
                       listener: (context, state) {
                         final sourceType = context
                             .read<TaskSourcePanelBloc>()
                             .state
                             .sourceType;
-                        if (sourceType is TaskSourcePanelAllDay) {
+                        // 与旧 AllDay 行为一致：仅「全天」源跟随主日历，
+                        // 「全部 / 非全天」是用户钉住的日期，不覆盖。
+                        if (sourceType is TaskSourcePanelDate &&
+                            sourceType.filter ==
+                                TaskSourcePanelDateFilter.allDay) {
                           context.read<TaskSourcePanelBloc>().add(
                             TaskSourcePanelSourceChanged(
-                              TaskSourcePanelAllDay(state.date),
+                              TaskSourcePanelDate(
+                                state.date,
+                                filter: TaskSourcePanelDateFilter.allDay,
+                              ),
                             ),
                           );
                         }
@@ -144,10 +147,17 @@ class TaskTodayPage extends StatelessWidget {
                           previous.showSourcePanel == false &&
                           current.showSourcePanel == true,
                       listener: (context, state) {
+                        // 仅默认收集箱时才切到「当天全天」，不覆盖用户已选日期源
+                        final sourceType = context
+                            .read<TaskSourcePanelBloc>()
+                            .state
+                            .sourceType;
+                        if (sourceType is! TaskSourcePanelInbox) return;
                         context.read<TaskSourcePanelBloc>().add(
                           TaskSourcePanelSourceChanged(
-                            TaskSourcePanelAllDay(
+                            TaskSourcePanelDate(
                               context.read<TaskTodayBloc>().state.date,
+                              filter: TaskSourcePanelDateFilter.allDay,
                             ),
                           ),
                         );
@@ -184,7 +194,6 @@ class TaskTodayPage extends StatelessWidget {
                         BlocSelector<RootTaskBloc, RootTaskState, bool>(
                           selector: (state) => state.showSourcePanel,
                           builder: (context, showSourcePanel) {
-                            // 时间块演示模式也展示侧栏，投放操作由 View 内 isDemo 引导付费
                             return AnimatedSwitcher(
                               duration: Durations.medium1,
                               transitionBuilder: (child, animation) {
@@ -209,10 +218,10 @@ class TaskTodayPage extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-          ],
-        );
-      },
+            ],
+          );
+        },
+      ),
     );
   }
 
@@ -287,7 +296,8 @@ class _TaskTodayListPage extends StatelessWidget {
         tagId: tag?.id,
       ),
       child: BlocListener<TaskTodayBloc, TaskTodayState>(
-        listenWhen: (previous, current) => previous.date != current.date,
+        listenWhen: (previous, current) =>
+            !previous.date.isSame(current.date, unit: Unit.day),
         listener: (context, state) {
           context.read<TaskListBloc>().add(
             TaskListRequested(
@@ -305,7 +315,6 @@ class _TaskTodayListPage extends StatelessWidget {
                     _wouldScheduleTaskToList(context, details.data, tag: tag),
                 onAccept: (task) =>
                     _scheduleTaskToList(context, task, tag: tag),
-                // 铺满剩余视口；底部留白避免被底部栏挡住
                 child: Padding(
                   padding: EdgeInsets.only(bottom: bottomInset),
                   child: const SizedBox.expand(),
@@ -326,7 +335,8 @@ class _TaskTodayListPage extends StatelessWidget {
         tagId: tag?.id,
       ),
       child: BlocListener<TaskTodayBloc, TaskTodayState>(
-        listenWhen: (previous, current) => previous.date != current.date,
+        listenWhen: (previous, current) =>
+            !previous.date.isSame(current.date, unit: Unit.day),
         listener: (context, state) {
           context.read<TaskListBloc>().add(
             TaskListRequested(

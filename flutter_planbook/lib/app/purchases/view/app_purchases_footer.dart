@@ -78,7 +78,7 @@ class AppPurchasesFooter extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 16),
-                if (!AppPurchases.instance.isAndroidChina)
+                if (!AppPurchases.instance.usesChinaPay)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: spacing),
                     child: CupertinoButton.filled(
@@ -86,22 +86,9 @@ class AppPurchasesFooter extends StatelessWidget {
                       color: theme.colorScheme.onSurface,
                       borderRadius: BorderRadius.circular(24),
                       onPressed: () async {
-                        if (AppPurchases.instance.isAndroidChina) {
-                          final isAgreed = await _showAgreementDialog(context);
-                          if ((isAgreed ?? false) && context.mounted) {
-                            context.read<AppPurchasesBloc>()
-                              ..add(
-                                const AppPurchasesAgreedToConditions(
-                                  isAgreed: true,
-                                ),
-                              )
-                              ..add(const AppPurchasesPurchased());
-                          }
-                        } else {
-                          context.read<AppPurchasesBloc>().add(
-                            const AppPurchasesPurchased(),
-                          );
-                        }
+                        context.read<AppPurchasesBloc>().add(
+                          const AppPurchasesPurchased(),
+                        );
                       },
                       child: Row(
                         children: [
@@ -176,11 +163,53 @@ class AppPurchasesFooter extends StatelessWidget {
                                       isAgreed: true,
                                     ),
                                   )
-                                  ..add(const AppPurchasesPurchased());
+                                  ..add(
+                                    const AppPurchasesPurchased(
+                                      chinaPayMethod: ChinaPayMethod.alipay,
+                                    ),
+                                  );
                               }
                             },
                             child: Text(
                               '支付宝支付',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: CupertinoButton(
+                            color: const Color(0xFF07C160),
+                            borderRadius: BorderRadius.circular(
+                              kMinInteractiveDimension,
+                            ),
+                            onPressed: () async {
+                              var isAgreed = context
+                                  .read<AppPurchasesBloc>()
+                                  .state
+                                  .isAgreedToConditions;
+                              if (!isAgreed) {
+                                isAgreed =
+                                    (await _showAgreementDialog(context)) ??
+                                    false;
+                              }
+                              if (isAgreed && context.mounted) {
+                                context.read<AppPurchasesBloc>()
+                                  ..add(
+                                    const AppPurchasesAgreedToConditions(
+                                      isAgreed: true,
+                                    ),
+                                  )
+                                  ..add(
+                                    const AppPurchasesPurchased(
+                                      chinaPayMethod: ChinaPayMethod.wechat,
+                                    ),
+                                  );
+                              }
+                            },
+                            child: Text(
+                              '微信支付',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: Colors.white,
                               ),

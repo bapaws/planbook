@@ -15,6 +15,7 @@ import 'package:flutter_planbook/task/source/picker/model/task_source_panel_pick
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/tag_entity.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
+import 'package:pull_down_button/pull_down_button.dart';
 
 /// 右侧任务来源选择器，以 bottom sheet 形式展示
 ///
@@ -73,26 +74,23 @@ class _TaskSourcePanelPicker extends StatefulWidget {
 class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
   late TaskSourcePanelTab _tab;
   late Jiffy _selectedDate;
-  bool _isAllDay = false;
+  late TaskSourcePanelDateFilter _dateFilter;
   final GlobalKey _dateTileKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _selectedDate = Jiffy.now();
+    _dateFilter = TaskSourcePanelDateFilter.all;
     switch (widget.initialSourceType) {
       case TaskSourcePanelInbox():
         _tab = TaskSourcePanelTab.inbox;
       case TaskSourcePanelTag():
         _tab = TaskSourcePanelTab.tag;
-      case TaskSourcePanelDate(date: final date):
+      case TaskSourcePanelDate(date: final date, filter: final filter):
         _tab = TaskSourcePanelTab.date;
         _selectedDate = date;
-        _isAllDay = false;
-      case TaskSourcePanelAllDay(date: final date):
-        _tab = TaskSourcePanelTab.date;
-        _selectedDate = date;
-        _isAllDay = true;
+        _dateFilter = filter;
     }
   }
 
@@ -262,18 +260,43 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
             ),
           ),
         ),
-        SettingsRow(
-          leading: Icon(
-            CupertinoIcons.sun_max,
-            size: 18,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          title: Text(context.l10n.allDay),
-          trailing: CupertinoSwitch(
-            value: _isAllDay,
-            onChanged: (value) => setState(() {
-              _isAllDay = value;
-            }),
+        PullDownButton(
+          buttonAnchor: PullDownMenuAnchor.end,
+          itemBuilder: (context) => [
+            for (final filter in TaskSourcePanelDateFilter.values)
+              PullDownMenuItem.selectable(
+                title: filter.title(context),
+                icon: filter.icon,
+                selected: filter == _dateFilter,
+                onTap: () => setState(() {
+                  _dateFilter = filter;
+                }),
+              ),
+          ],
+          buttonBuilder: (context, showMenu) => SettingsRow(
+            onPressed: showMenu,
+            leading: Icon(
+              _dateFilter.icon,
+              size: 18,
+              color: colorScheme.secondary,
+            ),
+            title: Text(context.l10n.dateFilter),
+            additionalInfo: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: colorScheme.tertiaryContainer,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                _dateFilter.title(context),
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.tertiary,
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -326,9 +349,10 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
             ? TaskSourcePanelTag(selected)
             : const TaskSourcePanelInbox();
       case TaskSourcePanelTab.date:
-        result = _isAllDay
-            ? TaskSourcePanelAllDay(_selectedDate)
-            : TaskSourcePanelDate(_selectedDate);
+        result = TaskSourcePanelDate(
+          _selectedDate,
+          filter: _dateFilter,
+        );
       case TaskSourcePanelTab.hide:
         result = const TaskSourcePanelInbox();
     }
@@ -337,4 +361,21 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
       TaskSourcePanelPickerResult(sourceType: result),
     );
   }
+}
+
+extension on TaskSourcePanelDateFilter {
+  String title(BuildContext context) {
+    final l10n = context.l10n;
+    return switch (this) {
+      TaskSourcePanelDateFilter.all => l10n.all,
+      TaskSourcePanelDateFilter.allDay => l10n.allDay,
+      TaskSourcePanelDateFilter.notAllDay => l10n.notAllDay,
+    };
+  }
+
+  IconData get icon => switch (this) {
+    TaskSourcePanelDateFilter.all => CupertinoIcons.calendar,
+    TaskSourcePanelDateFilter.allDay => CupertinoIcons.sun_max,
+    TaskSourcePanelDateFilter.notAllDay => CupertinoIcons.clock,
+  };
 }

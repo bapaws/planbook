@@ -32,7 +32,13 @@ class AppPurchasesProductSelected extends AppPurchasesEvent {
 }
 
 class AppPurchasesPurchased extends AppPurchasesEvent {
-  const AppPurchasesPurchased();
+  const AppPurchasesPurchased({this.chinaPayMethod});
+
+  /// 国内包支付方式；store 通道为 null
+  final ChinaPayMethod? chinaPayMethod;
+
+  @override
+  List<Object> get props => [?chinaPayMethod];
 }
 
 class AppPurchasesSupportUsFullPrice extends AppPurchasesEvent {

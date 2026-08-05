@@ -19,19 +19,25 @@ class TaskSourcePanelBloc
   }) : _tasksRepository = tasksRepository,
        _tagsRepository = tagsRepository,
        super(const TaskSourcePanelState()) {
-    on<TaskSourcePanelLoaded>(_onLoaded, transformer: restartable());
+    on<TaskSourcePanelLoaded>(_onLoaded, transformer: sequential());
     on<TaskSourcePanelSourceChanged>(
       _onSourceChanged,
-      transformer: restartable(),
+      transformer: sequential(),
     );
     on<TaskSourcePanelVisibilityChanged>(
       _onVisibilityChanged,
       transformer: sequential(),
     );
-    on<TaskSourcePanelTagChanged>(_onTagChanged, transformer: restartable());
-    on<TaskSourcePanelDateChanged>(_onDateChanged, transformer: restartable());
+    on<TaskSourcePanelTagChanged>(_onTagChanged, transformer: sequential());
+    on<TaskSourcePanelDateChanged>(_onDateChanged, transformer: sequential());
     on<TaskSourcePanelFilterChanged>(
       _onFilterChanged,
+      transformer: sequential(),
+    );
+    // 唯一持有 emit.forEach 的入口；Loaded / SourceChanged / FilterChanged
+    // 只改状态后派发本事件，避免多路 forEach 并发互相覆盖列表。
+    on<TaskSourcePanelTasksSubscriptionRequested>(
+      _onTasksSubscriptionRequested,
       transformer: restartable(),
     );
     on<TaskSourcePanelTaskDropped>(_onTaskDropped, transformer: sequential());
@@ -59,7 +65,7 @@ class TaskSourcePanelBloc
         selectedTagIdsFilter: event.selectedTagIds,
       ),
     );
-    await _subscribeTasks(emit);
+    add(const TaskSourcePanelTasksSubscriptionRequested());
   }
 
   Future<void> _onSourceChanged(
@@ -73,7 +79,7 @@ class TaskSourcePanelBloc
         optimisticUpdatedTasks: const [],
       ),
     );
-    await _subscribeTasks(emit);
+    add(const TaskSourcePanelTasksSubscriptionRequested());
   }
 
   Future<void> _onVisibilityChanged(
@@ -98,12 +104,20 @@ class TaskSourcePanelBloc
     TaskSourcePanelDateChanged event,
     Emitter<TaskSourcePanelState> emit,
   ) async {
+    final current = state.sourceType;
+    final filter = current is TaskSourcePanelDate
+        ? current.filter
+        : TaskSourcePanelDateFilter.all;
     emit(
       state.copyWith(
         sourceDate: () => event.date,
       ),
     );
-    add(TaskSourcePanelSourceChanged(TaskSourcePanelDate(event.date)));
+    add(
+      TaskSourcePanelSourceChanged(
+        TaskSourcePanelDate(event.date, filter: filter),
+      ),
+    );
   }
 
   Future<void> _onFilterChanged(
@@ -118,14 +132,21 @@ class TaskSourcePanelBloc
         optimisticUpdatedTasks: const [],
       ),
     );
+    add(const TaskSourcePanelTasksSubscriptionRequested());
+  }
+
+  Future<void> _onTasksSubscriptionRequested(
+    TaskSourcePanelTasksSubscriptionRequested event,
+    Emitter<TaskSourcePanelState> emit,
+  ) async {
     await _subscribeTasks(emit);
   }
 
   /// 按当前数据源类型接收拖入任务：
   /// - 收集箱：清除日期
   /// - 标签：追加所选标签
-  /// - 日期：改到该日期
-  /// - 全天：设为该日全天任务
+  /// - 日期（全部/非全天）：改到该日期
+  /// - 日期（全天）：设为该日全天任务
   Future<void> _onTaskDropped(
     TaskSourcePanelTaskDropped event,
     Emitter<TaskSourcePanelState> emit,
@@ -184,11 +205,44 @@ class TaskSourcePanelBloc
           children: task.children.isEmpty ? null : task.children,
         );
         _justDroppedTaskIds.remove(task.id);
-      case TaskSourcePanelDate(date: final date):
+      case TaskSourcePanelDate(date: final date, filter: final filter):
         final targetDate = date.startOf(Unit.day);
         final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
             ?.startOf(Unit.day);
-        if (taskDay != null && taskDay.isSame(targetDate, unit: Unit.day)) {
+        final sameDay =
+            taskDay != null && taskDay.isSame(targetDate, unit: Unit.day);
+
+        if (filter == TaskSourcePanelDateFilter.allDay) {
+          // 全天过滤：落到该日并设为全天
+          if (task.isAllDay && sameDay) {
+            _justDroppedTaskIds.add(task.id);
+            return;
+          }
+          final updatedTask = task.copyWith(
+            task: task.task.copyWith(
+              startAt: Value(targetDate),
+              endAt: Value(targetDate.endOf(Unit.day)),
+              isAllDay: true,
+            ),
+          );
+          emit(
+            state.copyWith(
+              tasks: _replaceTask(state.tasks, updatedTask),
+              optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+            ),
+          );
+          _justDroppedTaskIds.add(task.id);
+          await _tasksRepository.update(
+            task: updatedTask.task,
+            tags: task.tags,
+            children: task.children.isEmpty ? null : task.children,
+          );
+          _justDroppedTaskIds.remove(task.id);
+          return;
+        }
+
+        // 全部 / 非全天：改到该日期
+        if (sameDay) {
           _justDroppedTaskIds.add(task.id);
           return;
         }
@@ -221,49 +275,25 @@ class TaskSourcePanelBloc
           );
         }
         _justDroppedTaskIds.remove(task.id);
-      case TaskSourcePanelAllDay(date: final date):
-        final targetDate = date.startOf(Unit.day);
-        final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
-            ?.startOf(Unit.day);
-        if (task.isAllDay &&
-            taskDay != null &&
-            taskDay.isSame(targetDate, unit: Unit.day)) {
-          _justDroppedTaskIds.add(task.id);
-          return;
-        }
-        final updatedTask = task.copyWith(
-          task: task.task.copyWith(
-            startAt: Value(targetDate),
-            endAt: Value(targetDate.endOf(Unit.day)),
-            isAllDay: true,
-          ),
-        );
-        emit(
-          state.copyWith(
-            tasks: _replaceTask(state.tasks, updatedTask),
-            optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
-          ),
-        );
-        _justDroppedTaskIds.add(task.id);
-        await _tasksRepository.update(
-          task: updatedTask.task,
-          tags: task.tags,
-          children: task.children.isEmpty ? null : task.children,
-        );
-        _justDroppedTaskIds.remove(task.id);
     }
   }
 
-  /// 拖拽被接受后，Source Panel 同步移除任务。
+  /// 拖拽被接受后，按需从 Source Panel 乐观移除任务。
   ///
   /// 如果该任务刚被同 BLoC 内的目标事件处理过（同列表内拖拽），
   /// 目标事件已经更新了状态，这里不再重复移除。
+  ///
+  /// 跨 BLoC 拖出时也不总是移除：例如「当天全部 / 非全天」拖到时间块后
+  /// 任务仍属于当前列表，应保留；收集箱、当天「全天」拖出后通常不再匹配。
   Future<void> _onTaskDragCompleted(
     TaskSourcePanelTaskDragCompleted event,
     Emitter<TaskSourcePanelState> emit,
   ) async {
     if (_justDroppedTaskIds.remove(event.task.id)) {
       // 同 BLoC 内拖拽，目标事件已处理，无需移除。
+      return;
+    }
+    if (!_shouldOptimisticRemoveOnExternalDrop()) {
       return;
     }
     emit(
@@ -275,6 +305,21 @@ class TaskSourcePanelBloc
         },
       ),
     );
+  }
+
+  /// 跨 BLoC 拖出被接受后，是否应对源列表做乐观移除。
+  ///
+  /// - 收集箱：落到时间块/日期后离开收集箱 → 移除
+  /// - 当天全天：落到时间块后变为非全天 → 移除
+  /// - 当天全部 / 非全天：改时间仍属于该日该过滤 → 不移除（stream 纠正跨日等）
+  /// - 标签：标签通常仍匹配 → 不移除（stream 纠正）
+  bool _shouldOptimisticRemoveOnExternalDrop() {
+    return switch (state.sourceType) {
+      TaskSourcePanelInbox() => true,
+      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.allDay) => true,
+      TaskSourcePanelDate() => false,
+      TaskSourcePanelTag() => false,
+    };
   }
 
   /// 用 [newTask] 替换列表中相同 ID 的任务；不存在则追加。
@@ -336,6 +381,20 @@ class TaskSourcePanelBloc
     return a.isSame(b, unit: Unit.minute);
   }
 
+  /// 按日期源过滤范围筛选任务
+  List<TaskEntity> _applyDateFilter(
+    List<TaskEntity> tasks,
+    TaskSourcePanelDateFilter filter,
+  ) {
+    return switch (filter) {
+      TaskSourcePanelDateFilter.all => tasks,
+      TaskSourcePanelDateFilter.allDay =>
+        tasks.where((t) => t.isAllDay).toList(),
+      TaskSourcePanelDateFilter.notAllDay =>
+        tasks.where((t) => !t.isAllDay).toList(),
+    };
+  }
+
   Future<void> _subscribeTasks(Emitter<TaskSourcePanelState> emit) async {
     emit(state.copyWith(status: PageStatus.loading));
 
@@ -351,21 +410,13 @@ class TaskSourcePanelBloc
           tagIds: tags.map((tag) => tag.id).toList(),
           isCompleted: state.isCompleted,
         ),
-      TaskSourcePanelDate(date: final date) =>
-        _tasksRepository.getAllTodayTaskEntities(
-          day: date,
-          isCompleted: state.isCompleted,
-        ),
-      TaskSourcePanelAllDay(date: final date) =>
+      TaskSourcePanelDate(date: final date, filter: final filter) =>
         _tasksRepository
             .getAllTodayTaskEntities(
               day: date,
               isCompleted: state.isCompleted,
             )
-            .map(
-              (tasks) =>
-                  tasks.where((t) => t.parentId == null && t.isAllDay).toList(),
-            ),
+            .map((tasks) => _applyDateFilter(tasks, filter)),
     };
 
     await emit.forEach(

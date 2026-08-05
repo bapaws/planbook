@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:collection/collection.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases_interface.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:purchases_flutter/purchases_flutter.dart' hide StoreProduct;
 
 extension CustomerInfoX on CustomerInfo {
@@ -30,6 +33,28 @@ extension CustomerInfoX on CustomerInfo {
 
 final class RevenueCatPurchases implements AppPurchasesInterface {
   const RevenueCatPurchases();
+
+  /// 配置 RevenueCat SDK
+  static Future<void> configure() async {
+    await Purchases.setProxyURL('https://api.rc-backup.com/');
+    await Purchases.setLogLevel(LogLevel.error);
+
+    /// Development use same id
+    late final PurchasesConfiguration configuration;
+    if (Platform.isAndroid) {
+      configuration = PurchasesConfiguration(
+        'goog_jlxqPffDOplzoFISIizzxwRdFFk',
+      );
+    } else if (Platform.isIOS) {
+      configuration = PurchasesConfiguration(
+        'appl_aNYCwAWkYYxFFPdqMBTWIXzIzko',
+      )..userDefaultsSuiteName = kAppGroupId;
+    } else {
+      throw UnimplementedError();
+    }
+
+    await Purchases.configure(configuration);
+  }
 
   @override
   Future<String?> purchase(StoreProduct storeProduct) async {

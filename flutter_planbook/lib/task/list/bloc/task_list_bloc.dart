@@ -62,6 +62,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   final TaskListMode _mode;
   final TaskPriority? priority;
 
+  /// 当前列表模式（收集箱 / 今日 / 逾期等）
+  TaskListMode get mode => _mode;
+
   Set<String> _selectedTagIds = {};
 
   /// 当前列表的单个标签过滤（与 [_selectedTagIds] 不同，这是列表自身的 tagId）。
@@ -90,7 +93,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     _selectedTagIds = event.selectedTagIds;
     _tagId = event.tagId;
-    final date = event.date ?? state.date ?? Jiffy.now();
+    final date = _resolveListDate(event.date);
     emit(
       state.copyWith(
         status: PageStatus.loading,
@@ -100,7 +103,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     );
     final stream = _tasksRepository.getTaskEntities(
       mode: _mode,
-      date: date,
+      // 仓库接口要求非空；收集箱会忽略该参数
+      date: date ?? Jiffy.now(),
       tagId: event.tagId,
       isCompleted: event.isCompleted,
     );
@@ -113,7 +117,7 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
   ) async {
     _selectedTagIds = event.selectedTagIds;
     _tagId = event.tagId;
-    final date = event.date ?? state.date ?? Jiffy.now();
+    final date = _resolveListDate(event.date);
     emit(
       state.copyWith(
         status: PageStatus.loading,
@@ -129,6 +133,19 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       isCompleted: event.isCompleted,
     );
     await emit.forEach(stream, onData: _onTasksDataChanged);
+  }
+
+  /// 解析列表日期写入 [TaskListState.date]。
+  ///
+  /// 收集箱无日期概念；逾期未显式传入时也不默认写成今天，
+  /// 否则四象限拖放会把无日期任务误排到当天。
+  Jiffy? _resolveListDate(Jiffy? eventDate) {
+    if (eventDate != null) return eventDate;
+    if (state.date != null) return state.date;
+    return switch (_mode) {
+      TaskListMode.today => Jiffy.now(),
+      TaskListMode.inbox || TaskListMode.overdue || TaskListMode.tag => null,
+    };
   }
 
   TaskListState _onTasksDataChanged(List<TaskEntity> tasks) {
@@ -148,9 +165,6 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     // 移除已经反映到 stream 中的乐观操作。
     // 对于重复任务，repository 会创建新 ID 的分离实例，原 ID 从 stream 中消失，
     // 此时也应清除旧 ID 的乐观更新，避免旧任务和新任务同时显示。
-    final remainingRemovedIds = state.optimisticRemovedTaskIds
-        .where((id) => tasks.any((t) => t.id == id))
-        .toSet();
     final remainingUpdatedTasks = state.optimisticUpdatedTasks.where(
       (updated) {
         final streamTask = tasks.firstWhereOrNull(
@@ -160,6 +174,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
         return !_tasksMatch(streamTask, updated);
       },
     ).toList();
+    // 已有乐观更新的 id 不再保留「移除」——例如从侧栏全天拖回时间块。
+    final updatedIds = remainingUpdatedTasks.map((t) => t.id).toSet();
+    final remainingRemovedIds = state.optimisticRemovedTaskIds
+        .where((id) => tasks.any((t) => t.id == id))
+        .where((id) => !updatedIds.contains(id))
+        .toSet();
 
     return state.copyWith(
       status: PageStatus.success,
@@ -186,10 +206,12 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       }
     }
 
-    // 再应用移除。
-    if (state.optimisticRemovedTaskIds.isNotEmpty) {
+    // 再应用移除。已有乐观更新的任务视为「被拖回」，不再隐藏。
+    final updatedIds = state.optimisticUpdatedTasks.map((t) => t.id).toSet();
+    final removedIds = state.optimisticRemovedTaskIds.difference(updatedIds);
+    if (removedIds.isNotEmpty) {
       processedTasks = processedTasks
-          .where((t) => !state.optimisticRemovedTaskIds.contains(t.id))
+          .where((t) => !removedIds.contains(t.id))
           .toList();
     }
 
@@ -526,6 +548,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       state.copyWith(
         tasks: _optimisticTasksWith(updatedTask),
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          task.id,
+        }),
       ),
     );
     _justDroppedTaskIds.add(task.id);
@@ -607,6 +632,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       state.copyWith(
         tasks: _optimisticTasksWith(updatedTask),
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          event.task.id,
+        }),
       ),
     );
     _justDroppedTaskIds.add(event.task.id);
@@ -652,6 +680,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       state.copyWith(
         tasks: _optimisticTasksWith(updatedTask),
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          task.id,
+        }),
       ),
     );
     _justDroppedTaskIds.add(task.id);
@@ -710,7 +741,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       endAt: Value(endAt),
     );
 
-    // 同步乐观更新时间
+    // 同步乐观更新时间；同时清掉曾拖出时留下的 optimisticRemoved，
+    // 否则「侧栏全天 → 时间块」时任务会被移除标记继续盖住。
     final updatedTask = task.copyWith(
       task: task.task.copyWith(
         startAt: Value(startAt),
@@ -723,6 +755,9 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       state.copyWith(
         tasks: _optimisticTasksWith(updatedTask),
         optimisticUpdatedTasks: _optimisticUpdatedTasksWith(updatedTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          task.id,
+        }),
       ),
     );
 

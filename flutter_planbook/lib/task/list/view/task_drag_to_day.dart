@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
+import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 
@@ -104,6 +106,41 @@ Widget defaultDragFeedbackBuilder(
           ),
         ],
       ),
+    ),
+  );
+}
+
+/// 日/逾期列表拖拽反馈：半宽任务行 + 绿色加号
+Widget taskListTileDragFeedbackBuilder(
+  BuildContext context,
+  TaskEntity task,
+) {
+  final theme = Theme.of(context);
+  return Material(
+    elevation: 4,
+    borderRadius: BorderRadius.circular(8),
+    color: theme.colorScheme.surfaceContainerLowest,
+    child: Stack(
+      clipBehavior: Clip.none,
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 2,
+          height: kMinInteractiveDimension,
+          child: TaskListTile(
+            task: task,
+            titleTextStyle: theme.textTheme.titleMedium,
+          ),
+        ),
+        const Positioned(
+          top: -8,
+          right: -8,
+          child: Icon(
+            FontAwesomeIcons.circlePlus,
+            size: 18,
+            color: Colors.green,
+          ),
+        ),
+      ],
     ),
   );
 }

@@ -45,22 +45,42 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
     return MultiBlocListener(
       listeners: [
         BlocListener<AppPurchasesBloc, AppPurchasesState>(
-          listenWhen: (previous, current) =>
-              previous.isPremium != current.isPremium,
-          listener: (context, state) {
-            if (state.isPremium) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-        BlocListener<AppPurchasesBloc, AppPurchasesState>(
           listenWhen: (previous, current) => previous.status != current.status,
           listener: (context, state) {
             if (state.status == PageStatus.loading) {
               EasyLoading.show();
-            } else if (EasyLoading.isShow) {
+            } else if (EasyLoading.isShow && !state.entitlementJustGranted) {
+              // 成功提示由下方 listener 接管，避免先 dismiss 再闪一下
               EasyLoading.dismiss();
             }
+          },
+        ),
+        // 购买/恢复成功：提示后再关页（已是会员时 isPremium 不会翻转，不能依赖它）
+        BlocListener<AppPurchasesBloc, AppPurchasesState>(
+          listenWhen: (previous, current) =>
+              !previous.entitlementJustGranted &&
+              current.entitlementJustGranted,
+          listener: (context, state) async {
+            await EasyLoading.showSuccess(
+              AppLocalizations.of(context).purchaseSuccessHint,
+            );
+            if (context.mounted) {
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        // 支付失败/取消必须给用户反馈：区分于成功，并提示已扣款可走恢复
+        BlocListener<AppPurchasesBloc, AppPurchasesState>(
+          listenWhen: (previous, current) =>
+              previous.status != current.status &&
+              current.status == PageStatus.failure,
+          listener: (context, state) {
+            EasyLoading.showError(
+              state.isRestoreFailure
+                  ? AppLocalizations.of(context).restorePurchasesFailedHint
+                  : AppLocalizations.of(context).purchaseFailedHint,
+              duration: const Duration(seconds: 4),
+            );
           },
         ),
       ],
@@ -218,7 +238,7 @@ class _AppPurchasesPage extends StatelessWidget {
                             launchUrlString(l10n.userAgreementUrl);
                           },
                         ),
-                        if (AppPurchases.instance.isAndroidChina) ...[
+                        if (AppPurchases.instance.usesChinaPay) ...[
                           const Text('|'),
                           CupertinoButton(
                             onPressed: () {

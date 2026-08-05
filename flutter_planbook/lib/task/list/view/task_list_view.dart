@@ -6,7 +6,6 @@ import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:sliver_tools/sliver_tools.dart';
@@ -170,7 +169,7 @@ class TaskSliverList extends StatelessWidget {
               targetDay: targetDay,
               child: TaskDraggable(
                 task: task,
-                feedbackBuilder: _buildDragFeedback,
+                feedbackBuilder: taskListTileDragFeedbackBuilder,
                 onDragCompleted: (task) => context.read<TaskListBloc>().add(
                   TaskListTaskDragCompleted(task: task),
                 ),
@@ -186,38 +185,6 @@ class TaskSliverList extends StatelessWidget {
       onAccept: onTaskDropped,
       onWillAcceptWithDetails: onWillAcceptDropped,
       sliver: sliver,
-    );
-  }
-
-  Widget _buildDragFeedback(BuildContext context, TaskEntity task) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return Material(
-      elevation: 4,
-      borderRadius: BorderRadius.circular(8),
-      color: colorScheme.surfaceContainerLowest,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width / 2,
-            height: kMinInteractiveDimension,
-            child: TaskListTile(
-              task: task,
-              titleTextStyle: theme.textTheme.titleMedium,
-            ),
-          ),
-          const Positioned(
-            top: -8,
-            right: -8,
-            child: Icon(
-              FontAwesomeIcons.circlePlus,
-              size: 18,
-              color: Colors.green,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

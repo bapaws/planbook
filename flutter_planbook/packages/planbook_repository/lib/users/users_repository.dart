@@ -56,6 +56,24 @@ class UsersRepository {
       ? _onUserProfileChangeController.value
       : null;
 
+  // ---- entitlements 行内存缓存 ----
+  // splash / 活动页 / isPremium 判定等路径会反复读 entitlement，
+  // 每次都走 PostgREST 会拖慢启动并在弱网下抖动，故加短 TTL 缓存。
+  // TTL 取 2 分钟：足够覆盖一次页面访问内的多次判定；同时支付/恢复链路
+  // 都会走 getUserProfile(force: true) 强制刷新，退款/过期最坏 2 分钟自愈。
+  static const _entitlementCacheTtl = Duration(minutes: 2);
+
+  /// 缓存的行；null 表示「查过但该用户没有 entitlement 行」
+  ({String? productId, DateTime? expiresAt, String? provider})?
+  _entitlementCache;
+
+  /// 缓存归属的用户 id：切换账号后旧缓存不得串用
+  String? _entitlementCacheUserId;
+  DateTime? _entitlementCacheAt;
+
+  /// 是否已完成过一次查询（区分「没查过」与「查了但没行」）
+  bool _entitlementCacheLoaded = false;
+
   Stream<UserEntity?> get onUserEntityChange {
     return CombineLatestStream.combine2(
       onAuthStateChange.map(
@@ -288,6 +306,7 @@ class UsersRepository {
   Future<void> logout() async {
     await _supabase?.auth.signOut();
     await _sp.remove(kUserProfile);
+    _invalidateEntitlementCache();
     _onUserProfileChangeController.add(null);
     await AppHomeWidget.removeWidgetData(kUserId);
   }
@@ -298,6 +317,7 @@ class UsersRepository {
       if (response?.status == 200) {
         await _supabase?.auth.signOut();
         await _sp.remove(kUserProfile);
+        _invalidateEntitlementCache();
         _onUserProfileChangeController.add(null);
         await AppHomeWidget.removeWidgetData(kUserId);
       } else {
@@ -346,7 +366,13 @@ class UsersRepository {
       }
     } else {
       _onUserProfileChangeController.add(cache);
-      unawaited(_getUserProfileFromSupabase());
+      // 后台刷新仅同步缓存，PostgREST 瞬时失败不应冒泡为未捕获异步错误
+      unawaited(
+        _getUserProfileFromSupabase().catchError((Object e) {
+          if (kDebugMode) print('后台刷新 profile 失败: $e');
+          return null;
+        }),
+      );
       return cache;
     }
     return null;
@@ -375,9 +401,113 @@ class UsersRepository {
       if (response == null) return null;
     }
     final entity = UserProfileEntity.fromMap(response);
-    unawaited(_sp.setString(kUserProfile, entity.toJson()));
-    _onUserProfileChangeController.add(entity);
-    return entity;
+    // 用 entitlements 覆盖 profile 中的权益字段（新真相源；行存在则以之为准）。
+    // 强制刷新：profile 刷新（含支付/恢复后的 force 刷新）必须同步更新缓存，
+    // 否则合并出来的 profile 与后续 getActiveEntitlementProductId 会不一致。
+    final entitlement = await _getEntitlementRow(force: true);
+    // 注意 copyWith 的 ?? 语义：entitlement 字段为 null 时保留 profile 原值。
+    // entitlement 行以 productId 非空为常态；且行存在时会员判定直接读行
+    // （getActiveEntitlementProductId），不经过该合并结果，差异无实害。
+    final merged = entitlement == null
+        ? entity
+        : entity.copyWith(
+            productId: entitlement.productId,
+            expiresAt: entitlement.expiresAt,
+          );
+    unawaited(_sp.setString(kUserProfile, merged.toJson()));
+    _onUserProfileChangeController.add(merged);
+    return merged;
+  }
+
+  /// 清空 entitlement 缓存（登出/注销时调用；切账号主要靠 uid 隔离兜底）
+  void _invalidateEntitlementCache() {
+    _entitlementCache = null;
+    _entitlementCacheUserId = null;
+    _entitlementCacheAt = null;
+    _entitlementCacheLoaded = false;
+  }
+
+  Future<({String? productId, DateTime? expiresAt, String? provider})?>
+  _getEntitlementRow({bool force = false}) async {
+    final uid = user?.id;
+    if (uid == null) return null;
+    // 命中有效缓存直接返回（uid 必须一致，防止切账号串数据）
+    final cachedAt = _entitlementCacheAt;
+    if (!force &&
+        _entitlementCacheLoaded &&
+        _entitlementCacheUserId == uid &&
+        cachedAt != null &&
+        DateTime.now().difference(cachedAt) < _entitlementCacheTtl) {
+      return _entitlementCache;
+    }
+    try {
+      final row = await _supabase
+          ?.from('entitlements')
+          .select('product_id, expires_at, provider')
+          .eq('user_id', uid)
+          .maybeSingle();
+      final parsed = row == null
+          ? null
+          : (
+              productId: row['product_id'] as String?,
+              expiresAt: row['expires_at'] != null
+                  ? DateTime.parse(row['expires_at'] as String)
+                  : null,
+              provider: row['provider'] as String?,
+            );
+      // 查询成功即刷新缓存（包括「没有行」这一结果）
+      _entitlementCache = parsed;
+      _entitlementCacheUserId = uid;
+      _entitlementCacheAt = DateTime.now();
+      _entitlementCacheLoaded = true;
+      return parsed;
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('get entitlements error: $e');
+      }
+      // 离线兜底：网络失败时回退到本用户的缓存副本（即使已过 TTL），
+      // 避免弱网/离线下付费用户瞬时掉会员；无缓存才返回 null
+      if (_entitlementCacheLoaded && _entitlementCacheUserId == uid) {
+        return _entitlementCache;
+      }
+      return null;
+    }
+  }
+
+  /// 从 planbook.entitlements 读取当前有效商品 id（权威来源）
+  ///
+  /// [excludeProviders]：海外 RC 已过期时，fallback 应排除 `revenuecat`，
+  /// 避免服务端陈旧 RC 行盖过真实商店状态。
+  ///
+  /// 离线时 [_getEntitlementRow] 会回退到本用户的缓存副本（含 provider，
+  /// 可正常参与排除判定）；只有从未成功查询过时才会走到 profile 回退。
+  Future<String?> getActiveEntitlementProductId({
+    Set<String> excludeProviders = const {},
+  }) async {
+    if (user == null) return null;
+    final row = await _getEntitlementRow();
+    if (row == null) {
+      // 迁移窗口/从未查到行：回退 profile（无 provider，无法按渠道排除，
+      // 为避免陈旧 RC 数据盖过真实商店状态，有排除需求时直接返回 null）
+      if (excludeProviders.isNotEmpty) return null;
+      final profile = await getUserProfile();
+      final productId = profile?.productId;
+      if (productId == null) return null;
+      if (productId.toLowerCase().contains('lifetime')) return productId;
+      final expiresAt = profile?.expiresAt;
+      if (expiresAt == null || expiresAt.isBefore(DateTime.now())) return null;
+      return productId;
+    }
+    final provider = row.provider;
+    if (provider != null && excludeProviders.contains(provider)) {
+      return null;
+    }
+    final productId = row.productId;
+    if (productId == null) return null;
+    if (productId.toLowerCase().contains('lifetime')) return productId;
+    final expiresAt = row.expiresAt;
+    if (expiresAt == null || expiresAt.isBefore(DateTime.now())) return null;
+    return productId;
   }
 
   Future<void> updateUserProfile({

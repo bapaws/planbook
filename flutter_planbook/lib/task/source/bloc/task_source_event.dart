@@ -75,6 +75,12 @@ final class TaskSourcePanelFilterChanged extends TaskSourcePanelEvent {
   List<Object?> get props => [isCompleted, selectedTagIds];
 }
 
+/// 按当前 sourceType / 筛选条件重新订阅任务流（唯一 emit.forEach 入口）
+final class TaskSourcePanelTasksSubscriptionRequested
+    extends TaskSourcePanelEvent {
+  const TaskSourcePanelTasksSubscriptionRequested();
+}
+
 /// 从主视图拖入任务
 final class TaskSourcePanelTaskDropped extends TaskSourcePanelEvent {
   const TaskSourcePanelTaskDropped(this.task);

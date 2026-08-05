@@ -123,6 +123,7 @@ ios/fastlane/AuthKey.json
 ios/fastlane/screenshots/
 android/fastlane/metadata/**/*.png
 **/ios/fastlane/report.xml
+**/android/fastlane/report.xml
 **/ios/fastlane/Preview.html
 **/ios/fastlane/test_output/
 **/ios/Runner.ipa

@@ -6,10 +6,13 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/list/view/task_list_delete_dialog_listener.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/priority/view/task_priority_page.dart';
+import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
+import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -19,24 +22,66 @@ class TaskOverduePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RootTaskBloc, RootTaskState>(
-      buildWhen: (previous, current) =>
-          previous.dayViewType != current.dayViewType ||
-          previous.taskCounts != current.taskCounts ||
-          previous.priorityStyle != current.priorityStyle,
-      builder: (context, state) => AnimatedSwitcher(
-        duration: Durations.medium1,
-        child: switch (state.dayViewType) {
-          RootTaskViewType.list || RootTaskViewType.timeBlock =>
-            state.taskCounts[TaskListMode.overdue] == 0
-                ? AppEmptyTaskView(
-                    title: context.l10n.taskEmptyOverdue,
-                  )
-                : const _TaskOverdueListPage(),
-          RootTaskViewType.priority => TaskPriorityPage(
-            style: state.priorityStyle,
-            mode: TaskListMode.overdue,
+    return BlocProvider(
+      create: (context) =>
+          TaskSourcePanelBloc(
+            tasksRepository: context.read(),
+            tagsRepository: context.read(),
+          )..add(
+            TaskSourcePanelLoaded(
+              isCompleted: context.read<RootTaskBloc>().isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
+            ),
           ),
+      child: BlocBuilder<RootTaskBloc, RootTaskState>(
+        buildWhen: (previous, current) =>
+            previous.dayViewType != current.dayViewType ||
+            previous.taskCounts != current.taskCounts ||
+            previous.priorityStyle != current.priorityStyle ||
+            previous.showSourcePanel != current.showSourcePanel,
+        builder: (context, state) {
+          final isEmpty = state.taskCounts[TaskListMode.overdue] == 0;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: AnimatedSwitcher(
+                  duration: Durations.medium1,
+                  child: switch (state.dayViewType) {
+                    RootTaskViewType.list || RootTaskViewType.timeBlock =>
+                      isEmpty
+                          ? AppEmptyTaskView(
+                              key: const ValueKey('overdue-empty'),
+                              title: context.l10n.taskEmptyOverdue,
+                            )
+                          : const _TaskOverdueListPage(
+                              key: ValueKey('overdue-list'),
+                            ),
+                    RootTaskViewType.priority => TaskPriorityPage(
+                      key: const ValueKey('overdue-priority'),
+                      style: state.priorityStyle,
+                      mode: TaskListMode.overdue,
+                    ),
+                  },
+                ),
+              ),
+              AnimatedSwitcher(
+                duration: Durations.medium1,
+                transitionBuilder: (child, animation) => SizeTransition(
+                  axis: Axis.horizontal,
+                  sizeFactor: animation,
+                  child: child,
+                ),
+                child: state.showSourcePanel
+                    ? const TaskSourcePanel(
+                        key: ValueKey('overdue-source-panel'),
+                      )
+                    : const SizedBox.shrink(
+                        key: ValueKey('overdue-source-panel-hidden'),
+                      ),
+              ),
+            ],
+          );
         },
       ),
     );
@@ -44,7 +89,7 @@ class TaskOverduePage extends StatelessWidget {
 }
 
 class _TaskOverdueListPage extends StatelessWidget {
-  const _TaskOverdueListPage();
+  const _TaskOverdueListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +136,7 @@ class _TaskOverdueListPage extends StatelessWidget {
                   final nextTask = index < state.tasks.length - 1
                       ? state.tasks[index + 1]
                       : null;
-                  return TaskListTile(
+                  final tile = TaskListTile(
                     key: ValueKey(task),
                     task: task,
                     titleTextStyle: Theme.of(context).textTheme.titleMedium,
@@ -127,6 +172,17 @@ class _TaskOverdueListPage extends StatelessWidget {
                         TaskListTaskExpanded(task: task),
                       );
                     },
+                  );
+                  // 支持拖到侧栏改期 / 加标签 / 回收集箱
+                  return TaskDraggable(
+                    task: task,
+                    feedbackBuilder: taskListTileDragFeedbackBuilder,
+                    onDragCompleted: (task) {
+                      context.read<TaskListBloc>().add(
+                        TaskListTaskDragCompleted(task: task),
+                      );
+                    },
+                    child: tile,
                   );
                 },
               ),

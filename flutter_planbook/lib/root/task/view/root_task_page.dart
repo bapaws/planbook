@@ -163,13 +163,9 @@ class _RootTaskPage extends StatelessWidget {
                     ),
                   ),
                 ],
-                if (tab != RootTaskTab.overdue ||
-                    tab == RootTaskTab.day ||
-                    tab == RootTaskTab.month) ...[
-                  if (tab == RootTaskTab.inbox || tab == RootTaskTab.overdue)
-                    const PullDownMenuDivider.large(),
-                  PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
-                ],
+                if (tab == RootTaskTab.inbox || tab == RootTaskTab.overdue)
+                  const PullDownMenuDivider.large(),
+                PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
                 if (tab != RootTaskTab.overdue)
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.solidCircleCheck,
@@ -206,7 +202,9 @@ class _RootTaskPage extends StatelessWidget {
                     },
                   ),
                 ],
-                if (tab == RootTaskTab.day || tab == RootTaskTab.week)
+                if (tab == RootTaskTab.day ||
+                    tab == RootTaskTab.week ||
+                    tab == RootTaskTab.overdue)
                   PullDownMenuItem(
                     icon: FontAwesomeIcons.tableColumns,
                     iconColor: theme.colorScheme.primary,
