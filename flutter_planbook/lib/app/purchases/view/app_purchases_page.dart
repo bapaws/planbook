@@ -6,6 +6,7 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/purchases/model/app_pro_features.dart';
 import 'package:flutter_planbook/app/purchases/view/app_purchases_footer.dart';
+import 'package:flutter_planbook/app/purchases/view/app_purchases_product_view.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
@@ -131,15 +132,35 @@ class _AppPurchasesPage extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       fit: BoxFit.cover,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        top: kMinInteractiveDimension,
-                      ),
-                      child: Text(
-                        l10n.proFeatures,
+                    const SizedBox(height: 8),
+                    if (state.storeProducts.isNotEmpty) ...[
+                      Text(
+                        l10n.selectPlan,
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: theme.colorScheme.primary,
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final product in state.storeProducts) ...[
+                        AppPurchasesProductView(
+                          product: product,
+                          isSelected: state.selectedStoreProduct == product,
+                          savePercent: state.savePercent,
+                          showBestValueBadge: state.savePercentId == product.id,
+                          onPressed: () {
+                            context.read<AppPurchasesBloc>().add(
+                              AppPurchasesProductSelected(product),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                    ],
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.proFeatures,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     Divider(
@@ -211,7 +232,7 @@ class _AppPurchasesPage extends StatelessWidget {
                           ],
                         ),
                       ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -256,7 +277,6 @@ class _AppPurchasesPage extends StatelessWidget {
                         ],
                       ],
                     ),
-                    // const SizedBox(height: kMinInteractiveDimension),
                   ],
                 ),
               ),

@@ -15,12 +15,19 @@
   "add": "新增",
   "edit": "編輯",
   "delete": "刪除",
+  "viewDetails": "查看詳情",
   "clear": "清除",
   "all": "全部",
   "copy": "複製",
   "paste": "貼上",
   "cancel": "取消",
   "refresh": "重新整理",
+  "search": "搜尋",
+  "searchHint": "搜尋任務和筆記",
+  "searchTasks": "任務",
+  "searchNotes": "筆記",
+  "searchTags": "標籤",
+  "noSearchResults": "找不到結果",
   "noData": "暫無資料",
   "yes": "是",
   "no": "否",
@@ -222,6 +229,8 @@
   "time": "時間",
   "deleteNote": "刪除筆記",
   "deleteNoteContent": "確定要刪除此筆記嗎？",
+  "deleteTag": "刪除標籤？",
+  "deleteTagContent": "確定要刪除此標籤嗎？相關任務和筆記不會被刪除。",
   "durationSeconds": "{count} 秒",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -822,6 +831,29 @@
   "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
   "productTitleMonths": "{months, plural, =1{1個月} other{{months}個月}}",
   "productTitleMonthly": "月度",
+  "selectPlan": "選擇方案",
+  "productPlanMonthly": "月度訂閱",
+  "productPlanAnnual": "年度訂閱",
+  "productPlanLifetime": "終身買斷",
+  "productSubtitleAutoRenew": "自動續訂",
+  "productSubtitleOneTime": "一次性付費",
+  "productBadgeBestValue": "最超值 · 節省 {percent}%",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "一次付費 · 永久",
+  "productPricePerMonth": "{price}/月",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "月數據",
   "monthlyDescriptionPlannedTasks": "本月計劃了 {count} 項任務。",
   "@monthlyDescriptionPlannedTasks": {

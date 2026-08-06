@@ -582,4 +582,53 @@ class DatabaseTaskApi {
 
     return query.watch().asyncMap(buildTaskEntities);
   }
+
+  /// 按关键词搜索任务（标题 / 备注内容）
+  Future<List<TaskEntity>> searchTaskEntities({
+    required String query,
+    required String? userId,
+    int limit = 50,
+  }) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return [];
+
+    final pattern = '%${_escapeLikePattern(trimmed)}%';
+    final userExp = userId == null
+        ? db.tasks.userId.isNull()
+        : db.tasks.userId.equals(userId);
+    final matchExp =
+        db.tasks.title.like(pattern, escapeChar: r'\') |
+        db.tasks.notes.like(pattern, escapeChar: r'\');
+
+    final idQuery =
+        db.selectOnly(db.tasks)
+          ..addColumns([
+            db.tasks.id,
+            db.tasks.updatedAt,
+            db.tasks.createdAt,
+          ])
+          ..where(db.tasks.deletedAt.isNull() & userExp & matchExp)
+          ..orderBy([
+            OrderingTerm.desc(db.tasks.updatedAt),
+            OrderingTerm.desc(db.tasks.createdAt),
+          ])
+          ..limit(limit);
+
+    final ids = await idQuery.map((row) => row.read(db.tasks.id)!).get();
+    if (ids.isEmpty) return [];
+
+    final results = <TaskEntity>[];
+    for (final id in ids) {
+      final entity = await getTaskEntityById(id);
+      if (entity != null) results.add(entity);
+    }
+    return results;
+  }
+}
+
+String _escapeLikePattern(String input) {
+  return input
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
 }

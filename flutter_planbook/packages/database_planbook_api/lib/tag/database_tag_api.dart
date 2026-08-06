@@ -369,4 +369,47 @@ class DatabaseTagApi {
         ))
         .get();
   }
+
+  /// 按关键词搜索标签（名称）
+  Future<List<TagEntity>> searchTagEntities({
+    required String query,
+    required String? userId,
+    int limit = 50,
+  }) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return [];
+
+    final pattern = '%${_escapeLikePattern(trimmed)}%';
+    final tags =
+        await (db.select(db.tags)
+              ..where(
+                (tag) =>
+                    tag.deletedAt.isNull() &
+                    tag.name.like(pattern, escapeChar: r'\') &
+                    (userId == null
+                        ? tag.userId.isNull()
+                        : tag.userId.equals(userId)),
+              )
+              ..orderBy([
+                (tag) => OrderingTerm.asc(tag.level),
+                (tag) => OrderingTerm.asc(tag.order),
+                (tag) => OrderingTerm.asc(tag.createdAt),
+              ])
+              ..limit(limit))
+            .get();
+
+    final results = <TagEntity>[];
+    for (final tag in tags) {
+      final entity = await getTagEntityById(tag.id);
+      if (entity != null) results.add(entity);
+    }
+    return results;
+  }
+}
+
+String _escapeLikePattern(String input) {
+  return input
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
 }

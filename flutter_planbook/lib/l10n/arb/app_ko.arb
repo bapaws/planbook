@@ -15,12 +15,19 @@
   "add": "추가",
   "edit": "편집",
   "delete": "삭제",
+  "viewDetails": "상세 보기",
   "clear": "지우기",
   "all": "전체",
   "copy": "복사",
   "paste": "붙여넣기",
   "cancel": "취소",
   "refresh": "새로고침",
+  "search": "검색",
+  "searchHint": "할 일과 노트 검색",
+  "searchTasks": "할 일",
+  "searchNotes": "노트",
+  "searchTags": "태그",
+  "noSearchResults": "결과 없음",
   "noData": "데이터 없음",
   "yes": "예",
   "no": "아니요",
@@ -222,6 +229,8 @@
   "time": "시간",
   "deleteNote": "노트 삭제",
   "deleteNoteContent": "이 노트를 삭제하시겠어요?",
+  "deleteTag": "태그 삭제?",
+  "deleteTagContent": "이 태그를 삭제하시겠어요? 관련 할 일과 노트는 삭제되지 않습니다.",
   "durationSeconds": "{count}{count, plural, =1 {초} other {초}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1년} other{{years}년}}",
   "productTitleMonths": "{months, plural, =1{1개월} other{{months}개월}}",
   "productTitleMonthly": "월간",
+  "selectPlan": "요금제 선택",
+  "productPlanMonthly": "월간 구독",
+  "productPlanAnnual": "연간 구독",
+  "productPlanLifetime": "평생 구매",
+  "productSubtitleAutoRenew": "자동 갱신",
+  "productSubtitleOneTime": "일회성 결제",
+  "productBadgeBestValue": "가장 혜택 · {percent}% 절약",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "한 번 결제 · 영구",
+  "productPricePerMonth": "{price}/월",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "월간 데이터",
   "monthlyDescriptionPlannedTasks": "이번 달 {count, plural, =1 {작업 1개} other {작업 {count}개}}를 계획했습니다.",
   "@monthlyDescriptionPlannedTasks": {

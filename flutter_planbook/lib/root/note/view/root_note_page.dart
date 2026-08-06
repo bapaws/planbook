@@ -143,6 +143,12 @@ class _RootNotePage extends StatelessWidget {
           ),
         ),
         actions: [
+          CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size.square(kMinInteractiveDimension),
+            onPressed: () => context.router.push(const SearchRoute()),
+            child: const Icon(FontAwesomeIcons.magnifyingGlass),
+          ),
           PullDownButton(
             itemBuilder: (context) {
               final theme = Theme.of(context);

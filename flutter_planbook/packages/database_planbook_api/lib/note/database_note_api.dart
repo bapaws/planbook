@@ -561,4 +561,53 @@ class DatabaseNoteApi {
       );
     });
   }
+
+  /// 按关键词搜索笔记（标题 / 内容）
+  Future<List<NoteEntity>> searchNoteEntities({
+    required String query,
+    required String? userId,
+    int limit = 50,
+  }) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return [];
+
+    final pattern = '%${_escapeLikePattern(trimmed)}%';
+    final userExp = userId == null
+        ? db.notes.userId.isNull()
+        : db.notes.userId.equals(userId);
+    final matchExp =
+        db.notes.title.like(pattern, escapeChar: r'\') |
+        db.notes.content.like(pattern, escapeChar: r'\');
+
+    final idQuery =
+        db.selectOnly(db.notes)
+          ..addColumns([
+            db.notes.id,
+            db.notes.updatedAt,
+            db.notes.createdAt,
+          ])
+          ..where(db.notes.deletedAt.isNull() & userExp & matchExp)
+          ..orderBy([
+            OrderingTerm.desc(db.notes.updatedAt),
+            OrderingTerm.desc(db.notes.createdAt),
+          ])
+          ..limit(limit);
+
+    final ids = await idQuery.map((row) => row.read(db.notes.id)!).get();
+    if (ids.isEmpty) return [];
+
+    final results = <NoteEntity>[];
+    for (final id in ids) {
+      final entity = await getNoteEntityById(id);
+      if (entity != null) results.add(entity);
+    }
+    return results;
+  }
+}
+
+String _escapeLikePattern(String input) {
+  return input
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
 }

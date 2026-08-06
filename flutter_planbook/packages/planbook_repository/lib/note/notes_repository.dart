@@ -151,6 +151,11 @@ class NotesRepository {
     return _dbNoteApi.getNoteEntityById(noteId);
   }
 
+  /// 按关键词搜索笔记（标题 / 内容）
+  Future<List<NoteEntity>> search(String query) {
+    return _dbNoteApi.searchNoteEntities(query: query, userId: userId);
+  }
+
   Stream<List<NoteEntity>> getNoteEntitiesByTaskId(String taskId) {
     return _dbNoteApi.getNoteEntitiesByTaskId(taskId);
   }

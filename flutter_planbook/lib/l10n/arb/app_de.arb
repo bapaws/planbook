@@ -15,12 +15,19 @@
   "add": "Hinzufügen",
   "edit": "Bearbeiten",
   "delete": "Löschen",
+  "viewDetails": "Details anzeigen",
   "clear": "Leeren",
   "all": "Alle",
   "copy": "Kopieren",
   "paste": "Einfügen",
   "cancel": "Abbrechen",
   "refresh": "Aktualisieren",
+  "search": "Suche",
+  "searchHint": "Aufgaben und Notizen suchen",
+  "searchTasks": "Aufgaben",
+  "searchNotes": "Notizen",
+  "searchTags": "Tags",
+  "noSearchResults": "Keine Ergebnisse",
   "noData": "Keine Daten",
   "yes": "Ja",
   "no": "Nein",
@@ -222,6 +229,8 @@
   "time": "Zeit",
   "deleteNote": "Notiz löschen",
   "deleteNoteContent": "Möchtest du diese Notiz wirklich löschen?",
+  "deleteTag": "Tag löschen?",
+  "deleteTagContent": "Möchtest du diesen Tag wirklich löschen? Zugehörige Aufgaben und Notizen werden nicht gelöscht.",
   "durationSeconds": "{count} {count, plural, =1 {Sekunde} other {Sekunden}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1 Jahr} other{{years} Jahre}}",
   "productTitleMonths": "{months, plural, =1{1 Monat} other{{months} Monate}}",
   "productTitleMonthly": "Monatlich",
+  "selectPlan": "Tarif wählen",
+  "productPlanMonthly": "Monatlich",
+  "productPlanAnnual": "Jährlich",
+  "productPlanLifetime": "Lebenslang",
+  "productSubtitleAutoRenew": "Automatische Verlängerung",
+  "productSubtitleOneTime": "Einmaliger Kauf",
+  "productBadgeBestValue": "Bester Wert · {percent}% sparen",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "Einmal zahlen · Für immer",
+  "productPricePerMonth": "{price}/Mon.",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "Monatsdaten",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 geplante Aufgabe diesen Monat.} other {{count} geplante Aufgaben diesen Monat.}}",
   "@monthlyDescriptionPlannedTasks": {

@@ -136,7 +136,18 @@ final class StoreProduct extends Equatable {
         id.toLowerCase().contains('annual');
   }
 
-  bool get isMonthly => id.toLowerCase().contains('monthly');
+  /// 单年档（P1Y）；多年档（如 P3Y）不算进「年度」推荐/节省计算
+  bool get isSingleYearAnnual {
+    final parts = subscriptionPeriodParts;
+    if (parts != null) return parts.$2 == Unit.year && parts.$1 == 1;
+    return isAnnual && !id.toLowerCase().contains('3year');
+  }
+
+  bool get isMonthly {
+    final parts = subscriptionPeriodParts;
+    if (parts != null) return parts.$2 == Unit.month && parts.$1 >= 1;
+    return id.toLowerCase().contains('monthly');
+  }
 
   String displayTitle(AppLocalizations l10n, {bool preferDuration = false}) {
     if (isLifetime) return l10n.productTitleLifetime;

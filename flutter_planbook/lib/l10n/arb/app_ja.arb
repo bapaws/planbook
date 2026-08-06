@@ -15,12 +15,19 @@
   "add": "追加",
   "edit": "編集",
   "delete": "削除",
+  "viewDetails": "詳細を見る",
   "clear": "クリア",
   "all": "すべて",
   "copy": "コピー",
   "paste": "貼り付け",
   "cancel": "キャンセル",
   "refresh": "更新",
+  "search": "検索",
+  "searchHint": "タスクとノートを検索",
+  "searchTasks": "タスク",
+  "searchNotes": "ノート",
+  "searchTags": "タグ",
+  "noSearchResults": "結果なし",
   "noData": "データなし",
   "yes": "はい",
   "no": "いいえ",
@@ -222,6 +229,8 @@
   "time": "時間",
   "deleteNote": "ノートを削除",
   "deleteNoteContent": "このノートを削除してもよろしいですか？",
+  "deleteTag": "タグを削除しますか？",
+  "deleteTagContent": "このタグを削除してもよろしいですか？関連するタスクとノートは削除されません。",
   "durationSeconds": "{count} {count, plural, =1 {秒} other {秒}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
   "productTitleMonths": "{months, plural, =1{1ヶ月} other{{months}ヶ月}}",
   "productTitleMonthly": "月額",
+  "selectPlan": "プランを選択",
+  "productPlanMonthly": "月額",
+  "productPlanAnnual": "年額",
+  "productPlanLifetime": "買い切り",
+  "productSubtitleAutoRenew": "自動更新",
+  "productSubtitleOneTime": "一回払い",
+  "productBadgeBestValue": "一番お得 · {percent}%オフ",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "一回払い · 永久",
+  "productPricePerMonth": "{price}/月",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "月次データ",
   "monthlyDescriptionPlannedTasks": "今月は {count, plural, =1 {1 件のタスク} other {{count} 件のタスク}}を予定しました。",
   "@monthlyDescriptionPlannedTasks": {

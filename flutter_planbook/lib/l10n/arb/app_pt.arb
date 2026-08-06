@@ -15,12 +15,19 @@
   "add": "Adicionar",
   "edit": "Editar",
   "delete": "Eliminar",
+  "viewDetails": "Ver detalhes",
   "clear": "Limpar",
   "all": "Tudo",
   "copy": "Copiar",
   "paste": "Colar",
   "cancel": "Cancelar",
   "refresh": "Atualizar",
+  "search": "Pesquisar",
+  "searchHint": "Pesquisar tarefas e notas",
+  "searchTasks": "Tarefas",
+  "searchNotes": "Notas",
+  "searchTags": "Tags",
+  "noSearchResults": "Nenhum resultado",
   "noData": "Sem dados",
   "yes": "Sim",
   "no": "Não",
@@ -222,6 +229,8 @@
   "time": "Tempo",
   "deleteNote": "Eliminar nota",
   "deleteNoteContent": "Tem a certeza de que quer eliminar esta nota?",
+  "deleteTag": "Eliminar etiqueta?",
+  "deleteTagContent": "Tem a certeza de que quer eliminar esta etiqueta? Tarefas e notas relacionadas não serão eliminadas.",
   "durationSeconds": "{count} {count, plural, =1 {segundo} other {segundos}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1 ano} other{{years} anos}}",
   "productTitleMonths": "{months, plural, =1{1 mês} other{{months} meses}}",
   "productTitleMonthly": "Mensal",
+  "selectPlan": "Escolher um plano",
+  "productPlanMonthly": "Mensal",
+  "productPlanAnnual": "Anual",
+  "productPlanLifetime": "Vitalício",
+  "productSubtitleAutoRenew": "Renovação automática",
+  "productSubtitleOneTime": "Compra única",
+  "productBadgeBestValue": "Melhor valor · Poupe {percent}%",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "Pague uma vez · Para sempre",
+  "productPricePerMonth": "{price}/mês",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "Dados mensais",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 tarefa planejada este mês.} other {{count} tarefas planejadas este mês.}}",
   "@monthlyDescriptionPlannedTasks": {

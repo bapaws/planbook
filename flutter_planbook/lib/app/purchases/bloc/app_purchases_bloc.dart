@@ -95,6 +95,25 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     final selectedStoreProduct = storeProducts.isEmpty
         ? null
         : storeProducts[storeProducts.length ~/ 2];
+
+    // 相对月费计算年费节省比例，用于「最划算」角标
+    final monthly = storeProducts.firstWhereOrNull((e) => e.isMonthly);
+    final annual = storeProducts.firstWhereOrNull(
+      (e) => e.isSingleYearAnnual,
+    );
+    int? savePercent;
+    String? savePercentId;
+    if (monthly != null &&
+        annual != null &&
+        monthly.price > 0 &&
+        annual.price > 0) {
+      final percent = ((1 - annual.price / (monthly.price * 12)) * 100).round();
+      if (percent > 0) {
+        savePercent = percent;
+        savePercentId = annual.id;
+      }
+    }
+
     final activeProductIdentifier = await AppPurchases.instance
         .getActiveIdentifier();
     emit(
@@ -104,7 +123,8 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
             kDebugMode ? 'lifetime' : activeProductIdentifier,
         storeProducts: storeProducts,
         selectedStoreProduct: selectedStoreProduct,
-        savePercentId: selectedStoreProduct?.id,
+        savePercentId: savePercentId,
+        savePercent: savePercent,
         entitlementJustGranted: false,
       ),
     );

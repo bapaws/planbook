@@ -100,3 +100,13 @@ final class TaskSourcePanelTaskDragCompleted extends TaskSourcePanelEvent {
   @override
   List<Object?> get props => [task];
 }
+
+/// 完成 / 取消完成任务
+final class TaskSourcePanelTaskCompleted extends TaskSourcePanelEvent {
+  const TaskSourcePanelTaskCompleted(this.task);
+
+  final TaskEntity task;
+
+  @override
+  List<Object?> get props => [task];
+}

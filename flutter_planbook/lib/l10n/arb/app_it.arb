@@ -15,12 +15,19 @@
   "add": "Aggiungi",
   "edit": "Modifica",
   "delete": "Elimina",
+  "viewDetails": "Vedi dettagli",
   "clear": "Cancella",
   "all": "Tutto",
   "copy": "Copia",
   "paste": "Incolla",
   "cancel": "Annulla",
   "refresh": "Aggiorna",
+  "search": "Cerca",
+  "searchHint": "Cerca attività e note",
+  "searchTasks": "Attività",
+  "searchNotes": "Note",
+  "searchTags": "Tag",
+  "noSearchResults": "Nessun risultato",
   "noData": "Nessun dato",
   "yes": "Sì",
   "no": "No",
@@ -222,6 +229,8 @@
   "time": "Tempo",
   "deleteNote": "Elimina nota",
   "deleteNoteContent": "Sei sicuro di voler eliminare questa nota?",
+  "deleteTag": "Eliminare il tag?",
+  "deleteTagContent": "Sei sicuro di voler eliminare questo tag? Attività e note correlate non verranno eliminate.",
   "durationSeconds": "{count} {count, plural, =1 {secondo} other {secondi}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1 anno} other{{years} anni}}",
   "productTitleMonths": "{months, plural, =1{1 mese} other{{months} mesi}}",
   "productTitleMonthly": "Mensile",
+  "selectPlan": "Scegli un piano",
+  "productPlanMonthly": "Mensile",
+  "productPlanAnnual": "Annuale",
+  "productPlanLifetime": "A vita",
+  "productSubtitleAutoRenew": "Rinnovo automatico",
+  "productSubtitleOneTime": "Acquisto una tantum",
+  "productBadgeBestValue": "Più conveniente · Risparmia {percent}%",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "Paga una volta · Per sempre",
+  "productPricePerMonth": "{price}/mese",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "Dati mensili",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 attività pianificata questo mese.} other {{count} attività pianificate questo mese.}}",
   "@monthlyDescriptionPlannedTasks": {

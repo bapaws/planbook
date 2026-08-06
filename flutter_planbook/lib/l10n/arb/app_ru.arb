@@ -15,12 +15,19 @@
   "add": "Добавить",
   "edit": "Редактировать",
   "delete": "Удалить",
+  "viewDetails": "Подробнее",
   "clear": "Очистить",
   "all": "Все",
   "copy": "Копировать",
   "paste": "Вставить",
   "cancel": "Отмена",
   "refresh": "Обновить",
+  "search": "Поиск",
+  "searchHint": "Поиск задач и заметок",
+  "searchTasks": "Задачи",
+  "searchNotes": "Заметки",
+  "searchTags": "Теги",
+  "noSearchResults": "Ничего не найдено",
   "noData": "Нет данных",
   "yes": "Да",
   "no": "Нет",
@@ -222,6 +229,8 @@
   "time": "Время",
   "deleteNote": "Удалить заметку",
   "deleteNoteContent": "Вы уверены, что хотите удалить эту заметку?",
+  "deleteTag": "Удалить тег?",
+  "deleteTagContent": "Вы уверены, что хотите удалить этот тег? Связанные задачи и заметки не будут удалены.",
   "durationSeconds": "{count} {count, plural, =1 {секунда} other {секунд}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1 год} other{{years} лет}}",
   "productTitleMonths": "{months, plural, =1{1 месяц} other{{months} месяцев}}",
   "productTitleMonthly": "Ежемесячный",
+  "selectPlan": "Выберите план",
+  "productPlanMonthly": "Ежемесячно",
+  "productPlanAnnual": "Ежегодно",
+  "productPlanLifetime": "Навсегда",
+  "productSubtitleAutoRenew": "Автопродление",
+  "productSubtitleOneTime": "Разовая покупка",
+  "productBadgeBestValue": "Выгоднее · Экономия {percent}%",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "Один платёж · Навсегда",
+  "productPricePerMonth": "{price}/мес.",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "Месячные данные",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {Запланирована 1 задача} other {Запланировано {count} задач}} в этом месяце.",
   "@monthlyDescriptionPlannedTasks": {

@@ -303,6 +303,11 @@ class TasksRepository {
     return _dbTaskApi.getTaskEntityById(taskId, occurrenceAt: occurrenceAt);
   }
 
+  /// 按关键词搜索任务（标题 / 备注内容）
+  Future<List<TaskEntity>> search(String query) {
+    return _dbTaskApi.searchTaskEntities(query: query, userId: userId);
+  }
+
   Stream<int> getTaskCount({
     required TaskListMode mode,
     Jiffy? date,
@@ -363,7 +368,13 @@ class TasksRepository {
         priority: priority,
         userId: userId,
       ),
-      TaskListMode.tag => throw UnimplementedError(),
+      TaskListMode.tag => tagId == null
+          ? Stream.value(const <TaskEntity>[])
+          : _dbTaskApi.getTaskEntitiesByTags(
+              tagIds: [tagId],
+              isCompleted: isCompleted,
+              userId: userId,
+            ),
     };
   }
 
@@ -418,7 +429,13 @@ class TasksRepository {
         priority: priority,
         userId: userId,
       ),
-      TaskListMode.tag => throw UnimplementedError(),
+      TaskListMode.tag => tagId == null
+          ? Stream.value(const <TaskEntity>[])
+          : _dbTaskApi.getTaskEntitiesByTags(
+              tagIds: [tagId],
+              isCompleted: isCompleted,
+              userId: userId,
+            ),
     };
   }
 

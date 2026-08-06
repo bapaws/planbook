@@ -128,6 +128,9 @@ class RootTaskDrawer extends StatelessWidget {
                                 RootTaskTagToggled(tagId: tag.id),
                               );
                             },
+                            onDetail: () {
+                              context.router.push(TagDetailRoute(tag: tag));
+                            },
                             onDeleted: () {
                               context.read<RootHomeBloc>().add(
                                 RootHomeTagDeleted(tagId: tag.id),

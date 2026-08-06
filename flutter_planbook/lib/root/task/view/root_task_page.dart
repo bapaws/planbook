@@ -129,6 +129,12 @@ class _RootTaskPage extends StatelessWidget {
         ),
         actions: [
           const AppActivityNoticeAppBarActions(),
+          CupertinoButton(
+            padding: EdgeInsets.zero,
+            minimumSize: const Size.square(kMinInteractiveDimension),
+            onPressed: () => context.router.push(const SearchRoute()),
+            child: const Icon(FontAwesomeIcons.magnifyingGlass, size: 18),
+          ),
           _buildViewTypeSwitcher(context, tab),
           PullDownButton(
             itemBuilder: (context) {
@@ -232,7 +238,7 @@ class _RootTaskPage extends StatelessWidget {
               padding: EdgeInsets.zero,
               minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+              child: const Icon(FontAwesomeIcons.ellipsis, size: 18),
             ),
           ),
         ],
@@ -284,30 +290,27 @@ class _RootTaskPage extends StatelessWidget {
                 ),
               ),
             ],
-            buttonBuilder: (context, showMenu) => GestureDetector(
-              behavior: HitTestBehavior.translucent,
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              padding: EdgeInsets.zero,
               onLongPress: showMenu,
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                minimumSize: const Size.square(kMinInteractiveDimension),
-                onPressed: () {
-                  final next = switch (dayViewType) {
-                    RootTaskViewType.list => RootTaskViewType.priority,
-                    RootTaskViewType.priority => RootTaskViewType.timeBlock,
-                    RootTaskViewType.timeBlock => RootTaskViewType.list,
-                  };
-                  context.read<RootTaskBloc>().add(
-                    RootTaskDayViewTypeChanged(dayViewType: next),
-                  );
+              minimumSize: const Size.square(kMinInteractiveDimension),
+              onPressed: () {
+                final next = switch (dayViewType) {
+                  RootTaskViewType.list => RootTaskViewType.priority,
+                  RootTaskViewType.priority => RootTaskViewType.timeBlock,
+                  RootTaskViewType.timeBlock => RootTaskViewType.list,
+                };
+                context.read<RootTaskBloc>().add(
+                  RootTaskDayViewTypeChanged(dayViewType: next),
+                );
+              },
+              child: Icon(
+                switch (dayViewType) {
+                  RootTaskViewType.list => FontAwesomeIcons.hashtag,
+                  RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
+                  RootTaskViewType.timeBlock => FontAwesomeIcons.tableList,
                 },
-                child: Icon(
-                  switch (dayViewType) {
-                    RootTaskViewType.list => FontAwesomeIcons.hashtag,
-                    RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
-                    RootTaskViewType.timeBlock => FontAwesomeIcons.tableList,
-                  },
-                  size: 18,
-                ),
+                size: 18,
               ),
             ),
           ),
@@ -341,26 +344,23 @@ class _RootTaskPage extends StatelessWidget {
                 ),
               ),
             ],
-            buttonBuilder: (context, showMenu) => GestureDetector(
-              behavior: HitTestBehavior.translucent,
+            buttonBuilder: (context, showMenu) => CupertinoButton(
+              padding: EdgeInsets.zero,
               onLongPress: showMenu,
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                minimumSize: const Size.square(kMinInteractiveDimension),
-                onPressed: () {
-                  final next = viewMode == TaskWeekViewMode.grid
-                      ? TaskWeekViewMode.list
-                      : TaskWeekViewMode.grid;
-                  context.read<RootTaskBloc>().add(
-                    RootTaskWeekViewModeChanged(weekViewMode: next),
-                  );
-                },
-                child: Icon(
-                  viewMode == TaskWeekViewMode.grid
-                      ? FontAwesomeIcons.gripVertical
-                      : FontAwesomeIcons.list,
-                  size: 18,
-                ),
+              minimumSize: const Size.square(kMinInteractiveDimension),
+              onPressed: () {
+                final next = viewMode == TaskWeekViewMode.grid
+                    ? TaskWeekViewMode.list
+                    : TaskWeekViewMode.grid;
+                context.read<RootTaskBloc>().add(
+                  RootTaskWeekViewModeChanged(weekViewMode: next),
+                );
+              },
+              child: Icon(
+                viewMode == TaskWeekViewMode.grid
+                    ? FontAwesomeIcons.gripVertical
+                    : FontAwesomeIcons.list,
+                size: 18,
               ),
             ),
           ),

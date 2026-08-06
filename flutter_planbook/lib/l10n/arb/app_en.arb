@@ -15,12 +15,19 @@
   "add": "Add",
   "edit": "Edit",
   "delete": "Delete",
+  "viewDetails": "View Details",
   "clear": "Clear",
   "all": "All",
   "copy": "Copy",
   "paste": "Paste",
   "cancel": "Cancel",
   "refresh": "Refresh",
+  "search": "Search",
+  "searchHint": "Search tasks and notes",
+  "searchTasks": "Tasks",
+  "searchNotes": "Notes",
+  "searchTags": "Tags",
+  "noSearchResults": "No results found",
   "noData": "No Data",
   "yes": "Yes",
   "no": "No",
@@ -229,6 +236,8 @@
   "time": "Time",
   "deleteNote": "Delete Note",
   "deleteNoteContent": "Are you sure you want to delete this note?",
+  "deleteTag": "Delete Tag?",
+  "deleteTagContent": "Are you sure you want to delete this tag? This will not delete related tasks or notes.",
   "durationSeconds": "{count} {count, plural, =1 {second} other {seconds}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -851,6 +860,33 @@
     }
   },
   "productTitleMonthly": "Monthly",
+  "selectPlan": "Select a plan",
+  "productPlanMonthly": "Monthly",
+  "productPlanAnnual": "Yearly",
+  "productPlanLifetime": "Lifetime",
+  "productSubtitleAutoRenew": "Auto-renewal",
+  "productSubtitleOneTime": "One-time purchase",
+  "productBadgeBestValue": "Best value · Save {percent}%",
+  "@productBadgeBestValue": {
+    "description": "Badge for the best-value plan showing savings vs monthly",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "71"
+      }
+    }
+  },
+  "productBadgeLifetime": "Pay once · Forever",
+  "productPricePerMonth": "{price}/mo",
+  "@productPricePerMonth": {
+    "description": "Monthly equivalent price derived from an annual plan",
+    "placeholders": {
+      "price": {
+        "type": "String",
+        "example": "$0.58"
+      }
+    }
+  },
   "monthlyData": "Monthly Data",
   "monthlyDescriptionPlannedTasks": "Planned {count, plural, =1 {1 task} other {{count} tasks}} this month.",
   "@monthlyDescriptionPlannedTasks": {

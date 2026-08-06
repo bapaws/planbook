@@ -37,6 +37,7 @@ class TaskTodayPage extends StatelessWidget {
             TaskSourcePanelBloc(
               tasksRepository: context.read(),
               tagsRepository: context.read(),
+              taskActionService: context.read(),
             )..add(
               TaskSourcePanelLoaded(
                 isCompleted: context.read<RootTaskBloc>().isCompleted,

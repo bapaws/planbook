@@ -138,6 +138,10 @@ class RootNoteDrawer extends StatelessWidget {
                           );
                           Scaffold.of(context).closeDrawer();
                         },
+                        onDetail: () {
+                          context.router.push(TagDetailRoute(tag: tag));
+                          Scaffold.of(context).closeDrawer();
+                        },
                         onDeleted: () {
                           context.read<RootHomeBloc>().add(
                             RootHomeTagDeleted(tagId: tag.id),

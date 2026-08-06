@@ -10,6 +10,7 @@ final class TaskSourcePanelState extends Equatable {
     this.isVisible = true,
     this.status = PageStatus.initial,
     this.tasks = const [],
+    this.currentTaskNote,
     this.optimisticRemovedTaskIds = const {},
     this.optimisticUpdatedTasks = const [],
   });
@@ -22,6 +23,9 @@ final class TaskSourcePanelState extends Equatable {
   final bool isVisible;
   final PageStatus status;
   final List<TaskEntity> tasks;
+
+  /// 完成任务后需要弹出编辑的自动笔记。
+  final NoteEntity? currentTaskNote;
 
   /// 乐观移除的任务 ID；用于在 stream 尚未反映变更前保持任务不可见。
   final Set<String> optimisticRemovedTaskIds;
@@ -39,6 +43,7 @@ final class TaskSourcePanelState extends Equatable {
     isVisible,
     status,
     tasks,
+    currentTaskNote,
     optimisticRemovedTaskIds,
     optimisticUpdatedTasks,
   ];
@@ -52,6 +57,7 @@ final class TaskSourcePanelState extends Equatable {
     bool? isVisible,
     PageStatus? status,
     List<TaskEntity>? tasks,
+    NoteEntity? currentTaskNote,
     Set<String>? optimisticRemovedTaskIds,
     List<TaskEntity>? optimisticUpdatedTasks,
   }) {
@@ -64,6 +70,7 @@ final class TaskSourcePanelState extends Equatable {
       isVisible: isVisible ?? this.isVisible,
       status: status ?? this.status,
       tasks: tasks ?? this.tasks,
+      currentTaskNote: currentTaskNote ?? this.currentTaskNote,
       optimisticRemovedTaskIds:
           optimisticRemovedTaskIds ?? this.optimisticRemovedTaskIds,
       optimisticUpdatedTasks:

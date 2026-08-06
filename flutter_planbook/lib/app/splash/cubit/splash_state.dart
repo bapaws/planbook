@@ -4,7 +4,7 @@ final class SplashState extends Equatable {
   const SplashState({
     this.status = PageStatus.initial,
     this.launchedCount = 0,
-    this.isPremium = false,
+    this.isPremium,
     this.isLoggedIn = false,
   });
 

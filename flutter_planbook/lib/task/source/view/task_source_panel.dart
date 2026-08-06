@@ -65,18 +65,32 @@ class _TaskSourcePanelView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return BlocListener<RootTaskBloc, RootTaskState>(
-      listenWhen: (previous, current) =>
-          previous.showCompleted != current.showCompleted ||
-          previous.selectedTagIds != current.selectedTagIds,
-      listener: (context, state) {
-        context.read<TaskSourcePanelBloc>().add(
-          TaskSourcePanelFilterChanged(
-            isCompleted: state.isCompleted,
-            selectedTagIds: state.selectedTagIds,
-          ),
-        );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<RootTaskBloc, RootTaskState>(
+          listenWhen: (previous, current) =>
+              previous.showCompleted != current.showCompleted ||
+              previous.selectedTagIds != current.selectedTagIds,
+          listener: (context, state) {
+            context.read<TaskSourcePanelBloc>().add(
+              TaskSourcePanelFilterChanged(
+                isCompleted: state.isCompleted,
+                selectedTagIds: state.selectedTagIds,
+              ),
+            );
+          },
+        ),
+        BlocListener<TaskSourcePanelBloc, TaskSourcePanelState>(
+          listenWhen: (previous, current) =>
+              previous.currentTaskNote != current.currentTaskNote &&
+              current.currentTaskNote != null,
+          listener: (context, state) {
+            context.router.push(
+              NoteNewRoute(initialNote: state.currentTaskNote),
+            );
+          },
+        ),
+      ],
       child: TaskDragTarget(
         onWillAcceptWithDetails: (details) {
           final state = context.read<TaskSourcePanelBloc>().state;
@@ -143,6 +157,11 @@ class _TaskSourcePanelView extends StatelessWidget {
                           task: task,
                           onPressed: (task) => _openTaskDetail(context, task),
                           onEdited: (task) => _openTaskEdit(context, task),
+                          onCompleted: (task) {
+                            context.read<TaskSourcePanelBloc>().add(
+                              TaskSourcePanelTaskCompleted(task),
+                            );
+                          },
                         ),
                       );
                     },

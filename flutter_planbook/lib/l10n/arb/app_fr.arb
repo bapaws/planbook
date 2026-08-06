@@ -15,12 +15,19 @@
   "add": "Ajouter",
   "edit": "Modifier",
   "delete": "Supprimer",
+  "viewDetails": "Voir les détails",
   "clear": "Effacer",
   "all": "Tout",
   "copy": "Copier",
   "paste": "Coller",
   "cancel": "Annuler",
   "refresh": "Actualiser",
+  "search": "Rechercher",
+  "searchHint": "Rechercher tâches et notes",
+  "searchTasks": "Tâches",
+  "searchNotes": "Notes",
+  "searchTags": "Tags",
+  "noSearchResults": "Aucun résultat",
   "noData": "Aucune donnée",
   "yes": "Oui",
   "no": "Non",
@@ -222,6 +229,8 @@
   "time": "Temps",
   "deleteNote": "Supprimer la note",
   "deleteNoteContent": "Voulez-vous vraiment supprimer cette note ?",
+  "deleteTag": "Supprimer le tag ?",
+  "deleteTagContent": "Voulez-vous vraiment supprimer ce tag ? Les tâches et notes associées ne seront pas supprimées.",
   "durationSeconds": "{count} {count, plural, =1 {seconde} other {secondes}}",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -823,6 +832,29 @@
   "productTitleYears": "{years, plural, =1{1 an} other{{years} ans}}",
   "productTitleMonths": "{months, plural, =1{1 mois} other{{months} mois}}",
   "productTitleMonthly": "Mensuel",
+  "selectPlan": "Choisir une formule",
+  "productPlanMonthly": "Mensuel",
+  "productPlanAnnual": "Annuel",
+  "productPlanLifetime": "À vie",
+  "productSubtitleAutoRenew": "Renouvellement automatique",
+  "productSubtitleOneTime": "Achat unique",
+  "productBadgeBestValue": "Meilleure offre · Économisez {percent} %",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "Payer une fois · Pour toujours",
+  "productPricePerMonth": "{price}/mois",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "Données mensuelles",
   "monthlyDescriptionPlannedTasks": "{count, plural, =1 {1 tâche planifiée ce mois-ci.} other {{count} tâches planifiées ce mois-ci.}}",
   "@monthlyDescriptionPlannedTasks": {

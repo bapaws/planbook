@@ -15,12 +15,19 @@
   "add": "添加",
   "edit": "编辑",
   "delete": "删除",
+  "viewDetails": "查看详情",
   "clear": "清除",
   "all": "全部",
   "copy": "复制",
   "paste": "粘贴",
   "cancel": "取消",
   "refresh": "刷新",
+  "search": "搜索",
+  "searchHint": "搜索任务和笔记",
+  "searchTasks": "任务",
+  "searchNotes": "笔记",
+  "searchTags": "标签",
+  "noSearchResults": "未找到结果",
   "noData": "暂无数据",
   "yes": "是",
   "no": "否",
@@ -222,6 +229,8 @@
   "time": "时间",
   "deleteNote": "删除笔记",
   "deleteNoteContent": "确定要删除此笔记吗？",
+  "deleteTag": "删除标签？",
+  "deleteTagContent": "确定要删除此标签吗？相关任务和笔记不会被删除。",
   "durationSeconds": "{count} 秒",
   "@durationSeconds": {
     "description": "Duration in seconds",
@@ -819,6 +828,29 @@
   "productTitleYears": "{years, plural, =1{1年} other{{years}年}}",
   "productTitleMonths": "{months, plural, =1{1个月} other{{months}个月}}",
   "productTitleMonthly": "月度",
+  "selectPlan": "选择方案",
+  "productPlanMonthly": "月度订阅",
+  "productPlanAnnual": "年度订阅",
+  "productPlanLifetime": "终身买断",
+  "productSubtitleAutoRenew": "自动续订",
+  "productSubtitleOneTime": "一次性付费",
+  "productBadgeBestValue": "最划算 · 省 {percent}%",
+  "@productBadgeBestValue": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "productBadgeLifetime": "一次付费 · 永久",
+  "productPricePerMonth": "{price}/月",
+  "@productPricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "monthlyData": "月数据",
   "monthlyDescriptionPlannedTasks": "本月计划了 {count} 项任务。",
   "@monthlyDescriptionPlannedTasks": {

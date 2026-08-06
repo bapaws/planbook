@@ -310,7 +310,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
           return false;
         }
       case TaskListMode.tag:
-        throw UnimplementedError();
+        // 标签过滤已在上方通过 _tagId 处理
+        break;
     }
     return true;
   }

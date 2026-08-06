@@ -11,6 +11,7 @@ class TagListTile extends StatelessWidget {
     required this.tag,
     this.isSelected,
     this.onSelected,
+    this.onDetail,
     this.onDeleted,
     this.onEdited,
     super.key,
@@ -19,6 +20,7 @@ class TagListTile extends StatelessWidget {
   final TagEntity tag;
   final bool? isSelected;
   final VoidCallback? onSelected;
+  final VoidCallback? onDetail;
   final VoidCallback? onDeleted;
   final VoidCallback? onEdited;
 
@@ -31,18 +33,27 @@ class TagListTile extends StatelessWidget {
         : tag.light;
     return PullDownButton(
       itemBuilder: (context) => [
-        PullDownMenuItem(
-          icon: FontAwesomeIcons.penToSquare,
-          title: context.l10n.edit,
-          onTap: onEdited,
-        ),
-        const PullDownMenuDivider.large(),
-        PullDownMenuItem(
-          icon: FontAwesomeIcons.trash,
-          title: context.l10n.delete,
-          isDestructive: true,
-          onTap: onDeleted,
-        ),
+        if (onDetail != null)
+          PullDownMenuItem(
+            icon: FontAwesomeIcons.circleInfo,
+            title: context.l10n.viewDetails,
+            onTap: onDetail,
+          ),
+        if (onEdited != null)
+          PullDownMenuItem(
+            icon: FontAwesomeIcons.penToSquare,
+            title: context.l10n.edit,
+            onTap: onEdited,
+          ),
+        if (onDeleted != null) ...[
+          const PullDownMenuDivider.large(),
+          PullDownMenuItem(
+            icon: FontAwesomeIcons.trash,
+            title: context.l10n.delete,
+            isDestructive: true,
+            onTap: onDeleted,
+          ),
+        ],
       ],
       buttonBuilder: (context, showMenu) => CupertinoButton(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

@@ -4,9 +4,11 @@ import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_planbook/task/source/model/task_source_panel_type.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:uuid/uuid.dart';
 
 part 'task_source_event.dart';
 part 'task_source_state.dart';
@@ -16,8 +18,10 @@ class TaskSourcePanelBloc
   TaskSourcePanelBloc({
     required TasksRepository tasksRepository,
     required TagsRepository tagsRepository,
+    required TaskActionService taskActionService,
   }) : _tasksRepository = tasksRepository,
        _tagsRepository = tagsRepository,
+       _taskActionService = taskActionService,
        super(const TaskSourcePanelState()) {
     on<TaskSourcePanelLoaded>(_onLoaded, transformer: sequential());
     on<TaskSourcePanelSourceChanged>(
@@ -45,10 +49,15 @@ class TaskSourcePanelBloc
       _onTaskDragCompleted,
       transformer: sequential(),
     );
+    on<TaskSourcePanelTaskCompleted>(
+      _onTaskCompleted,
+      transformer: sequential(),
+    );
   }
 
   final TasksRepository _tasksRepository;
   final TagsRepository _tagsRepository;
+  final TaskActionService _taskActionService;
 
   /// 刚被目标事件处理过的任务 ID。
   ///
@@ -307,6 +316,69 @@ class TaskSourcePanelBloc
     );
   }
 
+  /// 完成 / 取消完成任务，并处理自动笔记。
+  Future<void> _onTaskCompleted(
+    TaskSourcePanelTaskCompleted event,
+    Emitter<TaskSourcePanelState> emit,
+  ) async {
+    final task = event.task;
+    // 完成按钮是切换：当前未完成则完成，当前已完成则取消完成。
+    final isCompleting = !task.isCompleted;
+
+    final optimisticTask = isCompleting
+        ? task.copyWith(
+            activity: () => TaskActivity(
+              id: const Uuid().v4(),
+              createdAt: Jiffy.now(),
+              taskId: task.id,
+              occurrenceAt: task.occurrence?.occurrenceAt,
+              completedAt: Jiffy.now(),
+              activityType: 'completed',
+            ),
+          )
+        : task.copyWith(activity: () => null);
+
+    emit(
+      state.copyWith(
+        tasks: _optimisticTasksWith(optimisticTask),
+        optimisticUpdatedTasks: _optimisticUpdatedTasksWith(optimisticTask),
+        optimisticRemovedTaskIds: state.optimisticRemovedTaskIds.difference({
+          task.id,
+        }),
+      ),
+    );
+
+    var occurrenceAt = task.occurrence?.occurrenceAt;
+    if (task.parentId != null) {
+      final parentTask = state.tasks.firstWhereOrNull(
+        (t) => t.id == task.parentId,
+      );
+      if (parentTask != null && parentTask.occurrence?.occurrenceAt != null) {
+        occurrenceAt = parentTask.occurrence!.occurrenceAt;
+      }
+    }
+
+    final activities = await _taskActionService.completeTask(
+      task: task,
+      occurrenceAt: occurrenceAt,
+    );
+
+    for (final activity in activities) {
+      final taskId = activity.taskId;
+      if (taskId == null) continue;
+      final completedTask = await _tasksRepository.getTaskEntityById(taskId);
+      if (completedTask == null) continue;
+
+      final noteEntity = await _taskActionService.resolveAutoNote(
+        activity: activity,
+        task: completedTask,
+      );
+      if (noteEntity != null) {
+        emit(state.copyWith(currentTaskNote: noteEntity));
+      }
+    }
+  }
+
   /// 跨 BLoC 拖出被接受后，是否应对源列表做乐观移除。
   ///
   /// - 收集箱：落到时间块/日期后离开收集箱 → 移除
@@ -327,6 +399,15 @@ class TaskSourcePanelBloc
     final index = tasks.indexWhere((t) => t.id == newTask.id);
     if (index == -1) return [...tasks, newTask];
     return [...tasks]..[index] = newTask;
+  }
+
+  /// 用 [newTask] 替换列表中相同 ID 的任务；不满足当前完成状态筛选时改为移除。
+  List<TaskEntity> _optimisticTasksWith(TaskEntity newTask) {
+    if (state.isCompleted != null &&
+        newTask.isCompleted != state.isCompleted) {
+      return _removeTask(state.tasks, newTask.id);
+    }
+    return _replaceTask(state.tasks, newTask);
   }
 
   /// 从列表中移除指定 ID 的任务。

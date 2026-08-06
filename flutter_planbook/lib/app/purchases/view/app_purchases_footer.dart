@@ -1,11 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
-import 'package:flutter_planbook/app/purchases/view/app_purchases_product_view.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -21,244 +18,199 @@ class AppPurchasesFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return BlocBuilder<AppPurchasesBloc, AppPurchasesState>(
-      builder: (context, state) {
-        final storeProducts = state.storeProducts;
-        // if (storeProducts.isEmpty) {
-        //   return const SizedBox.shrink();
-        // }
-
-        final size = MediaQuery.of(context).size;
-        const double spacing = 24;
-        final double productItemWidth = min(
-          (size.width - spacing * 4) / 3,
-          120,
-        );
-        return Container(
-          padding: const EdgeInsets.only(
-            top: spacing,
-            bottom: 8,
-          ),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(24),
-            ),
-          ),
-          child: SafeArea(
-            top: false,
-            child: Column(
-              children: [
-                BlocSelector<
-                  AppPurchasesBloc,
-                  AppPurchasesState,
-                  StoreProduct?
-                >(
-                  selector: (state) => state.selectedStoreProduct,
-                  builder: (context, selectedStoreProduct) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(width: spacing),
-                        for (final product in storeProducts) ...[
-                          AppPurchasesProductView(
-                            product: product,
-                            itemWidth: productItemWidth,
-                            isSelected: selectedStoreProduct == product,
-                            onPressed: () {
-                              context.read<AppPurchasesBloc>().add(
-                                AppPurchasesProductSelected(product),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: spacing),
-                        ],
-                      ],
+    const double spacing = 24;
+    return Container(
+      padding: const EdgeInsets.only(
+        top: 16,
+        bottom: 8,
+      ),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(24),
+        ),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!AppPurchases.instance.usesChinaPay)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: spacing),
+                child: CupertinoButton.filled(
+                  padding: EdgeInsets.zero,
+                  color: theme.colorScheme.onSurface,
+                  borderRadius: BorderRadius.circular(24),
+                  onPressed: () async {
+                    context.read<AppPurchasesBloc>().add(
+                      const AppPurchasesPurchased(),
                     );
                   },
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      BlocSelector<
+                        AppPurchasesBloc,
+                        AppPurchasesState,
+                        StoreProduct?
+                      >(
+                        selector: (state) => state.selectedStoreProduct,
+                        builder: (context, selectedStoreProduct) {
+                          var text = context.l10n.getPro;
+                          final period = selectedStoreProduct?.period;
+                          if (period != null) {
+                            text = switch (period.$2) {
+                              Unit.day => context.l10n.freeTrial(period.$1),
+                              Unit.week => context.l10n.freeTrial(
+                                period.$1 * 7,
+                              ),
+                              Unit.month => context.l10n.freeTrial(
+                                period.$1 * 30,
+                              ),
+                              Unit.year => context.l10n.freeTrial(
+                                period.$1 * 365,
+                              ),
+                              _ => context.l10n.freeTrial(period.$1),
+                            };
+                          }
+                          return Text(
+                            text,
+                            style: theme.textTheme.titleMedium!.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                              fontWeight: period != null
+                                  ? FontWeight.bold
+                                  : null,
+                            ),
+                          );
+                        },
+                      ),
+                      const Spacer(),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
-                if (!AppPurchases.instance.usesChinaPay)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: spacing),
-                    child: CupertinoButton.filled(
-                      padding: EdgeInsets.zero,
-                      color: theme.colorScheme.onSurface,
-                      borderRadius: BorderRadius.circular(24),
-                      onPressed: () async {
-                        context.read<AppPurchasesBloc>().add(
-                          const AppPurchasesPurchased(),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          const Spacer(),
-                          BlocSelector<
-                            AppPurchasesBloc,
-                            AppPurchasesState,
-                            StoreProduct?
-                          >(
-                            selector: (state) => state.selectedStoreProduct,
-                            builder: (context, selectedStoreProduct) {
-                              var text = context.l10n.getPro;
-                              final period = selectedStoreProduct?.period;
-                              if (period != null) {
-                                text = switch (period.$2) {
-                                  Unit.day => context.l10n.freeTrial(period.$1),
-                                  Unit.week => context.l10n.freeTrial(
-                                    period.$1 * 7,
-                                  ),
-                                  Unit.month => context.l10n.freeTrial(
-                                    period.$1 * 30,
-                                  ),
-                                  Unit.year => context.l10n.freeTrial(
-                                    period.$1 * 365,
-                                  ),
-                                  _ => context.l10n.freeTrial(period.$1),
-                                };
-                              }
-                              return Text(
-                                text,
-                                style: theme.textTheme.titleMedium!.copyWith(
-                                  color: theme.colorScheme.onPrimary,
-                                  fontWeight: period != null
-                                      ? FontWeight.bold
-                                      : null,
+              )
+            else ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: spacing),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    Expanded(
+                      child: CupertinoButton(
+                        color: const Color(0xFF027aff),
+                        borderRadius: BorderRadius.circular(
+                          kMinInteractiveDimension,
+                        ),
+                        onPressed: () async {
+                          var isAgreed = context
+                              .read<AppPurchasesBloc>()
+                              .state
+                              .isAgreedToConditions;
+                          if (!isAgreed) {
+                            isAgreed =
+                                (await _showAgreementDialog(context)) ?? false;
+                          }
+                          if (isAgreed && context.mounted) {
+                            context.read<AppPurchasesBloc>()
+                              ..add(
+                                const AppPurchasesAgreedToConditions(
+                                  isAgreed: true,
+                                ),
+                              )
+                              ..add(
+                                const AppPurchasesPurchased(
+                                  chinaPayMethod: ChinaPayMethod.alipay,
                                 ),
                               );
-                            },
+                          }
+                        },
+                        child: Text(
+                          '支付宝支付',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
                           ),
-                          const Spacer(),
-                        ],
+                        ),
                       ),
                     ),
-                  )
-                else ...[
-                  SizedBox(
-                    width: productItemWidth * 3 + spacing * 2,
-                    child: Row(
-                      spacing: 8,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: CupertinoButton(
-                            color: const Color(0xFF027aff),
-                            borderRadius: BorderRadius.circular(
-                              kMinInteractiveDimension,
-                            ),
-                            onPressed: () async {
-                              var isAgreed = context
-                                  .read<AppPurchasesBloc>()
-                                  .state
-                                  .isAgreedToConditions;
-                              if (!isAgreed) {
-                                isAgreed =
-                                    (await _showAgreementDialog(context)) ??
-                                    false;
-                              }
-                              if (isAgreed && context.mounted) {
-                                context.read<AppPurchasesBloc>()
-                                  ..add(
-                                    const AppPurchasesAgreedToConditions(
-                                      isAgreed: true,
-                                    ),
-                                  )
-                                  ..add(
-                                    const AppPurchasesPurchased(
-                                      chinaPayMethod: ChinaPayMethod.alipay,
-                                    ),
-                                  );
-                              }
-                            },
-                            child: Text(
-                              '支付宝支付',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
+                    Expanded(
+                      child: CupertinoButton(
+                        color: const Color(0xFF07C160),
+                        borderRadius: BorderRadius.circular(
+                          kMinInteractiveDimension,
+                        ),
+                        onPressed: () async {
+                          var isAgreed = context
+                              .read<AppPurchasesBloc>()
+                              .state
+                              .isAgreedToConditions;
+                          if (!isAgreed) {
+                            isAgreed =
+                                (await _showAgreementDialog(context)) ?? false;
+                          }
+                          if (isAgreed && context.mounted) {
+                            context.read<AppPurchasesBloc>()
+                              ..add(
+                                const AppPurchasesAgreedToConditions(
+                                  isAgreed: true,
+                                ),
+                              )
+                              ..add(
+                                const AppPurchasesPurchased(
+                                  chinaPayMethod: ChinaPayMethod.wechat,
+                                ),
+                              );
+                          }
+                        },
+                        child: Text(
+                          '微信支付',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: Colors.white,
                           ),
                         ),
-                        Expanded(
-                          child: CupertinoButton(
-                            color: const Color(0xFF07C160),
-                            borderRadius: BorderRadius.circular(
-                              kMinInteractiveDimension,
-                            ),
-                            onPressed: () async {
-                              var isAgreed = context
-                                  .read<AppPurchasesBloc>()
-                                  .state
-                                  .isAgreedToConditions;
-                              if (!isAgreed) {
-                                isAgreed =
-                                    (await _showAgreementDialog(context)) ??
-                                    false;
-                              }
-                              if (isAgreed && context.mounted) {
-                                context.read<AppPurchasesBloc>()
-                                  ..add(
-                                    const AppPurchasesAgreedToConditions(
-                                      isAgreed: true,
-                                    ),
-                                  )
-                                  ..add(
-                                    const AppPurchasesPurchased(
-                                      chinaPayMethod: ChinaPayMethod.wechat,
-                                    ),
-                                  );
-                              }
-                            },
-                            child: Text(
-                              '微信支付',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
-                  CupertinoButton(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8,
+                  ],
+                ),
+              ),
+              CupertinoButton(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                ),
+                onPressed: () async {
+                  final isAgreed = context
+                      .read<AppPurchasesBloc>()
+                      .state
+                      .isAgreedToConditions;
+                  context.read<AppPurchasesBloc>().add(
+                    AppPurchasesAgreedToConditions(isAgreed: !isAgreed),
+                  );
+                },
+                minimumSize: Size.zero,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
+                      selector: (state) => state.isAgreedToConditions,
+                      builder: (context, isAgreedToConditions) => Icon(
+                        isAgreedToConditions
+                            ? FontAwesomeIcons.circleCheck
+                            : FontAwesomeIcons.circle,
+                        size: 16,
+                        color: isAgreedToConditions
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                    onPressed: () async {
-                      final isAgreed = context
-                          .read<AppPurchasesBloc>()
-                          .state
-                          .isAgreedToConditions;
-                      context.read<AppPurchasesBloc>().add(
-                        AppPurchasesAgreedToConditions(isAgreed: !isAgreed),
-                      );
-                    },
-                    minimumSize: Size.zero,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
-                          selector: (state) => state.isAgreedToConditions,
-                          builder: (context, isAgreedToConditions) => Icon(
-                            isAgreedToConditions
-                                ? FontAwesomeIcons.circleCheck
-                                : FontAwesomeIcons.circle,
-                            size: 16,
-                            color: isAgreedToConditions
-                                ? theme.colorScheme.primary
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        _buildAgreementText(context),
-                      ],
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
+                    const SizedBox(width: 4),
+                    _buildAgreementText(context),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 

@@ -18,6 +18,7 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> onLaunched() async {
     final launchedCount = _usersRepository.userProfile?.launchCount ?? 0;
+    if (isClosed) return;
     emit(
       state.copyWith(
         launchedCount: launchedCount + 1,
@@ -30,10 +31,13 @@ class SplashCubit extends Cubit<SplashState> {
 
   Future<void> _onPremiumRequested() async {
     final isPremium = await AppPurchases.instance.isPremium;
+    // 动画结束导航后 Cubit 可能已关闭，避免异步回调继续 emit
+    if (isClosed) return;
     emit(state.copyWith(isPremium: isPremium));
   }
 
   Future<void> onAnimationFinished() async {
+    if (isClosed) return;
     emit(state.copyWith(status: PageStatus.success));
   }
 }

@@ -44,24 +44,24 @@ class AppSupabase {
   static Future<void> initialize() async {
     if (_supabase != null) return;
     Supabase supabase;
-    // if (kDebugMode) {
-    //   supabase = await Supabase.initialize(
-    //     url: 'https://rejmbcwozhohcxfvquus.supabase.co',
-    //     anonKey: 'sb_publishable_DHbbqiD_EzFMRy-PFJVc8A_zwLnqog3',
-    //     postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
-    //   );
-    // } else {
-    supabase = await Supabase.initialize(
-      url: 'https://supa.bapaws.top',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
-          'eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiY'
-          'XNlIiwiaWF0IjoxNzYyNzA0MDAwLCJleHAiOj'
-          'E5MjA0NzA0MDB9.'
-          'TKP8eEkch5MSBWn4_Qzz_pYTZWnssVUU-YcTgn_riw8',
-      postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
-    );
-    // }
+    if (kDebugMode) {
+      supabase = await Supabase.initialize(
+        url: 'https://rejmbcwozhohcxfvquus.supabase.co',
+        anonKey: 'sb_publishable_DHbbqiD_EzFMRy-PFJVc8A_zwLnqog3',
+        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
+      );
+    } else {
+      supabase = await Supabase.initialize(
+        url: 'https://supa.bapaws.top',
+        anonKey:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+            'eyJyb2xlIjoiYW5vbiIsImlzcyI6InN1cGFiY'
+            'XNlIiwiaWF0IjoxNzYyNzA0MDAwLCJleHAiOj'
+            'E5MjA0NzA0MDB9.'
+            'TKP8eEkch5MSBWn4_Qzz_pYTZWnssVUU-YcTgn_riw8',
+        postgrestOptions: const PostgrestClientOptions(schema: 'planbook'),
+      );
+    }
     _supabase = supabase;
 
     instance._onAuthStateChangeSubscription = _supabase

@@ -85,8 +85,11 @@ class _SplashPageViewState extends State<_SplashPageView> {
       listenWhen: (p, c) => !p.isInitialized && c.isInitialized,
       listener: _onAppStateChanged,
       child: BlocListener<SplashCubit, SplashState>(
+        // 动画结束与会员状态查询是并行的，任一晚到都要能触发导航
         listenWhen: (p, c) =>
-            p.status != c.status && c.status == PageStatus.success,
+            c.status == PageStatus.success &&
+            c.isPremium != null &&
+            (p.status != c.status || p.isPremium != c.isPremium),
         listener: _onSplashStateChanged,
         child: const _ThemedSplashContent(),
       ),

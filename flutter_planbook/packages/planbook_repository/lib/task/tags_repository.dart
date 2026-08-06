@@ -66,6 +66,11 @@ class TagsRepository {
     return _tagApi.getTagEntityByName(name, userId);
   }
 
+  /// 按关键词搜索标签（名称）
+  Future<List<TagEntity>> search(String query) {
+    return _tagApi.searchTagEntities(query: query, userId: userId);
+  }
+
   Future<void> createTag({
     required String name,
     required ColorScheme lightColorScheme,

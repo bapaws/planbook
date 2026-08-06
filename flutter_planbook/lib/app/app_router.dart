@@ -155,6 +155,9 @@ class AppRouter extends RootStackRouter {
 
     AutoRoute(page: TaskDetailRoute.page),
 
+    AutoRoute(page: SearchRoute.page),
+    AutoRoute(page: TagDetailRoute.page),
+
     AutoRoute(page: NoteNewFullscreenRoute.page),
     _buildModalBottomSheetRoute(NoteNewRoute.page),
 
