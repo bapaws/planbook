@@ -24,8 +24,10 @@ class TaskDetailRepeatView extends StatelessWidget {
     return TaskDetailSliverTile(
       onPressed: () async {
         final bloc = context.read<TaskDetailBloc>();
+        final task = bloc.state.task?.task;
         final result = await context.router.push(
           TaskRecurrenceRoute(
+            taskDate: task?.startAt ?? task?.dueAt,
             initialRecurrenceRule: recurrenceRule,
           ),
         );

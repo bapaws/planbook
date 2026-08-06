@@ -346,8 +346,11 @@ class DatabaseTaskApi {
 
       // 为每个实例日期生成 TaskOccurrence
       for (final occurrenceDate in occurrenceDates) {
-        // 计算实例的时间信息：将任务的原始时间调整到实例日期，保持时间部分不变
-        final daysDiff = occurrenceDate.diff(startDate, unit: Unit.day).toInt();
+        // 按日历日差偏移，避免带时分的 startAt 被 Jiffy.diff(day) 按 24h 截断少算一天
+        final daysDiff = occurrenceDate
+            .startOf(Unit.day)
+            .diff(startDate.startOf(Unit.day), unit: Unit.day)
+            .toInt();
         final occurrenceStartAt = task.startAt?.add(days: daysDiff);
         final occurrenceEndAt = task.endAt?.add(days: daysDiff);
         final occurrenceDueAt = task.dueAt?.add(days: daysDiff);

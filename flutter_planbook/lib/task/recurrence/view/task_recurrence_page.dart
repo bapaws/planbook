@@ -31,18 +31,17 @@ class _TaskRecurrencePageState extends State<TaskRecurrencePage> {
   @override
   void initState() {
     super.initState();
-    final now = Jiffy.now();
+    final now = widget.taskDate ?? Jiffy.now();
     _recurrenceRule =
         widget.initialRecurrenceRule ??
         RecurrenceRule(
           frequency: RecurrenceFrequency.daily,
+          // 仅按当前频率填充对应字段，避免切到 monthly/yearly 时残留 daysOfWeek
           daysOfWeek: [
             RecurrenceDayOfWeek.day(
               Weekday.fromDateTimeWeekday(now.dateTime.weekday),
             ),
           ],
-          daysOfMonth: [now.date],
-          daysOfYear: [now.month * 100 + now.date],
         );
   }
 

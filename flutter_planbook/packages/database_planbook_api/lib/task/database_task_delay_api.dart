@@ -138,6 +138,7 @@ class DatabaseTaskDelayApi {
             dueAt: Value(occurrenceDueAt),
             deletedAt: Value(Jiffy.now()),
           ),
+          mode: InsertMode.insertOrIgnore,
         );
   }
 

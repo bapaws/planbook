@@ -323,6 +323,80 @@ void main() {
         });
 
         test(
+          'daysOfMonth 优先于残留的 daysOfWeek（创建页同时写入两个字段的回归）',
+          () {
+            // 模拟：周四 8/6 创建「每月 6 号」，规则里残留了周四
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.monthly,
+              daysOfMonth: [6],
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.thursday),
+              ],
+            );
+            final start = Jiffy.parse('2026-08-06');
+
+            // 8/6 周四：两个条件都满足
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2026-08-06'),
+              ),
+              isTrue,
+            );
+            // 9/6 周日：只看 daysOfMonth，不应再要求周四
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2026-09-06'),
+              ),
+              isTrue,
+            );
+            // 8/8：不是 6 号
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2026-08-08'),
+              ),
+              isFalse,
+            );
+          },
+        );
+
+        test(
+          '每月 8 号 + 残留周四：8/8 仍应发生（不要求星期几）',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.monthly,
+              daysOfMonth: [8],
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.thursday),
+              ],
+            );
+            final start = Jiffy.parse('2026-08-06');
+
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2026-08-08'),
+              ),
+              isTrue,
+            );
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2026-09-08'),
+              ),
+              isTrue,
+            );
+          },
+        );
+
+        test(
           'returns true when daysOfWeek and weeksOfMonth with weekNumber match',
           () {
             final rule = RecurrenceRule(
@@ -528,6 +602,30 @@ void main() {
             isFalse,
           );
         });
+
+        test(
+          'daysOfYear 优先于残留的 daysOfWeek',
+          () {
+            final rule = RecurrenceRule(
+              frequency: RecurrenceFrequency.yearly,
+              daysOfYear: [806], // Aug 6
+              daysOfWeek: [
+                RecurrenceDayOfWeek.day(Weekday.thursday),
+              ],
+            );
+            final start = Jiffy.parse('2026-08-06');
+
+            // 2027-08-06 是周五，不应因残留周四而失败
+            expect(
+              RecurrenceRuleCalculator.shouldOccurOnDate(
+                rule: rule,
+                startDate: start,
+                targetDate: Jiffy.parse('2027-08-06'),
+              ),
+              isTrue,
+            );
+          },
+        );
 
         test(
           'returns true when daysOfWeek and weeksOfMonth match for yearly',

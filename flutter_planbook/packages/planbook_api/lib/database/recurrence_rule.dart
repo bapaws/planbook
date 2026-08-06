@@ -308,15 +308,12 @@ class RecurrenceRule extends Equatable {
       }
       // 向后兼容：支持旧的 int 格式（0-6，需要转换为 1-7）
       else if (daysOfWeekJson.isNotEmpty && daysOfWeekJson.first is int) {
-        daysOfWeek = (daysOfWeekJson as List<int>).map((day) {
+        daysOfWeek = daysOfWeekJson.map((day) {
+          // jsonDecode 得到 List<dynamic>，不能直接 as List<int>
+          final dayValue = day as int;
           // 旧格式：0=Sunday, 1=Monday, ..., 6=Saturday
           // 新格式：1=Monday, 2=Tuesday, ..., 7=Sunday
-          int convertedDay;
-          if (day == 0) {
-            convertedDay = 7; // Sunday
-          } else {
-            convertedDay = day; // Monday-Saturday
-          }
+          final convertedDay = dayValue == 0 ? 7 : dayValue;
           return RecurrenceDayOfWeek.day(
             Weekday.fromValue(convertedDay) ?? Weekday.monday,
           );

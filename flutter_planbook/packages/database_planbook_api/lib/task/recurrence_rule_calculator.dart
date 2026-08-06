@@ -134,14 +134,15 @@ class RecurrenceRuleCalculator {
       }
     }
 
-    // 如果指定了每月的第几天
-    if (rule.daysOfMonth != null && rule.daysOfMonth!.isNotEmpty) {
-      if (!rule.daysOfMonth!.contains(targetDate.date)) {
-        return false;
-      }
+    // 按「每月第几天」重复时，以 daysOfMonth 为准，忽略残留的 daysOfWeek
+    //（创建页会同时初始化两个字段，切到 monthly 后若不清空会导致 AND 误判）
+    final hasDaysOfMonth =
+        rule.daysOfMonth != null && rule.daysOfMonth!.isNotEmpty;
+    if (hasDaysOfMonth) {
+      return rule.daysOfMonth!.contains(targetDate.date);
     }
 
-    // 如果指定了每月的第几周和星期几
+    // 如果指定了每月的第几周和星期几（如「每月第一个周一」）
     if (rule.daysOfWeek != null &&
         rule.daysOfWeek!.isNotEmpty &&
         rule.weeksOfMonth != null &&
@@ -207,16 +208,16 @@ class RecurrenceRuleCalculator {
       }
     }
 
-    // 如果指定了每年的第几天，检查目标日期的月份和日期是否匹配
-    if (rule.daysOfYear != null && rule.daysOfYear!.isNotEmpty) {
-      if (!rule.daysOfYear!.contains(
+    // 按「每年某月某日」重复时，以 daysOfYear 为准，忽略残留的 daysOfWeek
+    final hasDaysOfYear =
+        rule.daysOfYear != null && rule.daysOfYear!.isNotEmpty;
+    if (hasDaysOfYear) {
+      return rule.daysOfYear!.contains(
         targetDate.month * 100 + targetDate.date,
-      )) {
-        return false;
-      }
+      );
     }
 
-    // 如果指定了每月的第几周和星期几
+    // 如果指定了第几周和星期几（如「每年某月第 N 个周一」）
     if (rule.daysOfWeek != null &&
         rule.daysOfWeek!.isNotEmpty &&
         rule.weeksOfMonth != null &&

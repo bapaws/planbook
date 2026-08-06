@@ -43,24 +43,46 @@ class _TaskRecurrenceViewState extends State<TaskRecurrenceView> {
   @override
   void initState() {
     super.initState();
-    final now = Jiffy.now();
+    final now = widget.taskDate ?? Jiffy.now();
     _recurrenceRule =
         widget.initialRecurrenceRule ??
         RecurrenceRule(
           frequency: RecurrenceFrequency.daily,
+          // 仅按当前频率填充对应字段，避免切到 monthly/yearly 时残留 daysOfWeek
           daysOfWeek: [
             RecurrenceDayOfWeek.day(
               Weekday.fromDateTimeWeekday(now.dateTime.weekday),
             ),
           ],
-          daysOfMonth: [now.date],
-          daysOfYear: [now.month * 100 + now.date],
         );
     _everyScrollController = FixedExtentScrollController(
       initialItem: widget.initialRecurrenceRule?.interval ?? 1,
     );
     _frequencyScrollController = FixedExtentScrollController(
       initialItem: widget.initialRecurrenceRule?.frequency.index ?? 0,
+    );
+  }
+
+  /// 按频率重建规则字段，避免 weekly 的 daysOfWeek 残留到 monthly
+  RecurrenceRule _ruleForFrequency(RecurrenceFrequency frequency) {
+    final anchor = widget.taskDate ?? Jiffy.now();
+    return RecurrenceRule(
+      frequency: frequency,
+      interval: _recurrenceRule.interval,
+      recurrenceEnd: _recurrenceRule.recurrenceEnd,
+      daysOfWeek: frequency == RecurrenceFrequency.weekly
+          ? [
+              RecurrenceDayOfWeek.day(
+                Weekday.fromDateTimeWeekday(anchor.dateTime.weekday),
+              ),
+            ]
+          : null,
+      daysOfMonth: frequency == RecurrenceFrequency.monthly
+          ? [anchor.date]
+          : null,
+      daysOfYear: frequency == RecurrenceFrequency.yearly
+          ? [anchor.month * 100 + anchor.date]
+          : null,
     );
   }
 
@@ -126,8 +148,8 @@ class _TaskRecurrenceViewState extends State<TaskRecurrenceView> {
                 scrollController: _frequencyScrollController,
                 changeReportingBehavior: ChangeReportingBehavior.onScrollEnd,
                 onSelectedItemChanged: (index) {
-                  recurrenceRule = recurrenceRule.copyWith(
-                    frequency: RecurrenceFrequency.values[index],
+                  recurrenceRule = _ruleForFrequency(
+                    RecurrenceFrequency.values[index],
                   );
                 },
                 selectionOverlay: null,
