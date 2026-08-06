@@ -199,6 +199,8 @@
   "selectViewType": "選擇視圖類型",
   "quadrant": "四象限",
   "timeBlock": "時間塊",
+  "timeBlockView": "時間塊視圖",
+  "weekListView": "週列表視圖",
   "tagList": "標籤列表",
   "octant": "八宮格",
   "quadrantCustomize": "自訂四象限",

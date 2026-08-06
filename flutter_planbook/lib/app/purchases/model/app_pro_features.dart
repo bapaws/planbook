@@ -8,6 +8,8 @@ enum AppProFeatures {
   image,
   duration,
   subTask,
+  timeBlock,
+  weekList,
   // statistics,
   // desktopWidget,
   theme,
@@ -22,6 +24,8 @@ enum AppProFeatures {
     // desktopWidget => '💻 ${context.l10n.desktopWidget}',
     theme => '🎨 ${context.l10n.theme}',
     subTask => '🔖 ${context.l10n.subtasks}',
+    timeBlock => '📅 ${context.l10n.timeBlockView}',
+    weekList => '📋 ${context.l10n.weekListView}',
     // statistics => '📊 ${context.l10n.statistics}',
     more => '🔥 ${context.l10n.more}',
   };
@@ -55,6 +59,8 @@ enum AppProFeatures {
     theme => context.l10n.unlimited,
     // statistics => '✅',
     subTask => '✅',
+    timeBlock => '✅',
+    weekList => '✅',
     more => '✅',
     _ => '♾️',
   };

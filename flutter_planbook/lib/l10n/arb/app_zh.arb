@@ -199,6 +199,8 @@
   "selectViewType": "选择视图类型",
   "quadrant": "四象限",
   "timeBlock": "时间块",
+  "timeBlockView": "时间块视图",
+  "weekListView": "周列表视图",
   "tagList": "标签列表",
   "octant": "八宫格",
   "quadrantCustomize": "自定义四象限",

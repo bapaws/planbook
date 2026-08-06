@@ -199,6 +199,8 @@
   "selectViewType": "表示形式を選択",
   "quadrant": "象限",
   "timeBlock": "タイムブロック",
+  "timeBlockView": "タイムブロックビュー",
+  "weekListView": "週リストビュー",
   "tagList": "タグ一覧",
   "octant": "八分割",
   "quadrantCustomize": "象限をカスタマイズ",

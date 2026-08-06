@@ -199,6 +199,8 @@
   "selectViewType": "Seleziona tipo di vista",
   "quadrant": "Quadrante",
   "timeBlock": "Blocco orario",
+  "timeBlockView": "Vista blocco orario",
+  "weekListView": "Vista elenco settimanale",
   "tagList": "Elenco tag",
   "octant": "Ottante",
   "quadrantCustomize": "Personalizza quadranti",

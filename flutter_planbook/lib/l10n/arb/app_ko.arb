@@ -199,6 +199,8 @@
   "selectViewType": "보기 유형 선택",
   "quadrant": "사분면",
   "timeBlock": "시간 블록",
+  "timeBlockView": "시간 블록 보기",
+  "weekListView": "주간 목록 보기",
   "tagList": "태그 목록",
   "octant": "팔분면",
   "quadrantCustomize": "사분면 사용자화",

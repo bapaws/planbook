@@ -199,6 +199,8 @@
   "selectViewType": "Выбрать вид",
   "quadrant": "Квадрант",
   "timeBlock": "Временной блок",
+  "timeBlockView": "Вид временных блоков",
+  "weekListView": "Недельный список",
   "tagList": "Список тегов",
   "octant": "Октант",
   "quadrantCustomize": "Настроить квадранты",
