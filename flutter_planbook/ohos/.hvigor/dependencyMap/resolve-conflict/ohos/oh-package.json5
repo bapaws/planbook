@@ -6,7 +6,7 @@
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
-    "@ohos/flutter_ohos": "file:../../../../../fvm/versions/custom_3.35.7-ohos/bin/cache/artifacts/engine/ohos-arm64-release/flutter_embedding_release.har",
+    "@ohos/flutter_ohos": "file:../../../../../fvm/versions/custom_3.35.7-ohos/bin/cache/artifacts/engine/ohos-arm64/flutter_embedding_debug.har",
     "@cashier_alipay/cashiersdk": "15.8.43"
   },
   "devDependencies": {},

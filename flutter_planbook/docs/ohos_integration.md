@@ -34,10 +34,13 @@
 ## 3. Phase 0：工具链 ✅（2026-08-07 已验证）
 
 1. **DevEco Studio 5.x** + OpenHarmony SDK（API 12+，建议 API 14/15）、hvigor、node。
-2. **OpenHarmony Flutter SDK 分支**：已通过 fvm 安装 `custom_3.35.7-ohos`（Flutter 3.35.8-ohos-1.0.4-beta / Dart 3.9.2，gitcode.com/openharmony-tpc/flutter_flutter）。项目根 `.fvmrc` 已 pin 到该版本（本分支），家目录 `.fvmrc` 保持 `stable`。
+2. **OpenHarmony Flutter SDK 分支**：已通过 fvm 安装 `custom_3.35.7-ohos`（Flutter 3.35.8-ohos-1.0.4-beta / Dart 3.9.2，gitcode.com/openharmony-tpc/flutter_flutter）。
+   - **仅 ohos 分支**提交项目根 `.fvmrc`（pin `custom_3.35.7-ohos`）与 `.vscode/settings.json`（`dart.flutterSdkPath: .fvm/flutter_sdk`）。
+   - **main / 其他分支不使用项目级 fvm**：无 `.fvmrc`，IDE 走 PATH / 全局 Flutter；家目录 `~/.fvmrc` 保持 `stable`。
+   - 切回 main 后若本地仍残留 `.fvm/` 目录可忽略（已 gitignore）；勿把 `.fvmrc` / 含 fvm 的 settings 合入 main。
 3. ~~⚠️ 版本对齐风险~~：Dart 3.9.2 满足 `environment: sdk: ^3.8.1`，**无需降级任何依赖**。
 4. `flutter doctor`：**HarmonyOS toolchain ✅**、已连接 1 台设备；两个 warning（unknown channel / Android Studio 版本探测）为分支版噪声，可忽略。
-5. 后续所有 flutter 命令经 `fvm flutter ...` 执行（或 IDE 内选择 fvm SDK）。
+5. 在 ohos 分支所有 flutter 命令经 `fvm flutter ...` 执行（或 IDE 读 `.fvm/flutter_sdk`）。
 
 ## 4. Phase 1：原生工程与依赖替换
 

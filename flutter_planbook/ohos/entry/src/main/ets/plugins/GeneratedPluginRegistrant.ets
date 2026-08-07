@@ -1,7 +1,21 @@
 import { FlutterEngine, Log } from '@ohos/flutter_ohos';
+import UrlLauncherPlugin from 'url_launcher_ohos';
 import TobiasPlugin from 'tobias';
 import SaverGalleryPlugin from 'saver_gallery';
+import Sqlite3FlutterLibsPlugin from 'sqlite3_flutter_libs';
 import FluwxPlugin from 'fluwx';
+import SharedPreferencesPlugin from 'shared_preferences_ohos';
+import SqflitePlugin from 'sqflite';
+import PermissionHandlerOhosPlugin from 'permission_handler_ohos';
+import PathProviderPlugin from 'path_provider_ohos';
+import PackageInfoPlusPlugin from 'package_info_plus_ohos';
+import ImagePickerPlugin from 'image_picker_ohos';
+import FluttertoastPlugin from 'fluttertoast_ohos';
+import FlutterTimezoneOhosPlugin from 'flutter_timezone_ohos';
+import DeviceInfoPlusPlugin from 'device_info_plus_ohos';
+import ConnectivityPlusOhosPlugin from 'connectivity_plus_ohos';
+import AppSettingsOhosPlugin from 'app_settings_ohos';
+import AppLinksOhosPlugin from 'app_links_ohos';
 
 /**
  * Generated file. Do not edit.
@@ -15,9 +29,23 @@ export class GeneratedPluginRegistrant {
 
   static registerWith(flutterEngine: FlutterEngine) {
     try {
+      flutterEngine.getPlugins()?.add(new UrlLauncherPlugin());
       flutterEngine.getPlugins()?.add(new TobiasPlugin());
       flutterEngine.getPlugins()?.add(new SaverGalleryPlugin());
+      flutterEngine.getPlugins()?.add(new Sqlite3FlutterLibsPlugin());
       flutterEngine.getPlugins()?.add(new FluwxPlugin());
+      flutterEngine.getPlugins()?.add(new SharedPreferencesPlugin());
+      flutterEngine.getPlugins()?.add(new SqflitePlugin());
+      flutterEngine.getPlugins()?.add(new PermissionHandlerOhosPlugin());
+      flutterEngine.getPlugins()?.add(new PathProviderPlugin());
+      flutterEngine.getPlugins()?.add(new PackageInfoPlusPlugin());
+      flutterEngine.getPlugins()?.add(new ImagePickerPlugin());
+      flutterEngine.getPlugins()?.add(new FluttertoastPlugin());
+      flutterEngine.getPlugins()?.add(new FlutterTimezoneOhosPlugin());
+      flutterEngine.getPlugins()?.add(new DeviceInfoPlusPlugin());
+      flutterEngine.getPlugins()?.add(new ConnectivityPlusOhosPlugin());
+      flutterEngine.getPlugins()?.add(new AppSettingsOhosPlugin());
+      flutterEngine.getPlugins()?.add(new AppLinksOhosPlugin());
     } catch (e) {
       Log.e(
         TAG,

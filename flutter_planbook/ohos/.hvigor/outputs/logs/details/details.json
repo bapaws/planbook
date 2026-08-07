@@ -10,7 +10,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -44,7 +44,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -76,7 +76,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -108,7 +108,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -140,7 +140,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -172,7 +172,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -204,7 +204,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -236,7 +236,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -268,7 +268,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -300,7 +300,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -332,7 +332,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -364,7 +364,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -396,7 +396,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -428,7 +428,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -460,7 +460,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -492,7 +492,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -524,7 +524,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -556,7 +556,7 @@
           {
             "path": "debuggable",
             "traceValue": true,
-            "value": false
+            "value": true
           },
           {
             "path": "copyFrom",
@@ -583,7 +583,7 @@
     "NATIVE_COMPILER": "Default",
     "IS_FULL_BUILD": false,
     "PACKAGE_JSON": [],
-    "BUILD_MODE": "release",
+    "BUILD_MODE": "debug",
     "USE_NORMALIZED_OHMURL": true
   },
   "HVIGOR": {
@@ -594,206 +594,201 @@
     "IS_EXECUTION_OHPM_BY_HVIGOR": false,
     "BUILD_ANALYSIS_MODE": "normal",
     "TASK_TIME": {
-      "APP": {
-        "PreBuildApp": 394541,
-        "DuplicateDependencyCheck": 143042,
-        "MakeProjectPackInfo": 2455917,
-        "GeneratePackRes": 876125,
-        "PackageApp": 2052325333,
-        "SignPackagesFromApp": 465125,
-        "SignApp": 509375,
-        "assembleApp": 57375
-      },
       "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
-        "PreBuild": 75114833,
-        "CreateModuleInfo": 660917,
-        "PreCheckSyscap": 158083,
-        "GeneratePkgSdkInfo": 1785167,
-        "ProcessIntegratedHsp": 678750,
-        "SyscapTransform": 8650666,
-        "ProcessStartupConfig": 2643250,
-        "CreateBuildProfile": 596709,
-        "MergeProfile": 12781708,
-        "ConfigureCmake": 121209,
-        "MakePackInfo": 2025334,
-        "ProcessProfile": 62836125,
-        "BuildNativeWithCmake": 104292,
-        "CompileResource": 189679708,
-        "BuildNativeWithNinja": 479708,
-        "BuildJS": 1490375,
-        "ProcessLibs": 20137875,
-        "DoNativeStrip": 614901791,
-        "CacheNativeLibs": 37083250,
-        "CompileArkTS": 7204228875,
-        "GeneratePkgModuleJson": 1573959,
-        "ProcessCompiledResources": 201833,
-        "PackageHap": 395147959,
-        "PackingCheck": 5111208,
-        "SignHap": 532042,
-        "CollectDebugSymbol": 3272125,
-        "assembleHap": 70416
+        "PreBuild": 170272375,
+        "CreateModuleInfo": 458958,
+        "GenerateMetadata": 1433917,
+        "PreCheckSyscap": 196250,
+        "GeneratePkgContextInfo": 16442000,
+        "GeneratePkgSdkInfo": 1965500,
+        "ProcessIntegratedHsp": 396250,
+        "SyscapTransform": 9116250,
+        "ProcessRouterMap": 5000000,
+        "ProcessShareConfig": 1573667,
+        "ProcessStartupConfig": 1894750,
+        "CreateBuildProfile": 561292,
+        "MergeProfile": 25357291,
+        "GenerateLoaderJson": 20022917,
+        "ConfigureCmake": 65709,
+        "MakePackInfo": 1233250,
+        "ProcessProfile": 72382542,
+        "BuildNativeWithCmake": 69458,
+        "CompileResource": 792928125,
+        "BuildNativeWithNinja": 178417,
+        "BuildJS": 1867583,
+        "ProcessLibs": 30807583,
+        "DoNativeStrip": 657395792,
+        "CacheNativeLibs": 33038500,
+        "CompileArkTS": 10912066750,
+        "GeneratePkgModuleJson": 1536167,
+        "ProcessCompiledResources": 223042,
+        "PackageHap": 706783042,
+        "PackingCheck": 7523750,
+        "SignHap": 2419884875,
+        "CollectDebugSymbol": 912625,
+        "assembleHap": 90084
       },
       "e020b0ddf39b584a3f4afd2386432fb730712fbc49b2bb8252ccbf60fc48607c": {
-        "PreBuild": 27694833,
-        "CreateHarBuildProfile": 1312958,
-        "ConfigureCmake": 145125,
-        "MergeProfile": 3360209,
-        "BuildNativeWithCmake": 107208,
-        "BuildNativeWithNinja": 242292,
-        "ProcessLibs": 1731125
+        "PreBuild": 31629875,
+        "CreateHarBuildProfile": 938625,
+        "ConfigureCmake": 92250,
+        "MergeProfile": 2123959,
+        "BuildNativeWithCmake": 114458,
+        "BuildNativeWithNinja": 257250,
+        "ProcessLibs": 1952208
       },
       "6aa37f1e2074d8f342e7c223f32f7814b8e73ca77ba4c555c7efc417f0632393": {
-        "PreBuild": 5743875,
-        "CreateHarBuildProfile": 483834,
-        "ConfigureCmake": 54167,
-        "MergeProfile": 1094833,
-        "BuildNativeWithCmake": 60084,
-        "BuildNativeWithNinja": 134667,
-        "ProcessLibs": 1517917
+        "PreBuild": 6512458,
+        "CreateHarBuildProfile": 739541,
+        "ConfigureCmake": 68333,
+        "MergeProfile": 1284500,
+        "BuildNativeWithCmake": 55917,
+        "BuildNativeWithNinja": 131209,
+        "ProcessLibs": 992916
       },
       "da4e133f8017b795a84595f87c74da83c814d421d27c6783bfc9d6c047e4e699": {
-        "PreBuild": 5208125,
-        "CreateHarBuildProfile": 506334,
-        "ConfigureCmake": 72334,
-        "MergeProfile": 1426250,
-        "BuildNativeWithCmake": 46000,
-        "BuildNativeWithNinja": 122541,
-        "ProcessLibs": 1103209
+        "PreBuild": 5133417,
+        "CreateHarBuildProfile": 887250,
+        "ConfigureCmake": 87208,
+        "MergeProfile": 1862375,
+        "BuildNativeWithCmake": 49959,
+        "BuildNativeWithNinja": 126833,
+        "ProcessLibs": 1014500
       },
       "95de4bd04d3ba187b3286c876bc68b9d2ea3a5507a801f401619039c85870b43": {
-        "PreBuild": 5349500,
-        "CreateHarBuildProfile": 623208,
-        "ConfigureCmake": 73500,
-        "MergeProfile": 1031625,
-        "BuildNativeWithCmake": 43334,
-        "BuildNativeWithNinja": 541083,
-        "ProcessLibs": 995083
+        "PreBuild": 5452209,
+        "CreateHarBuildProfile": 448500,
+        "ConfigureCmake": 59167,
+        "MergeProfile": 2031500,
+        "BuildNativeWithCmake": 46792,
+        "BuildNativeWithNinja": 115833,
+        "ProcessLibs": 1008542
       },
       "57f505ed86bd216eacfe63e7e2239252abfc2c4e745a43a9c333ffd87dddc656": {
-        "PreBuild": 5189750,
-        "CreateHarBuildProfile": 391750,
-        "ConfigureCmake": 56750,
-        "MergeProfile": 1375083,
-        "BuildNativeWithCmake": 45125,
-        "BuildNativeWithNinja": 177291,
-        "ProcessLibs": 836208
+        "PreBuild": 5966042,
+        "CreateHarBuildProfile": 573375,
+        "ConfigureCmake": 69708,
+        "MergeProfile": 1126166,
+        "BuildNativeWithCmake": 47125,
+        "BuildNativeWithNinja": 114625,
+        "ProcessLibs": 1982791
       },
       "4a7551ff3fb9ad0cac2462cdf8f0a68ccd122992270050891d3896c94f4346e5": {
-        "PreBuild": 4757625,
-        "CreateHarBuildProfile": 440125,
-        "ConfigureCmake": 90917,
-        "MergeProfile": 1409625,
-        "BuildNativeWithCmake": 42458,
-        "BuildNativeWithNinja": 145167,
-        "ProcessLibs": 860459
+        "PreBuild": 5348292,
+        "CreateHarBuildProfile": 370917,
+        "ConfigureCmake": 79291,
+        "MergeProfile": 1096000,
+        "BuildNativeWithCmake": 44584,
+        "BuildNativeWithNinja": 130666,
+        "ProcessLibs": 1893541
       },
       "073653fbd96ed269806065c5f984eff875d36f9fba8aff20e3f6d086b3bf2578": {
-        "PreBuild": 4510500,
-        "CreateHarBuildProfile": 697583,
-        "ConfigureCmake": 78958,
-        "MergeProfile": 1340250,
-        "BuildNativeWithCmake": 43542,
-        "BuildNativeWithNinja": 131708,
-        "ProcessLibs": 978208
+        "PreBuild": 4600375,
+        "CreateHarBuildProfile": 438583,
+        "ConfigureCmake": 63875,
+        "MergeProfile": 1103084,
+        "BuildNativeWithCmake": 48458,
+        "BuildNativeWithNinja": 128334,
+        "ProcessLibs": 1849500
       },
       "d24ed749b3a1bee1d5be93b373aa26a54bf3b5ffd06b9efa3f619a07925e6926": {
-        "PreBuild": 4585083,
-        "CreateHarBuildProfile": 422125,
-        "ConfigureCmake": 58167,
-        "MergeProfile": 1057083,
-        "BuildNativeWithCmake": 41709,
-        "BuildNativeWithNinja": 137375,
-        "ProcessLibs": 800375
+        "PreBuild": 6341750,
+        "CreateHarBuildProfile": 466625,
+        "ConfigureCmake": 67250,
+        "MergeProfile": 1447875,
+        "BuildNativeWithCmake": 49250,
+        "BuildNativeWithNinja": 120084,
+        "ProcessLibs": 1377167
       },
       "538ab1a16bbd46b281be3453128f55274acd1dc1f7c3e120353aa56ecef34fb5": {
-        "PreBuild": 5899084,
-        "CreateHarBuildProfile": 442750,
-        "ConfigureCmake": 63417,
-        "MergeProfile": 918208,
-        "BuildNativeWithCmake": 39041,
-        "BuildNativeWithNinja": 131375,
-        "ProcessLibs": 896042
+        "PreBuild": 5772958,
+        "CreateHarBuildProfile": 788917,
+        "ConfigureCmake": 85584,
+        "MergeProfile": 1279875,
+        "BuildNativeWithCmake": 44875,
+        "BuildNativeWithNinja": 124500,
+        "ProcessLibs": 1238459
       },
       "9507ed95f3f3689a9842a36a06110a9925ebc5f170462e23a3c5b684e96fa1db": {
-        "PreBuild": 5233958,
-        "CreateHarBuildProfile": 461125,
-        "ConfigureCmake": 73708,
-        "MergeProfile": 1017000,
-        "BuildNativeWithCmake": 40000,
-        "BuildNativeWithNinja": 356084,
-        "ProcessLibs": 883459
+        "PreBuild": 4544958,
+        "CreateHarBuildProfile": 506791,
+        "ConfigureCmake": 72459,
+        "MergeProfile": 1184167,
+        "BuildNativeWithCmake": 41750,
+        "BuildNativeWithNinja": 115500,
+        "ProcessLibs": 1024750
       },
       "ee6cb19f980846a27e12eb3fbe4c073a32726a7ec469e755d233169e64ee106a": {
-        "PreBuild": 4099708,
-        "CreateHarBuildProfile": 902959,
-        "ConfigureCmake": 219291,
-        "MergeProfile": 1371416,
-        "BuildNativeWithCmake": 40000,
-        "BuildNativeWithNinja": 166333,
-        "ProcessLibs": 1000750
+        "PreBuild": 6937916,
+        "CreateHarBuildProfile": 396542,
+        "ConfigureCmake": 104167,
+        "MergeProfile": 986708,
+        "BuildNativeWithCmake": 44958,
+        "BuildNativeWithNinja": 103875,
+        "ProcessLibs": 874250
       },
       "92e1edaf332326ab75cd2e28ece8c6feb8b39d4e4081710412ffe320c76a88b1": {
-        "PreBuild": 6224125,
-        "CreateHarBuildProfile": 490625,
-        "ConfigureCmake": 65416,
-        "MergeProfile": 1366209,
-        "BuildNativeWithCmake": 40125,
-        "BuildNativeWithNinja": 134042,
-        "ProcessLibs": 888250
+        "PreBuild": 4953875,
+        "CreateHarBuildProfile": 301291,
+        "ConfigureCmake": 58500,
+        "MergeProfile": 954500,
+        "BuildNativeWithCmake": 41666,
+        "BuildNativeWithNinja": 104417,
+        "ProcessLibs": 1869083
       },
       "b7fee722c4902ecb7d3dc2e99f4b1ffa6c9074a4451277556ed68e48d6254428": {
-        "PreBuild": 4671042,
-        "CreateHarBuildProfile": 387417,
-        "ConfigureCmake": 59958,
-        "MergeProfile": 1006041,
-        "BuildNativeWithCmake": 41542,
-        "BuildNativeWithNinja": 128125,
-        "ProcessLibs": 1428042
+        "PreBuild": 5449167,
+        "CreateHarBuildProfile": 429334,
+        "ConfigureCmake": 69334,
+        "MergeProfile": 1274208,
+        "BuildNativeWithCmake": 41875,
+        "BuildNativeWithNinja": 111041,
+        "ProcessLibs": 1459417
       },
       "0c2716987ebd4318fea1aacaa65de46acb44a032d8c186a7c8b3255ce31c83cf": {
-        "PreBuild": 5529542,
-        "CreateHarBuildProfile": 256791,
-        "ConfigureCmake": 43292,
-        "MergeProfile": 1394708,
-        "BuildNativeWithCmake": 43625,
-        "BuildNativeWithNinja": 117583,
-        "ProcessLibs": 1471084
+        "PreBuild": 4552250,
+        "CreateHarBuildProfile": 517583,
+        "ConfigureCmake": 61375,
+        "MergeProfile": 1501500,
+        "BuildNativeWithCmake": 38666,
+        "BuildNativeWithNinja": 107584,
+        "ProcessLibs": 5716042
       },
       "2286d85cc260573bf8948b33ed2e709c5b2fe1e94b2e7dab8cb4e15c4ed174b8": {
-        "PreBuild": 4858792,
-        "CreateHarBuildProfile": 645416,
-        "ConfigureCmake": 92333,
-        "MergeProfile": 1199084,
-        "BuildNativeWithCmake": 41625,
-        "BuildNativeWithNinja": 124833,
-        "ProcessLibs": 1383917
+        "PreBuild": 5321458,
+        "CreateHarBuildProfile": 578750,
+        "ConfigureCmake": 179959,
+        "MergeProfile": 1983792,
+        "BuildNativeWithCmake": 41541,
+        "BuildNativeWithNinja": 123750,
+        "ProcessLibs": 4023833
       },
       "3beb460e56ea841b9eb9fd8a297fa680562e9a1d33df7540479c2ed037ab4883": {
-        "PreBuild": 4367042,
-        "CreateHarBuildProfile": 534458,
-        "ConfigureCmake": 71959,
-        "MergeProfile": 1676208,
-        "BuildNativeWithCmake": 41709,
-        "BuildNativeWithNinja": 161750,
-        "ProcessLibs": 1237000
+        "PreBuild": 4831875,
+        "CreateHarBuildProfile": 499750,
+        "ConfigureCmake": 105791,
+        "MergeProfile": 1072833,
+        "BuildNativeWithCmake": 40875,
+        "BuildNativeWithNinja": 112792,
+        "ProcessLibs": 1407042
       },
       "64569eb3bc300b216f9ac831db09b1ac42d61f1f0e712b8be1fb9945e64b01b5": {
-        "PreBuild": 4230958,
-        "CreateHarBuildProfile": 365083,
-        "ConfigureCmake": 53459,
-        "MergeProfile": 1357709,
-        "BuildNativeWithCmake": 48250,
-        "BuildNativeWithNinja": 152709,
-        "ProcessLibs": 1273209
+        "PreBuild": 4844708,
+        "CreateHarBuildProfile": 559958,
+        "ConfigureCmake": 89459,
+        "MergeProfile": 2334667,
+        "BuildNativeWithCmake": 46625,
+        "BuildNativeWithNinja": 117250,
+        "ProcessLibs": 891500
       }
     },
     "CUSTOM_TASK_TIME": {
       "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
-        "3e3be5c5d501a9b30b92ca8ff804fdf8684ae351829ed2bdc1bf992a4ec41e41": 3491817917
+        "3e3be5c5d501a9b30b92ca8ff804fdf8684ae351829ed2bdc1bf992a4ec41e41": 18385416333
       }
     },
     "CUSTOM_PLUGIN_TIME": {
-      "bba70b03f780371e7d05491fa1d015fe3f622bdaa6aa3b234f4958809b30e507": 606958
+      "bba70b03f780371e7d05491fa1d015fe3f622bdaa6aa3b234f4958809b30e507": 2258458
     },
     "APIS": [
       "getParameter",
@@ -824,7 +819,7 @@
       "ENABLE_CPP_FUNCTION_LEVEL_INCREMENTAL": false
     },
     "CONFIG_PROPERTIES": {},
-    "BUILD_ID": "202608071846099630",
-    "TOTAL_TIME": 16511762125
+    "BUILD_ID": "202608072132191380",
+    "TOTAL_TIME": 39261339708
   }
 }
