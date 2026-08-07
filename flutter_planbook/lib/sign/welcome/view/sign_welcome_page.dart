@@ -9,6 +9,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/sign/home/cubit/sign_home_cubit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SignWelcomePage extends StatelessWidget {
@@ -148,7 +149,8 @@ class SignWelcomePage extends StatelessWidget {
           builder: (context, weChatState) {
             return Column(
               children: [
-                if (weChatState.installed)
+                // 鸿蒙首版隐藏微信登录（见 SignHomeCubit.onInitialized）
+                if (weChatState.installed && !kIsOhos)
                   SignButton(
                     text: l10n.weChatLogin,
                     style: SignButtonStyle.filled,

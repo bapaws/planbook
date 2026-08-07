@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ActivityPlatform {
@@ -189,6 +190,18 @@ class AppActivityRepository {
             !item.platforms.contains(ActivityPlatform.android)) {
           return false;
         }
+        // 鸿蒙按 android 类目过滤活动，但隐藏商店好评活动：
+        // openURL 指向 Google Play / App Store，鸿蒙（AppGallery）无对应页面
+        if (kIsOhos) {
+          if (!item.platforms.contains(ActivityPlatform.android)) {
+            return false;
+          }
+          final openURL = item.openURL ?? '';
+          if (openURL.contains('play.google.com') ||
+              openURL.contains('apps.apple.com')) {
+            return false;
+          }
+        }
       }
 
       if (isNew && !item.isNew) return false;
@@ -230,6 +243,18 @@ class AppActivityRepository {
         if (Platform.isAndroid &&
             !item.platforms.contains(ActivityPlatform.android)) {
           return false;
+        }
+        // 鸿蒙按 android 类目过滤活动，但隐藏商店好评活动：
+        // openURL 指向 Google Play / App Store，鸿蒙（AppGallery）无对应页面
+        if (kIsOhos) {
+          if (!item.platforms.contains(ActivityPlatform.android)) {
+            return false;
+          }
+          final openURL = item.openURL ?? '';
+          if (openURL.contains('play.google.com') ||
+              openURL.contains('apps.apple.com')) {
+            return false;
+          }
         }
       }
 

@@ -6,6 +6,7 @@ import 'package:flutter_planbook/core/purchases/app_purchases_interface.dart';
 import 'package:flutter_planbook/core/purchases/revenue_cat_purchases.dart';
 import 'package:flutter_planbook/core/purchases/store_product.dart';
 import 'package:flutter_planbook/core/purchases/wechat_purchases.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/users/users_repository.dart';
 
 /// 国内支付方式（仅 [PurchaseChannel.chinaPay] 下有效）
@@ -44,8 +45,8 @@ class AppPurchases implements AppPurchasesInterface {
   /// UI：是否国内支付包（支付宝/微信入口、协议等）
   bool get usesChinaPay => channel == PurchaseChannel.chinaPay;
 
-  /// 兼容旧调用：Android + 国内支付包
-  bool get isAndroidChina => Platform.isAndroid && usesChinaPay;
+  /// 兼容旧调用：Android/鸿蒙 + 国内支付包
+  bool get isAndroidChina => (Platform.isAndroid || kIsOhos) && usesChinaPay;
 
   /// 拉商品列表的后端（国内包两渠道共用同一商品表，默认走支付宝）
   AppPurchasesInterface get _productBackend {
@@ -82,9 +83,9 @@ class AppPurchases implements AppPurchasesInterface {
   }
 
   static Future<void> initialize({bool enableChinaPay = false}) async {
-    await RevenueCatPurchases.configure();
+    if (!kIsOhos) await RevenueCatPurchases.configure();
     final revenueCatAvailable =
-        !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+        !kIsWeb && !kIsOhos && (Platform.isAndroid || Platform.isIOS);
     instance = AppPurchases(
       channel: enableChinaPay
           ? PurchaseChannel.chinaPay

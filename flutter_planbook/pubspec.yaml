@@ -28,7 +28,6 @@ dependencies:
   device_info_plus: ^12.2.0
   dismissible_page: ^1.0.2
   drift: ^2.26.1
-  drift_flutter: ^0.2.4
   email_validator: ^3.0.0
   equatable: ^2.0.7
   fl_chart: ^1.1.1
@@ -55,7 +54,6 @@ dependencies:
   hydrated_bloc: ^10.1.1
   image_cropper: ^11.0.0
   image_picker: ^1.1.2
-  in_app_purchase: ^3.2.3
   in_app_review: ^2.0.10
   install_plugin_v3: ^3.1.3
   intl: ^0.20.2
@@ -100,6 +98,41 @@ dependencies:
   url_launcher: ^6.3.2
   uuid: ^4.5.1
 
+  # —— 鸿蒙平台实现（不影响其他平台构建）——
+  # pub.dev 直引（SDK 约束兼容 Dart 3.9）
+  app_links_ohos: ^0.2.0
+  fluttertoast_ohos: ^9.0.0
+  # OpenHarmony SIG gitcode 仓库
+  shared_preferences_ohos:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/shared_preferences/shared_preferences_ohos
+  path_provider_ohos:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/path_provider/path_provider_ohos
+  url_launcher_ohos:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/url_launcher/url_launcher_ohos
+  image_picker_ohos:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_packages.git
+      path: packages/image_picker/image_picker_ohos
+  # pub.dev 版 SDK 约束停留在 Dart 2.x，vendor 后放宽（packages/ohos_vendor）
+  connectivity_plus_ohos:
+    path: packages/ohos_vendor/connectivity_plus_ohos
+  device_info_plus_ohos:
+    path: packages/ohos_vendor/device_info_plus_ohos
+  package_info_plus_ohos:
+    path: packages/ohos_vendor/package_info_plus_ohos
+  permission_handler_ohos:
+    path: packages/ohos_vendor/permission_handler_ohos
+  app_settings_ohos:
+    path: packages/ohos_vendor/app_settings_ohos
+  flutter_timezone_ohos:
+    path: packages/ohos_vendor/flutter_timezone_ohos
+
 dev_dependencies:
   auto_route_generator: ^10.2.3
   bloc_test: ^10.0.0
@@ -114,6 +147,30 @@ dev_dependencies:
 dependency_overrides:
   redeem_client:
     path: ../../redeem_code/client/flutter/redeem_client
+  # 鸿蒙适配：vendor 3.7.2，修复 TargetPlatform 穷尽 switch 在 OHOS 分支 SDK 下的编译错误
+  flex_color_picker:
+    path: packages/flex_color_picker
+  # 鸿蒙适配：sqlite3 FFI。2.9.4 分支含 ohos 加载逻辑（DynamicLibrary.open('libsqlite3.so')），
+  # 原生 .so 由 sqlite3_flutter_libs 0.5.25-ohos 提供；版本满足 drift 的 ^2.6.0 约束
+  sqlite3:
+    git:
+      url: https://ghproxy.net/https://github.com/SageMik/sqlite3-ohos.dart.git
+      path: sqlite3
+      ref: sqlite3-2.9.4
+  sqlite3_flutter_libs:
+    git:
+      url: https://ghproxy.net/https://github.com/SageMik/sqlite3-ohos.dart.git
+      path: sqlite3_flutter_libs
+      ref: sqlite3_flutter_libs-0.5.25-ohos
+  # 鸿蒙适配：sqflite（flutter_cache_manager 传递依赖）走 gitcode 适配版
+  sqflite:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: sqflite
+  sqflite_common:
+    git:
+      url: https://gitcode.com/openharmony-sig/flutter_sqflite.git
+      path: sqflite_common
 
 flutter:
   generate: true

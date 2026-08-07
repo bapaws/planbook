@@ -54,6 +54,8 @@ class PlanbookWidget {
   static Future<void> notifyReady() async {
     try {
       await _channel.invokeMethod<void>('flutterReady');
+    } on MissingPluginException {
+      // 鸿蒙等平台没有 native 端实现，直接忽略。
     } on PlatformException catch (e) {
       developer.log(
         'PlanbookWidget.notifyReady failed: ${e.code} ${e.message}',

@@ -22,6 +22,7 @@ import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
@@ -165,8 +166,10 @@ class _AppActivityPageState extends State<AppActivityPage> {
               },
               child: Text(context.l10n.activityClaim),
             ),
-          Builder(
-            builder: (context) {
+          // 鸿蒙首版无 share_plus 实现，隐藏分享按钮
+          if (!kIsOhos)
+            Builder(
+              builder: (context) {
               return CupertinoButton(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
                 child: const Icon(CupertinoIcons.share),

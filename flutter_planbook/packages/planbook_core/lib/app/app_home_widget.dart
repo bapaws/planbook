@@ -1,4 +1,5 @@
 import 'package:home_widget/home_widget.dart';
+import 'package:planbook_core/app/app_platform.dart';
 
 /// App group id for the app
 const kAppGroupId = 'group.GM4766U38W.com.bapaws.planbook';
@@ -20,21 +21,26 @@ class AppHomeWidget {
   /// Initializes the HomeWidget plugin with the given app group ID.
   /// This is required for iOS.
   static Future<bool?> setAppGroupId(String groupId) {
+    // 鸿蒙首版不支持桌面小组件，home_widget 无 ohos 实现，全部降级为 no-op
+    if (kIsOhos) return Future.value(true);
     return HomeWidget.setAppGroupId(groupId);
   }
 
   /// Saves data to be used by the widget.
   static Future<bool?> saveWidgetData<T>(String id, T? data) {
+    if (kIsOhos) return Future.value(true);
     return HomeWidget.saveWidgetData(id, data);
   }
 
   /// Removes data from the widget.
   static Future<void> removeWidgetData(String id) async {
+    if (kIsOhos) return;
     await HomeWidget.saveWidgetData(id, null);
   }
 
   /// Gets data saved for the widget.
   static Future<T?> getWidgetData<T>(String id, {T? defaultValue}) {
+    if (kIsOhos) return Future.value(defaultValue);
     return HomeWidget.getWidgetData(id, defaultValue: defaultValue);
   }
 
@@ -47,6 +53,7 @@ class AppHomeWidget {
     String? iOSName,
     String? qualifiedAndroidName,
   }) async {
+    if (kIsOhos) return;
     await HomeWidget.updateWidget(
       name: name,
       androidName: androidName,
@@ -59,6 +66,7 @@ class AppHomeWidget {
   ///
   /// 任务被创建/修改/完成/删除时调用。失败不抛异常，避免影响业务流程。
   static Future<void> refreshQuadrantWidgets() async {
+    if (kIsOhos) return;
     try {
       await Future.wait([
         HomeWidget.updateWidget(

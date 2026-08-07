@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/users/users_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,6 +15,9 @@ class SignHomeCubit extends Cubit<SignHomeState> {
   final UsersRepository _usersRepository;
 
   Future<void> onInitialized() async {
+    // 鸿蒙首版隐藏所有第三方登录（华为审核要求三方登录须搭配华为登录，
+    // 首版未接入 Account Kit），跳过微信安装检测使主按钮回退为验证码/邮箱登录
+    if (kIsOhos) return;
     final installed = await _usersRepository.isWeChatInstalled();
     emit(state.copyWith(isWeChatInstalled: installed));
   }

@@ -76,7 +76,7 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   Future<void> _start() async {
     _sp = await SharedPreferences.getInstance();
 
-    if (Platform.isAndroid && AppChannel.isAndroidChina) {
+    if ((Platform.isAndroid || kIsOhos) && AppChannel.isAndroidChina) {
       final accepted = SettingsRepository.getPrivacyConsentAcceptedFrom(_sp);
       if (!accepted) {
         setState(() => _needsConsent = true);

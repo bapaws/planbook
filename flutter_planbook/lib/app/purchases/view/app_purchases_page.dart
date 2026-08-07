@@ -14,6 +14,7 @@ import 'package:flutter_planbook/l10n/gen/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/data/page_status.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -35,6 +36,8 @@ class _AppPurchasesPageState extends State<AppPurchasesPage> {
   }
 
   Future<void> _requestReview() async {
+    // 鸿蒙无 in_app_review 实现
+    if (kIsOhos) return;
     final inAppReview = InAppReview.instance;
     if (await inAppReview.isAvailable()) {
       await inAppReview.requestReview();

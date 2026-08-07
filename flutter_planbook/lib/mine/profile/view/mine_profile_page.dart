@@ -15,6 +15,7 @@ import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/data/page_status.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -186,25 +187,27 @@ class _MineProfilePage extends StatelessWidget {
                         onPressed: () =>
                             context.router.push(const MinePasswordRoute()),
                       ),
-                      SettingsRow(
-                        leading: const Icon(
-                          FontAwesomeIcons.weixin,
-                          color: Color(0xFF07C160),
-                          size: 18,
-                        ),
-                        title: Text(context.l10n.weChat),
-                        additionalInfo: Text(
-                          _isWeChatLinked(user)
-                              ? context.l10n.weChatLinked
-                              : context.l10n.bind,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.outline,
+                      // 鸿蒙首版隐藏微信绑定（三方登录须搭配华为登录，首版未接入）
+                      if (!kIsOhos)
+                        SettingsRow(
+                          leading: const Icon(
+                            FontAwesomeIcons.weixin,
+                            color: Color(0xFF07C160),
+                            size: 18,
                           ),
+                          title: Text(context.l10n.weChat),
+                          additionalInfo: Text(
+                            _isWeChatLinked(user)
+                                ? context.l10n.weChatLinked
+                                : context.l10n.bind,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.outline,
+                            ),
+                          ),
+                          onPressed: () {
+                            context.read<MineProfileCubit>().linkWeChat();
+                          },
                         ),
-                        onPressed: () {
-                          context.read<MineProfileCubit>().linkWeChat();
-                        },
-                      ),
                     ],
                   ),
                 ),

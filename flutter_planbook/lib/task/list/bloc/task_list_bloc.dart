@@ -873,6 +873,8 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
 
   Future<void> _requestReview() async {
     if (kDebugMode) return;
+    // 鸿蒙无 in_app_review 实现
+    if (kIsOhos) return;
     final inAppReview = InAppReview.instance;
     if (await inAppReview.isAvailable()) {
       await inAppReview.requestReview();

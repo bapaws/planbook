@@ -1,0 +1,60 @@
+
+{
+  "module": {
+    "name": "entry",
+    "type": "entry",
+    "description": "$string:module_desc",
+    "mainElement": "EntryAbility",
+    "deviceTypes": [
+      "phone"
+    ],
+    "deliveryWithInstall": true,
+    "installationFree": false,
+    "pages": "$profile:main_pages",
+    "abilities": [
+      {
+        "name": "EntryAbility",
+        "srcEntry": "./ets/entryability/EntryAbility.ets",
+        "description": "$string:EntryAbility_desc",
+        "icon": "$media:icon",
+        "label": "$string:EntryAbility_label",
+        "startWindowIcon": "$media:icon",
+        "startWindowBackground": "$color:start_window_background",
+        "exported": true,
+        "skills": [
+          {
+            "entities": [
+              "entity.system.home"
+            ],
+            "actions": [
+              "action.system.home"
+            ]
+          },
+          {
+            // 深链：planbook.bapaws://task/new、planbook.bapaws://note/new
+            // 与 lib/app/links/app_links_handler.dart 的 kAppUrlScheme 保持一致
+            "entities": [
+              "entity.system.browsable"
+            ],
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "planbook.bapaws"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "requestPermissions": [
+      {"name" :  "ohos.permission.INTERNET"},
+    ],
+    // 查询第三方 App 是否安装：fluwx（微信）/ tobias（支付宝）鸿蒙端要求
+    "querySchemes": [
+      "weixin",
+      "alipays"
+    ]
+  }
+}

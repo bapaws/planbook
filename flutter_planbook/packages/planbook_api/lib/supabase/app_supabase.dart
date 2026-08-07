@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:fluwx/fluwx.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -206,6 +207,8 @@ class AppSupabase {
   }
 
   Future<AuthResponse?> signInWithGoogle() async {
+    // 鸿蒙无 GMS 且首版不开放三方登录
+    if (kIsOhos) throw const AuthException('当前版本暂不支持 Google 登录');
     if (_supabase == null) return null;
     const webClientId =
         '468465613098-sldi4kqbojdieefilrnj7kskh31lkn4u.'
@@ -296,6 +299,8 @@ class AppSupabase {
 
   /// 调起微信授权登录，拿到 code 后调用后端 Edge Function 换取 Supabase session。
   Future<AuthResponse?> signInWithWeChat() async {
+    // 鸿蒙首版隐藏三方登录（华为审核要求搭配华为登录）
+    if (kIsOhos) throw const AuthException('当前版本暂不支持微信登录');
     if (_supabase == null) return null;
     if (_kWeChatAppId.isEmpty) {
       throw const AuthException('WECHAT_APP_ID 未配置');

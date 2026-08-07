@@ -31,6 +31,13 @@
       "type": "dart",
       "program": "lib/main_cloud.dart",
       "args": ["--target", "lib/main_cloud.dart","--flavor", "cloud"]
+    },
+    {
+      "name": "HarmonyOS",
+      "request": "launch",
+      "type": "dart",
+      "program": "lib/main_ohos.dart",
+      "args": ["--target", "lib/main_ohos.dart"]
     }
   ]
 }

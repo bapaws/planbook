@@ -36,6 +36,8 @@ final class RevenueCatPurchases implements AppPurchasesInterface {
 
   /// 配置 RevenueCat SDK
   static Future<void> configure() async {
+    // 鸿蒙无 RevenueCat 支持，走国内支付渠道，直接跳过
+    if (kIsOhos) return;
     await Purchases.setProxyURL('https://api.rc-backup.com/');
     await Purchases.setLogLevel(LogLevel.error);
 
@@ -50,7 +52,8 @@ final class RevenueCatPurchases implements AppPurchasesInterface {
         'appl_aNYCwAWkYYxFFPdqMBTWIXzIzko',
       )..userDefaultsSuiteName = kAppGroupId;
     } else {
-      throw UnimplementedError();
+      // 其余平台（桌面/Web）不启用 RevenueCat
+      return;
     }
 
     await Purchases.configure(configuration);

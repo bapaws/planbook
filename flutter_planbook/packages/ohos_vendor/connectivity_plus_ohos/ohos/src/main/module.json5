@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "connectivity_plus_ohos",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
