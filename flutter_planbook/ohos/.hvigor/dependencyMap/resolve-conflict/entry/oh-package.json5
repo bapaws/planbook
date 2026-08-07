@@ -1,0 +1,31 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "@ohos/flutter_ohos": "/Users/zhangminchao/fvm/versions/custom_3.35.7-ohos/bin/cache/artifacts/engine/ohos-arm64-release/flutter_embedding_release.har",
+    "flutter_native_arm64_v8a": "/Users/zhangminchao/fvm/versions/custom_3.35.7-ohos/bin/cache/artifacts/engine/ohos-arm64-release/arm64_v8a_release.har",
+    "app_links_ohos": "/Users/zhangminchao/.pub-cache/hosted/pub.flutter-io.cn/app_links_ohos-0.2.0/ohos",
+    "app_settings_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/app_settings_ohos/ohos",
+    "connectivity_plus_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/connectivity_plus_ohos/ohos",
+    "device_info_plus_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/device_info_plus_ohos/ohos",
+    "flutter_timezone_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/flutter_timezone_ohos/ohos",
+    "fluttertoast_ohos": "/Users/zhangminchao/.pub-cache/hosted/pub.flutter-io.cn/fluttertoast_ohos-9.0.0/ohos",
+    "fluwx": "/Users/zhangminchao/.pub-cache/hosted/pub.flutter-io.cn/fluwx-5.7.7/ohos",
+    "image_picker_ohos": "/Users/zhangminchao/.pub-cache/git/flutter_packages-fd410050c6842717ee1b851ca7640c294de9568c/packages/image_picker/image_picker_ohos/ohos",
+    "package_info_plus_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/package_info_plus_ohos/ohos",
+    "path_provider_ohos": "/Users/zhangminchao/.pub-cache/git/flutter_packages-fd410050c6842717ee1b851ca7640c294de9568c/packages/path_provider/path_provider_ohos/ohos",
+    "permission_handler_ohos": "/Users/zhangminchao/Documents/GitHub/planbook/flutter_planbook/packages/ohos_vendor/permission_handler_ohos/ohos",
+    "saver_gallery": "/Users/zhangminchao/.pub-cache/hosted/pub.flutter-io.cn/saver_gallery-4.1.0/ohos",
+    "shared_preferences_ohos": "/Users/zhangminchao/.pub-cache/git/flutter_packages-fd410050c6842717ee1b851ca7640c294de9568c/packages/shared_preferences/shared_preferences_ohos/ohos",
+    "sqflite": "/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos",
+    "sqlite3_flutter_libs": "/Users/zhangminchao/.pub-cache/git/sqlite3-ohos.dart-7db6570303ad66f05dca66d284eae28750dc037a/sqlite3_flutter_libs/ohos",
+    "tobias": "/Users/zhangminchao/.pub-cache/hosted/pub.flutter-io.cn/tobias-5.3.4/ohos",
+    "url_launcher_ohos": "/Users/zhangminchao/.pub-cache/git/flutter_packages-fd410050c6842717ee1b851ca7640c294de9568c/packages/url_launcher/url_launcher_ohos/ohos"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
+}

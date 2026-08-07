@@ -108,7 +108,8 @@ class AppPurchases implements AppPurchasesInterface {
   }) async {
     try {
       return await _purchaseBackend(chinaPayMethod).purchase(storeProduct);
-    } on Exception catch (e) {
+    } on Object catch (e) {
+      // 含 StateError 等 Error：避免冒泡导致 BLoC 停在 loading
       if (kDebugMode) print('purchase error: $e');
       return null;
     }

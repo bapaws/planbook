@@ -1,0 +1,1 @@
+{"name":"fluttertoast_ohos","version":"1.0.0","description":"fluttertoast 的鸿蒙化实现 - 为 OpenHarmony 平台提供 Toast 提示功能","main":"index.ets","author":"shaohushuo","license":"MIT","dependencies":{"@ohos/flutter_ohos":"","flutter_native_arm64_v8a":""}}

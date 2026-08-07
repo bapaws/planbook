@@ -1,0 +1,830 @@
+{
+  "HVIGOR_OHOS_PLUGIN": {
+    "MODULES": [
+      {
+        "MODULE_NAME": "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "entry",
+        "INCREMENTAL_TASKS": {
+          "COMPILE_ARKTS": true
+        },
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "e020b0ddf39b584a3f4afd2386432fb730712fbc49b2bb8252ccbf60fc48607c",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "6aa37f1e2074d8f342e7c223f32f7814b8e73ca77ba4c555c7efc417f0632393",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "da4e133f8017b795a84595f87c74da83c814d421d27c6783bfc9d6c047e4e699",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "95de4bd04d3ba187b3286c876bc68b9d2ea3a5507a801f401619039c85870b43",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "57f505ed86bd216eacfe63e7e2239252abfc2c4e745a43a9c333ffd87dddc656",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "4a7551ff3fb9ad0cac2462cdf8f0a68ccd122992270050891d3896c94f4346e5",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "073653fbd96ed269806065c5f984eff875d36f9fba8aff20e3f6d086b3bf2578",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "d24ed749b3a1bee1d5be93b373aa26a54bf3b5ffd06b9efa3f619a07925e6926",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "538ab1a16bbd46b281be3453128f55274acd1dc1f7c3e120353aa56ecef34fb5",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "9507ed95f3f3689a9842a36a06110a9925ebc5f170462e23a3c5b684e96fa1db",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "ee6cb19f980846a27e12eb3fbe4c073a32726a7ec469e755d233169e64ee106a",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "92e1edaf332326ab75cd2e28ece8c6feb8b39d4e4081710412ffe320c76a88b1",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "b7fee722c4902ecb7d3dc2e99f4b1ffa6c9074a4451277556ed68e48d6254428",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "0c2716987ebd4318fea1aacaa65de46acb44a032d8c186a7c8b3255ce31c83cf",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "2286d85cc260573bf8948b33ed2e709c5b2fe1e94b2e7dab8cb4e15c4ed174b8",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "3beb460e56ea841b9eb9fd8a297fa680562e9a1d33df7540479c2ed037ab4883",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      },
+      {
+        "MODULE_NAME": "64569eb3bc300b216f9ac831db09b1ac42d61f1f0e712b8be1fb9945e64b01b5",
+        "API_TYPE": "stageMode",
+        "INCLUDE_IN_BUILD": true,
+        "IS_COMMAND_LINE_ENTRY_MODULE": false,
+        "BUILD_OPTION": [
+          {
+            "path": "debuggable",
+            "traceValue": true,
+            "value": false
+          },
+          {
+            "path": "copyFrom",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode",
+            "traceValue": false,
+            "value": ""
+          },
+          {
+            "path": "strictMode.useNormalizedOHMUrl",
+            "traceValue": true,
+            "value": true
+          }
+        ],
+        "PACKAGE_JSON": [],
+        "MODULE_TYPE": "har",
+        "IS_BYTE_CODE_HAR": true,
+        "IS_INCREMENTAL_MODULE": true
+      }
+    ],
+    "NATIVE_COMPILER": "Default",
+    "IS_FULL_BUILD": false,
+    "PACKAGE_JSON": [],
+    "BUILD_MODE": "release",
+    "USE_NORMALIZED_OHMURL": true
+  },
+  "HVIGOR": {
+    "IS_INCREMENTAL": true,
+    "IS_DAEMON": false,
+    "IS_PARALLEL": true,
+    "IS_HVIGORFILE_TYPE_CHECK": false,
+    "IS_EXECUTION_OHPM_BY_HVIGOR": false,
+    "BUILD_ANALYSIS_MODE": "normal",
+    "TASK_TIME": {
+      "APP": {
+        "PreBuildApp": 394541,
+        "DuplicateDependencyCheck": 143042,
+        "MakeProjectPackInfo": 2455917,
+        "GeneratePackRes": 876125,
+        "PackageApp": 2052325333,
+        "SignPackagesFromApp": 465125,
+        "SignApp": 509375,
+        "assembleApp": 57375
+      },
+      "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
+        "PreBuild": 75114833,
+        "CreateModuleInfo": 660917,
+        "PreCheckSyscap": 158083,
+        "GeneratePkgSdkInfo": 1785167,
+        "ProcessIntegratedHsp": 678750,
+        "SyscapTransform": 8650666,
+        "ProcessStartupConfig": 2643250,
+        "CreateBuildProfile": 596709,
+        "MergeProfile": 12781708,
+        "ConfigureCmake": 121209,
+        "MakePackInfo": 2025334,
+        "ProcessProfile": 62836125,
+        "BuildNativeWithCmake": 104292,
+        "CompileResource": 189679708,
+        "BuildNativeWithNinja": 479708,
+        "BuildJS": 1490375,
+        "ProcessLibs": 20137875,
+        "DoNativeStrip": 614901791,
+        "CacheNativeLibs": 37083250,
+        "CompileArkTS": 7204228875,
+        "GeneratePkgModuleJson": 1573959,
+        "ProcessCompiledResources": 201833,
+        "PackageHap": 395147959,
+        "PackingCheck": 5111208,
+        "SignHap": 532042,
+        "CollectDebugSymbol": 3272125,
+        "assembleHap": 70416
+      },
+      "e020b0ddf39b584a3f4afd2386432fb730712fbc49b2bb8252ccbf60fc48607c": {
+        "PreBuild": 27694833,
+        "CreateHarBuildProfile": 1312958,
+        "ConfigureCmake": 145125,
+        "MergeProfile": 3360209,
+        "BuildNativeWithCmake": 107208,
+        "BuildNativeWithNinja": 242292,
+        "ProcessLibs": 1731125
+      },
+      "6aa37f1e2074d8f342e7c223f32f7814b8e73ca77ba4c555c7efc417f0632393": {
+        "PreBuild": 5743875,
+        "CreateHarBuildProfile": 483834,
+        "ConfigureCmake": 54167,
+        "MergeProfile": 1094833,
+        "BuildNativeWithCmake": 60084,
+        "BuildNativeWithNinja": 134667,
+        "ProcessLibs": 1517917
+      },
+      "da4e133f8017b795a84595f87c74da83c814d421d27c6783bfc9d6c047e4e699": {
+        "PreBuild": 5208125,
+        "CreateHarBuildProfile": 506334,
+        "ConfigureCmake": 72334,
+        "MergeProfile": 1426250,
+        "BuildNativeWithCmake": 46000,
+        "BuildNativeWithNinja": 122541,
+        "ProcessLibs": 1103209
+      },
+      "95de4bd04d3ba187b3286c876bc68b9d2ea3a5507a801f401619039c85870b43": {
+        "PreBuild": 5349500,
+        "CreateHarBuildProfile": 623208,
+        "ConfigureCmake": 73500,
+        "MergeProfile": 1031625,
+        "BuildNativeWithCmake": 43334,
+        "BuildNativeWithNinja": 541083,
+        "ProcessLibs": 995083
+      },
+      "57f505ed86bd216eacfe63e7e2239252abfc2c4e745a43a9c333ffd87dddc656": {
+        "PreBuild": 5189750,
+        "CreateHarBuildProfile": 391750,
+        "ConfigureCmake": 56750,
+        "MergeProfile": 1375083,
+        "BuildNativeWithCmake": 45125,
+        "BuildNativeWithNinja": 177291,
+        "ProcessLibs": 836208
+      },
+      "4a7551ff3fb9ad0cac2462cdf8f0a68ccd122992270050891d3896c94f4346e5": {
+        "PreBuild": 4757625,
+        "CreateHarBuildProfile": 440125,
+        "ConfigureCmake": 90917,
+        "MergeProfile": 1409625,
+        "BuildNativeWithCmake": 42458,
+        "BuildNativeWithNinja": 145167,
+        "ProcessLibs": 860459
+      },
+      "073653fbd96ed269806065c5f984eff875d36f9fba8aff20e3f6d086b3bf2578": {
+        "PreBuild": 4510500,
+        "CreateHarBuildProfile": 697583,
+        "ConfigureCmake": 78958,
+        "MergeProfile": 1340250,
+        "BuildNativeWithCmake": 43542,
+        "BuildNativeWithNinja": 131708,
+        "ProcessLibs": 978208
+      },
+      "d24ed749b3a1bee1d5be93b373aa26a54bf3b5ffd06b9efa3f619a07925e6926": {
+        "PreBuild": 4585083,
+        "CreateHarBuildProfile": 422125,
+        "ConfigureCmake": 58167,
+        "MergeProfile": 1057083,
+        "BuildNativeWithCmake": 41709,
+        "BuildNativeWithNinja": 137375,
+        "ProcessLibs": 800375
+      },
+      "538ab1a16bbd46b281be3453128f55274acd1dc1f7c3e120353aa56ecef34fb5": {
+        "PreBuild": 5899084,
+        "CreateHarBuildProfile": 442750,
+        "ConfigureCmake": 63417,
+        "MergeProfile": 918208,
+        "BuildNativeWithCmake": 39041,
+        "BuildNativeWithNinja": 131375,
+        "ProcessLibs": 896042
+      },
+      "9507ed95f3f3689a9842a36a06110a9925ebc5f170462e23a3c5b684e96fa1db": {
+        "PreBuild": 5233958,
+        "CreateHarBuildProfile": 461125,
+        "ConfigureCmake": 73708,
+        "MergeProfile": 1017000,
+        "BuildNativeWithCmake": 40000,
+        "BuildNativeWithNinja": 356084,
+        "ProcessLibs": 883459
+      },
+      "ee6cb19f980846a27e12eb3fbe4c073a32726a7ec469e755d233169e64ee106a": {
+        "PreBuild": 4099708,
+        "CreateHarBuildProfile": 902959,
+        "ConfigureCmake": 219291,
+        "MergeProfile": 1371416,
+        "BuildNativeWithCmake": 40000,
+        "BuildNativeWithNinja": 166333,
+        "ProcessLibs": 1000750
+      },
+      "92e1edaf332326ab75cd2e28ece8c6feb8b39d4e4081710412ffe320c76a88b1": {
+        "PreBuild": 6224125,
+        "CreateHarBuildProfile": 490625,
+        "ConfigureCmake": 65416,
+        "MergeProfile": 1366209,
+        "BuildNativeWithCmake": 40125,
+        "BuildNativeWithNinja": 134042,
+        "ProcessLibs": 888250
+      },
+      "b7fee722c4902ecb7d3dc2e99f4b1ffa6c9074a4451277556ed68e48d6254428": {
+        "PreBuild": 4671042,
+        "CreateHarBuildProfile": 387417,
+        "ConfigureCmake": 59958,
+        "MergeProfile": 1006041,
+        "BuildNativeWithCmake": 41542,
+        "BuildNativeWithNinja": 128125,
+        "ProcessLibs": 1428042
+      },
+      "0c2716987ebd4318fea1aacaa65de46acb44a032d8c186a7c8b3255ce31c83cf": {
+        "PreBuild": 5529542,
+        "CreateHarBuildProfile": 256791,
+        "ConfigureCmake": 43292,
+        "MergeProfile": 1394708,
+        "BuildNativeWithCmake": 43625,
+        "BuildNativeWithNinja": 117583,
+        "ProcessLibs": 1471084
+      },
+      "2286d85cc260573bf8948b33ed2e709c5b2fe1e94b2e7dab8cb4e15c4ed174b8": {
+        "PreBuild": 4858792,
+        "CreateHarBuildProfile": 645416,
+        "ConfigureCmake": 92333,
+        "MergeProfile": 1199084,
+        "BuildNativeWithCmake": 41625,
+        "BuildNativeWithNinja": 124833,
+        "ProcessLibs": 1383917
+      },
+      "3beb460e56ea841b9eb9fd8a297fa680562e9a1d33df7540479c2ed037ab4883": {
+        "PreBuild": 4367042,
+        "CreateHarBuildProfile": 534458,
+        "ConfigureCmake": 71959,
+        "MergeProfile": 1676208,
+        "BuildNativeWithCmake": 41709,
+        "BuildNativeWithNinja": 161750,
+        "ProcessLibs": 1237000
+      },
+      "64569eb3bc300b216f9ac831db09b1ac42d61f1f0e712b8be1fb9945e64b01b5": {
+        "PreBuild": 4230958,
+        "CreateHarBuildProfile": 365083,
+        "ConfigureCmake": 53459,
+        "MergeProfile": 1357709,
+        "BuildNativeWithCmake": 48250,
+        "BuildNativeWithNinja": 152709,
+        "ProcessLibs": 1273209
+      }
+    },
+    "CUSTOM_TASK_TIME": {
+      "923fe53966c6cd9343e11af776cd4b05be315ea4b200b02e4d5dfb0f929b73bf": {
+        "3e3be5c5d501a9b30b92ca8ff804fdf8684ae351829ed2bdc1bf992a4ec41e41": 3491817917
+      }
+    },
+    "CUSTOM_PLUGIN_TIME": {
+      "bba70b03f780371e7d05491fa1d015fe3f622bdaa6aa3b234f4958809b30e507": 606958
+    },
+    "APIS": [
+      "getParameter",
+      "getExtParam",
+      "getHvigorConfig",
+      "includeNode",
+      "getContext",
+      "getCurrentProduct",
+      "getProductName",
+      "getBuildMode",
+      "afterNodeEvaluate",
+      "subNodes",
+      "getNodeName",
+      "getAppJsonOpt",
+      "setAppJsonOpt",
+      "getOverrides",
+      "setOverrides",
+      "targets",
+      "getTargetName",
+      "registerTask",
+      "getDependenciesOpt",
+      "setDependenciesOpt",
+      "getNodePath",
+      "getProperty"
+    ],
+    "CONFIG_EXPERIMENT": {
+      "ENABLE_MODULE_SKIP": false,
+      "ENABLE_CPP_FUNCTION_LEVEL_INCREMENTAL": false
+    },
+    "CONFIG_PROPERTIES": {},
+    "BUILD_ID": "202608071846099630",
+    "TOTAL_TIME": 16511762125
+  }
+}
