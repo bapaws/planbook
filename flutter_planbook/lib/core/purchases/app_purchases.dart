@@ -132,26 +132,20 @@ class AppPurchases implements AppPurchasesInterface {
           (s) => s.getActiveIdentifier(),
         );
       case PurchaseChannel.store:
-        // 海外：先 RC；再 fallback 国内渠道 entitlements。
-        // RC 调用成功但无有效权益时，entitlements 表里的 revenuecat 行可能
-        // 陈旧（webhook 滞后/已过期），需要排除，只看国内渠道的行；
-        // RC 调用抛异常（服务不可用）时不能排除——webhook 刚写入的
-        // revenuecat 行可能是付费用户当前唯一的会员凭据。
+        // 海外：先 RC；再 fallback 服务端 entitlements（含 revenuecat）。
+        // 不能排除 revenuecat：webhook 已写入而 SDK 未同步时，
+        // 排除会导致已付费用户（设置页能看到到期日）无法点亮 PRO。
         if (_revenueCatAvailable) {
           try {
             final rc = await _revenueCat.getActiveIdentifier();
             if (rc != null) return rc;
-            return UsersRepository.instance.getActiveEntitlementProductId(
-              excludeProviders: const {'revenuecat'},
-            );
+            return UsersRepository.instance.getActiveEntitlementProductId();
           } on Exception catch (e) {
             if (kDebugMode) print('getActiveIdentifier RC error: $e');
             return UsersRepository.instance.getActiveEntitlementProductId();
           }
         }
-        return UsersRepository.instance.getActiveEntitlementProductId(
-          excludeProviders: const {'revenuecat'},
-        );
+        return UsersRepository.instance.getActiveEntitlementProductId();
     }
   }
 
