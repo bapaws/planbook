@@ -245,20 +245,30 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
       return;
     }
 
-    final activeProductIdentifier = await AppPurchases.instance.purchase(
-      storeProduct,
-      chinaPayMethod: event.chinaPayMethod,
-    );
-    // 失败时不传 activeProductId（copyWith 保留原值）：
-    // 一次失败的购买不能清掉已有的有效会员
-    final granted = activeProductIdentifier != null;
-    emit(
-      state.copyWith(
-        status: granted ? PageStatus.success : PageStatus.failure,
-        activeProductId: granted ? () => activeProductIdentifier : null,
-        entitlementJustGranted: granted,
-      ),
-    );
+    try {
+      final activeProductIdentifier = await AppPurchases.instance.purchase(
+        storeProduct,
+        chinaPayMethod: event.chinaPayMethod,
+      );
+      // 失败时不传 activeProductId（copyWith 保留原值）：
+      // 一次失败的购买不能清掉已有的有效会员
+      final granted = activeProductIdentifier != null;
+      emit(
+        state.copyWith(
+          status: granted ? PageStatus.success : PageStatus.failure,
+          activeProductId: granted ? () => activeProductIdentifier : null,
+          entitlementJustGranted: granted,
+        ),
+      );
+    } on Object catch (e) {
+      if (kDebugMode) print('AppPurchasesPurchased error: $e');
+      emit(
+        state.copyWith(
+          status: PageStatus.failure,
+          entitlementJustGranted: false,
+        ),
+      );
+    }
   }
 
   Future<void> _onSupportUsFullPrice(

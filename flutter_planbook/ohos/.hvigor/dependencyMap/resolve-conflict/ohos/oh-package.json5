@@ -1,0 +1,14 @@
+{
+  "name": "tobias",
+  "version": "1.0.0",
+  "description": "AliPay Sdk for HarmonyOS",
+  "main": "index.ets",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@ohos/flutter_ohos": "file:../../../../../fvm/versions/custom_3.35.7-ohos/bin/cache/artifacts/engine/ohos-arm64-release/flutter_embedding_release.har",
+    "@cashier_alipay/cashiersdk": "15.8.43"
+  },
+  "devDependencies": {},
+  "dynamicDependencies": {}
+}

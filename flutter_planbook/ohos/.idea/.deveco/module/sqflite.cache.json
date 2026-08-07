@@ -1,0 +1,22 @@
+{
+	"CommonInfo":{
+		"current.select.target":"default"
+	},
+	"BuildOptions":{
+		"SELECT_BUILD_TARGET":"default",
+		"BUILD_PATH":{
+			"OUTPUT_METADATA_JSON":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/hap_metadata/default/output_metadata.json",
+			"OUTPUT_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/outputs/default",
+			"RES_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/res/default",
+			"ETS_SUPER_VISUAL_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/cache/default/default@HarCompileArkTS/esmodule",
+			"JS_ASSETS_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/loader_out/default",
+			"SOURCE_MAP_DIR":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/source_map/default",
+			"INTERMEDIA_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates",
+			"RES_PROFILE_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/res/default/resources/base/profile",
+			"WORKER_LOADER":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/loader/default/loader.json",
+			"MANIFEST_JSON":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/manifest/default",
+			"JS_LITE_ASSETS_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/intermediates/loader_out_lite/default",
+			"JS_SUPER_VISUAL_PATH":"/Users/zhangminchao/.pub-cache/git/flutter_sqflite-e909d9f75a9b5e0939c073b6ebf3c45ea0ea69a3/sqflite/ohos/build/default/cache/default/default@HarCompileJS/jsbundle"
+		}
+	}
+}

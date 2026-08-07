@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/entry.iml" filepath="$PROJECT_DIR$/.idea/modules/entry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.app_links_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.app_links_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.app_settings_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.app_settings_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.connectivity_plus_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.connectivity_plus_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.device_info_plus_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.device_info_plus_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.entry.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.entry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.flutter_timezone_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.flutter_timezone_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.fluttertoast_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.fluttertoast_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.fluwx.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.fluwx.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.image_picker_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.image_picker_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.package_info_plus_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.package_info_plus_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.path_provider_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.path_provider_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.permission_handler_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.permission_handler_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.saver_gallery.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.saver_gallery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.shared_preferences_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.shared_preferences_ohos.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.sqflite.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.sqflite.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.sqlite3_flutter_libs.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.sqlite3_flutter_libs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.tobias.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.tobias.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ohos.url_launcher_ohos.iml" filepath="$PROJECT_DIR$/.idea/modules/ohos.url_launcher_ohos.iml" />
+    </modules>
+  </component>
+</project>

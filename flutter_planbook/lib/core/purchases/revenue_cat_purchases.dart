@@ -58,10 +58,20 @@ final class RevenueCatPurchases implements AppPurchasesInterface {
 
   @override
   Future<String?> purchase(StoreProduct storeProduct) async {
-    final products = await Purchases.getProducts([storeProduct.id]);
-    final product = products.firstWhere(
+    // 永久会员是一次性商品（无 subscriptionPeriod），默认只查订阅会返回空列表
+    final productCategory = storeProduct.subscriptionPeriod == null
+        ? ProductCategory.nonSubscription
+        : ProductCategory.subscription;
+
+    final products = await Purchases.getProducts(
+      [storeProduct.id],
+      productCategory: productCategory,
+    );
+    final product = products.firstWhereOrNull(
       (e) => e.identifier == storeProduct.id,
     );
+    if (product == null) return null;
+
     final result = await Purchases.purchase(
       PurchaseParams.storeProduct(product),
     );
