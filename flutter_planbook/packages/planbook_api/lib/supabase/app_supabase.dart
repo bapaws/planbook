@@ -99,7 +99,11 @@ class AppSupabase {
       email: email,
       phone: phone,
       password: password,
-      data: data,
+      data: {
+        ...?data,
+        'com.bapaws.planbook': true,
+        'planbook': true,
+      },
       captchaToken: captchaToken,
       channel: channel,
     );
