@@ -6,6 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build, Run & Verify
 
+项目用 [FVM](https://fvm.app) 按分支锁定 Flutter SDK（`.fvmrc`）。**请用 `fvm flutter` / `fvm dart`**，不要直接用 PATH 里的 `flutter`，以免 `android/local.properties` 与当前分支 SDK 不一致。
+
+| 分支 | `.fvmrc` |
+|---|---|
+| `main` | `stable` |
+| `ohos` | `custom_3.35.7-ohos` |
+
+切分支后执行一次 `fvm use`（刷新 `.fvm/flutter_sdk`）。IDE 通过 `.vscode/settings.json` 的 `dart.flutterSdkPath: .fvm/flutter_sdk` 跟随当前分支。
+
 The app has three entry points wired to Android flavors. `AppChannel.instance.type` is set in each `main_*.dart` and gates channel-specific behavior — don't bypass it.
 
 | Channel | Target | Flavor | Purpose |
@@ -19,21 +28,21 @@ Flutter build / run:
 
 ```bash
 # iOS App Store
-flutter build ipa --target lib/main.dart
+fvm flutter build ipa --target lib/main.dart
 
 # Google Play
-flutter build appbundle --target lib/main.dart --flavor store
+fvm flutter build appbundle --target lib/main.dart --flavor store
 
 # 国内应用市场（小米、VIVO）
-flutter build apk --flavor store --target lib/main_store.dart
+fvm flutter build apk --flavor store --target lib/main_store.dart
 
 # 自分发（腾讯云存储）
-flutter build apk --flavor cloud --target lib/main_cloud.dart
+fvm flutter build apk --flavor cloud --target lib/main_cloud.dart
 
 # Development on a connected device/simulator
-flutter run --target lib/main.dart                    # iOS / generic Android
-flutter run --target lib/main_store.dart --flavor store
-flutter run --target lib/main_cloud.dart --flavor cloud
+fvm flutter run --target lib/main.dart                    # iOS / generic Android
+fvm flutter run --target lib/main_store.dart --flavor store
+fvm flutter run --target lib/main_cloud.dart --flavor cloud
 ```
 
 Fastlane release lanes (run inside `ios/` or `android/`):
@@ -48,11 +57,11 @@ cd android && fastlane deploy  # Play production
 Verification:
 
 ```bash
-flutter analyze                                 # lint
-flutter test                                    # run all tests
-flutter test test/foo_test.dart                 # run a single test file
-dart format --set-exit-if-changed lib packages  # check formatting
-dart fix --apply                                # apply auto-fixes
+fvm flutter analyze                                 # lint
+fvm flutter test                                    # run all tests
+fvm flutter test test/foo_test.dart                 # run a single test file
+fvm dart format --set-exit-if-changed lib packages  # check formatting
+fvm dart fix --apply                                # apply auto-fixes
 ```
 
 ## Code Generation
@@ -61,13 +70,13 @@ Three independent generators. Run only the ones whose inputs you touched:
 
 ```bash
 # AutoRoute (after editing lib/app/app_router.dart)
-dart run build_runner build --delete-conflicting-outputs
+fvm dart run build_runner build --delete-conflicting-outputs
 
 # Localization (after editing lib/l10n/arb/*.arb)
-flutter gen-l10n
+fvm flutter gen-l10n
 
 # Drift schema (after editing tables in packages/planbook_api)
-cd packages/planbook_api && dart run build_runner build --delete-conflicting-outputs
+cd packages/planbook_api && fvm dart run build_runner build --delete-conflicting-outputs
 ```
 
 Generated files (`*.g.dart`, `lib/l10n/gen/*`, `app_router.gr.dart`) are excluded from analysis — never edit them by hand.

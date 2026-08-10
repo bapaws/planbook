@@ -414,18 +414,20 @@ Android flavors configured in build.gradle:
 
 ### Build Commands
 
+项目用 FVM 按分支锁定 SDK（`main`→`stable`，`ohos`→`custom_3.35.7-ohos`）。请用 `fvm flutter`；切分支后建议 `fvm use`。
+
 ```bash
 # iOS App Store
-flutter build ipa --target lib/main.dart
+fvm flutter build ipa --target lib/main.dart
 
 # Google Play Store (AAB)
-flutter build appbundle --target lib/main.dart --flavor store
+fvm flutter build appbundle --target lib/main.dart --flavor store
 
 # China app stores (Xiaomi, VIVO) - APK
-flutter build apk --flavor store --target lib/main_store.dart
+fvm flutter build apk --flavor store --target lib/main_store.dart
 
 # Self-distribution - APK
-flutter build apk --flavor cloud --target lib/main_cloud.dart
+fvm flutter build apk --flavor cloud --target lib/main_cloud.dart
 ```
 
 ## Code Style Guidelines
@@ -568,13 +570,13 @@ When you add a new repository or app-wide service, register it here — don't la
 ### Code Generation
 ```bash
 # Generate routes (after modifying app_router.dart)
-dart run build_runner build --delete-conflicting-outputs
+fvm dart run build_runner build --delete-conflicting-outputs
 
 # Generate localization
-flutter gen-l10n
+fvm flutter gen-l10n
 
 # Generate Drift database code (in planbook_api package)
-cd packages/planbook_api && dart run build_runner build --delete-conflicting-outputs
+cd packages/planbook_api && fvm dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### Adding a New Feature
