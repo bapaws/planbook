@@ -3,12 +3,18 @@ import 'dart:typed_data';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:planbook_core/app/app_platform.dart';
 import 'package:saver_gallery/saver_gallery.dart';
 
 class AppImageSaver {
   static Future<bool> checkAndRequestPermissions({
     required bool skipIfExists,
   }) async {
+    // saver_gallery 鸿蒙端走 showAssetsCreationDialog，由系统弹窗授权
+    if (kIsOhos) {
+      return true;
+    }
+
     if (!Platform.isAndroid && !Platform.isIOS) {
       return false; // Only Android and iOS platforms are supported
     }

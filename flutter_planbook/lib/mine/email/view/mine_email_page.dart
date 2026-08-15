@@ -43,9 +43,11 @@ class _MineEmailPageState extends State<_MineEmailPage> {
   final _codeController = TextEditingController();
   bool _canSendCode = true;
   int _countdown = 60;
+  Timer? _countdownTimer;
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _emailController.dispose();
     _codeController.dispose();
     super.dispose();
@@ -57,6 +59,8 @@ class _MineEmailPageState extends State<_MineEmailPage> {
         msg: context.l10n.emailMessage,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
       );
       return;
     }
@@ -66,12 +70,13 @@ class _MineEmailPageState extends State<_MineEmailPage> {
         msg: context.l10n.emailMessageInvalid,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
       );
       return;
     }
 
     context.read<MineEmailCubit>().sendCode(_emailController.text.trim());
-    _startCountdown();
   }
 
   void _save() {
@@ -84,12 +89,17 @@ class _MineEmailPageState extends State<_MineEmailPage> {
   }
 
   void _startCountdown() {
+    _countdownTimer?.cancel();
     setState(() {
       _canSendCode = false;
       _countdown = 60;
     });
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       setState(() {
         _countdown--;
       });
@@ -107,94 +117,109 @@ class _MineEmailPageState extends State<_MineEmailPage> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return AppScaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        title: Text(l10n.changeEmail),
-        leading: const NavigationBarBackButton(),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 邮箱输入框
-              AppTextField(
-                hintText: l10n.email,
-                keyboardType: TextInputType.emailAddress,
-                controller: _emailController,
-                textInputAction: TextInputAction.next,
-                autofocus: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l10n.emailMessage;
-                  }
-                  if (!EmailValidator.validate(value)) {
-                    return l10n.emailMessageInvalid;
-                  }
-                  return null;
-                },
-              ),
+    return BlocListener<MineEmailCubit, MineEmailState>(
+      listenWhen: (previous, current) =>
+          (!previous.isSent && current.isSent) ||
+          current.status == PageStatus.success,
+      listener: (context, state) {
+        if (state.status == PageStatus.success) {
+          context.router.maybePop();
+          return;
+        }
+        if (state.isSent) {
+          _startCountdown();
+        }
+      },
+      child: AppScaffold(
+        appBar: AppBar(
+          forceMaterialTransparency: true,
+          title: Text(l10n.changeEmail),
+          leading: const NavigationBarBackButton(),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 邮箱输入框
+                AppTextField(
+                  hintText: l10n.email,
+                  keyboardType: TextInputType.emailAddress,
+                  controller: _emailController,
+                  textInputAction: TextInputAction.next,
+                  autofocus: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return l10n.emailMessage;
+                    }
+                    if (!EmailValidator.validate(value)) {
+                      return l10n.emailMessageInvalid;
+                    }
+                    return null;
+                  },
+                ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // 验证码输入框和发送按钮
-              Row(
-                children: [
-                  Expanded(
-                    child: AppTextField(
-                      hintText: l10n.verificationCode,
-                      keyboardType: TextInputType.number,
-                      controller: _codeController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return context.l10n.verificationCodeMessage;
-                        }
-                        if (value.length != 6) {
-                          return context.l10n.verificationCodeMessageInvalid;
-                        }
-                        return null;
+                // 验证码输入框和发送按钮
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppTextField(
+                        hintText: l10n.verificationCode,
+                        keyboardType: TextInputType.number,
+                        controller: _codeController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return context.l10n.verificationCodeMessage;
+                          }
+                          if (value.length != 6) {
+                            return context.l10n.verificationCodeMessageInvalid;
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    BlocBuilder<MineEmailCubit, MineEmailState>(
+                      builder: (context, state) {
+                        return SizedBox(
+                          width: 100,
+                          child: SignButton(
+                            text: _canSendCode
+                                ? l10n.sendCode
+                                : '${_countdown}s',
+                            onPressed:
+                                (_canSendCode &&
+                                    state.status != PageStatus.loading)
+                                ? _handleSendCode
+                                : () {},
+                            isLoading: state.status == PageStatus.loading,
+                            style: SignButtonStyle.outlined,
+                          ),
+                        );
                       },
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  BlocBuilder<MineEmailCubit, MineEmailState>(
-                    builder: (context, state) {
-                      return SizedBox(
-                        width: 100,
-                        child: SignButton(
-                          // height: 48,
-                          text: _canSendCode ? l10n.sendCode : '${_countdown}s',
-                          onPressed:
-                              (_canSendCode &&
-                                  state.status == PageStatus.initial)
-                              ? _handleSendCode
-                              : () {},
-                          isLoading: state.status == PageStatus.loading,
-                          style: SignButtonStyle.outlined,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // 登录按钮
-              BlocBuilder<MineEmailCubit, MineEmailState>(
-                builder: (context, state) {
-                  return SignButton(
-                    text: l10n.save,
-                    onPressed: _save,
-                    isLoading: state.status == PageStatus.loading,
-                    style: SignButtonStyle.filled,
-                  );
-                },
-              ),
-            ],
+                // 保存按钮
+                BlocBuilder<MineEmailCubit, MineEmailState>(
+                  builder: (context, state) {
+                    return SignButton(
+                      text: l10n.save,
+                      onPressed: _save,
+                      isLoading: state.status == PageStatus.loading,
+                      style: SignButtonStyle.filled,
+                    );
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),

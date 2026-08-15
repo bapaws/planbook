@@ -71,8 +71,12 @@ class SignInCubit extends Cubit<SignInState> {
         );
       }
       emit(CodeSentSuccess());
+    } on AuthException catch (e) {
+      emit(CodeSentFailure(e.message));
     } on Exception catch (e) {
-      print('e: $e');
+      if (kDebugMode) {
+        print('e: $e');
+      }
       emit(CodeSentFailure(e.toString()));
     }
   }
@@ -98,7 +102,7 @@ class SignInCubit extends Cubit<SignInState> {
         );
       }
       emit(SignInSuccess());
-    } on AuthException catch (e) {
+    } on AuthException catch (_) {
       try {
         if (EmailValidator.validate(phone)) {
           await _usersRepository.verifyOTP(
@@ -114,6 +118,8 @@ class SignInCubit extends Cubit<SignInState> {
           );
         }
         emit(SignInSuccess());
+      } on AuthException catch (e) {
+        emit(SignInFailure(e.message));
       } on Exception catch (e) {
         if (kDebugMode) {
           print('e: $e');

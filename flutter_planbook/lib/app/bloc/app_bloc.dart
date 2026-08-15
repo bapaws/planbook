@@ -145,11 +145,11 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
       lastLaunchAppAt: DateTime.now(),
       launchCount: (_usersRepository.userProfile?.launchCount ?? 0) + 1,
     );
-    // Create default tags and sample tasks on first launch
+    // 首启预置标签/示例任务已停用（应用市场审核：勿提交含测试数据的版本）
     if (isFirstLaunch) {
-      final languageCode = event.l10n.localeName.split('_').first;
-      await _tagsRepository.createDefaultTags(languageCode: languageCode);
-      await _tasksRepository.createDefaultTasks(languageCode: languageCode);
+      // final languageCode = event.l10n.localeName.split('_').first;
+      // await _tagsRepository.createDefaultTags(languageCode: languageCode);
+      // await _tasksRepository.createDefaultTasks(languageCode: languageCode);
       // await _notesRepository.createDefaultNotes(languageCode: languageCode);
     } else if (kDebugMode) {
       // const languageCode = 'zh';

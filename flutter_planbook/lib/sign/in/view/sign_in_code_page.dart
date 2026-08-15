@@ -46,6 +46,7 @@ class _SignInCodePageState extends State<SignInCodePage> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: Colors.black,
+        textColor: Colors.white,
       );
       return;
     }
@@ -57,6 +58,7 @@ class _SignInCodePageState extends State<SignInCodePage> {
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: Colors.black,
+        textColor: Colors.white,
       );
       return;
     }
@@ -118,6 +120,7 @@ class _SignInCodePageState extends State<SignInCodePage> {
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             backgroundColor: Colors.black,
+            textColor: Colors.white,
           );
         } else if (state is CodeSentSuccess) {
           // 验证码发送成功
@@ -126,6 +129,7 @@ class _SignInCodePageState extends State<SignInCodePage> {
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             backgroundColor: Colors.black,
+            textColor: Colors.white,
           );
           _startCountdown();
         } else if (state is CodeSentFailure) {
@@ -138,6 +142,7 @@ class _SignInCodePageState extends State<SignInCodePage> {
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.CENTER,
             backgroundColor: Colors.black,
+            textColor: Colors.white,
           );
         }
       },
