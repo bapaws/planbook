@@ -7,7 +7,8 @@
 #       用 SDK 的 hap-sign-tool.jar 以发布证书本地签名 → 恢复配置。
 #
 # 用法：tool/ohos_release_app.sh
-# 产出：~/.ohos/sign/release/planbook-<versionName>-<versionCode>-release.app
+# 产出：build/ohos/outputs/planbook-<versionName>-<versionCode>-release.app
+#       （与 Android build/app/outputs、iOS build 产物同级，位于 Flutter 工程 build/ 下）
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
@@ -20,6 +21,7 @@ PW_FILE="$SIGN_DIR/PASSWORDS.txt"
 PROFILE="ohos/build-profile.json5"
 SIGN_TOOL_JAR="$HOME/Library/OpenHarmony/Sdk/23/toolchains/lib/hap-sign-tool.jar"
 JAVA_BIN="${JAVA_BIN:-java}"
+OUT_DIR="build/ohos/outputs"
 
 for f in "$P12" "$CER" "$P7B" "$PW_FILE" "$SIGN_TOOL_JAR"; do
   if [ ! -f "$f" ]; then
@@ -31,7 +33,8 @@ done
 PW=$(awk '/storePassword/{print $2}' "$PW_FILE")
 VERSION_NAME=$(python3 -c "import re;print(re.search(r'\"versionName\": \"([^\"]+)\"', open('ohos/AppScope/app.json5').read()).group(1))")
 VERSION_CODE=$(python3 -c "import re;print(re.search(r'\"versionCode\": (\d+)', open('ohos/AppScope/app.json5').read()).group(1))")
-OUT="$SIGN_DIR/planbook-${VERSION_NAME}-${VERSION_CODE}-release.app"
+mkdir -p "$OUT_DIR"
+OUT="$OUT_DIR/planbook-${VERSION_NAME}-${VERSION_CODE}-release.app"
 
 # 1. 临时摘掉 product 的 signingConfig（hvigor 无配置时产出未签名包）
 cp "$PROFILE" /tmp/build-profile.json5.ohos-bak
@@ -45,9 +48,9 @@ EOF
 
 # 2. 构建未签名 .app（flutter 工具最后会因找不到签名包报错，属预期，忽略之）
 fvm flutter build app --release --target lib/main_ohos.dart || true
-UNSIGNED="ohos/build/outputs/default/ohos-default-unsigned.app"
-if [ ! -f "$UNSIGNED" ]; then
-  echo "未找到未签名包 $UNSIGNED，构建失败" >&2
+UNSIGNED_APP="ohos/build/outputs/default/ohos-default-unsigned.app"
+if [ ! -f "${UNSIGNED_APP}" ]; then
+  echo "未找到未签名包 ${UNSIGNED_APP}，构建失败" >&2
   exit 1
 fi
 
@@ -58,7 +61,7 @@ fi
   -mode localSign \
   -appCertFile "$CER" \
   -profileFile "$P7B" \
-  -inFile "$UNSIGNED" \
+  -inFile "${UNSIGNED_APP}" \
   -keystoreFile "$P12" \
   -outFile "$OUT" \
   -keyPwd "$PW" \

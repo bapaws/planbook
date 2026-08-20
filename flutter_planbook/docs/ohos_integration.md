@@ -196,7 +196,7 @@ bloc/flutter_bloc/hydrated_bloc（内部 hive_ce 为纯 Dart）、auto_route、r
 
 1. 华为开发者联盟 + AppGallery Connect 创建应用（包名 `com.bapaws.planbook`）。
 2. ~~DevEco Studio 生成密钥（p12）与 CSR，AGC 申请发布证书 + Profile~~ ✅（2026-08-07 已完成）：命令行 keytool 生成 `planbook.p12`（EC secp256r1 / SHA256withECDSA / alias `planbook_release` / 25 年）+ CSR，AGC 已签发发布证书与发布 Profile（主体：合肥八爪未来科技有限公司，有效期至 2029-08-07）。**签名材料全部在 `~/.ohos/sign/release/`（p12/cer/p7b/PASSWORDS.txt，chmod 600，不进仓库）；仓库内 `build-profile.json5` 只保留调试签名**。
-3. 上架包构建 ✅（2026-08-07 已验证）：`tool/ohos_release_app.sh` 一键产出 —— 临时摘掉 product 的 signingConfig 构建未签名 .app，再用 SDK `hap-sign-tool.jar`（`-mode localSign`）以发布证书签名并 verify-app 校验，密码从 PASSWORDS.txt 运行时读取（不写入任何仓库文件，避免明文泄露）；产物 `~/.ohos/sign/release/planbook-<versionName>-<versionCode>-release.app`，已验证签名为发布证书。日常 debug 开发不受影响的（脚本用 trap 恢复配置）。
+3. 上架包构建 ✅（2026-08-07 已验证）：`tool/ohos_release_app.sh` 一键产出 —— 临时摘掉 product 的 signingConfig 构建未签名 .app，再用 SDK `hap-sign-tool.jar`（`-mode localSign`）以发布证书签名并 verify-app 校验，密码从 PASSWORDS.txt 运行时读取（不写入任何仓库文件，避免明文泄露）；产物 `build/ohos/outputs/planbook-<versionName>-<versionCode>-release.app`（签名材料仍在 `~/.ohos/sign/release/`），已验证签名为发布证书。日常 debug 开发不受影响的（脚本用 trap 恢复配置）。
 4. 上架材料：隐私政策 URL（复用现有）、软著、ICP、应用截图（鸿蒙设备）。
 5. Fastlane 无鸿蒙 lane，发布脚本后续再补；首版手工上传 AGC。
 
