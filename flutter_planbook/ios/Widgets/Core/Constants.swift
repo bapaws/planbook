@@ -16,3 +16,5 @@ let kDBName = "planbook.sqlite"
 ///
 let kQuadrantWidgetLargeKind = "QuadrantWidgetLarge"
 let kQuadrantWidgetSmallKind = "QuadrantWidgetSmall"
+let kTimeBlockWidgetLargeKind = "TimeBlockWidgetLarge"
+let kTimeBlockWidgetMediumKind = "TimeBlockWidgetMedium"

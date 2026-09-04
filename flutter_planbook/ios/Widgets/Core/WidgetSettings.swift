@@ -31,6 +31,8 @@ enum WidgetSettings {
         /// 必须与 `packages/planbook_repository/lib/users/users_repository.dart` 中
         /// 的 `kUserId` 常量保持一致。
         static let currentUserId = "__supabase_user_id__"
+        /// 会员状态。Flutter 端通过 home_widget 写入；缺省视为非会员。
+        static let isPremium = "widget_is_premium"
     }
 
     // MARK: - 象限优先级
@@ -168,5 +170,15 @@ enum WidgetSettings {
             .trimmingCharacters(in: .whitespacesAndNewlines)
         guard let raw, !raw.isEmpty else { return nil }
         return raw
+    }
+
+    // MARK: - 会员
+
+    /// 时间块小组件是否按会员渲染。从未写入时视为非会员，避免泄露日程。
+    ///
+    /// Flutter `home_widget` 经 StandardMessageCodec 写入的 Bool 在
+    /// UserDefaults 里是 `NSNumber`，`as? Bool` 会失败，必须用 `bool(forKey:)`。
+    static var isPremium: Bool {
+        defaults.bool(forKey: Keys.isPremium)
     }
 }

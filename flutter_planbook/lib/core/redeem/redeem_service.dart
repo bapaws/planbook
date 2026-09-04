@@ -41,16 +41,29 @@ class RedeemService {
 
   String? get savedSubmissionId => _client?.savedSubmissionId;
 
+  Future<Bootstrap> bootstrap({String? locale, String? platform}) async {
+    final c = await _ensureClient();
+    return c.bootstrap(locale: locale, platform: platform);
+  }
+
   Future<String> submitReview({
     required List<ReviewImage> images,
     required String appVersion,
     String? idfv,
+    String? campaignId,
+    String? locale,
+    String? externalUserId,
+    String? proofUrl,
   }) async {
     final c = await _ensureClient();
     return c.submitReview(
       images: images,
       appVersion: appVersion,
       idfv: idfv,
+      campaignId: campaignId,
+      locale: locale,
+      externalUserId: externalUserId,
+      proofUrl: proofUrl,
     );
   }
 

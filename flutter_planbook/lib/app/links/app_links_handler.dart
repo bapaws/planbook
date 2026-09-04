@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/links/widget_deep_link.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -14,7 +15,9 @@ import 'package:planbook_api/planbook_api.dart';
 ///
 /// 当前支持的 URL Scheme：
 /// - `planbook.bapaws://task/new?priority=high|medium|low|none&dueAt=yyyy-MM-dd`
+/// - `planbook.bapaws://task/today?view=timeBlock`
 /// - `planbook.bapaws://note/new`
+/// - `planbook.bapaws://purchases`
 class AppLinksHandler {
   AppLinksHandler({required RootStackRouter router}) : _router = router;
 
@@ -51,6 +54,8 @@ class AppLinksHandler {
         _handleTask(uri);
       case 'note':
         _handleNote(uri);
+      case 'purchases':
+        _router.push(const AppPurchasesRoute());
     }
   }
 
@@ -73,6 +78,25 @@ class AppLinksHandler {
             : null;
 
         _router.push(TaskNewRoute(dueAt: dueAt, priority: priority));
+      case '/today':
+        _openToday(view: uri.queryParameters['view']);
+    }
+  }
+
+  void _openToday({String? view}) {
+    unawaited(
+      _router.navigate(
+        const RootHomeRoute(
+          children: [
+            RootTaskRoute(
+              children: [TaskTodayRoute()],
+            ),
+          ],
+        ),
+      ),
+    );
+    if (view == 'timeBlock') {
+      WidgetDeepLink.openTodayTimeBlock();
     }
   }
 

@@ -12,10 +12,14 @@ import 'package:planbook_widget/src/widget_action_handler.dart';
 /// PlanbookWidget.setAppGroupId(kAppGroupId);
 ///
 /// // 2. 注册 widget 完成任务回调
-/// PlanbookWidget.registerCompleteTaskHandler((taskId) async {
-///   final task = await tasksRepository.getTaskEntityById(taskId);
+/// PlanbookWidget.registerCompleteTaskHandler((taskId, {occurrenceAt}) async {
+///   final occ = occurrenceAt == null ? null : Jiffy.parse(occurrenceAt);
+///   final task = await tasksRepository.getTaskEntityById(
+///     taskId,
+///     occurrenceAt: occ,
+///   );
 ///   if (task == null) return;
-///   await tasksRepository.completeTask(task);
+///   await tasksRepository.completeTask(task, occurrenceAt: occ);
 ///   await PlanbookWidget.clearPendingCompletion(taskId);
 /// });
 /// await PlanbookWidget.notifyReady();
@@ -122,6 +126,7 @@ class PlanbookWidget {
             message: 'completeTask requires taskId',
           );
         }
+        final occurrenceAt = args?['occurrenceAt'] as String?;
         final handler = _completeTaskHandler;
         if (handler == null) {
           throw PlatformException(
@@ -130,7 +135,7 @@ class PlanbookWidget {
           );
         }
         try {
-          await handler(taskId);
+          await handler(taskId, occurrenceAt: occurrenceAt);
           return true;
         } on Object catch (e, st) {
           developer.log(

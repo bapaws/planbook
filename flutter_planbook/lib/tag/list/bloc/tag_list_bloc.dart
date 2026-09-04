@@ -21,6 +21,7 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
     required TagsRepository tagsRepository,
     this.mode = TagListMode.list,
     this.notIncludeTagIds = const {},
+    this.notIncludeTagAndDescendantsOfId,
   }) : _tagsRepository = tagsRepository,
        super(const TagListState()) {
     on<TagListRequested>(_onRequested);
@@ -35,14 +36,22 @@ class TagListBloc extends Bloc<TagListEvent, TagListState> {
 
   final TagListMode mode;
   final Set<String> notIncludeTagIds;
+  final String? notIncludeTagAndDescendantsOfId;
 
   Future<void> _onRequested(
     TagListRequested event,
     Emitter<TagListState> emit,
   ) async {
     emit(state.copyWith(status: PageStatus.loading));
+    final excludedIds = {...notIncludeTagIds};
+    final hierarchyRootId = notIncludeTagAndDescendantsOfId;
+    if (hierarchyRootId != null) {
+      excludedIds.addAll(
+        await _tagsRepository.getTagAndDescendantIds(hierarchyRootId),
+      );
+    }
     await emit.forEach(
-      _tagsRepository.getAllTags(notIncludeTagIds: notIncludeTagIds),
+      _tagsRepository.getAllTags(notIncludeTagIds: excludedIds),
       onData: (tags) {
         return state.copyWith(
           status: PageStatus.success,

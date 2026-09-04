@@ -11,6 +11,13 @@
     <string name="widget_medium_description">切换显示不同象限的任务</string>
     <string name="widget_quick_note_name">快速笔记</string>
     <string name="widget_quick_note_description">快速创建一条笔记</string>
+    <string name="widget_time_block_large_name">时间块（大号）</string>
+    <string name="widget_time_block_large_description">左右两列展示今天的时间块</string>
+    <string name="widget_time_block_medium_name">时间块（中号）</string>
+    <string name="widget_time_block_medium_description">显示当前时刻附近的时间块</string>
+    <string name="widget_time_block_today">今天</string>
+    <string name="widget_time_block_empty">今天还没有时间块</string>
+    <string name="widget_time_block_locked">升级 PRO 解锁时间块</string>
     <string name="widget_test_name">测试组件</string>
     <string name="widget_test_description">极简测试组件，用于调试</string>
     <string name="quadrant_high">重要且紧急</string>

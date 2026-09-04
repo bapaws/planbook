@@ -35,7 +35,8 @@ class TagNewPage extends StatelessWidget {
           create: (context) => TagListBloc(
             tagsRepository: context.read(),
             mode: TagListMode.singleSelect,
-            notIncludeTagIds: initialTag != null ? {initialTag!.id} : const {},
+            // 编辑标签时，自身及全部后代都不能成为新的父标签。
+            notIncludeTagAndDescendantsOfId: initialTag?.id,
           )..add(const TagListRequested()),
         ),
       ],

@@ -1860,6 +1860,125 @@
           }
         }
       }
+    },
+    "widget.timeBlock.today" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今天" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今天" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "今天" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Heute" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Hoy" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aujourd'hui" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Oggi" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오늘" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Hoje" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сегодня" } }
+      }
+    },
+    "widget.timeBlock.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No time blocks today" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今天还没有时间块" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今天還沒有時間塊" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "今天還沒有時間塊" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Heute keine Zeitblöcke" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "No hay bloques de tiempo hoy" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aucun bloc de temps aujourd'hui" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Nessun blocco orario oggi" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日のタイムブロックはありません" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오늘 시간 블록이 없습니다" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Sem blocos de tempo hoje" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сегодня нет временных блоков" } }
+      }
+    },
+    "widget.timeBlock.locked" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Upgrade to PRO to unlock Time Block" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "升级 PRO 解锁时间块" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "升級 PRO 解鎖時間塊" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "升級 PRO 解鎖時間塊" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Upgrade auf PRO, um Zeitblöcke freizuschalten" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Actualiza a PRO para desbloquear el bloque de tiempo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Passez à PRO pour débloquer le bloc de temps" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Passa a PRO per sbloccare il blocco orario" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "PRO にアップグレードしてタイムブロックを解除" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "PRO로 업그레이드하여 시간 블록 잠금 해제" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Atualize para PRO para desbloquear o bloco de tempo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновитесь до PRO, чтобы открыть временные блоки" } }
+      }
+    },
+    "widget.timeBlock.large.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Time Block (Large)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间块（大号）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "時間塊（大號）" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "時間塊（大號）" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitblock (Groß)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bloque de tiempo (Grande)" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bloc de temps (Grand)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Blocco orario (Grande)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "タイムブロック（大）" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "시간 블록 (대)" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bloco de tempo (Grande)" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Временной блок (Большой)" } }
+      }
+    },
+    "widget.timeBlock.large.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today's schedule in two columns, morning and afternoon" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "左右两列展示今天的时间块" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "左右兩列展示今天的時間塊" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "左右兩列展示今天的時間塊" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Heutiger Zeitplan in zwei Spalten, vormittags und nachmittags" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Horario de hoy en dos columnas, mañana y tarde" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Planning du jour en deux colonnes, matin et après-midi" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Programma di oggi in due colonne, mattina e pomeriggio" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日のタイムブロックを午前・午後の2列で表示" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "오늘의 시간 블록을 오전/오후 두 열로 표시" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Agenda de hoje em duas colunas, manhã e tarde" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сегодняшнее расписание в двух колонках, утро и день" } }
+      }
+    },
+    "widget.timeBlock.medium.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Time Block (Medium)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间块（中号）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "時間塊（中號）" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "時間塊（中號）" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitblock (Mittel)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bloque de tiempo (Mediano)" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bloc de temps (Moyen)" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Blocco orario (Medio)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "タイムブロック（中）" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "시간 블록 (중)" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bloco de tempo (Médio)" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Временной блок (Средний)" } }
+      }
+    },
+    "widget.timeBlock.medium.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Upcoming time blocks around now" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示当前时刻附近的时间块" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示當前時刻附近的時間塊" } },
+        "zh-HK" : { "stringUnit" : { "state" : "translated", "value" : "顯示當前時刻附近的時間塊" } },
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zeitblöcke rund um die aktuelle Uhrzeit" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bloques de tiempo alrededor de ahora" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Blocs de temps autour de maintenant" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Blocchi orari intorno ad ora" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "現在時刻付近のタイムブロックを表示" } },
+        "ko" : { "stringUnit" : { "state" : "translated", "value" : "현재 시각 근처의 시간 블록 표시" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Blocos de tempo em torno de agora" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Временные блоки около текущего времени" } }
+      }
     }
   },
   "version" : "1.0"

@@ -75,11 +75,13 @@ class WidgetDatabase private constructor(context: Context) {
     }
 
     /** 读取单个任务当前在 DB 中的完成状态；不存在或读库失败返回 null */
-    fun isTaskCompleted(taskId: String): Boolean? {
+    fun isTaskCompleted(taskId: String, occurrenceAt: String? = null): Boolean? {
         val userId = WidgetSettings.getCurrentUserId(appContext)
         val userClause = if (userId == null) "AND t.user_id IS NULL" else "AND t.user_id = ?"
+        val occurrenceClause = if (occurrenceAt == null) "" else "AND ta.occurrence_at = ?"
         val args = mutableListOf(taskId)
         if (userId != null) args.add(userId)
+        if (occurrenceAt != null) args.add(occurrenceAt)
         return try {
             db.rawQuery(
                 """
@@ -89,6 +91,7 @@ class WidgetDatabase private constructor(context: Context) {
                 WHERE ta.task_id = ?
                   AND ta.deleted_at IS NULL
                   $userClause
+                  $occurrenceClause
                 LIMIT 1
                 """.trimIndent(),
                 args.toTypedArray()
@@ -98,6 +101,122 @@ class WidgetDatabase private constructor(context: Context) {
         } catch (e: Exception) {
             null
         }
+    }
+
+    /** 今天有起止时间的非全天顶层任务（对齐 App 时间块过滤）。 */
+    fun fetchTimeBlockTasks(): List<TimeBlockTask> {
+        val userId = WidgetSettings.getCurrentUserId(appContext)
+        val userClause = if (userId == null) "AND t.user_id IS NULL" else "AND t.user_id = ?"
+        val args = mutableListOf<String>()
+        if (userId != null) {
+            args.add(userId)
+            args.add(userId)
+            args.add(userId)
+        }
+        val sql = """
+            SELECT DISTINCT
+                t.id, t.title, t.priority,
+                t.start_at, t.end_at,
+                NULL AS occurrence_at,
+                ta.completed_at, ta.deleted_at AS activity_deleted_at
+            FROM tasks t
+            LEFT JOIN task_activities ta
+                ON ta.task_id = t.id
+                AND ta.deleted_at IS NULL
+                AND ta.occurrence_at IS NULL
+            WHERE t.deleted_at IS NULL
+              AND t.parent_id IS NULL
+              AND COALESCE(t.is_all_day, 0) = 0
+              AND t.start_at IS NOT NULL
+              AND t.recurrence_rule IS NULL
+              AND t.detached_from_task_id IS NULL
+              $userClause
+              AND datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime')
+                  < datetime('now', 'localtime', 'start of day', '+1 day')
+              AND (
+                  (t.end_at IS NOT NULL
+                   AND datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime')
+                       >= datetime('now', 'localtime', 'start of day'))
+                  OR (t.end_at IS NULL
+                      AND date(datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime'))
+                          = date('now', 'localtime'))
+              )
+            UNION ALL
+            SELECT DISTINCT
+                t.id, t.title, t.priority,
+                t.start_at, t.end_at,
+                NULL AS occurrence_at,
+                ta.completed_at, ta.deleted_at AS activity_deleted_at
+            FROM tasks t
+            LEFT JOIN task_activities ta
+                ON ta.task_id = t.id
+                AND ta.deleted_at IS NULL
+                AND ta.occurrence_at IS NULL
+            WHERE t.deleted_at IS NULL
+              AND t.parent_id IS NULL
+              AND COALESCE(t.is_all_day, 0) = 0
+              AND t.start_at IS NOT NULL
+              AND t.detached_from_task_id IS NOT NULL
+              AND t.detached_recurrence_at IS NOT NULL
+              $userClause
+              AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime'))
+                  = date('now', 'localtime')
+            UNION ALL
+            SELECT DISTINCT
+                t.id, t.title, t.priority,
+                COALESCE(toc.start_at, t.start_at) AS start_at,
+                COALESCE(toc.end_at, t.end_at) AS end_at,
+                toc.occurrence_at,
+                ta.completed_at, ta.deleted_at AS activity_deleted_at
+            FROM tasks t
+            INNER JOIN task_occurrences toc
+                ON toc.task_id = t.id
+                AND toc.deleted_at IS NULL
+                AND (
+                    (
+                        toc.start_at IS NOT NULL AND toc.end_at IS NOT NULL
+                        AND datetime(substr(toc.start_at, 1, 19) || 'Z', 'localtime')
+                            < datetime('now', 'localtime', 'start of day', '+1 day')
+                        AND datetime(substr(toc.end_at, 1, 19) || 'Z', 'localtime')
+                            >= datetime('now', 'localtime', 'start of day')
+                    )
+                    OR (
+                        toc.due_at IS NOT NULL
+                        AND date(datetime(substr(toc.due_at, 1, 19) || 'Z', 'localtime'))
+                            = date('now', 'localtime')
+                    )
+                    OR (
+                        toc.start_at IS NULL
+                        AND date(datetime(substr(toc.occurrence_at, 1, 19) || 'Z', 'localtime'))
+                            = date('now', 'localtime')
+                    )
+                )
+            LEFT JOIN task_activities ta
+                ON ta.task_id = t.id
+                AND ta.deleted_at IS NULL
+                AND ta.occurrence_at = toc.occurrence_at
+            WHERE t.deleted_at IS NULL
+              AND t.parent_id IS NULL
+              AND t.recurrence_rule IS NOT NULL
+              AND t.detached_from_task_id IS NULL
+              AND COALESCE(t.is_all_day, 0) = 0
+              AND COALESCE(toc.start_at, t.start_at) IS NOT NULL
+              $userClause
+        """.trimIndent()
+        val tasks = mutableListOf<TimeBlockTask>()
+        try {
+            db.rawQuery(sql, args.toTypedArray()).use { cursor ->
+                while (cursor.moveToNext()) {
+                    TimeBlockLayout.taskFromCursor(cursor)?.let { tasks.add(it) }
+                }
+            }
+        } catch (_: Exception) {
+            return emptyList()
+        }
+        return TimeBlockLayout.overlayPending(
+            tasks,
+            WidgetSettings.getPendingCompletions(appContext),
+        )
     }
 
     /**

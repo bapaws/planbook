@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/links/widget_deep_link.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
@@ -128,8 +129,32 @@ class RootHomePage extends StatelessWidget {
   }
 }
 
-class _RootHomePage extends StatelessWidget {
+class _RootHomePage extends StatefulWidget {
   const _RootHomePage();
+
+  @override
+  State<_RootHomePage> createState() => _RootHomePageState();
+}
+
+class _RootHomePageState extends State<_RootHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetDeepLink.bind(_onWidgetDayViewType);
+  }
+
+  @override
+  void dispose() {
+    WidgetDeepLink.unbind(_onWidgetDayViewType);
+    super.dispose();
+  }
+
+  void _onWidgetDayViewType(RootTaskViewType viewType) {
+    if (!mounted) return;
+    context.read<RootTaskBloc>().add(
+      RootTaskDayViewTypeChanged(dayViewType: viewType),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

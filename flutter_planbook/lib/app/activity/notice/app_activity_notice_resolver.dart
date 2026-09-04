@@ -61,6 +61,7 @@ class AppActivityNoticeResolver {
           );
           coveredActivityIds.add(redeemActivity.id);
         case SubmissionRejected():
+        case SubmissionGrantFailed():
           break;
       }
     }

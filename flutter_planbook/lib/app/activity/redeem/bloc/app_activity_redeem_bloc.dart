@@ -15,11 +15,19 @@ part 'app_activity_redeem_state.dart';
 class AppActivityRedeemBloc
     extends Bloc<AppActivityRedeemEvent, AppActivityRedeemState> {
   AppActivityRedeemBloc({
+    this.campaignId,
+    this.locale,
+    this.requireImages = true,
+    this.requireLink = false,
     RedeemService? redeemService,
   }) : _redeemService = redeemService ?? RedeemService.instance,
-       super(const AppActivityRedeemState()) {
+       super(AppActivityRedeemState(
+         requireImages: requireImages,
+         requireLink: requireLink,
+       )) {
     on<AppActivityRedeemStarted>(_onStarted, transformer: restartable());
     on<AppActivityRedeemImagesPicked>(_onImagesPicked);
+    on<AppActivityRedeemProofUrlChanged>(_onProofUrlChanged);
     on<AppActivityRedeemSubmitted>(_onSubmitted, transformer: droppable());
     on<AppActivityRedeemStatusRefreshed>(
       _onStatusRefreshed,
@@ -29,6 +37,10 @@ class AppActivityRedeemBloc
     on<AppActivityRedeemResetTapped>(_onResetTapped);
   }
 
+  final String? campaignId;
+  final String? locale;
+  final bool requireImages;
+  final bool requireLink;
   final RedeemService _redeemService;
 
   Future<void> _onStarted(
@@ -72,20 +84,32 @@ class AppActivityRedeemBloc
     );
   }
 
+  void _onProofUrlChanged(
+    AppActivityRedeemProofUrlChanged event,
+    Emitter<AppActivityRedeemState> emit,
+  ) {
+    emit(state.copyWith(proofUrl: event.url));
+  }
+
   Future<void> _onSubmitted(
     AppActivityRedeemSubmitted event,
     Emitter<AppActivityRedeemState> emit,
   ) async {
-    if (state.imagePaths.isEmpty) return;
+    if (!state.canSubmit) return;
 
     emit(state.copyWith(status: PageStatus.loading));
 
     try {
-      final images = await _buildReviewImages(state.imagePaths);
+      final images = state.imagePaths.isEmpty
+          ? <ReviewImage>[]
+          : await _buildReviewImages(state.imagePaths);
       final packageInfo = await PackageInfo.fromPlatform();
       final submissionId = await _redeemService.submitReview(
         images: images,
         appVersion: packageInfo.version,
+        campaignId: campaignId,
+        locale: locale,
+        proofUrl: state.proofUrl.trim().isEmpty ? null : state.proofUrl.trim(),
       );
 
       emit(
@@ -136,7 +160,10 @@ class AppActivityRedeemBloc
   ) async {
     await _redeemService.clearLocalState();
     emit(
-      const AppActivityRedeemState(),
+      AppActivityRedeemState(
+        requireImages: requireImages,
+        requireLink: requireLink,
+      ),
     );
   }
 
@@ -171,6 +198,15 @@ class AppActivityRedeemBloc
               submissionId: submissionId,
               code: code,
               redeemUrl: redeemUrl,
+              status: PageStatus.success,
+            ),
+          );
+        case SubmissionGrantFailed(:final reason):
+          emit(
+            state.copyWith(
+              phase: AppActivityRedeemPhase.pending,
+              submissionId: submissionId,
+              rejectReason: reason,
               status: PageStatus.success,
             ),
           );

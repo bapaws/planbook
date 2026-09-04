@@ -78,13 +78,38 @@
 
         <receiver
             android:name=".widget.QuickNoteWidgetProvider"
-            android:exported="true">
+            android:exported="true"
+            android:label="@string/widget_quick_note_name">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/quick_note_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.TimeBlockWidgetLargeProvider"
+            android:exported="true"
+            android:label="@string/widget_time_block_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/time_block_widget_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.TimeBlockWidgetMediumProvider"
+            android:exported="true"
+            android:label="@string/widget_time_block_medium_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/time_block_widget_medium_info" />
         </receiver>
 
         <!-- Widget 配置界面 -->

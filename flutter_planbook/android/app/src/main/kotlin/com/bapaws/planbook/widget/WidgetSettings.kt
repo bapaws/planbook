@@ -36,6 +36,9 @@ object WidgetSettings {
      */
     private const val KEY_CURRENT_USER_ID = "__supabase_user_id__"
 
+    /// 与 Flutter `kWidgetIsPremiumKey` 保持一致。
+    private const val KEY_IS_PREMIUM = "widget_is_premium"
+
     private fun getPrefs(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE)
     }
@@ -60,6 +63,11 @@ object WidgetSettings {
     fun getCurrentUserId(context: Context): String? {
         val raw = getPrefs(context).getString(KEY_CURRENT_USER_ID, null)?.trim()
         return if (raw.isNullOrEmpty()) null else raw
+    }
+
+    /** 时间块小组件是否按会员渲染；从未写入时视为非会员。 */
+    fun isPremium(context: Context): Boolean {
+        return getPrefs(context).getBoolean(KEY_IS_PREMIUM, false)
     }
 
     /** 当前选中的象限优先级（中号组件切换） */

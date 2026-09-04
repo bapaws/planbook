@@ -28,9 +28,10 @@ Future<void> setupPlanbookWidgetActions({
   // App Group UserDefaults。Android 端是 no-op。
   await PlanbookWidget.setAppGroupId(kAppGroupId);
 
-  PlanbookWidget.registerCompleteTaskHandler((taskId) async {
+  PlanbookWidget.registerCompleteTaskHandler((taskId, {occurrenceAt}) async {
     await _onCompleteTaskFromWidget(
       taskId: taskId,
+      occurrenceAt: occurrenceAt,
       tasksRepository: tasksRepository,
       taskActionService: taskActionService,
     );
@@ -43,8 +44,13 @@ Future<void> _onCompleteTaskFromWidget({
   required String taskId,
   required TasksRepository tasksRepository,
   required TaskActionService taskActionService,
+  String? occurrenceAt,
 }) async {
-  final task = await tasksRepository.getTaskEntityById(taskId);
+  final parsedOccurrence = _parseOccurrenceAt(occurrenceAt);
+  final task = await tasksRepository.getTaskEntityById(
+    taskId,
+    occurrenceAt: parsedOccurrence,
+  );
   if (task == null) {
     developer.log(
       'completeTaskFromWidget: task not found id=$taskId',
@@ -58,7 +64,7 @@ Future<void> _onCompleteTaskFromWidget({
   try {
     final activities = await taskActionService.completeTask(
       task: task,
-      occurrenceAt: task.occurrence?.occurrenceAt,
+      occurrenceAt: parsedOccurrence ?? task.occurrence?.occurrenceAt,
     );
 
     // widget 端没法弹"编辑笔记"页，所以 service 内部会把 edit / createAndEdit
@@ -72,5 +78,14 @@ Future<void> _onCompleteTaskFromWidget({
     // 不管 completeTask 成不成功，都清 pending；失败时让 widget 回到 DB 的
     // 真实状态，而不是停留在乐观 UI 上。
     await PlanbookWidget.clearPendingCompletion(taskId);
+  }
+}
+
+Jiffy? _parseOccurrenceAt(String? raw) {
+  if (raw == null || raw.isEmpty) return null;
+  try {
+    return Jiffy.parse(raw);
+  } on Object {
+    return null;
   }
 }

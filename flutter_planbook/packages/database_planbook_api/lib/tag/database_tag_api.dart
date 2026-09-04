@@ -53,6 +53,7 @@ class DatabaseTagApi {
           )
           ..where(
             (tag) =>
+                tag.deletedAt.isNull() &
                 tag.parentId.isNull() &
                 (userId == null
                     ? tag.userId.isNull()
@@ -81,11 +82,23 @@ class DatabaseTagApi {
         );
   }
 
-  TagEntity _buildTagEntity(Tag tag, Map<String, Tag> allTags) {
+  TagEntity _buildTagEntity(
+    Tag tag,
+    Map<String, Tag> allTags, {
+    Set<String> ancestorIds = const {},
+  }) {
+    final nextAncestorIds = {...ancestorIds, tag.id};
     final parent = allTags[tag.parentId];
     return TagEntity(
       tag: tag,
-      parent: parent != null ? _buildTagEntity(parent, allTags) : null,
+      // 历史数据可能存在父子循环。遇到已访问节点时截断父链，避免整批标签读取失败。
+      parent: parent != null && !nextAncestorIds.contains(parent.id)
+          ? _buildTagEntity(
+              parent,
+              allTags,
+              ancestorIds: nextAncestorIds,
+            )
+          : null,
     );
   }
 
@@ -130,7 +143,15 @@ class DatabaseTagApi {
         );
   }
 
-  Future<TagEntity?> getTagEntityById(String id) async {
+  Future<TagEntity?> getTagEntityById(String id) {
+    return _getTagEntityById(id, <String>{});
+  }
+
+  Future<TagEntity?> _getTagEntityById(
+    String id,
+    Set<String> visitedIds,
+  ) async {
+    if (!visitedIds.add(id)) return null;
     final tag =
         await (db.select(
               db.tags,
@@ -139,7 +160,7 @@ class DatabaseTagApi {
     if (tag == null) return null;
     var entity = TagEntity(tag: tag);
     if (tag.parentId != null) {
-      final parent = await getTagEntityById(tag.parentId!);
+      final parent = await _getTagEntityById(tag.parentId!, visitedIds);
       if (parent != null) entity = entity.copyWith(parent: parent);
     }
     return entity;
@@ -162,10 +183,154 @@ class DatabaseTagApi {
     if (tags.isEmpty) return null;
     var entity = TagEntity(tag: tags.first);
     if (tags.first.parentId != null) {
-      final parent = await getTagEntityById(tags.first.parentId!);
+      final parent = await _getTagEntityById(
+        tags.first.parentId!,
+        {tags.first.id},
+      );
       if (parent != null) entity = entity.copyWith(parent: parent);
     }
     return entity;
+  }
+
+  /// 返回标签自身及其全部后代 ID，供父标签选择器排除非法选项。
+  Future<Set<String>> getTagAndDescendantIds({
+    required String id,
+    required String? userId,
+  }) async {
+    final tags =
+        await (db.select(db.tags)..where(
+              (tag) =>
+                  tag.deletedAt.isNull() &
+                  (userId == null
+                      ? tag.userId.isNull()
+                      : tag.userId.equals(userId)),
+            ))
+            .get();
+    final childIdsByParentId = <String, List<String>>{};
+    for (final tag in tags) {
+      final parentId = tag.parentId;
+      if (parentId == null) continue;
+      childIdsByParentId.putIfAbsent(parentId, () => []).add(tag.id);
+    }
+
+    final result = <String>{};
+    final pendingIds = <String>[id];
+    while (pendingIds.isNotEmpty) {
+      final currentId = pendingIds.removeLast();
+      if (!result.add(currentId)) continue;
+      pendingIds.addAll(childIdsByParentId[currentId] ?? const []);
+    }
+    return result;
+  }
+
+  /// 判断把 [tagId] 移到 [parentId] 下是否会形成父子循环。
+  Future<bool> wouldCreateHierarchyCycle({
+    required String tagId,
+    required String? parentId,
+  }) async {
+    if (parentId == null) return false;
+
+    final visitedIds = <String>{tagId};
+    String? currentId = parentId;
+    while (currentId != null) {
+      if (!visitedIds.add(currentId)) return true;
+      final current = await getTagById(currentId);
+      if (current == null || current.deletedAt != null) return false;
+      currentId = current.parentId;
+    }
+    return false;
+  }
+
+  /// 修复同步下来的历史循环数据，并重新计算受影响标签的层级。
+  ///
+  /// 一个标签只能有一个父标签，因此每个环只需断开一条边。这里选择最后更新的
+  /// 标签恢复为顶级标签，通常就是导致成环的最后一次移动操作。
+  Future<int> repairHierarchyCycles({required String? userId}) async {
+    final tags =
+        await (db.select(db.tags)..where(
+              (tag) =>
+                  tag.deletedAt.isNull() &
+                  (userId == null
+                      ? tag.userId.isNull()
+                      : tag.userId.equals(userId)),
+            ))
+            .get();
+    final originalTags = {for (final tag in tags) tag.id: tag};
+    final repairedTags = Map<String, Tag>.of(originalTags);
+    final changedIds = <String>{};
+    final handledIds = <String>{};
+    final now = Jiffy.now();
+
+    for (final startTag in tags) {
+      if (handledIds.contains(startTag.id)) continue;
+      final path = <String>[];
+      final pathIndexes = <String, int>{};
+      String? currentId = startTag.id;
+
+      while (currentId != null && repairedTags.containsKey(currentId)) {
+        final cycleStartIndex = pathIndexes[currentId];
+        if (cycleStartIndex != null) {
+          final cycleIds = path.sublist(cycleStartIndex);
+          final idToDetach = cycleIds.reduce((latestId, candidateId) {
+            final latest = repairedTags[latestId]!;
+            final candidate = repairedTags[candidateId]!;
+            final latestAt = (latest.updatedAt ?? latest.createdAt).dateTime;
+            final candidateAt = (candidate.updatedAt ?? candidate.createdAt)
+                .dateTime;
+            final comparison = candidateAt.compareTo(latestAt);
+            if (comparison != 0) {
+              return comparison > 0 ? candidateId : latestId;
+            }
+            return candidateId.compareTo(latestId) > 0
+                ? candidateId
+                : latestId;
+          });
+          repairedTags[idToDetach] = repairedTags[idToDetach]!.copyWith(
+            parentId: const Value(null),
+            level: 0,
+            updatedAt: Value(now),
+          );
+          changedIds.add(idToDetach);
+          break;
+        }
+        if (handledIds.contains(currentId)) break;
+
+        pathIndexes[currentId] = path.length;
+        path.add(currentId);
+        currentId = repairedTags[currentId]!.parentId;
+      }
+      handledIds.addAll(path);
+    }
+
+    if (changedIds.isEmpty) return 0;
+
+    final resolvedLevels = <String, int>{};
+    int resolveLevel(String id) {
+      final cached = resolvedLevels[id];
+      if (cached != null) return cached;
+      final parentId = repairedTags[id]?.parentId;
+      final level = parentId == null || !repairedTags.containsKey(parentId)
+          ? 0
+          : resolveLevel(parentId) + 1;
+      resolvedLevels[id] = level;
+      return level;
+    }
+
+    for (final id in repairedTags.keys) {
+      final tag = repairedTags[id]!;
+      final expectedLevel = resolveLevel(id);
+      if (tag.level == expectedLevel) continue;
+      repairedTags[id] = tag.copyWith(
+        level: expectedLevel,
+        updatedAt: Value(now),
+      );
+      changedIds.add(id);
+    }
+
+    for (final id in changedIds) {
+      await update(tag: repairedTags[id]!);
+    }
+    return changedIds.length;
   }
 
   Future<List<TagEntity>> getTagEntitiesByTaskId(

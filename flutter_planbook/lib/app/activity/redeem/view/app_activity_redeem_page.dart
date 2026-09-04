@@ -14,6 +14,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
 
+String _bootstrapLocale(BuildContext context) {
+  final locale = Localizations.localeOf(context);
+  if (locale.languageCode == 'zh') {
+    return locale.scriptCode == 'Hant' ? 'zh-Hant' : 'zh-Hans';
+  }
+  return locale.languageCode;
+}
+
 @RoutePage()
 class AppActivityRedeemPage extends StatelessWidget {
   const AppActivityRedeemPage({
@@ -27,7 +35,12 @@ class AppActivityRedeemPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) =>
-          AppActivityRedeemBloc()..add(const AppActivityRedeemStarted()),
+          AppActivityRedeemBloc(
+            campaignId: activity.campaignId,
+            locale: _bootstrapLocale(context),
+            requireImages: activity.requireImages,
+            requireLink: activity.requireLink,
+          )..add(const AppActivityRedeemStarted()),
       child: _AppActivityRedeemView(activity: activity),
     );
   }
@@ -102,13 +115,22 @@ class _AppActivityRedeemView extends StatelessWidget {
                 _StatusBanner(state: state),
                 if (state.phase == AppActivityRedeemPhase.initial ||
                     state.phase == AppActivityRedeemPhase.rejected) ...[
-                  Text(
-                    l10n.redeemSelectImages,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.outline,
+                  if (activity.requireImages) ...[
+                    Text(
+                      l10n.redeemSelectImages,
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.outline,
+                      ),
                     ),
-                  ),
-                  _ImagePreviewGrid(paths: state.imagePaths),
+                    _ImagePreviewGrid(paths: state.imagePaths),
+                  ],
+                  if (activity.requireLink)
+                    _ProofLinkField(
+                      label: (activity.receiveWay?.isNotEmpty ?? false)
+                          ? activity.receiveWay!
+                          : l10n.redeemProofLink,
+                      hint: l10n.redeemProofLinkHint,
+                    ),
                 ],
                 if (state.phase == AppActivityRedeemPhase.approved &&
                     state.code != null)
@@ -122,7 +144,7 @@ class _AppActivityRedeemView extends StatelessWidget {
             horizontal: 16,
             vertical: 8,
           ),
-          child: _BottomActions(state: state),
+          child: _BottomActions(state: state, activity: activity),
         ),
       ],
     );
@@ -274,10 +296,61 @@ class _ApprovedCard extends StatelessWidget {
   }
 }
 
+class _ProofLinkField extends StatefulWidget {
+  const _ProofLinkField({required this.label, required this.hint});
+
+  final String label;
+  final String hint;
+
+  @override
+  State<_ProofLinkField> createState() => _ProofLinkFieldState();
+}
+
+class _ProofLinkFieldState extends State<_ProofLinkField> {
+  late final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 8,
+      children: [
+        Text(
+          widget.label,
+          style: textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+        ),
+        TextField(
+          controller: _controller,
+          keyboardType: TextInputType.url,
+          textInputAction: TextInputAction.done,
+          decoration: InputDecoration(
+            hintText: widget.hint,
+            border: const OutlineInputBorder(),
+          ),
+          onChanged: (value) {
+            context.read<AppActivityRedeemBloc>().add(
+              AppActivityRedeemProofUrlChanged(value),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
 class _BottomActions extends StatelessWidget {
-  const _BottomActions({required this.state});
+  const _BottomActions({required this.state, required this.activity});
 
   final AppActivityRedeemState state;
+  final ActivityMessageEntity activity;
 
   @override
   Widget build(BuildContext context) {
@@ -321,6 +394,10 @@ class _BottomActions extends StatelessWidget {
       );
     }
 
+    final submitLabel = activity.requireLink
+        ? l10n.submitProof
+        : l10n.submitReviewScreenshot;
+
     if (state.phase == AppActivityRedeemPhase.rejected) {
       return Row(
         spacing: 12,
@@ -341,16 +418,14 @@ class _BottomActions extends StatelessWidget {
           Expanded(
             child: CupertinoButton.filled(
               borderRadius: BorderRadius.circular(16),
-              onPressed: isLoading || state.imagePaths.isEmpty
-                  ? null
-                  : () async {
-                      final paths = await showRedeemImagePicker(context);
-                      if (paths == null || !context.mounted) return;
+              onPressed: state.canSubmit && !isLoading
+                  ? () {
                       context.read<AppActivityRedeemBloc>().add(
-                        AppActivityRedeemImagesPicked(paths),
+                        const AppActivityRedeemSubmitted(),
                       );
-                    },
-              child: Text(l10n.submitReviewScreenshot),
+                    }
+                  : null,
+              child: Text(submitLabel),
             ),
           ),
         ],
@@ -361,19 +436,20 @@ class _BottomActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: 12,
       children: [
-        CupertinoButton.tinted(
-          borderRadius: BorderRadius.circular(16),
-          onPressed: isLoading
-              ? null
-              : () async {
-                  final paths = await showRedeemImagePicker(context);
-                  if (paths == null || !context.mounted) return;
-                  context.read<AppActivityRedeemBloc>().add(
-                    AppActivityRedeemImagesPicked(paths),
-                  );
-                },
-          child: Text(l10n.redeemSelectImages),
-        ),
+        if (activity.requireImages)
+          CupertinoButton.tinted(
+            borderRadius: BorderRadius.circular(16),
+            onPressed: isLoading
+                ? null
+                : () async {
+                    final paths = await showRedeemImagePicker(context);
+                    if (paths == null || !context.mounted) return;
+                    context.read<AppActivityRedeemBloc>().add(
+                      AppActivityRedeemImagesPicked(paths),
+                    );
+                  },
+            child: Text(l10n.redeemSelectImages),
+          ),
         CupertinoButton.filled(
           borderRadius: BorderRadius.circular(16),
           onPressed: state.canSubmit && !isLoading
@@ -385,7 +461,7 @@ class _BottomActions extends StatelessWidget {
               : null,
           child: isLoading
               ? const CupertinoActivityIndicator()
-              : Text(l10n.submitReviewScreenshot),
+              : Text(submitLabel),
         ),
       ],
     );

@@ -27,29 +27,32 @@ class WidgetClickReceiver : BroadcastReceiver() {
         when (intent.action) {
             ACTION_COMPLETE_TASK -> {
                 val taskId = intent.getStringExtra(EXTRA_TASK_ID) ?: return
+                val occurrenceAt = intent.getStringExtra(EXTRA_OCCURRENCE_AT)
                 val pending = goAsync()
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         // 1. 计算翻转后的目标状态——优先看 pending（防止用户连点时基于 stale DB 翻转），
                         //    其次回落到 DB 的真实状态；都拿不到就当作未完成。
                         val current = WidgetSettings.pendingCompletion(context, taskId)
-                            ?: WidgetDatabase.getInstance(context)?.isTaskCompleted(taskId)
+                            ?: WidgetDatabase.getInstance(context)
+                                ?.isTaskCompleted(taskId, occurrenceAt)
                             ?: false
                         val targetCompleted = !current
 
                         // 2. 写入 pending，让 widget 立刻刷新反馈。
                         WidgetSettings.setPendingCompletion(context, taskId, targetCompleted)
-                        refreshQuadrantWidgets(context)
+                        refreshAllTaskWidgets(context)
 
                         // 3. 派发到 Flutter 端跑完整业务。
                         val ok = WidgetActionDispatcher.completeTask(
                             context.applicationContext,
                             taskId,
+                            occurrenceAt,
                         )
 
                         // 4. 清除 pending，再次刷新让 widget 读到权威 DB 状态。
                         WidgetSettings.clearPendingCompletion(context, taskId)
-                        refreshQuadrantWidgets(context)
+                        refreshAllTaskWidgets(context)
 
                         if (!ok) {
                             Log.w(TAG, "Flutter dispatch failed, widget will show stale state until next refresh. id=$taskId")
@@ -59,7 +62,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
                         Log.e(TAG, "Complete task error", e)
                         // 异常时也要清掉 pending，避免 widget 永远停留在乐观状态。
                         WidgetSettings.clearPendingCompletion(context, taskId)
-                        refreshQuadrantWidgets(context)
+                        refreshAllTaskWidgets(context)
                     } finally {
                         pending.finish()
                     }
@@ -80,6 +83,7 @@ class WidgetClickReceiver : BroadcastReceiver() {
         const val ACTION_SWITCH_QUADRANT = "com.bapaws.planbook.widget.SWITCH_QUADRANT"
 
         const val EXTRA_TASK_ID = "task_id"
+        const val EXTRA_OCCURRENCE_AT = "occurrence_at"
         const val EXTRA_PRIORITY = "priority"
     }
 }

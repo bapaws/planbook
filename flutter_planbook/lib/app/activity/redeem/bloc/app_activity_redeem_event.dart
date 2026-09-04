@@ -22,6 +22,16 @@ final class AppActivityRedeemImagesPicked extends AppActivityRedeemEvent {
   List<Object?> get props => [paths];
 }
 
+/// 用户填写了提交链接。
+final class AppActivityRedeemProofUrlChanged extends AppActivityRedeemEvent {
+  const AppActivityRedeemProofUrlChanged(this.url);
+
+  final String url;
+
+  @override
+  List<Object?> get props => [url];
+}
+
 /// 提交截图。
 final class AppActivityRedeemSubmitted extends AppActivityRedeemEvent {
   const AppActivityRedeemSubmitted();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
@@ -128,6 +130,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         entitlementJustGranted: false,
       ),
     );
+    _syncPremiumWidget();
   }
 
   Future<void> _onUserRequested(
@@ -140,10 +143,12 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         final id = user?.session?.user.id;
         // 登出时必须清空会员信息，否则下一位登录用户会继承上一位的会员状态
         if (id == null) {
-          return state.copyWith(
+          final next = state.copyWith(
             userId: () => null,
             activeProductId: () => null,
           );
+          _syncPremiumWidget(next);
+          return next;
         }
         if (id == state.userId) return state;
         add(AppPurchasesLogin(userId: id));
@@ -167,6 +172,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         activeProductId: () => activeProductIdentifier,
       ),
     );
+    _syncPremiumWidget();
   }
 
   Future<void> _onRestored(
@@ -192,6 +198,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
           entitlementJustGranted: false,
         ),
       );
+      _syncPremiumWidget();
       return;
     }
     emit(
@@ -201,6 +208,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         entitlementJustGranted: true,
       ),
     );
+    _syncPremiumWidget();
   }
 
   Future<void> _onProductSelected(
@@ -260,6 +268,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
           entitlementJustGranted: granted,
         ),
       );
+      _syncPremiumWidget();
     } on Object catch (e) {
       if (kDebugMode) print('AppPurchasesPurchased error: $e');
       emit(
@@ -289,6 +298,7 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
         entitlementJustGranted: granted,
       ),
     );
+    _syncPremiumWidget();
   }
 
   Future<void> _onAgreedToConditions(
@@ -296,6 +306,13 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
     Emitter<AppPurchasesState> emit,
   ) async {
     emit(state.copyWith(isAgreedToConditions: event.isAgreed));
+  }
+
+  /// 把当前会员状态同步给时间块小组件。未打开过 App 时 native 缺省为非会员。
+  void _syncPremiumWidget([AppPurchasesState? next]) {
+    unawaited(
+      AppHomeWidget.syncPremium(isPremium: (next ?? state).isPremium),
+    );
   }
 }
 

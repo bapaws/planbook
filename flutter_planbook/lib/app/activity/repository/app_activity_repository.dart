@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
+import 'package:flutter_planbook/core/redeem/redeem_service.dart';
+import 'package:redeem_client/redeem_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum ActivityPlatform {
@@ -34,9 +36,19 @@ class ActivityMessageEntity {
     this.enableInAppRedeem = false,
     this.enableXhsClaim = false,
     this.xhsClaimURL,
+    this.campaignId,
+    this.fromRemote = false,
+    this.requireImages = true,
+    this.requireLink = false,
   });
 
   factory ActivityMessageEntity.fromJson(Map<String, dynamic> json) {
+    final flags = proofFlags(
+      requireImages: json['requireImages'] as bool?,
+      requireLink: json['requireLink'] as bool?,
+      enableXhsClaim: json['enableXhsClaim'] as bool? ?? false,
+      enableInAppRedeem: json['enableInAppRedeem'] as bool? ?? false,
+    );
     return ActivityMessageEntity(
       id: json['id'] as int,
       emoji: json['emoji'] as String,
@@ -60,7 +72,27 @@ class ActivityMessageEntity {
       enableInAppRedeem: json['enableInAppRedeem'] as bool? ?? false,
       enableXhsClaim: json['enableXhsClaim'] as bool? ?? false,
       xhsClaimURL: json['xhsClaimURL'] as String?,
+      requireImages: flags.images,
+      requireLink: flags.link,
     );
+  }
+
+  static ({bool images, bool link}) proofFlags({
+    bool? requireImages,
+    bool? requireLink,
+    bool enableXhsClaim = false,
+    bool enableInAppRedeem = false,
+  }) {
+    if (requireImages == null && requireLink == null) {
+      final xhsOnly = enableXhsClaim && !enableInAppRedeem;
+      return (images: !xhsOnly, link: xhsOnly);
+    }
+    var images = requireImages ?? false;
+    final link = requireLink ?? false;
+    if (!images && !link) {
+      images = true;
+    }
+    return (images: images, link: link);
   }
 
   static const kDefaultXhsClaimURL =
@@ -84,6 +116,18 @@ class ActivityMessageEntity {
   final bool enableInAppRedeem;
   final bool enableXhsClaim;
   final String? xhsClaimURL;
+
+  /// Redeem 活动 id；本地 json 没有此字段。
+  final String? campaignId;
+
+  /// 已由服务端按语言裁好，不再做 languageCode 过滤。
+  final bool fromRemote;
+
+  /// 提交时是否必须上传截图。
+  final bool requireImages;
+
+  /// 提交时是否必须填写链接（如小红书笔记）。
+  final bool requireLink;
 
   bool isAvailable(ActivityPlatform platform) {
     return platforms.contains(platform);
@@ -123,9 +167,14 @@ class AppActivityRepository {
 
   static const _activityItemsAsset = 'assets/files/activity_messages.json';
 
+  List<ActivityMessageEntity>? _cachedItems;
+  String? _cachedKey;
+
   /// 更新活动筛选使用的语言，切换语言后需重新 [fetch]。
   void updateLocale(Locale? locale) {
     _localeOverride = locale;
+    _cachedItems = null;
+    _cachedKey = null;
   }
 
   Locale get _effectiveLocale =>
@@ -148,10 +197,46 @@ class AppActivityRepository {
   List<String> get _languageCodes => languageCodesFor(_effectiveLocale);
 
   bool _matchesLanguage(ActivityMessageEntity item) {
+    if (item.fromRemote) return true;
     return _languageCodes.contains(item.languageCode);
   }
 
+  String get bootstrapLocale {
+    final locale = _effectiveLocale;
+    if (locale.languageCode == 'zh') {
+      return locale.scriptCode == 'Hant' ? 'zh-Hant' : 'zh-Hans';
+    }
+    return locale.languageCode;
+  }
+
+  String? get _bootstrapPlatform =>
+      kDebugMode ? null : (Platform.isAndroid ? 'android' : 'ios');
+
   Future<List<ActivityMessageEntity>> _loadItems() async {
+    final key = '$bootstrapLocale|${_bootstrapPlatform ?? 'any'}';
+    if (_cachedItems != null && _cachedKey == key) return _cachedItems!;
+
+    final remote = await _loadRemoteItems();
+    final items = remote ?? await _loadAssetItems();
+    _cachedItems = items;
+    _cachedKey = key;
+    return items;
+  }
+
+  Future<List<ActivityMessageEntity>?> _loadRemoteItems() async {
+    if (!await RedeemService.instance.isAvailable) return null;
+    try {
+      final boot = await RedeemService.instance.bootstrap(
+        locale: bootstrapLocale,
+        platform: _bootstrapPlatform,
+      );
+      return [for (final c in boot.campaigns) _fromCampaign(c)];
+    } on Object {
+      return null;
+    }
+  }
+
+  Future<List<ActivityMessageEntity>> _loadAssetItems() async {
     final rawJson = await rootBundle.loadString(_activityItemsAsset);
     final decoded = jsonDecode(rawJson) as List<dynamic>;
     return decoded
@@ -160,6 +245,47 @@ class AppActivityRepository {
               ActivityMessageEntity.fromJson(item as Map<String, dynamic>),
         )
         .toList();
+  }
+
+  static ActivityMessageEntity _fromCampaign(CampaignInfo c) {
+    final emoji = c.copy.emoji;
+    var title = c.copy.title;
+    if (emoji.isNotEmpty && title.startsWith(emoji)) {
+      title = title.substring(emoji.length).trim();
+    }
+    final rawPlats = c.platforms.isNotEmpty
+        ? c.platforms
+        : (c.platform == 'any' || c.platform.isEmpty
+            ? const ['ios', 'android']
+            : [c.platform]);
+    final openTitle =
+        c.copy.openTitle.isNotEmpty ? c.copy.openTitle : c.copy.cta;
+    return ActivityMessageEntity(
+      id: c.legacyId != 0 ? c.legacyId : (c.id.hashCode & 0x7fffffff),
+      campaignId: c.id,
+      fromRemote: true,
+      emoji: emoji.isEmpty ? '🎁' : emoji,
+      title: title,
+      languageCode: '',
+      content: c.copy.content.isNotEmpty ? c.copy.content : c.copy.subtitle,
+      contentURL: c.copy.contentUrl.isEmpty ? null : c.copy.contentUrl,
+      openURL: c.copy.openUrl.isEmpty ? null : c.copy.openUrl,
+      openTitle: openTitle.isEmpty ? null : openTitle,
+      illustration: c.illustration.isEmpty ? null : c.illustration,
+      receiveWay: c.copy.receiveWay.isEmpty ? null : c.copy.receiveWay,
+      isNotPro: c.isNotPro,
+      startAt: ActivityMessageEntity._parseDate(c.startsAt),
+      endAt: ActivityMessageEntity._parseDate(c.endsAt),
+      platforms: [
+        for (final p in rawPlats) ActivityMessageEntity._parsePlatform(p),
+      ],
+      isNew: c.isNew,
+      enableInAppRedeem: c.enableInAppRedeem,
+      enableXhsClaim: c.enableXhsClaim,
+      xhsClaimURL: c.xhsClaimUrl.isEmpty ? null : c.xhsClaimUrl,
+      requireImages: c.requireImages,
+      requireLink: c.requireLink,
+    );
   }
 
   Future<bool> isReleaseVersion() async {

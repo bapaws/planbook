@@ -32,10 +32,14 @@ struct CompleteTaskIntent: AppIntent {
     @Parameter(title: "Task ID")
     var taskId: String
 
+    @Parameter(title: "Occurrence At")
+    var occurrenceAt: String?
+
     init() {}
 
-    init(taskId: String) {
+    init(taskId: String, occurrenceAt: String? = nil) {
         self.taskId = taskId
+        self.occurrenceAt = occurrenceAt
     }
 
     /// 返回 IntentResult & OpensIntent 是为了让系统在主 App 进程执行 `perform()`。
@@ -48,20 +52,22 @@ struct CompleteTaskIntent: AppIntent {
         //    其次回落到 DB 的真实状态；都拿不到就当作未完成。
         let current =
             WidgetSettings.pendingCompletion(forTaskId: taskId)
-                ?? WidgetDatabase.shared.isTaskCompleted(taskId: taskId)
+                ?? WidgetDatabase.shared.isTaskCompleted(
+                    taskId: taskId,
+                    occurrenceAt: occurrenceAt
+                )
                 ?? false
         let newCompleted = !current
 
         // 2. 写入 pending，让下一次 reload 立刻反馈。
         WidgetSettings.setPendingCompletion(taskId: taskId, completed: newCompleted)
 
-        // 3. 立刻刷新所有四象限 widget。
-        WidgetCenter.shared.reloadTimelines(ofKind: kQuadrantWidgetLargeKind)
-        WidgetCenter.shared.reloadTimelines(ofKind: kQuadrantWidgetSmallKind)
+        // 3. 立刻刷新四象限 + 时间块 widget。
+        reloadTaskWidgets()
 
         // 4. 链到 `_CompleteTaskIntent`：它是 LiveActivityIntent，会被系统调度
         //    到主 App 进程，在那里把 toggle 请求透传给 Flutter 跑完整业务链路。
-        return .result(opensIntent: _CompleteTaskIntent(taskId: taskId))
+        return .result(opensIntent: _CompleteTaskIntent(taskId: taskId, occurrenceAt: occurrenceAt))
     }
 }
 
@@ -80,17 +86,31 @@ struct _CompleteTaskIntent: AppIntent, LiveActivityIntent {
     @Parameter(title: "Task ID")
     var taskId: String
 
+    @Parameter(title: "Occurrence At")
+    var occurrenceAt: String?
+
     init() {}
 
-    init(taskId: String) {
+    init(taskId: String, occurrenceAt: String? = nil) {
         self.taskId = taskId
+        self.occurrenceAt = occurrenceAt
     }
 
     func perform() async throws -> some IntentResult {
         #if canImport(planbook_widget)
-            _ = await WidgetActionDispatcher.completeTask(taskId: taskId)
+            _ = await WidgetActionDispatcher.completeTask(
+                taskId: taskId,
+                occurrenceAt: occurrenceAt
+            )
         #endif
 
         return .result()
     }
+}
+
+func reloadTaskWidgets() {
+    WidgetCenter.shared.reloadTimelines(ofKind: kQuadrantWidgetLargeKind)
+    WidgetCenter.shared.reloadTimelines(ofKind: kQuadrantWidgetSmallKind)
+    WidgetCenter.shared.reloadTimelines(ofKind: kTimeBlockWidgetLargeKind)
+    WidgetCenter.shared.reloadTimelines(ofKind: kTimeBlockWidgetMediumKind)
 }

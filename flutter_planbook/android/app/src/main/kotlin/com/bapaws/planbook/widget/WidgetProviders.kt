@@ -372,7 +372,7 @@ class QuickNoteWidgetProvider : AppWidgetProvider() {
 /**
  * 创建圆角平铺背景 Bitmap
  */
-private fun createRoundedTiledBackground(
+internal fun createRoundedTiledBackground(
     context: Context,
     tileResId: Int,
     width: Int,
@@ -508,9 +508,30 @@ fun refreshQuadrantWidgets(context: Context) {
     }
 }
 
+fun refreshTimeBlockWidgets(context: Context) {
+    val appWidgetManager = AppWidgetManager.getInstance(context)
+
+    val largeComponent = ComponentName(context, TimeBlockWidgetLargeProvider::class.java)
+    val largeIds = appWidgetManager.getAppWidgetIds(largeComponent)
+    for (id in largeIds) {
+        TimeBlockWidgetLargeProvider.updateWidget(context, appWidgetManager, id)
+    }
+
+    val mediumComponent = ComponentName(context, TimeBlockWidgetMediumProvider::class.java)
+    val mediumIds = appWidgetManager.getAppWidgetIds(mediumComponent)
+    for (id in mediumIds) {
+        TimeBlockWidgetMediumProvider.updateWidget(context, appWidgetManager, id)
+    }
+}
+
+fun refreshAllTaskWidgets(context: Context) {
+    refreshQuadrantWidgets(context)
+    refreshTimeBlockWidgets(context)
+}
+
 /** 绑定打开 App 首页的点击事件 */
-private fun bindOpenAppClick(rv: RemoteViews, context: Context, viewId: Int, requestCode: Int) {
-    val openIntent = WidgetActionUtils.createOpenAppIntent(context)
+internal fun bindOpenAppClick(rv: RemoteViews, context: Context, viewId: Int, requestCode: Int, deepLink: String? = null) {
+    val openIntent = WidgetActionUtils.createOpenAppIntent(context, deepLink)
     val openPending = PendingIntent.getActivity(
         context, requestCode, openIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

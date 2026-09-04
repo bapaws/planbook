@@ -80,13 +80,22 @@ final class WidgetDatabase {
     /// 任务不存在或读库失败返回 `nil`；CompleteTaskIntent 在没有 pending
     /// 缓存时用它作为权威来源，计算翻转目标。
     /// 通过 join `tasks` 按当前登录用户过滤，避免读到其他账号残留的 activity。
-    func isTaskCompleted(taskId: String) -> Bool? {
+    func isTaskCompleted(taskId: String, occurrenceAt: String? = nil) -> Bool? {
         let userId = WidgetSettings.currentUserId
         let userClause = userId == nil ? "AND t.user_id IS NULL" : "AND t.user_id = ?"
+        let occurrenceClause: String
+        if occurrenceAt == nil {
+            occurrenceClause = ""
+        } else {
+            occurrenceClause = "AND ta.occurrence_at = ?"
+        }
 
         var args: [DatabaseValueConvertible] = [taskId]
         if let userId {
             args.append(userId)
+        }
+        if let occurrenceAt {
+            args.append(occurrenceAt)
         }
 
         do {
@@ -100,6 +109,7 @@ final class WidgetDatabase {
                     WHERE ta.task_id = ?
                       AND ta.deleted_at IS NULL
                       \(userClause)
+                      \(occurrenceClause)
                     LIMIT 1
                     """,
                     arguments: StatementArguments(args)
@@ -109,6 +119,118 @@ final class WidgetDatabase {
         } catch {
             print("[Widget] Failed to read completion for task \(taskId): \(error)")
             return nil
+        }
+    }
+
+    /// 今天有起止时间的非全天顶层任务（对齐 App 时间块过滤）。
+    func fetchTimeBlockTasks() -> [TimeBlockTask] {
+        let userId = WidgetSettings.currentUserId
+        let userClause = userId == nil ? "AND t.user_id IS NULL" : "AND t.user_id = ?"
+        var args: [DatabaseValueConvertible] = []
+        if let userId {
+            args.append(userId)
+            args.append(userId)
+            args.append(userId)
+        }
+
+        let sql = """
+        SELECT DISTINCT
+            t.id, t.title, t.priority,
+            t.start_at, t.end_at,
+            NULL AS occurrence_at,
+            ta.completed_at, ta.deleted_at AS activity_deleted_at
+        FROM tasks t
+        LEFT JOIN task_activities ta
+            ON ta.task_id = t.id
+            AND ta.deleted_at IS NULL
+            AND ta.occurrence_at IS NULL
+        WHERE t.deleted_at IS NULL
+          AND t.parent_id IS NULL
+          AND COALESCE(t.is_all_day, 0) = 0
+          AND t.start_at IS NOT NULL
+          AND t.recurrence_rule IS NULL
+          AND t.detached_from_task_id IS NULL
+          \(userClause)
+          AND datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime')
+              < datetime('now', 'localtime', 'start of day', '+1 day')
+          AND (
+              (t.end_at IS NOT NULL
+               AND datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime')
+                   >= datetime('now', 'localtime', 'start of day'))
+              OR (t.end_at IS NULL
+                  AND date(datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime'))
+                      = date('now', 'localtime'))
+          )
+        UNION ALL
+        SELECT DISTINCT
+            t.id, t.title, t.priority,
+            t.start_at, t.end_at,
+            NULL AS occurrence_at,
+            ta.completed_at, ta.deleted_at AS activity_deleted_at
+        FROM tasks t
+        LEFT JOIN task_activities ta
+            ON ta.task_id = t.id
+            AND ta.deleted_at IS NULL
+            AND ta.occurrence_at IS NULL
+        WHERE t.deleted_at IS NULL
+          AND t.parent_id IS NULL
+          AND COALESCE(t.is_all_day, 0) = 0
+          AND t.start_at IS NOT NULL
+          AND t.detached_from_task_id IS NOT NULL
+          AND t.detached_recurrence_at IS NOT NULL
+          \(userClause)
+          AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime'))
+              = date('now', 'localtime')
+        UNION ALL
+        SELECT DISTINCT
+            t.id, t.title, t.priority,
+            COALESCE(toc.start_at, t.start_at) AS start_at,
+            COALESCE(toc.end_at, t.end_at) AS end_at,
+            toc.occurrence_at,
+            ta.completed_at, ta.deleted_at AS activity_deleted_at
+        FROM tasks t
+        INNER JOIN task_occurrences toc
+            ON toc.task_id = t.id
+            AND toc.deleted_at IS NULL
+            AND (
+                (
+                    toc.start_at IS NOT NULL AND toc.end_at IS NOT NULL
+                    AND datetime(substr(toc.start_at, 1, 19) || 'Z', 'localtime')
+                        < datetime('now', 'localtime', 'start of day', '+1 day')
+                    AND datetime(substr(toc.end_at, 1, 19) || 'Z', 'localtime')
+                        >= datetime('now', 'localtime', 'start of day')
+                )
+                OR (
+                    toc.due_at IS NOT NULL
+                    AND date(datetime(substr(toc.due_at, 1, 19) || 'Z', 'localtime'))
+                        = date('now', 'localtime')
+                )
+                OR (
+                    toc.start_at IS NULL
+                    AND date(datetime(substr(toc.occurrence_at, 1, 19) || 'Z', 'localtime'))
+                        = date('now', 'localtime')
+                )
+            )
+        LEFT JOIN task_activities ta
+            ON ta.task_id = t.id
+            AND ta.deleted_at IS NULL
+            AND ta.occurrence_at = toc.occurrence_at
+        WHERE t.deleted_at IS NULL
+          AND t.parent_id IS NULL
+          AND t.recurrence_rule IS NOT NULL
+          AND t.detached_from_task_id IS NULL
+          AND COALESCE(t.is_all_day, 0) = 0
+          AND COALESCE(toc.start_at, t.start_at) IS NOT NULL
+          \(userClause)
+        """
+
+        do {
+            return try dbQueue.read { db in
+                try TimeBlockTask.fetchAll(db, sql: sql, arguments: StatementArguments(args))
+            }
+        } catch {
+            print("[Widget] Failed to fetch time block tasks: \(error)")
+            return []
         }
     }
 
