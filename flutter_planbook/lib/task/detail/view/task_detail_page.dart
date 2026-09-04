@@ -131,7 +131,7 @@ class _TaskDetailPage extends StatelessWidget {
           PullDownButton(
             itemBuilder: (context) => [
               PullDownMenuItem(
-                icon: FontAwesomeIcons.pencil,
+                icon: FontAwesomeIcons.pencil.data,
                 title: context.l10n.edit,
                 onTap: () async {
                   final bloc = context.read<TaskDetailBloc>();
@@ -144,7 +144,7 @@ class _TaskDetailPage extends StatelessWidget {
                 },
               ),
               PullDownMenuItem(
-                icon: FontAwesomeIcons.trash,
+                icon: FontAwesomeIcons.trash.data,
                 title: context.l10n.delete,
                 isDestructive: true,
                 onTap: () {
@@ -156,7 +156,7 @@ class _TaskDetailPage extends StatelessWidget {
             ],
             buttonBuilder: (context, showMenu) => CupertinoButton(
               onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+              child: const FaIcon(FontAwesomeIcons.ellipsis),
             ),
           ),
         ],
@@ -237,7 +237,7 @@ class _TaskDetailPage extends StatelessWidget {
                         _onDateTap(context, task);
                       },
                       leading: AppIcon(
-                        FontAwesomeIcons.calendarDay,
+                        FontAwesomeIcons.calendarDay.data,
                         backgroundColor: theme.colorScheme.primaryContainer,
                         foregroundColor: theme.colorScheme.primary,
                       ),
@@ -304,7 +304,7 @@ class _TaskDetailPage extends StatelessWidget {
                       }
                     },
                     leading: AppIcon(
-                      FontAwesomeIcons.solidFlag,
+                      FontAwesomeIcons.solidFlag.data,
                       backgroundColor: colorScheme.primaryContainer,
                       foregroundColor: colorScheme.primary,
                     ),
@@ -332,7 +332,7 @@ class _TaskDetailPage extends StatelessWidget {
                       );
                     },
                     leading: AppIcon(
-                      FontAwesomeIcons.hashtag,
+                      FontAwesomeIcons.hashtag.data,
                       backgroundColor:
                           tagColorScheme?.primaryContainer ??
                           colorScheme.secondaryContainer,

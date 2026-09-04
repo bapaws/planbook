@@ -45,7 +45,7 @@ class TaskDetailNewSubtaskButton extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 18),
-            Icon(
+            FaIcon(
               FontAwesomeIcons.circlePlus,
               size: 18,
               color: colorScheme.primary,

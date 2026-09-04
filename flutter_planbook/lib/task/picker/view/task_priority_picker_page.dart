@@ -56,7 +56,7 @@ class TaskPriorityPickerPage extends StatelessWidget {
       child: Row(
         children: [
           AppIcon(
-            FontAwesomeIcons.solidFlag,
+            FontAwesomeIcons.solidFlag.data,
             backgroundColor: colorScheme.primaryContainer,
             foregroundColor: colorScheme.primary,
           ),
@@ -69,7 +69,7 @@ class TaskPriorityPickerPage extends StatelessWidget {
           ),
           const Spacer(),
           if (priority == selectedPriority)
-            Icon(
+            FaIcon(
               FontAwesomeIcons.check,
               color: colorScheme.onSurface,
               size: 16,

@@ -28,7 +28,7 @@ class TagNewButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              FaIcon(
                 FontAwesomeIcons.plus,
                 size: 16,
                 color: colorScheme.primary,

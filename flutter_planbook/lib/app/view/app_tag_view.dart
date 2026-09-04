@@ -27,7 +27,7 @@ class AppTagView extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            FaIcon(
               FontAwesomeIcons.hashtag,
               size: 9,
               color: colorScheme?.primary,

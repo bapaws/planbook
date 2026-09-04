@@ -192,7 +192,7 @@ class AppPurchasesFooter extends StatelessWidget {
                   children: [
                     BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
                       selector: (state) => state.isAgreedToConditions,
-                      builder: (context, isAgreedToConditions) => Icon(
+                      builder: (context, isAgreedToConditions) => FaIcon(
                         isAgreedToConditions
                             ? FontAwesomeIcons.circleCheck
                             : FontAwesomeIcons.circle,

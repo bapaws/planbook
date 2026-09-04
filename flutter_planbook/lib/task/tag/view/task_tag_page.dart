@@ -44,17 +44,17 @@ class TaskTagPage extends StatelessWidget {
           tasks: state.tasks,
           header: switch (mode) {
             TaskListMode.today => TaskTagHeader(
-              icon: FontAwesomeIcons.calendar,
+              icon: FontAwesomeIcons.calendar.data,
               title: context.l10n.today,
               backgroundColor: Colors.green,
             ),
             TaskListMode.inbox => TaskTagHeader(
-              icon: FontAwesomeIcons.inbox,
+              icon: FontAwesomeIcons.inbox.data,
               title: context.l10n.inbox,
               backgroundColor: Colors.blue,
             ),
             TaskListMode.overdue => TaskTagHeader(
-              icon: FontAwesomeIcons.clock,
+              icon: FontAwesomeIcons.clock.data,
               title: context.l10n.overdue,
               backgroundColor: Colors.red,
             ),

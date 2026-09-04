@@ -61,11 +61,11 @@ class _MineProfilePage extends StatelessWidget {
             buttonBuilder: (context, show) => CupertinoButton(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               onPressed: show,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+              child: const FaIcon(FontAwesomeIcons.ellipsis),
             ),
             itemBuilder: (context) => [
               PullDownMenuItem(
-                icon: FontAwesomeIcons.trash,
+                icon: FontAwesomeIcons.trash.data,
                 title: context.l10n.deleteAccount,
                 isDestructive: true,
                 onTap: () {
@@ -86,7 +86,7 @@ class _MineProfilePage extends StatelessWidget {
                   child: ListView(
                     children: [
                       SettingsRow(
-                        leading: const Icon(
+                        leading: const FaIcon(
                           FontAwesomeIcons.fingerprint,
                           color: Colors.purple,
                           size: 18,
@@ -127,7 +127,7 @@ class _MineProfilePage extends StatelessWidget {
                         ),
                       ),
                       SettingsRow(
-                        leading: const Icon(
+                        leading: const FaIcon(
                           FontAwesomeIcons.phone,
                           color: Colors.green,
                           size: 18,
@@ -148,7 +148,7 @@ class _MineProfilePage extends StatelessWidget {
                             context.router.push(const MinePhoneRoute()),
                       ),
                       SettingsRow(
-                        leading: const Icon(
+                        leading: const FaIcon(
                           FontAwesomeIcons.solidEnvelope,
                           color: Colors.blue,
                           size: 18,
@@ -171,7 +171,7 @@ class _MineProfilePage extends StatelessWidget {
                             context.router.push(const MineEmailRoute()),
                       ),
                       SettingsRow(
-                        leading: const Icon(
+                        leading: const FaIcon(
                           FontAwesomeIcons.key,
                           color: Colors.orange,
                           size: 18,
@@ -187,7 +187,7 @@ class _MineProfilePage extends StatelessWidget {
                             context.router.push(const MinePasswordRoute()),
                       ),
                       SettingsRow(
-                        leading: const Icon(
+                        leading: const FaIcon(
                           FontAwesomeIcons.weixin,
                           color: Color(0xFF07C160),
                           size: 18,

@@ -113,7 +113,7 @@ class RootUserHeader extends StatelessWidget {
                     ),
                     CupertinoButton(
                       sizeStyle: CupertinoButtonSize.small,
-                      child: const Icon(FontAwesomeIcons.gear),
+                      child: const FaIcon(FontAwesomeIcons.gear),
                       onPressed: () {
                         context.router.push(const SettingsHomeRoute());
                       },

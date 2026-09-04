@@ -33,7 +33,7 @@ class NoteNewBottomBar extends StatelessWidget {
             final paths = files.map((file) => file.path).toList();
             await context.read<NoteNewCubit>().addImages(paths);
           },
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.solidImage,
             color: colorScheme.onSurface,
           ),
@@ -55,7 +55,7 @@ class NoteNewBottomBar extends StatelessWidget {
             if (!context.mounted || file == null) return;
             await context.read<NoteNewCubit>().addImages([file.path]);
           },
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.solidCamera,
             color: colorScheme.onSurface,
           ),
@@ -74,7 +74,7 @@ class NoteNewBottomBar extends StatelessWidget {
               ),
             );
           },
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.tags,
             color: colorScheme.onSurface,
           ),
@@ -92,7 +92,7 @@ class NoteNewBottomBar extends StatelessWidget {
               );
             }
           },
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.paperclip,
             color: colorScheme.onSurface,
           ),
@@ -105,7 +105,7 @@ class NoteNewBottomBar extends StatelessWidget {
             FocusScope.of(context).unfocus();
             context.read<NoteNewCubit>().onSave();
           },
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.solidPaperPlane,
             color: colorScheme.onSurface,
           ),

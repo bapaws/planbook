@@ -43,7 +43,7 @@ class TaskDetailRepeatView extends StatelessWidget {
         }
       },
       leading: AppIcon(
-        FontAwesomeIcons.arrowsRotate,
+        FontAwesomeIcons.arrowsRotate.data,
         backgroundColor: colorScheme.secondaryContainer,
         foregroundColor: colorScheme.secondary,
       ),

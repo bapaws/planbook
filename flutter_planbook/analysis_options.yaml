@@ -4,6 +4,9 @@ analyzer:
     no_default_cases: ignore
   exclude:
     - lib/l10n/gen/*
+    - build/**
+    - android/**
+    - ios/**
 linter:
   rules:
     public_member_api_docs: false

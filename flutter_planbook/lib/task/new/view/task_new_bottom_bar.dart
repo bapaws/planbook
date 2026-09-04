@@ -43,7 +43,7 @@ class TaskNewBottomBar extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.solidFlag,
                     color: colorScheme.primary,
                   ),
@@ -69,7 +69,7 @@ class TaskNewBottomBar extends StatelessWidget {
                       ),
                     );
                   },
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.tags,
                     color: colorScheme?.primary ?? Colors.grey.shade400,
                   ),
@@ -101,7 +101,7 @@ class TaskNewBottomBar extends StatelessWidget {
                     },
                     child: RotatedBox(
                       quarterTurns: 1,
-                      child: Icon(
+                      child: FaIcon(
                         FontAwesomeIcons.shareNodes,
                         color: children.isNotEmpty
                             ? colorScheme.tertiary
@@ -119,7 +119,7 @@ class TaskNewBottomBar extends StatelessWidget {
                   return CupertinoButton(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     minimumSize: const Size.square(kMinInteractiveDimension),
-                    child: Icon(
+                    child: FaIcon(
                       FontAwesomeIcons.solidClock,
                       color: endAt != null
                           ? colorScheme.tertiary
@@ -149,7 +149,7 @@ class TaskNewBottomBar extends StatelessWidget {
                   return CupertinoButton(
                     padding: const EdgeInsets.symmetric(horizontal: 6),
                     minimumSize: const Size.square(kMinInteractiveDimension),
-                    child: Icon(
+                    child: FaIcon(
                       FontAwesomeIcons.arrowsRotate,
                       color: recurrenceRule != null
                           ? colorScheme.tertiary
@@ -185,7 +185,7 @@ class TaskNewBottomBar extends StatelessWidget {
                     child: CupertinoButton(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       minimumSize: const Size.square(kMinInteractiveDimension),
-                      child: Icon(
+                      child: FaIcon(
                         FontAwesomeIcons.solidBell,
                         color: alarms.isNotEmpty
                             ? colorScheme.tertiary
@@ -238,7 +238,7 @@ class TaskNewBottomBar extends StatelessWidget {
                           state.status == PageStatus.loading
                       ? null
                       : context.read<TaskNewCubit>().onSave,
-                  child: const Icon(
+                  child: const FaIcon(
                     FontAwesomeIcons.solidPaperPlane,
                   ),
                 ).shakeX(animate: state.status == PageStatus.failure);

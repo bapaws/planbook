@@ -99,7 +99,7 @@ class TaskDetailBottomBar extends StatelessWidget {
               ],
             ),
             clipBehavior: Clip.hardEdge,
-            child: Icon(
+            child: FaIcon(
               FontAwesomeIcons.featherPointed,
               size: 18,
               color: theme.colorScheme.onSurface,

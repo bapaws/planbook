@@ -1,3 +1,4 @@
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -158,33 +159,35 @@ class _RootHomePageState extends State<_RootHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AppPageScaffold(
-      child: AutoTabsRouter(
-        routes: const [
-          RootTaskRoute(),
-          RootDiscoverRoute(),
-          RootNoteRoute(),
-        ],
-        builder: (context, child) {
-          return Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              child,
-              const Positioned(
-                left: 24,
-                right: 24,
-                bottom: 22,
-                child: RootHomeBottomBar(),
-              ),
-            ],
-          );
-        },
-        transitionBuilder: (context, child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
+    return AppHubNoticeAlertListener(
+      child: AppPageScaffold(
+        child: AutoTabsRouter(
+          routes: const [
+            RootTaskRoute(),
+            RootDiscoverRoute(),
+            RootNoteRoute(),
+          ],
+          builder: (context, child) {
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                child,
+                const Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 22,
+                  child: RootHomeBottomBar(),
+                ),
+              ],
+            );
+          },
+          transitionBuilder: (context, child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
     );
   }

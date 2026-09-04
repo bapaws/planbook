@@ -61,7 +61,7 @@ class _TaskNewChildPageState extends State<TaskNewChildPage> {
               actions: [
                 CupertinoButton(
                   onPressed: _pop,
-                  child: const Icon(FontAwesomeIcons.check),
+                  child: const FaIcon(FontAwesomeIcons.check),
                 ),
               ],
             ),
@@ -139,7 +139,7 @@ class _TaskNewChildPageState extends State<TaskNewChildPage> {
                           }
                         }
                       : null,
-                  child: const Icon(FontAwesomeIcons.circlePlus),
+                  child: const FaIcon(FontAwesomeIcons.circlePlus),
                 ),
               ],
             ),
@@ -189,7 +189,7 @@ class _TaskNewChildPageState extends State<TaskNewChildPage> {
                     CupertinoButton(
                       padding: EdgeInsets.zero,
                       minimumSize: const Size.square(kMinInteractiveDimension),
-                      child: Icon(
+                      child: FaIcon(
                         FontAwesomeIcons.circleMinus,
                         size: 16,
                         color: theme.colorScheme.error,

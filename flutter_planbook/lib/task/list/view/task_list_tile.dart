@@ -195,7 +195,7 @@ class _TaskListTileState extends State<TaskListTile>
               },
               backgroundColor: theme.colorScheme.primaryContainer,
               foregroundColor: theme.colorScheme.primary,
-              icon: FontAwesomeIcons.listCheck,
+              icon: FontAwesomeIcons.listCheck.data,
             ),
           ],
         ),
@@ -209,7 +209,7 @@ class _TaskListTileState extends State<TaskListTile>
               },
               backgroundColor: theme.colorScheme.primaryContainer,
               foregroundColor: theme.colorScheme.primary,
-              icon: FontAwesomeIcons.pencil,
+              icon: FontAwesomeIcons.pencil.data,
             ),
             SlidableAction(
               onPressed: (context) {
@@ -217,7 +217,7 @@ class _TaskListTileState extends State<TaskListTile>
               },
               backgroundColor: theme.colorScheme.errorContainer,
               foregroundColor: theme.colorScheme.error,
-              icon: FontAwesomeIcons.trash,
+              icon: FontAwesomeIcons.trash.data,
             ),
             if (_isOverdue && widget.onDelayed != null)
               SlidableAction(
@@ -226,7 +226,7 @@ class _TaskListTileState extends State<TaskListTile>
                 },
                 backgroundColor: theme.colorScheme.tertiaryContainer,
                 foregroundColor: theme.colorScheme.tertiary,
-                icon: FontAwesomeIcons.calendarDay,
+                icon: FontAwesomeIcons.calendarDay.data,
               ),
           ],
         ),

@@ -1,15 +1,17 @@
 import 'dart:io';
 
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/links/app_links_handler.dart';
+import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/apk_download_service.dart';
+import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:intl/intl.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -82,7 +84,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       // 从后台回到前台时滚动补 schedule，使重复任务提醒窗口始终覆盖未来一段时间
       final repo = context.read<TasksRepository>();
       Future.microtask(repo.rescheduleAllRecurringAlarms);
-      context.read<AppActivityBloc>().add(const AppActivityNoticesRefreshed());
     }
   }
 
@@ -162,45 +163,77 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<AppBloc, AppState>(
-          listenWhen: (previous, current) => previous.locale != current.locale,
-          listener: (context, state) {
-            context.read<AppActivityBloc>().add(
-              AppActivityLocaleChanged(locale: state.locale),
-            );
-          },
-        ),
-      ],
-      child: BlocBuilder<AppBloc, AppState>(
-        builder: (context, state) {
-          _syncIntlDefaultLocale(state.locale);
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: _getSystemUiOverlayStyle(state),
-            child: MaterialApp.router(
-              debugShowCheckedModeBanner: false,
-              theme: state.getTheme(_brightness),
-              locale: state.locale,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              routerConfig: _appRouter.config(),
-              builder: (context, child) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  // 只在 Android 上设置 edgeToEdge 模式
-                  if (Platform.isAndroid) {
-                    SystemChrome.setEnabledSystemUIMode(
-                      SystemUiMode.edgeToEdge,
-                      overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-                    );
-                  }
-                });
-                return EasyLoading.init()(context, child);
-              },
-            ),
-          );
-        },
-      ),
+    return BlocBuilder<AppBloc, AppState>(
+      builder: (context, state) {
+        _syncIntlDefaultLocale(state.locale);
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: _getSystemUiOverlayStyle(state),
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: state.getTheme(_brightness),
+            locale: state.locale,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            routerConfig: _appRouter.config(),
+            builder: (context, child) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                // 只在 Android 上设置 edgeToEdge 模式
+                if (Platform.isAndroid) {
+                  SystemChrome.setEnabledSystemUIMode(
+                    SystemUiMode.edgeToEdge,
+                    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+                  );
+                }
+              });
+              final loaded = EasyLoading.init()(context, child);
+              return AppHubHost(
+                config: _appHubConfig(),
+                fallbackAsset: 'assets/files/activity_messages.json',
+                locale: _appHubLocaleTag(state.locale),
+                channel: AppHubChannel.resolve(
+                  isCn: AppChannel.isAndroidChina,
+                ),
+                externalUserId: state.user?.id,
+                isEntitled: () =>
+                    context.read<AppPurchasesBloc>().state.isPremium,
+                // 挂在 Host 子树下才能拿到 AppHubSession；会员状态变化时立刻 refilter。
+                child: BlocListener<AppPurchasesBloc, AppPurchasesState>(
+                  listenWhen: (previous, current) =>
+                      previous.isPremium != current.isPremium,
+                  listener: (context, _) {
+                    final session = AppHubSession.maybeOf(context);
+                    if (session == null) return;
+                    session.refilter();
+                  },
+                  child: loaded,
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
+}
+
+/// `--dart-define=APP_HUB_API_KEY` 优先；未注入时沿用计划本已登记的 key。
+AppHubConfig _appHubConfig() {
+  final env = AppHubConfig.fromEnvironment();
+  if (env.isConfigured) return env;
+  return const AppHubConfig(
+    apiKey: '5c949033c65e333a8b67efc57b884235db9fb957c417f64f',
+  );
+}
+
+String? _appHubLocaleTag(Locale? locale) {
+  if (locale == null) return null;
+  if (locale.languageCode == 'zh') {
+    final traditional =
+        locale.scriptCode == 'Hant' ||
+        locale.countryCode == 'TW' ||
+        locale.countryCode == 'HK' ||
+        locale.countryCode == 'MO';
+    return traditional ? 'zh-Hant' : 'zh-Hans';
+  }
+  return locale.languageCode;
 }

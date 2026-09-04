@@ -55,7 +55,7 @@ class _SettingsBackgroundPage extends StatelessWidget {
                   );
                 },
                 title: Text(asset.name),
-                trailing: Icon(
+                trailing: FaIcon(
                   state.selectedAssetId == asset.id
                       ? FontAwesomeIcons.solidCircleCheck
                       : FontAwesomeIcons.circle,

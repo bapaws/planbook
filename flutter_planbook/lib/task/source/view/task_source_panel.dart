@@ -191,7 +191,7 @@ class _TaskSourcePanelView extends StatelessWidget {
           const Positioned(
             top: -8,
             right: -8,
-            child: Icon(
+            child: FaIcon(
               FontAwesomeIcons.circlePlus,
               size: 24,
               color: Colors.green,

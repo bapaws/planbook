@@ -72,7 +72,7 @@ class _TaskRecurrencePageState extends State<TaskRecurrencePage> {
                   onPressed: () {
                     context.router.maybePop(_recurrenceRule);
                   },
-                  child: const Icon(FontAwesomeIcons.check),
+                  child: const FaIcon(FontAwesomeIcons.check),
                 ),
               ],
             ),

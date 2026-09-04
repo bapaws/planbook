@@ -192,7 +192,8 @@ class SignWelcomePage extends StatelessWidget {
                       color: theme.colorScheme.surfaceContainerHighest,
                     ),
                   ),
-                  child: Icon(
+                  alignment: Alignment.center,
+                  child: FaIcon(
                     FontAwesomeIcons.apple,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -213,7 +214,8 @@ class SignWelcomePage extends StatelessWidget {
                       color: theme.colorScheme.surfaceContainerHighest,
                     ),
                   ),
-                  child: Icon(
+                  alignment: Alignment.center,
+                  child: FaIcon(
                     FontAwesomeIcons.phone,
                     color: theme.colorScheme.onSurface,
                   ),
@@ -231,7 +233,8 @@ class SignWelcomePage extends StatelessWidget {
                     color: theme.colorScheme.surfaceContainerHighest,
                   ),
                 ),
-                child: Icon(
+                alignment: Alignment.center,
+                child: FaIcon(
                   FontAwesomeIcons.envelope,
                   color: theme.colorScheme.onSurface,
                 ),
@@ -249,7 +252,8 @@ class SignWelcomePage extends StatelessWidget {
                     color: theme.colorScheme.surfaceContainerHighest,
                   ),
                 ),
-                child: Icon(
+                alignment: Alignment.center,
+                child: FaIcon(
                   FontAwesomeIcons.key,
                   color: theme.colorScheme.onSurface,
                 ),

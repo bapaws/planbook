@@ -1,14 +1,20 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 3.1.5+139
+version: 3.1.6+142
 publish_to: none
 
 environment:
-  sdk: ^3.8.1
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   animate_do: ^4.2.0
   animated_text_kit: ^4.3.0
+  app_hub:
+    git:
+      url: https://github.com/bapaws/app_hub.git
+      path: client/flutter/app_hub
+      ref: 0c68482b12a2b22124de57560770eac3d5e03856
   app_links: ^6.4.1
   app_settings: ^7.0.0
   audioplayers: ^6.5.1
@@ -49,7 +55,7 @@ dependencies:
   flutter_svg: ^2.2.0
   fluttertoast: ^8.2.11
   fluwx: ^5.0.0
-  font_awesome_flutter: ^10.8.0
+  font_awesome_flutter: ^11.0.0
   google_fonts: ^6.3.0
   http: ^1.6.0
   hydrated_bloc: ^10.1.1
@@ -62,7 +68,7 @@ dependencies:
   internet_connection_checker: ^3.0.1
   jiffy: ^6.3.1
   octo_image: ^2.1.0
-  package_info_plus: ^8.3.0
+  package_info_plus: ^9.0.0
   path: ^1.9.1
   path_provider: ^2.1.5
   pdf: ^3.11.3
@@ -77,15 +83,10 @@ dependencies:
     path: packages/planbook_widget
   pull_down_button: ^0.10.2
   purchases_flutter: 9.9.9
-  redeem_client:
-    git:
-      url: https://github.com/bapaws/redeem_code.git
-      path: client/flutter/redeem_client
-      ref: main
   rxdart: ^0.28.0
   saver_gallery: ^4.0.0
   screenshot: ^3.0.0
-  share_plus: ^12.0.1
+  share_plus: ^11.1.0
   shared_preferences: ^2.3.2
   shimmer: ^3.0.0
   sliver_tools: ^0.2.12
@@ -108,14 +109,15 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   mocktail: ^1.0.4
   very_good_analysis: ^9.0.0
 
-dependency_overrides:
-  redeem_client:
-    path: ../../redeem_code/client/flutter/redeem_client
-
 flutter:
+  # 当前原生插件以 CocoaPods 为主；SPM 会与工程现有 GRDB/SQLite 依赖冲突。
+  config:
+    enable-swift-package-manager: false
   generate: true
   uses-material-design: true
   assets:

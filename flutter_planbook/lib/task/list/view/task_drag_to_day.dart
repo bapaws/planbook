@@ -134,7 +134,7 @@ Widget taskListTileDragFeedbackBuilder(
         const Positioned(
           top: -8,
           right: -8,
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.circlePlus,
             size: 18,
             color: Colors.green,

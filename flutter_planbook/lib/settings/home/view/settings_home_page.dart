@@ -1,17 +1,15 @@
 import 'dart:io';
 
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
-import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
-import 'package:flutter_planbook/core/redeem/redeem_service.dart';
 import 'package:flutter_planbook/core/view/app_pro_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -167,7 +165,7 @@ class _SettingsHomePage extends StatelessWidget {
             title: l10n.general,
           ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.solidCalendarCheck,
               color: Colors.teal,
               size: 20,
@@ -181,7 +179,7 @@ class _SettingsHomePage extends StatelessWidget {
             title: l10n.appearance,
           ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.language,
               color: Colors.deepPurple,
               size: 20,
@@ -192,7 +190,7 @@ class _SettingsHomePage extends StatelessWidget {
             },
           ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.solidImage,
               color: Colors.cyan,
               size: 20,
@@ -203,7 +201,7 @@ class _SettingsHomePage extends StatelessWidget {
             },
           ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.solidMoon,
               color: Colors.blueGrey,
               size: 20,
@@ -214,7 +212,7 @@ class _SettingsHomePage extends StatelessWidget {
             },
           ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.palette,
               color: Colors.pink,
               size: 20,
@@ -240,33 +238,10 @@ class _SettingsHomePage extends StatelessWidget {
           SettingsSectionHeader(
             title: l10n.other,
           ),
-          BlocSelector<AppActivityBloc, AppActivityState, bool>(
-            selector: (state) =>
-                state.activities.isNotEmpty || state.notices.isNotEmpty,
-            builder: (context, isNotEmpty) {
-              return isNotEmpty
-                  ? SettingsRow(
-                      leading: const Icon(
-                        FontAwesomeIcons.gift,
-                        color: Colors.red,
-                        size: 20,
-                      ),
-                      title: Text(
-                        l10n.rewardActivities,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                      onPressed: () {
-                        context.router.push(const AppActivityListRoute());
-                      },
-                    )
-                  : const SizedBox.shrink();
-            },
-          ),
+          _buildRewardActivitiesRow(context, theme, l10n),
           if (Platform.isIOS || Platform.isMacOS) ...[
             SettingsRow(
-              leading: const Icon(
+              leading: const FaIcon(
                 FontAwesomeIcons.solidStar,
                 color: Colors.amber,
                 size: 20,
@@ -280,7 +255,7 @@ class _SettingsHomePage extends StatelessWidget {
             ),
           ],
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.solidMessage,
               color: Colors.green,
               size: 20,
@@ -319,17 +294,16 @@ class _SettingsHomePage extends StatelessWidget {
                 ),
               ),
               onPressed: () async {
-                await context
-                    .read<AppActivityRepository>()
-                    .clearLocalActivityPreferences();
-                await RedeemService.instance.clearLocalState();
+                final session = AppHubSession.maybeOf(context);
+                if (session == null) return;
+                await session.client.clearLocalState();
+                await session.reload();
                 if (!context.mounted) return;
-                context.read<AppActivityBloc>().add(const AppActivityFetched());
                 await Fluttertoast.showToast(msg: '已清空活动和兑换本地记录');
               },
             ),
           SettingsRow(
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.circleInfo,
               color: Colors.orange,
               size: 20,
@@ -342,6 +316,39 @@ class _SettingsHomePage extends StatelessWidget {
           const SizedBox(height: kToolbarHeight),
         ],
       ),
+    );
+  }
+
+  Widget _buildRewardActivitiesRow(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final session = AppHubSession.maybeOf(context);
+    if (session == null) return const SizedBox.shrink();
+    return ListenableBuilder(
+      listenable: session,
+      builder: (context, _) {
+        if (session.isEntitled?.call() ?? false) {
+          return const SizedBox.shrink();
+        }
+        return SettingsRow(
+          leading: const FaIcon(
+            FontAwesomeIcons.gift,
+            color: Colors.red,
+            size: 20,
+          ),
+          title: Text(
+            l10n.rewardActivities,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          onPressed: () {
+            AppHubUI.open<void>(context);
+          },
+        );
+      },
     );
   }
 

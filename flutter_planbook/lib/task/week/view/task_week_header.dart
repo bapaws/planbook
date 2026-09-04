@@ -70,7 +70,7 @@ class TaskWeekHeader extends StatelessWidget {
             sizeStyle: CupertinoButtonSize.small,
             padding: const EdgeInsets.symmetric(horizontal: 8),
             minimumSize: const Size.square(28),
-            child: Icon(
+            child: FaIcon(
               FontAwesomeIcons.plus,
               size: 14,
               color: colorScheme.primary,

@@ -97,7 +97,7 @@ class _NoteNewTypePage extends StatelessWidget {
                   onPressed: () {
                     context.read<NoteTypeNewCubit>().onSave();
                   },
-                  child: const Icon(FontAwesomeIcons.solidPaperPlane),
+                  child: const FaIcon(FontAwesomeIcons.solidPaperPlane),
                 ),
               ],
             ),

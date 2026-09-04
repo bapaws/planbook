@@ -33,7 +33,7 @@ class JournalDailyDataView extends StatelessWidget {
           children: [
             JournalDailyHeader(
               title: context.l10n.dailyData,
-              icon: Icon(
+              icon: FaIcon(
                 FontAwesomeIcons.trophy,
                 size: 14,
                 color: theme.colorScheme.primary,

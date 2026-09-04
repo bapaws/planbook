@@ -36,8 +36,10 @@ class AppNetworkImage extends StatelessWidget {
       child: SizedBox(
         width: width ?? height ?? 56,
         height: height ?? width ?? 56,
-        child: Icon(
-          placeholderIcon ?? FontAwesomeIcons.image,
+        child: FaIcon(
+          placeholderIcon != null
+              ? FaIconData(placeholderIcon!)
+              : FontAwesomeIcons.image,
           color:
               placeholderColor ??
               Theme.of(context).colorScheme.onSurfaceVariant,

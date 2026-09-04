@@ -96,7 +96,7 @@ class TaskFocusHeaderView extends StatelessWidget {
           sizeStyle: CupertinoButtonSize.small,
           minimumSize: const Size.square(21),
           onPressed: onMindMapTapped,
-          child: Icon(
+          child: FaIcon(
             FontAwesomeIcons.snowflake,
             size: 14,
             color: theme.colorScheme.primary,
@@ -114,7 +114,7 @@ class TaskFocusHeaderView extends StatelessWidget {
                 ),
               );
             },
-            child: Icon(
+            child: FaIcon(
               FontAwesomeIcons.xmark,
               size: 14,
               color: theme.colorScheme.outlineVariant,

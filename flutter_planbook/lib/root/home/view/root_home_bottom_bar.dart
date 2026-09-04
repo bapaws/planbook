@@ -19,13 +19,13 @@ enum RootHomeTab {
   journal,
   note;
 
-  IconData get icon => switch (this) {
+  FaIconData get icon => switch (this) {
     RootHomeTab.task => FontAwesomeIcons.solidCalendarCheck,
     RootHomeTab.journal => FontAwesomeIcons.solidCompass,
     RootHomeTab.note => FontAwesomeIcons.book,
   };
 
-  IconData get actionIcon => switch (this) {
+  FaIconData get actionIcon => switch (this) {
     RootHomeTab.task => FontAwesomeIcons.plus,
     RootHomeTab.journal => FontAwesomeIcons.download,
     RootHomeTab.note => FontAwesomeIcons.featherPointed,
@@ -87,7 +87,7 @@ class RootHomeBottomBar extends StatelessWidget {
                         width: kRootBottomBarItemWidth,
                         child: AnimatedSwitcher(
                           duration: animationDuration,
-                          child: Icon(
+                          child: FaIcon(
                             tab.icon,
                             key: ValueKey(tab),
                             size: 24,
@@ -127,7 +127,7 @@ class RootHomeBottomBar extends StatelessWidget {
             clipBehavior: Clip.hardEdge,
             child: AnimatedSwitcher(
               duration: animationDuration,
-              child: Icon(
+              child: FaIcon(
                 activeTab.actionIcon,
                 key: ValueKey(activeTab),
                 size: 18,

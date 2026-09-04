@@ -35,7 +35,7 @@ class TaskDoneNoteTile extends StatelessWidget {
           horizontal: 16,
           vertical: 12,
         ),
-        leading: const Icon(
+        leading: const FaIcon(
           FontAwesomeIcons.featherPointed,
           size: 16,
           color: Colors.green,

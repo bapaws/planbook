@@ -51,10 +51,12 @@ class RootDiscoverJournalTitleView extends StatelessWidget {
             child: AnimatedRotation(
               turns: isCalendarExpanded ? 0.25 : 0,
               duration: Durations.medium1,
-              child: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 12,
-                color: theme.colorScheme.primary,
+              child: Center(
+                child: FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 12,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
           ),

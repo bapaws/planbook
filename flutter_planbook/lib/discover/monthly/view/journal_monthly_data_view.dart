@@ -45,7 +45,7 @@ class JournalMonthlyDataView extends StatelessWidget {
       children: [
         JournalDailyHeader(
           title: context.l10n.monthlyData,
-          icon: Icon(
+          icon: FaIcon(
             FontAwesomeIcons.trophy,
             size: 14,
             color: theme.colorScheme.primary,

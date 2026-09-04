@@ -19,11 +19,11 @@ enum RootTaskTab {
 
   IconData get icon {
     return switch (this) {
-      RootTaskTab.inbox => FontAwesomeIcons.inbox,
-      RootTaskTab.day => FontAwesomeIcons.calendar,
-      RootTaskTab.overdue => FontAwesomeIcons.clock,
-      RootTaskTab.week => FontAwesomeIcons.calendarWeek,
-      RootTaskTab.month => FontAwesomeIcons.calendarDays,
+      RootTaskTab.inbox => FontAwesomeIcons.inbox.data,
+      RootTaskTab.day => FontAwesomeIcons.calendar.data,
+      RootTaskTab.overdue => FontAwesomeIcons.clock.data,
+      RootTaskTab.week => FontAwesomeIcons.calendarWeek.data,
+      RootTaskTab.month => FontAwesomeIcons.calendarDays.data,
     };
   }
 

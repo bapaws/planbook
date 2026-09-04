@@ -133,7 +133,7 @@ class _TaskDonePage extends StatelessWidget {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(
+                              FaIcon(
                                 FontAwesomeIcons.solidCalendar,
                                 size: 12,
                                 color: colorScheme.primary,
@@ -163,7 +163,7 @@ class _TaskDonePage extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            FaIcon(
                               FontAwesomeIcons.solidFlag,
                               size: 12,
                               color: colorScheme.primary,
@@ -222,7 +222,7 @@ class _TaskDonePage extends StatelessWidget {
                       horizontal: 16,
                       vertical: 12,
                     ),
-                    leading: const Icon(
+                    leading: const FaIcon(
                       FontAwesomeIcons.solidCalendarCheck,
                       size: 16,
                       color: Colors.blue,

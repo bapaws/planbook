@@ -31,7 +31,7 @@ class JournalDailyFocusView extends StatelessWidget {
       children: [
         JournalDailyHeader(
           title: noteType.getTitle(context.l10n),
-          icon: Icon(
+          icon: FaIcon(
             FontAwesomeIcons.arrowsToDot,
             size: 14,
             color: colorScheme.primary,

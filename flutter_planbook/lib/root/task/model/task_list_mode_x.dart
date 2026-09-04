@@ -6,10 +6,10 @@ import 'package:planbook_api/entity/task_entity.dart';
 extension TaskListModeX on TaskListMode {
   IconData get icon {
     return switch (this) {
-      TaskListMode.inbox => FontAwesomeIcons.inbox,
-      TaskListMode.today => FontAwesomeIcons.calendar,
-      TaskListMode.overdue => FontAwesomeIcons.clock,
-      TaskListMode.tag => FontAwesomeIcons.hashtag,
+      TaskListMode.inbox => FontAwesomeIcons.inbox.data,
+      TaskListMode.today => FontAwesomeIcons.calendar.data,
+      TaskListMode.overdue => FontAwesomeIcons.clock.data,
+      TaskListMode.tag => FontAwesomeIcons.hashtag.data,
     };
   }
 
