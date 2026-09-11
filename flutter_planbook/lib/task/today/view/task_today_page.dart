@@ -76,40 +76,18 @@ class TaskTodayPage extends StatelessWidget {
                   );
                 },
               ),
-              BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
-                selector: (state) =>
-                    state.tabFocusNoteTypes[RootTaskTab.day] ??
-                    NoteType.dailyFocus,
+              BlocSelector<RootTaskBloc, RootTaskState, NoteType?>(
+                selector: (state) => state.tabFocusNoteTypes[RootTaskTab.day],
                 builder: (context, noteType) {
-                  final bloc = context.read<TaskTodayBloc>();
-                  final note = noteType.isFocus
-                      ? bloc.state.focusNote
-                      : bloc.state.summaryNote;
-                  return TaskFocusView(
-                    note: note,
-                    noteType: noteType,
-                    onTap: () {
-                      final focusAt = context.read<TaskTodayBloc>().state.date;
-                      context.router.push(
-                        NoteNewTypeRoute(
-                          initialNote: note,
-                          type: noteType,
-                          focusAt: focusAt,
-                        ),
-                      );
-                    },
-                    onMindMapTapped: () {
-                      _addDiscoverEvent(context, noteType);
-                      _navigateToRootDiscover(context, noteType);
-                    },
-                    onTaskDropped: (task) {
-                      context.read<TaskTodayBloc>().add(
-                        TaskTodayNoteTaskAppended(
-                          task: task,
-                          noteType: noteType,
-                        ),
-                      );
-                    },
+                  return AnimatedSwitcher(
+                    duration: Durations.medium1,
+                    transitionBuilder: (child, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      child: child,
+                    ),
+                    child: noteType == null
+                        ? const SizedBox.shrink()
+                        : _buildFocusView(context, noteType),
                   );
                 },
               ),
@@ -223,6 +201,39 @@ class TaskTodayPage extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildFocusView(BuildContext context, NoteType noteType) {
+    final bloc = context.read<TaskTodayBloc>();
+    final note = noteType.isFocus
+        ? bloc.state.focusNote
+        : bloc.state.summaryNote;
+    return TaskFocusView(
+      note: note,
+      noteType: noteType,
+      onTap: () {
+        final focusAt = context.read<TaskTodayBloc>().state.date;
+        context.router.push(
+          NoteNewTypeRoute(
+            initialNote: note,
+            type: noteType,
+            focusAt: focusAt,
+          ),
+        );
+      },
+      onMindMapTapped: () {
+        _addDiscoverEvent(context, noteType);
+        _navigateToRootDiscover(context, noteType);
+      },
+      onTaskDropped: (task) {
+        context.read<TaskTodayBloc>().add(
+          TaskTodayNoteTaskAppended(
+            task: task,
+            noteType: noteType,
+          ),
+        );
+      },
     );
   }
 

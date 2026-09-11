@@ -110,3 +110,17 @@ final class TaskSourcePanelTaskCompleted extends TaskSourcePanelEvent {
   @override
   List<Object?> get props => [task];
 }
+
+/// 删除任务（弹窗确认后派发）
+final class TaskSourcePanelTaskDeleted extends TaskSourcePanelEvent {
+  const TaskSourcePanelTaskDeleted({
+    required this.task,
+    required this.mode,
+  });
+
+  final TaskEntity task;
+  final RecurringTaskDeleteMode mode;
+
+  @override
+  List<Object?> get props => [task, mode];
+}

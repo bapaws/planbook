@@ -150,6 +150,9 @@ Widget taskListTileDragFeedbackBuilder(
 /// 将 [child] 包在 Draggable 内，data 为 [task]；
 /// [feedbackBuilder] 为 null 时使用 defaultDragFeedbackBuilder。
 ///
+/// 与 [TaskListTile] 一起用时，必须通过 [TaskListTile.contentWrapper]
+/// 只包住滑动主体，不要包住整个 [TaskListTile]（否则左滑按钮点不到）。
+///
 /// 当拖拽被 [TaskDragTarget] 接受且目标操作类型为 [TaskDragOperation.move] 时，
 /// 会调用 [onDragCompleted]，通常用于向源 BLoC 派发乐观移除事件。
 class TaskDraggable extends StatelessWidget {

@@ -61,7 +61,8 @@ data class QuadrantTask(
     val priority: TaskPriority,
     val isCompleted: Boolean,
     val hasAlarm: Boolean,
-    val tagNames: List<String> = emptyList()
+    val tagNames: List<String> = emptyList(),
+    val occurrenceAt: String? = null,
 )
 
 data class QuadrantGroup(

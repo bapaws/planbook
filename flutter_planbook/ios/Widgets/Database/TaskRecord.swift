@@ -101,14 +101,24 @@ struct QuadrantTask: Identifiable {
     let isCompleted: Bool
     let hasAlarm: Bool
     let tagNames: [String]
+    let occurrenceAt: String?
 
-    init(id: String, title: String, priority: String?, isCompleted: Bool, hasAlarm: Bool, tagNames: [String] = []) {
+    init(
+        id: String,
+        title: String,
+        priority: String?,
+        isCompleted: Bool,
+        hasAlarm: Bool,
+        tagNames: [String] = [],
+        occurrenceAt: String? = nil
+    ) {
         self.id = id
         self.title = title
         self.priority = TaskPriority(rawValue: priority ?? "none") ?? .none
         self.isCompleted = isCompleted
         self.hasAlarm = hasAlarm
         self.tagNames = tagNames
+        self.occurrenceAt = occurrenceAt
     }
 }
 
@@ -160,6 +170,7 @@ extension QuadrantTask: FetchableRecord {
         let completedAt: String? = row["completed_at"]
         let activityDeletedAt: String? = row["activity_deleted_at"]
         let alarms: String? = row["alarms"]
+        let occurrenceAt: String? = row["occurrence_at"]
 
         let isCompleted = completedAt != nil && activityDeletedAt == nil
         let hasAlarm = alarms != nil && !alarms!.isEmpty
@@ -170,7 +181,8 @@ extension QuadrantTask: FetchableRecord {
             priority: priority,
             isCompleted: isCompleted,
             hasAlarm: hasAlarm,
-            tagNames: []
+            tagNames: [],
+            occurrenceAt: occurrenceAt
         )
     }
 }

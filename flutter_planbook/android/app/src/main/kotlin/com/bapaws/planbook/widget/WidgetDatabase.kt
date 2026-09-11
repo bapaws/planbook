@@ -71,17 +71,24 @@ class WidgetDatabase private constructor(context: Context) {
                 tasks.add(cursor.toQuadrantTask())
             }
         }
-        return tasks
+        return collapseQuadrantTasks(tasks)
     }
 
     /** 读取单个任务当前在 DB 中的完成状态；不存在或读库失败返回 null */
     fun isTaskCompleted(taskId: String, occurrenceAt: String? = null): Boolean? {
         val userId = WidgetSettings.getCurrentUserId(appContext)
         val userClause = if (userId == null) "AND t.user_id IS NULL" else "AND t.user_id = ?"
-        val occurrenceClause = if (occurrenceAt == null) "" else "AND ta.occurrence_at = ?"
+        val occurrence = occurrenceAt?.takeIf { it.isNotEmpty() }
+        // occurrenceAt 为空表示非重复任务，只匹配 occurrence_at IS NULL；
+        // 不能省略条件，否则重复任务任意一天完成都会被当成整组已完成。
+        val occurrenceClause = if (occurrence == null) {
+            "AND ta.occurrence_at IS NULL"
+        } else {
+            "AND ta.occurrence_at = ?"
+        }
         val args = mutableListOf(taskId)
         if (userId != null) args.add(userId)
-        if (occurrenceAt != null) args.add(occurrenceAt)
+        if (occurrence != null) args.add(occurrence)
         return try {
             db.rawQuery(
                 """
@@ -118,12 +125,15 @@ class WidgetDatabase private constructor(context: Context) {
                 t.id, t.title, t.priority,
                 t.start_at, t.end_at,
                 NULL AS occurrence_at,
-                ta.completed_at, ta.deleted_at AS activity_deleted_at
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM task_activities ta
+                    WHERE ta.task_id = t.id
+                      AND ta.deleted_at IS NULL
+                      AND ta.completed_at IS NOT NULL
+                      AND ta.occurrence_at IS NULL
+                ) THEN '1' END AS completed_at,
+                NULL AS activity_deleted_at
             FROM tasks t
-            LEFT JOIN task_activities ta
-                ON ta.task_id = t.id
-                AND ta.deleted_at IS NULL
-                AND ta.occurrence_at IS NULL
             WHERE t.deleted_at IS NULL
               AND t.parent_id IS NULL
               AND COALESCE(t.is_all_day, 0) = 0
@@ -146,12 +156,15 @@ class WidgetDatabase private constructor(context: Context) {
                 t.id, t.title, t.priority,
                 t.start_at, t.end_at,
                 NULL AS occurrence_at,
-                ta.completed_at, ta.deleted_at AS activity_deleted_at
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM task_activities ta
+                    WHERE ta.task_id = t.id
+                      AND ta.deleted_at IS NULL
+                      AND ta.completed_at IS NOT NULL
+                      AND ta.occurrence_at IS NULL
+                ) THEN '1' END AS completed_at,
+                NULL AS activity_deleted_at
             FROM tasks t
-            LEFT JOIN task_activities ta
-                ON ta.task_id = t.id
-                AND ta.deleted_at IS NULL
-                AND ta.occurrence_at IS NULL
             WHERE t.deleted_at IS NULL
               AND t.parent_id IS NULL
               AND COALESCE(t.is_all_day, 0) = 0
@@ -167,7 +180,14 @@ class WidgetDatabase private constructor(context: Context) {
                 COALESCE(toc.start_at, t.start_at) AS start_at,
                 COALESCE(toc.end_at, t.end_at) AS end_at,
                 toc.occurrence_at,
-                ta.completed_at, ta.deleted_at AS activity_deleted_at
+                CASE WHEN EXISTS (
+                    SELECT 1 FROM task_activities ta
+                    WHERE ta.task_id = t.id
+                      AND ta.deleted_at IS NULL
+                      AND ta.completed_at IS NOT NULL
+                      AND ta.occurrence_at = toc.occurrence_at
+                ) THEN '1' END AS completed_at,
+                NULL AS activity_deleted_at
             FROM tasks t
             INNER JOIN task_occurrences toc
                 ON toc.task_id = t.id
@@ -191,10 +211,6 @@ class WidgetDatabase private constructor(context: Context) {
                             = date('now', 'localtime')
                     )
                 )
-            LEFT JOIN task_activities ta
-                ON ta.task_id = t.id
-                AND ta.deleted_at IS NULL
-                AND ta.occurrence_at = toc.occurrence_at
             WHERE t.deleted_at IS NULL
               AND t.parent_id IS NULL
               AND t.recurrence_rule IS NOT NULL
@@ -214,7 +230,7 @@ class WidgetDatabase private constructor(context: Context) {
             return emptyList()
         }
         return TimeBlockLayout.overlayPending(
-            tasks,
+            tasks.distinctBy { "${it.taskId}#${it.occurrenceAt.orEmpty()}" },
             WidgetSettings.getPendingCompletions(appContext),
         )
     }
@@ -393,50 +409,156 @@ class WidgetDatabase private constructor(context: Context) {
     private fun newUuid(): String =
         UUID.randomUUID().toString()
 
+    /** ISO8601 UTC 文本转本地日历日，截断小数秒避免 .999999 进位到下一天。 */
+    private fun sqlLocalDate(column: String): String =
+        "date(datetime(substr($column, 1, 19) || 'Z', 'localtime'))"
+
+    private fun sqlLocalDateTime(column: String): String =
+        "datetime(substr($column, 1, 19) || 'Z', 'localtime')"
+
+    /**
+     * 重复任务实例是否落在「今天」。
+     * 对齐 [database_task_today_api]：due 在当天，或 start/end 与当天相交；
+     * 仅当没有 due/start 时才回退到 occurrence_at 的日历日，避免跨天实例被展开成多行。
+     */
+    private fun sqlOccurrenceIsToday(alias: String = "toc"): String = """
+        (
+            ($alias.due_at IS NOT NULL
+             AND ${sqlLocalDate("$alias.due_at")} = date('now', 'localtime'))
+            OR (
+                $alias.start_at IS NOT NULL AND $alias.end_at IS NOT NULL
+                AND ${sqlLocalDateTime("$alias.start_at")}
+                    < datetime('now', 'localtime', 'start of day', '+1 day')
+                AND ${sqlLocalDateTime("$alias.end_at")}
+                    >= datetime('now', 'localtime', 'start of day')
+            )
+            OR (
+                $alias.due_at IS NULL AND $alias.start_at IS NULL
+                AND ${sqlLocalDate("$alias.occurrence_at")} = date('now', 'localtime')
+            )
+        )
+    """.trimIndent()
+
+    /** 重复任务实例是否已逾期，对齐 DatabaseTaskOverdueApi。 */
+    private fun sqlOccurrenceIsOverdue(alias: String = "toc"): String = """
+        (
+            ($alias.end_at IS NOT NULL
+             AND ${sqlLocalDateTime("$alias.end_at")} < datetime('now', 'localtime'))
+            OR (
+                $alias.end_at IS NULL AND $alias.due_at IS NOT NULL
+                AND ${sqlLocalDate("$alias.due_at")} < date('now', 'localtime')
+            )
+            OR (
+                $alias.end_at IS NULL AND $alias.due_at IS NULL
+                AND ${sqlLocalDate("$alias.occurrence_at")} < date('now', 'localtime')
+            )
+        )
+    """.trimIndent()
+
+    /** 同一任务只保留一条：未完成优先，避免重复实例把象限刷满。 */
+    private fun collapseQuadrantTasks(tasks: List<QuadrantTask>): List<QuadrantTask> =
+        tasks.sortedBy { it.isCompleted }.distinctBy { it.id }
+
     private fun sqlForFilterMode(filterMode: TaskFilterMode, priority: TaskPriority, userId: String?, limit: Int): String {
         // 与 Flutter 端 DatabaseTaskTodayApi / InboxApi / OverdueApi 一致：
         //   未登录 → 仅展示 user_id IS NULL 的任务
         //   已登录 → 仅展示 user_id = ? 的任务
         val userClause = if (userId == null) "AND t.user_id IS NULL" else "AND t.user_id = ?"
-        return when (filterMode) {
-            // 注意：所有时间字段都是 ISO8601 UTC 字符串（带 .999999Z 等小数秒）。
-            // SQLite 的 datetime(x, 'localtime') 在遇到 .999999 时会向上进位到下一秒，
-            // 例如 '2026-04-24T15:59:59.999999Z' 会被算成本地的下一天 00:00:00，
-            // 导致全天任务（end_at = 当日 23:59:59.999999）被错误地归到第二天。
-            // 这里用 substr(x, 1, 19) || 'Z' 截断小数秒后再做时区转换，避免进位。
-            TaskFilterMode.TODAY -> """
-                SELECT DISTINCT
-                    t.id, t.title, t.priority, t.alarms,
-                    ta.completed_at, ta.deleted_at AS activity_deleted_at
-                FROM tasks t
-                LEFT JOIN task_activities ta
-                    ON ta.task_id = t.id AND ta.deleted_at IS NULL
-                LEFT JOIN task_occurrences toc
-                    ON toc.task_id = t.id
-                    AND date(datetime(substr(toc.occurrence_at, 1, 19) || 'Z', 'localtime')) = date('now', 'localtime')
-                    AND toc.deleted_at IS NULL
+        val completedByOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at = toc.occurrence_at
+            ) THEN '1' END
+        """.trimIndent()
+        val completedWithoutOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at IS NULL
+            ) THEN '1' END
+        """.trimIndent()
+        val scopedCte = """
+            scoped AS (
+                SELECT * FROM tasks t
                 WHERE t.deleted_at IS NULL
                   AND t.parent_id IS NULL
                   AND COALESCE(t.priority, 'none') = ?
                   $userClause
+            )
+        """.trimIndent()
+        return when (filterMode) {
+            TaskFilterMode.TODAY -> """
+                WITH $scopedCte
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    NULL AS occurrence_at,
+                    $completedWithoutOccurrence AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                WHERE s.recurrence_rule IS NULL
+                  AND s.detached_from_task_id IS NULL
                   AND (
-                      (t.recurrence_rule IS NULL AND t.detached_from_task_id IS NULL AND date(datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime')) = date('now', 'localtime'))
-                      OR (t.recurrence_rule IS NULL AND t.detached_from_task_id IS NULL AND date(datetime(substr(t.due_at, 1, 19) || 'Z', 'localtime')) = date('now', 'localtime'))
-                      OR (t.recurrence_rule IS NULL AND t.detached_from_task_id IS NULL AND date(datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime')) = date('now', 'localtime'))
-                      OR toc.occurrence_at IS NOT NULL
-                      OR (t.detached_from_task_id IS NOT NULL AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime')) = date('now', 'localtime'))
+                      (s.start_at IS NOT NULL
+                       AND ${sqlLocalDateTime("s.start_at")}
+                           < datetime('now', 'localtime', 'start of day', '+1 day')
+                       AND (
+                           (s.end_at IS NOT NULL
+                            AND ${sqlLocalDateTime("s.end_at")}
+                                >= datetime('now', 'localtime', 'start of day'))
+                           OR (s.end_at IS NULL
+                               AND ${sqlLocalDate("s.start_at")} = date('now', 'localtime'))
+                       ))
+                      OR (s.due_at IS NOT NULL
+                          AND ${sqlLocalDate("s.due_at")} = date('now', 'localtime'))
                   )
-                ORDER BY t."order" ASC, t.created_at ASC
+                UNION ALL
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    NULL AS occurrence_at,
+                    $completedWithoutOccurrence AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                WHERE s.detached_from_task_id IS NOT NULL
+                  AND s.detached_recurrence_at IS NOT NULL
+                  AND ${sqlLocalDate("s.detached_recurrence_at")} = date('now', 'localtime')
+                UNION ALL
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    toc.occurrence_at,
+                    $completedByOccurrence AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                INNER JOIN task_occurrences toc
+                    ON toc.task_id = s.id
+                    AND toc.deleted_at IS NULL
+                    AND ${sqlOccurrenceIsToday()}
+                WHERE s.recurrence_rule IS NOT NULL
+                  AND s.detached_from_task_id IS NULL
+                ORDER BY task_order ASC, task_created ASC
                 LIMIT ?
             """.trimIndent()
 
             TaskFilterMode.INBOX -> """
                 SELECT DISTINCT
                     t.id, t.title, t.priority, t.alarms,
-                    ta.completed_at, ta.deleted_at AS activity_deleted_at
+                    NULL AS occurrence_at,
+                    CASE WHEN EXISTS (
+                        SELECT 1 FROM task_activities ta
+                        WHERE ta.task_id = t.id
+                          AND ta.deleted_at IS NULL
+                          AND ta.completed_at IS NOT NULL
+                          AND ta.occurrence_at IS NULL
+                    ) THEN '1' END AS completed_at,
+                    NULL AS activity_deleted_at
                 FROM tasks t
-                LEFT JOIN task_activities ta
-                    ON ta.task_id = t.id AND ta.deleted_at IS NULL
                 WHERE t.deleted_at IS NULL
                   AND t.parent_id IS NULL
                   AND COALESCE(t.priority, 'none') = ?
@@ -448,46 +570,69 @@ class WidgetDatabase private constructor(context: Context) {
                 LIMIT ?
             """.trimIndent()
 
-            // 同 TODAY 的说明：使用 substr(x, 1, 19) || 'Z' 截断小数秒，
-            // 避免 SQLite 的 'localtime' 修饰符把 .999999 进位到下一秒，
-            // 否则全天任务的 end_at 会被错误判断为"未过期"。
             TaskFilterMode.OVERDUE -> """
-                SELECT DISTINCT
-                    t.id, t.title, t.priority, t.alarms,
-                    ta.completed_at, ta.deleted_at AS activity_deleted_at
-                FROM tasks t
-                LEFT JOIN task_activities ta
-                    ON ta.task_id = t.id AND ta.deleted_at IS NULL
-                LEFT JOIN task_occurrences toc
-                    ON toc.task_id = t.id
-                    AND date(datetime(substr(toc.occurrence_at, 1, 19) || 'Z', 'localtime')) < date('now', 'localtime')
-                    AND toc.deleted_at IS NULL
-                WHERE t.deleted_at IS NULL
-                  AND t.parent_id IS NULL
-                  AND COALESCE(t.priority, 'none') = ?
-                  $userClause
-                  AND ta.id IS NULL
+                WITH $scopedCte
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    NULL AS occurrence_at,
+                    NULL AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                WHERE s.recurrence_rule IS NULL
+                  AND s.detached_from_task_id IS NULL
                   AND (
-                      (
-                          t.recurrence_rule IS NULL
-                          AND t.detached_from_task_id IS NULL
-                          AND (
-                              (t.due_at IS NOT NULL AND date(datetime(substr(t.due_at, 1, 19) || 'Z', 'localtime')) < date('now', 'localtime'))
-                              OR (t.end_at IS NOT NULL AND datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime') < datetime('now', 'localtime'))
-                          )
-                      )
-                      OR (
-                          t.recurrence_rule IS NOT NULL
-                          AND toc.occurrence_at IS NOT NULL
-                      )
-                      OR (
-                          t.detached_from_task_id IS NOT NULL
-                          AND t.detached_recurrence_at IS NOT NULL
-                          AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime')) < date('now', 'localtime')
-                          AND (t.detached_reason IS NULL OR t.detached_reason != 'completed')
-                      )
+                      (s.due_at IS NOT NULL AND ${sqlLocalDate("s.due_at")} < date('now', 'localtime'))
+                      OR (s.end_at IS NOT NULL AND ${sqlLocalDateTime("s.end_at")} < datetime('now', 'localtime'))
                   )
-                ORDER BY t."order" ASC, t.created_at ASC
+                  AND NOT EXISTS (
+                      SELECT 1 FROM task_activities ta
+                      WHERE ta.task_id = s.id
+                        AND ta.deleted_at IS NULL
+                        AND ta.completed_at IS NOT NULL
+                        AND ta.occurrence_at IS NULL
+                  )
+                UNION ALL
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    NULL AS occurrence_at,
+                    NULL AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                WHERE s.detached_from_task_id IS NOT NULL
+                  AND s.detached_recurrence_at IS NOT NULL
+                  AND ${sqlLocalDate("s.detached_recurrence_at")} < date('now', 'localtime')
+                  AND (s.detached_reason IS NULL OR s.detached_reason != 'completed')
+                  AND NOT EXISTS (
+                      SELECT 1 FROM task_activities ta
+                      WHERE ta.task_id = s.id
+                        AND ta.deleted_at IS NULL
+                        AND ta.completed_at IS NOT NULL
+                        AND ta.occurrence_at IS NULL
+                  )
+                UNION ALL
+                SELECT
+                    s.id, s.title, s.priority, s.alarms,
+                    toc.occurrence_at,
+                    NULL AS completed_at,
+                    NULL AS activity_deleted_at,
+                    s."order" AS task_order, s.created_at AS task_created
+                FROM scoped s
+                INNER JOIN task_occurrences toc
+                    ON toc.task_id = s.id
+                    AND toc.deleted_at IS NULL
+                    AND ${sqlOccurrenceIsOverdue()}
+                WHERE s.recurrence_rule IS NOT NULL
+                  AND s.detached_from_task_id IS NULL
+                  AND NOT EXISTS (
+                      SELECT 1 FROM task_activities ta
+                      WHERE ta.task_id = s.id
+                        AND ta.deleted_at IS NULL
+                        AND ta.completed_at IS NOT NULL
+                        AND ta.occurrence_at = toc.occurrence_at
+                  )
+                ORDER BY task_order ASC, task_created ASC
                 LIMIT ?
             """.trimIndent()
         }
@@ -500,6 +645,8 @@ class WidgetDatabase private constructor(context: Context) {
         val completedAt = if (isNull(getColumnIndexOrThrow("completed_at"))) null else getString(getColumnIndexOrThrow("completed_at"))
         val activityDeletedAt = if (isNull(getColumnIndexOrThrow("activity_deleted_at"))) null else getString(getColumnIndexOrThrow("activity_deleted_at"))
         val alarms = if (isNull(getColumnIndexOrThrow("alarms"))) null else getString(getColumnIndexOrThrow("alarms"))
+        val occurrenceIdx = getColumnIndex("occurrence_at")
+        val occurrenceAt = if (occurrenceIdx >= 0 && !isNull(occurrenceIdx)) getString(occurrenceIdx) else null
 
         val isCompleted = completedAt != null && activityDeletedAt == null
         val hasAlarm = alarms != null && alarms.isNotEmpty()
@@ -509,7 +656,8 @@ class WidgetDatabase private constructor(context: Context) {
             title = title,
             priority = TaskPriority.fromRawValue(priority),
             isCompleted = isCompleted,
-            hasAlarm = hasAlarm
+            hasAlarm = hasAlarm,
+            occurrenceAt = occurrenceAt,
         )
     }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/task/list/view/task_delete_dialog.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_to_day.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
@@ -118,6 +121,7 @@ class _TaskSourcePanelView extends StatelessWidget {
               minWidth: 136,
               maxWidth: 260,
             ),
+            clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
               color: context.blueColorScheme.surface,
               borderRadius: BorderRadius.circular(16),
@@ -143,26 +147,29 @@ class _TaskSourcePanelView extends StatelessWidget {
                     },
                     itemBuilder: (context, index) {
                       final task = state.tasks[index];
-                      return TaskDraggable(
+                      return TaskListTile.week(
                         key: ValueKey(task),
                         task: task,
-                        feedbackBuilder: _buildDragFeedback,
-                        onDragCompleted: (task) {
-                          context.read<TaskSourcePanelBloc>().add(
-                            TaskSourcePanelTaskDragCompleted(task),
-                          );
-                        },
-                        child: TaskListTile.week(
-                          key: ValueKey(task),
+                        contentWrapper: (child) => TaskDraggable(
                           task: task,
-                          onPressed: (task) => _openTaskDetail(context, task),
-                          onEdited: (task) => _openTaskEdit(context, task),
-                          onCompleted: (task) {
+                          feedbackBuilder: _buildDragFeedback,
+                          onDragCompleted: (task) {
                             context.read<TaskSourcePanelBloc>().add(
-                              TaskSourcePanelTaskCompleted(task),
+                              TaskSourcePanelTaskDragCompleted(task),
                             );
                           },
+                          child: child,
                         ),
+                        onPressed: (task) => _openTaskDetail(context, task),
+                        onEdited: (task) => _openTaskEdit(context, task),
+                        onDeleted: (task) => unawaited(
+                          _deleteTask(context, task),
+                        ),
+                        onCompleted: (task) {
+                          context.read<TaskSourcePanelBloc>().add(
+                            TaskSourcePanelTaskCompleted(task),
+                          );
+                        },
                       );
                     },
                   );
@@ -213,6 +220,23 @@ class _TaskSourcePanelView extends StatelessWidget {
 
   void _openTaskEdit(BuildContext context, TaskEntity task) {
     context.router.push(TaskNewRoute(initialTask: task));
+  }
+
+  Future<void> _deleteTask(BuildContext context, TaskEntity task) async {
+    final RecurringTaskDeleteMode? mode;
+    if (task.recurrenceRule == null) {
+      final confirmed = await showDeleteConfirmationDialog(context);
+      mode = confirmed ? RecurringTaskDeleteMode.allEvents : null;
+    } else {
+      mode = await showDeleteModeSelectionDialog(
+        context,
+        hasOccurrence: task.occurrence?.occurrenceAt != null,
+      );
+    }
+    if (mode == null || !context.mounted) return;
+    context.read<TaskSourcePanelBloc>().add(
+      TaskSourcePanelTaskDeleted(task: task, mode: mode),
+    );
   }
 }
 

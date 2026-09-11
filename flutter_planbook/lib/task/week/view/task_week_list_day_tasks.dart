@@ -83,6 +83,14 @@ class TaskWeekListDayTasksSliver extends StatelessWidget {
       key: ValueKey(task),
       task: task,
       isExpanded: nextTask?.parentId == task.id,
+      contentWrapper: (child) => TaskDraggable(
+        task: task,
+        feedbackBuilder: _buildDragFeedback,
+        onDragCompleted: (task) => context.read<TaskListBloc>().add(
+          TaskListTaskDragCompleted(task: task),
+        ),
+        child: child,
+      ),
       onPressed: (t) => context.router.push(
         TaskDetailRoute(
           taskId: t.id,
@@ -105,14 +113,7 @@ class TaskWeekListDayTasksSliver extends StatelessWidget {
         TaskListTaskExpanded(task: t),
       ),
     );
-    return TaskDraggable(
-      task: task,
-      feedbackBuilder: _buildDragFeedback,
-      onDragCompleted: (task) => context.read<TaskListBloc>().add(
-        TaskListTaskDragCompleted(task: task),
-      ),
-      child: tile,
-    );
+    return tile;
   }
 
   Widget _buildDragFeedback(BuildContext context, TaskEntity task) {

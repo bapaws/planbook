@@ -141,9 +141,10 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                             val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
                                 action = WidgetClickReceiver.ACTION_COMPLETE_TASK
                                 putExtra(WidgetClickReceiver.EXTRA_TASK_ID, task.id)
+                                putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, task.occurrenceAt)
                             }
                             val completePending = PendingIntent.getBroadcast(
-                                context, task.id.hashCode(), completeIntent,
+                                context, "${task.id}#${task.occurrenceAt.orEmpty()}".hashCode(), completeIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                             )
                             rv.setOnClickPendingIntent(taskRowId, completePending)
@@ -286,9 +287,10 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                         val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
                             action = WidgetClickReceiver.ACTION_COMPLETE_TASK
                             putExtra(WidgetClickReceiver.EXTRA_TASK_ID, task.id)
+                            putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, task.occurrenceAt)
                         }
                         val completePending = PendingIntent.getBroadcast(
-                            context, task.id.hashCode(), completeIntent,
+                            context, "${task.id}#${task.occurrenceAt.orEmpty()}".hashCode(), completeIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                         )
                         rv.setOnClickPendingIntent(taskRowId, completePending)

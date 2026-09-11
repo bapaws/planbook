@@ -71,6 +71,16 @@ class TaskPriorityListView extends StatelessWidget {
                         task: task,
                         titleTextStyle: Theme.of(context).textTheme.bodyMedium,
                         isExpanded: nextTask?.parentId == task.id,
+                        contentWrapper: (child) => TaskDraggable(
+                          task: task,
+                          feedbackBuilder: _buildDragFeedback,
+                          onDragCompleted: (task) {
+                            context.read<TaskListBloc>().add(
+                              TaskListTaskDragCompleted(task: task),
+                            );
+                          },
+                          child: child,
+                        ),
                         onPressed: (t) {
                           if (onTaskPressed != null) {
                             onTaskPressed!(t);
@@ -121,16 +131,7 @@ class TaskPriorityListView extends StatelessWidget {
                           );
                         },
                       );
-                      return TaskDraggable(
-                        task: task,
-                        feedbackBuilder: _buildDragFeedback,
-                        onDragCompleted: (task) {
-                          context.read<TaskListBloc>().add(
-                            TaskListTaskDragCompleted(task: task),
-                          );
-                        },
-                        child: tile,
-                      );
+                      return tile;
                     },
                   ),
                 );
