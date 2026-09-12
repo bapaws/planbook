@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -138,15 +140,19 @@ class _RootHomePage extends StatefulWidget {
 }
 
 class _RootHomePageState extends State<_RootHomePage> {
+  bool _isWidgetCreateTaskOpen = false;
+
   @override
   void initState() {
     super.initState();
     WidgetDeepLink.bind(_onWidgetDayViewType);
+    WidgetDeepLink.bindCreateTask(_onWidgetCreateTask);
   }
 
   @override
   void dispose() {
     WidgetDeepLink.unbind(_onWidgetDayViewType);
+    WidgetDeepLink.unbindCreateTask(_onWidgetCreateTask);
     super.dispose();
   }
 
@@ -155,6 +161,37 @@ class _RootHomePageState extends State<_RootHomePage> {
     context.read<RootTaskBloc>().add(
       RootTaskDayViewTypeChanged(dayViewType: viewType),
     );
+  }
+
+  void _onWidgetCreateTask(WidgetCreateTaskRequest request) {
+    final rootRouter = context.router.root;
+    if (_isWidgetCreateTaskOpen ||
+        rootRouter.stackData.any(
+          (route) => route.name == TaskNewRoute.name,
+        )) {
+      return;
+    }
+    _isWidgetCreateTaskOpen = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        _isWidgetCreateTaskOpen = false;
+        return;
+      }
+      if (rootRouter.stackData.any(
+        (route) => route.name == TaskNewRoute.name,
+      )) {
+        _isWidgetCreateTaskOpen = false;
+        return;
+      }
+      unawaited(
+        rootRouter
+            .push(
+              TaskNewRoute(dueAt: request.dueAt, priority: request.priority),
+            )
+            .whenComplete(() => _isWidgetCreateTaskOpen = false),
+      );
+    });
   }
 
   @override

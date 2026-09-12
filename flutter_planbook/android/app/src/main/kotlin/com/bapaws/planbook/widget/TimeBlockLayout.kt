@@ -1,6 +1,7 @@
 package com.bapaws.planbook.widget
 
 import android.database.Cursor
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -83,7 +84,7 @@ object TimeBlockLayout {
     }
 
     fun formatTimeRange(startMillis: Long, endMillis: Long): String {
-        val fmt = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val fmt = DateFormat.getTimeInstance(DateFormat.SHORT, Locale.getDefault())
         return "${fmt.format(Date(startMillis))} – ${fmt.format(Date(endMillis))}"
     }
 
@@ -102,7 +103,7 @@ object TimeBlockLayout {
         return start to (start + visibleMinutes)
     }
 
-    /** 窗口内需要对齐的整点；中号窗口不一定从整点开始。 */
+    /** 窗口内需要对齐的整点。 */
     fun visibleHours(windowStart: Int, windowEnd: Int): List<Int> {
         val hours = mutableListOf<Int>()
         var hour = windowStart / 60

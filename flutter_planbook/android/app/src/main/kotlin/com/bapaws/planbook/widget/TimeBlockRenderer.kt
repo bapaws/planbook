@@ -6,6 +6,8 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.Typeface
+import android.text.Layout
+import android.text.StaticLayout
 import android.text.TextPaint
 import android.text.TextUtils
 import com.bapaws.planbook.R
@@ -89,12 +91,13 @@ object TimeBlockRenderer {
     ) {
         val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorScheme.onSurfaceColor()
-            textSize = 13f * density
+            textSize = 14f * density
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
         val datePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorScheme.outlineColor()
-            textSize = 11f * density
+            textSize = 10f * density
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
         }
         val centerY = top + height / 2f
         val titleY = centerY - (titlePaint.ascent() + titlePaint.descent()) / 2f
@@ -193,7 +196,7 @@ object TimeBlockRenderer {
                 textSize = 10f * density
             }
             val titleW = titlePaint.measureText(title)
-            val emptyLeft = titleLeft + titleW + 6f * density
+            val emptyLeft = titleLeft + titleW + 5f * density
             val availableWidth = (dateLeft - 8f * density - emptyLeft).coerceAtLeast(0f)
             if (availableWidth > 0f) {
                 val empty = TextUtils.ellipsize(
@@ -262,29 +265,22 @@ object TimeBlockRenderer {
             val rect = RectF(blockLeft, blockTop, blockLeft + blockW, blockTop + item.height)
             val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = theme.primaryContainerColor()
+                alpha = 235
             }
             canvas.drawRoundRect(rect, 6f * density, 6f * density, bgPaint)
 
             val accent = if (item.task.isCompleted) theme.outlineColor() else theme.primaryColor()
-            val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = accent }
-            val accentRect = RectF(
-                rect.left + 2f * density,
-                rect.top + 2f * density,
-                rect.left + 5f * density,
-                rect.bottom - 2f * density,
-            )
-            canvas.drawRoundRect(accentRect, 1.5f * density, 1.5f * density, accentPaint)
-
             val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = if (item.task.isCompleted) theme.outlineColor() else theme.primaryColor()
                 textSize = 9f * density
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isStrikeThruText = item.task.isCompleted
             }
-            val completeSize = 14f * density
-            val completePad = 4f * density
-            val completeCx = rect.right - completePad - completeSize / 2f
-            val completeCy = rect.top + completePad + completeSize / 2f
+            val completeSize = 11f * density
+            val completeTrailing = 3f * density
+            val completeTop = 2f * density
+            val completeCx = rect.right - completeTrailing - completeSize / 2f
+            val completeCy = rect.top + completeTop + completeSize / 2f
             val completePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = accent
                 strokeWidth = 1.4f * density
@@ -314,14 +310,17 @@ object TimeBlockRenderer {
                 )
             }
 
-            val titleMaxWidth = (rect.width() - 14f * density - completeSize - completePad).coerceAtLeast(8f)
+            val titleLeft = rect.left + 5f * density
+            val titleMaxWidth = (
+                completeCx - completeSize / 2f - 2f * density - titleLeft
+            ).coerceAtLeast(8f)
             val title = TextUtils.ellipsize(
                 item.task.title,
                 titlePaint,
                 titleMaxWidth,
                 TextUtils.TruncateAt.END,
             ).toString()
-            canvas.drawText(title, rect.left + 8f * density, rect.top + 11f * density, titlePaint)
+            canvas.drawText(title, titleLeft, rect.top + 11f * density, titlePaint)
             if (item.height >= 32f) {
                 val timePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                     color = accent
@@ -329,12 +328,14 @@ object TimeBlockRenderer {
                 }
                 canvas.drawText(
                     item.timeRangeLabel,
-                    rect.left + 8f * density,
+                    titleLeft,
                     rect.top + 21f * density,
                     timePaint,
                 )
             }
-            val completeHitSize = (completeSize + completePad * 2f).coerceAtMost(item.height)
+            val completeHitSize = maxOf(17f * density, completeSize)
+                .coerceAtMost(item.height)
+                .coerceAtMost(blockW)
             hits.add(
                 TimeBlockHit(
                     task = item.task,
@@ -358,7 +359,7 @@ object TimeBlockRenderer {
             val label = TimeBlockLayout.formatNowLabel(nowMinutes)
             val nowText = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = onError
-                textSize = 7f * density
+                textSize = 8f * density
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 textAlign = Paint.Align.CENTER
             }
@@ -370,7 +371,7 @@ object TimeBlockRenderer {
                 left + (labelW + badgeW) / 2f,
                 nowY + badgeH / 2f,
             )
-            canvas.drawRoundRect(badgeRect, badgeH / 2f, badgeH / 2f, nowPaint)
+            canvas.drawRoundRect(badgeRect, 4f * density, 4f * density, nowPaint)
             canvas.drawText(label, badgeRect.centerX(), nowY - (nowText.fontMetrics.ascent + nowText.fontMetrics.descent) / 2f, nowText)
             canvas.drawCircle(gridLeft, nowY, 2.5f * density, nowPaint)
             canvas.drawRect(gridLeft, nowY - 0.75f * density, left + width, nowY + 0.75f * density, nowPaint)
@@ -387,27 +388,45 @@ object TimeBlockRenderer {
         density: Float,
         colorScheme: FlutterColorScheme,
     ) {
-        val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = colorScheme.errorColor() }
         val cx = width / 2f
-        val cy = height / 2f - 16f * density
-        canvas.drawCircle(cx, cy, 14f * density, iconPaint)
-        val lockPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = colorScheme.onErrorColor()
-            textSize = 14f * density
-            textAlign = Paint.Align.CENTER
-            typeface = Typeface.DEFAULT_BOLD
+        val cy = height / 2f - 11f * density
+        val lockPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorScheme.errorColor()
+            strokeWidth = 2.2f * density
+            strokeCap = Paint.Cap.ROUND
+            style = Paint.Style.STROKE
         }
-        canvas.drawText("🔒", cx, cy + 5f * density, lockPaint)
+        canvas.drawArc(
+            RectF(cx - 5f * density, cy - 10f * density, cx + 5f * density, cy),
+            180f,
+            180f,
+            false,
+            lockPaint,
+        )
+        lockPaint.style = Paint.Style.FILL
+        canvas.drawRoundRect(
+            RectF(cx - 8f * density, cy - 2f * density, cx + 8f * density, cy + 9f * density),
+            2.5f * density,
+            2.5f * density,
+            lockPaint,
+        )
         val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorScheme.outlineColor()
             textSize = 12f * density
-            textAlign = Paint.Align.CENTER
         }
-        canvas.drawText(
+        @Suppress("DEPRECATION")
+        val textLayout = StaticLayout(
             context.getString(R.string.widget_time_block_locked),
-            cx,
-            cy + 32f * density,
             textPaint,
+            (width - 20f * density).toInt().coerceAtLeast(1),
+            Layout.Alignment.ALIGN_CENTER,
+            1f,
+            0f,
+            false,
         )
+        canvas.save()
+        canvas.translate(10f * density, cy + 17f * density)
+        textLayout.draw(canvas)
+        canvas.restore()
     }
 }

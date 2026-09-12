@@ -408,19 +408,8 @@ class AppDatabase extends _$AppDatabase {
     // `getApplicationDocumentsDirectory()`.
     // return driftDatabase(name: 'yummy');
     return LazyDatabase(() async {
+      await _configureSqliteRuntime();
       final file = await getDatabaseFile();
-
-      // Also work around limitations on old Android versions
-      if (Platform.isAndroid) {
-        await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-      }
-
-      // Make sqlite3 pick a more suitable location for temporary files - the
-      // one from the system may be inaccessible due to sandboxing.
-      final cachebase = (await getTemporaryDirectory()).path;
-      // We can't access /tmp on Android, which sqlite3 would try by default.
-      // Explicitly tell it about the correct temporary directory.
-      sqlite3.tempDirectory = cachebase;
 
       // 使用后台 isolate 执行数据库操作，避免阻塞 UI
       return NativeDatabase.createInBackground(
@@ -434,6 +423,91 @@ class AppDatabase extends _$AppDatabase {
         },
       );
     });
+  }
+
+  /// 打开 Drift 连接前检查本地库。损坏时先丢掉 WAL sidecar，仍坏则隔离主文件。
+  ///
+  /// 隔离后 [File.existsSync] 为 false，bootstrap 里的路径迁移逻辑会清掉
+  /// 同步时间戳，登录用户可从远端重新拉取。
+  static Future<void> recoverCorruptIfNeeded() async {
+    await _configureSqliteRuntime();
+    final file = await getDatabaseFile();
+    if (!file.existsSync()) return;
+
+    if (_quickCheckOk(file.path)) return;
+
+    debugPrint('AppDatabase: sqlite malformed, dropping WAL sidecars');
+    _deleteSidecars(file);
+    if (_quickCheckOk(file.path)) return;
+
+    debugPrint('AppDatabase: sqlite still malformed, quarantining file');
+    _quarantineDatabase(file);
+  }
+
+  static Future<void> _configureSqliteRuntime() async {
+    if (Platform.isAndroid) {
+      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
+    }
+    // We can't access /tmp on Android, which sqlite3 would try by default.
+    sqlite3.tempDirectory = (await getTemporaryDirectory()).path;
+  }
+
+  static bool _quickCheckOk(String path) {
+    try {
+      final db = sqlite3.open(path);
+      try {
+        final rows = db.select('PRAGMA quick_check;');
+        if (rows.isEmpty) return false;
+        return rows.first.columnAt(0)?.toString() == 'ok';
+      } finally {
+        db.dispose();
+      }
+    } on SqliteException catch (e) {
+      if (_isCorruptSqliteCode(e.resultCode) ||
+          _isCorruptSqliteCode(e.extendedResultCode)) {
+        return false;
+      }
+      // locked / busy 等不要当成损坏，否则会误删完好的库
+      debugPrint('AppDatabase: quick_check skipped (${e.resultCode}): $e');
+      return true;
+    } on Object catch (e) {
+      final text = e.toString();
+      if (text.contains('malformed') || text.contains('CORRUPT')) {
+        return false;
+      }
+      debugPrint('AppDatabase: quick_check skipped: $e');
+      return true;
+    }
+  }
+
+  static bool _isCorruptSqliteCode(int code) {
+    const sqliteCorrupt = 11;
+    const sqliteNotADb = 26;
+    return code == sqliteCorrupt || code == sqliteNotADb;
+  }
+
+  static void _deleteSidecars(File dbFile) {
+    for (final suffix in ['-wal', '-shm']) {
+      final sidecar = File('${dbFile.path}$suffix');
+      if (sidecar.existsSync()) {
+        sidecar.deleteSync();
+      }
+    }
+  }
+
+  static void _quarantineDatabase(File dbFile) {
+    _deleteSidecars(dbFile);
+    final backup = File('${dbFile.path}.corrupt');
+    if (backup.existsSync()) {
+      backup.deleteSync();
+    }
+    try {
+      dbFile.renameSync(backup.path);
+    } on Object {
+      if (dbFile.existsSync()) {
+        dbFile.deleteSync();
+      }
+    }
   }
 
   static Future<File> getDatabaseFile() async {

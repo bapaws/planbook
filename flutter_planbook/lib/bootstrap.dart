@@ -165,6 +165,9 @@ Future<Widget> _initApp() async {
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 
+  /// 本地库损坏时先隔离文件；下面的路径迁移逻辑会清同步时间戳以便重拉。
+  await AppDatabase.recoverCorruptIfNeeded();
+
   /// Migration database path
   /// 当前情况是将数据库从 habits.sqlite 迁移到 planbook.sqlite
   /// 清除一些缓存数据，重新获取数据

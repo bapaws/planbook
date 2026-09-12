@@ -16,7 +16,7 @@ private let kHeaderHeight: CGFloat = 22
 private let kColumnGutter: CGFloat = 10
 private let kGridTopInset: CGFloat = 6
 private let kOpenTimeBlockURL = URL(string: "planbook.bapaws://task/today?view=timeBlock")!
-private let kCreateTaskURL = URL(string: "planbook.bapaws://task/new")!
+private let kCreateTaskURL = URL(string: "planbook.bapaws://task/new?dueAt=today")!
 private let kPurchasesURL = URL(string: "planbook.bapaws://purchases")!
 
 @available(iOS 16.0, *)

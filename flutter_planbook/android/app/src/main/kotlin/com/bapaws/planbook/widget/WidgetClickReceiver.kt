@@ -34,8 +34,9 @@ class WidgetClickReceiver : BroadcastReceiver() {
                         // 1. 计算翻转后的目标状态——优先看 pending（防止用户连点时基于 stale DB 翻转），
                         //    其次回落到 DB 的真实状态；都拿不到就当作未完成。
                         val current = WidgetSettings.pendingCompletion(context, taskId)
-                            ?: WidgetDatabase.getInstance(context)
-                                ?.isTaskCompleted(taskId, occurrenceAt)
+                            ?: WidgetDatabase.open(context) {
+                                it.isTaskCompleted(taskId, occurrenceAt)
+                            }
                             ?: false
                         val targetCompleted = !current
 

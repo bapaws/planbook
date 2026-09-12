@@ -283,16 +283,24 @@ class TasksRepository {
   /// 滚动补 schedule：为所有带闹钟的重复任务重新调度，使预约窗口始终覆盖「从现在起」的未来一段时间。
   /// 应在应用启动和从后台回到前台时调用。
   Future<void> rescheduleAllRecurringAlarms() async {
-    final tasks = await _dbTaskApi.getRecurringTasksWithAlarms(userId: userId);
-    for (final task in tasks) {
-      try {
-        await AlarmNotificationService.instance.scheduleForTask(task);
-      } on Object catch (e) {
-        debugPrint(
-          'TasksRepository.rescheduleAllRecurringAlarms: '
-          'failed task=${task.id} $e',
-        );
+    try {
+      final tasks = await _dbTaskApi.getRecurringTasksWithAlarms(
+        userId: userId,
+      );
+      for (final task in tasks) {
+        try {
+          await AlarmNotificationService.instance.scheduleForTask(task);
+        } on Object catch (e) {
+          debugPrint(
+            'TasksRepository.rescheduleAllRecurringAlarms: '
+            'failed task=${task.id} $e',
+          );
+        }
       }
+    } on Object catch (e, st) {
+      debugPrint(
+        'TasksRepository.rescheduleAllRecurringAlarms failed: $e\n$st',
+      );
     }
   }
 

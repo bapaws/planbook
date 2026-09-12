@@ -68,7 +68,8 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
 
                 // 获取数据并应用 pending 覆盖（乐观 UI）
                 val groups = runBlocking(Dispatchers.IO) {
-                    val raw = WidgetDatabase.getInstance(context)?.fetchQuadrantTasks(filterMode) ?: emptyList()
+                    val raw = WidgetDatabase.open(context) { it.fetchQuadrantTasks(filterMode) }
+                        ?: emptyList()
                     applyPendingCompletions(context, raw)
                 }
 
@@ -251,7 +252,9 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
 
                 // 获取选中象限的任务并应用 pending 覆盖（乐观 UI）
                 val tasks = runBlocking(Dispatchers.IO) {
-                    val raw = WidgetDatabase.getInstance(context)?.fetchTasks(selectedPriority, filterMode, 4) ?: emptyList()
+                    val raw = WidgetDatabase.open(context) {
+                        it.fetchTasks(selectedPriority, filterMode, 4)
+                    } ?: emptyList()
                     val pending = WidgetSettings.getPendingCompletions(context)
                     if (pending.isEmpty()) {
                         raw

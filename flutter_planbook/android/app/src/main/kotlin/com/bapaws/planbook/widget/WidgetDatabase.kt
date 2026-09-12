@@ -14,6 +14,7 @@ import java.util.*
 class WidgetDatabase private constructor(context: Context) {
 
     private val appContext: Context = context.applicationContext
+    private val snapshotDir: File
     private val db: SQLiteDatabase
 
     init {
@@ -25,25 +26,56 @@ class WidgetDatabase private constructor(context: Context) {
         if (!dbFile.exists()) {
             throw IllegalStateException("Database file not found: ${dbFile.path}. Please open the app first.")
         }
-        // App 端使用 PRAGMA journal_mode=WAL，需要可写权限才能读取 WAL 中的最新数据
-        db = SQLiteDatabase.openDatabase(dbFile.path, null, SQLiteDatabase.OPEN_READWRITE)
-        db.enableWriteAheadLogging()
+        // 不要用 Android 系统 SQLite 打开 Flutter sqlite3 正在写的 WAL 主库，
+        // 两个引擎混写同一套 -wal/-shm 会导致 SQLITE_CORRUPT。
+        // 小组件只读一份快照；完成任务仍走 Flutter MethodChannel。
+        snapshotDir = File(appContext.cacheDir, "widget_db_${System.nanoTime()}")
+        try {
+            snapshotLiveDatabase(dbFile, snapshotDir)
+            val snapshotFile = File(snapshotDir, dbFile.name)
+            db = SQLiteDatabase.openDatabase(
+                snapshotFile.path,
+                null,
+                SQLiteDatabase.OPEN_READONLY,
+            )
+        } catch (e: Exception) {
+            snapshotDir.deleteRecursively()
+            throw e
+        }
+    }
+
+    private fun close() {
+        try {
+            db.close()
+        } catch (_: Exception) {
+        }
+        snapshotDir.deleteRecursively()
     }
 
     companion object {
-        @Volatile
-        private var instance: WidgetDatabase? = null
-        @Volatile
-        private var initFailed = false
+        /**
+         * 打开只读快照，[block] 结束后关闭连接并删掉临时文件。
+         */
+        fun <T> open(context: Context, block: (WidgetDatabase) -> T): T? {
+            val instance = try {
+                WidgetDatabase(context.applicationContext)
+            } catch (_: Exception) {
+                return null
+            }
+            return try {
+                block(instance)
+            } finally {
+                instance.close()
+            }
+        }
 
-        fun getInstance(context: Context): WidgetDatabase? {
-            if (initFailed) return null
-            return instance ?: synchronized(this) {
-                instance ?: try {
-                    WidgetDatabase(context.applicationContext).also { instance = it }
-                } catch (_: Exception) {
-                    initFailed = true
-                    null
+        private fun snapshotLiveDatabase(src: File, destDir: File) {
+            destDir.mkdirs()
+            src.copyTo(File(destDir, src.name), overwrite = true)
+            for (suffix in listOf("-wal", "-shm")) {
+                val sidecar = File(src.path + suffix)
+                if (sidecar.exists()) {
+                    sidecar.copyTo(File(destDir, src.name + suffix), overwrite = true)
                 }
             }
         }

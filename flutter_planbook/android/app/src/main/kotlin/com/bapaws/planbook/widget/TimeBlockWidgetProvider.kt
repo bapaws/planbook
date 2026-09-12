@@ -4,6 +4,7 @@ import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
@@ -99,8 +100,21 @@ private object TimeBlockWidgetUpdater {
             val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
             val minW = widgetInfo?.minWidth ?: if (isLarge) 250 else 110
             val minH = widgetInfo?.minHeight ?: if (isLarge) 250 else 110
-            val widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
-            val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
+            val isLandscape = context.resources.configuration.orientation ==
+                Configuration.ORIENTATION_LANDSCAPE
+            val widthOption = if (isLandscape) {
+                AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH
+            } else {
+                AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
+            }
+            val heightOption = if (isLandscape) {
+                AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT
+            } else {
+                AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT
+            }
+            val widthDp = options.getInt(widthOption, minW)
+            val heightDp = options.getInt(heightOption, minH)
+            val renderLarge = widthDp >= 220 && heightDp >= 200
             val widthPx = (widthDp * density).toInt().coerceAtLeast(100)
             val heightPx = (heightDp * density).toInt().coerceAtLeast(100)
 
@@ -112,7 +126,7 @@ private object TimeBlockWidgetUpdater {
 
             val tasks = if (isPremium) {
                 runBlocking(Dispatchers.IO) {
-                    WidgetDatabase.getInstance(context)?.fetchTimeBlockTasks() ?: emptyList()
+                    WidgetDatabase.open(context) { it.fetchTimeBlockTasks() } ?: emptyList()
                 }
             } else {
                 emptyList()
@@ -122,7 +136,7 @@ private object TimeBlockWidgetUpdater {
                 context = context,
                 widthPx = widthPx,
                 heightPx = heightPx,
-                isLarge = isLarge,
+                isLarge = renderLarge,
                 isPremium = isPremium,
                 tasks = tasks,
                 isDark = isDark,
@@ -138,8 +152,8 @@ private object TimeBlockWidgetUpdater {
                     rv,
                     context,
                     R.id.time_block_create,
-                    if (isLarge) 4300 + appWidgetId else 4400 + appWidgetId,
-                    "planbook.bapaws://task/new",
+                    if (renderLarge) 4300 + appWidgetId else 4400 + appWidgetId,
+                    "planbook.bapaws://task/new?dueAt=today",
                 )
             }
 
@@ -153,10 +167,19 @@ private object TimeBlockWidgetUpdater {
             } else {
                 "planbook.bapaws://purchases"
             }
-            bindOpenAppClick(rv, context, R.id.widget_root, if (isLarge) 4100 + appWidgetId else 4200 + appWidgetId, deepLink)
+            bindOpenAppClick(
+                rv,
+                context,
+                R.id.widget_root,
+                if (renderLarge) 4100 + appWidgetId else 4200 + appWidgetId,
+                deepLink,
+            )
 
             appWidgetManager.updateAppWidget(appWidgetId, rv)
-            Log.d(TAG, "Time block widget updated large=$isLarge premium=$isPremium")
+            Log.d(
+                TAG,
+                "Time block widget updated large=$renderLarge size=${widthDp}x$heightDp premium=$isPremium",
+            )
         } catch (e: Exception) {
             Log.e(TAG, "Time block update error", e)
         }
