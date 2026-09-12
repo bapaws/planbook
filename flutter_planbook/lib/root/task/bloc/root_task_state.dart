@@ -11,6 +11,7 @@ final class RootTaskState extends Equatable {
     this.status = PageStatus.initial,
     this.dayViewType = RootTaskViewType.list,
     this.weekViewMode = TaskWeekViewMode.grid,
+    this.weekGridCellKind = TaskWeekGridCellKind.note,
     this.showCompleted = true,
     this.showSourcePanel = true,
     this.selectedTagIds = const {},
@@ -31,6 +32,9 @@ final class RootTaskState extends Equatable {
 
   /// 周：八宫格 / 列表
   final TaskWeekViewMode weekViewMode;
+
+  /// 八宫格第一格：笔记或侧栏数据源
+  final TaskWeekGridCellKind weekGridCellKind;
   final bool showCompleted;
   final bool showSourcePanel;
 
@@ -55,6 +59,7 @@ final class RootTaskState extends Equatable {
     status,
     dayViewType,
     weekViewMode,
+    weekGridCellKind,
     showCompleted,
     showSourcePanel,
     selectedTagIds,
@@ -68,6 +73,7 @@ final class RootTaskState extends Equatable {
     PageStatus? status,
     RootTaskViewType? dayViewType,
     TaskWeekViewMode? weekViewMode,
+    TaskWeekGridCellKind? weekGridCellKind,
     bool? showCompleted,
     bool? showSourcePanel,
     Set<String>? selectedTagIds,
@@ -80,6 +86,7 @@ final class RootTaskState extends Equatable {
       status: status ?? this.status,
       dayViewType: dayViewType ?? this.dayViewType,
       weekViewMode: weekViewMode ?? this.weekViewMode,
+      weekGridCellKind: weekGridCellKind ?? this.weekGridCellKind,
       showCompleted: showCompleted ?? this.showCompleted,
       showSourcePanel: showSourcePanel ?? this.showSourcePanel,
       selectedTagIds: selectedTagIds ?? this.selectedTagIds,

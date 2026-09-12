@@ -1,0 +1,325 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+# Ruby often prefers IPv6 for *.googleapis.com; a broken IPv6 path causes
+# OpenSSL::SSL::SSLError "unexpected eof while reading" during OAuth / Play API.
+# Resolving to an IPv4 address here keeps TLS SNI/verification intact (Net::HTTP
+# still uses the original hostname on the SSL socket).
+module PlayStoreGoogleIpv4Tcp
+  class << self
+    def apply!
+      return if @applied
+      @applied = true
+
+      require "socket"
+
+      TCPSocket.prepend(Module.new do
+        def initialize(*args, **kwargs)
+          if args.first.is_a?(String)
+            args = [PlayStoreGoogleIpv4Tcp.ipv4_host(args.first), *args.drop(1)]
+          end
+          super(*args, **kwargs)
+        end
+      end)
+    end
+
+    def google_host?(host)
+      host.end_with?(".google.com") || host == "google.com" ||
+        host.end_with?(".googleapis.com") || host == "googleapis.com" ||
+        host.end_with?(".gstatic.com") || host == "gstatic.com" ||
+        host.end_with?(".googleusercontent.com")
+    end
+
+    def ipv4_host(host)
+      return host if host.match?(/\A\d{1,3}(?:\.\d{1,3}){3}\z/)
+      return host unless google_host?(host)
+
+      infos = Socket.getaddrinfo(host, nil, Socket::AF_INET, Socket::SOCK_STREAM, Socket::IPPROTO_TCP)
+      infos.first&.dig(3) || host
+    rescue StandardError
+      host
+    end
+  end
+end
+
+PlayStoreGoogleIpv4Tcp.apply!
+
+# Absolute project root, captured at parse time (cwd = fastlane/). `__dir__` is
+# "." after Fastlane's eval, so File.expand_path("..", ".") follows later chdir.
+FLUTTER_PROJECT_ROOT = File.expand_path("..")
+
+def flutter_project_root
+  FLUTTER_PROJECT_ROOT
+end
+
+# App Store Connect API key (JSON exported via `fastlane app_store_connect_api_key`).
+def ios_api_key_path
+  File.join(flutter_project_root, "fastlane/AuthKey.json")
+end
+
+def release_aab
+  File.join(flutter_project_root, "build/app/outputs/bundle/storeRelease/app-store-release.aab")
+end
+
+def release_cloud_apk
+  candidates = [
+    File.join(flutter_project_root, "build/app/outputs/flutter-apk/app-cloud-release.apk"),
+    *Dir[File.join(flutter_project_root, "build/app/outputs/apk/cloud/release/*.apk")],
+  ]
+  apk = candidates.find { |p| File.file?(p) }
+  UI.user_error!("No cloud release APK found") if apk.nil?
+  apk
+end
+
+def release_cnstore_apk
+  candidates = [
+    File.join(flutter_project_root, "build/app/outputs/flutter-apk/app-store-release.apk"),
+    *Dir[File.join(flutter_project_root, "build/app/outputs/apk/store/release/*.apk")],
+  ]
+  apk = candidates.find { |p| File.file?(p) }
+  UI.user_error!("No store release APK found") if apk.nil?
+  apk
+end
+
+# Homebrew CocoaPods breaks under fastlane:
+# 1) Bundler (project Gemfile has fastlane, not cocoapods) hijacks `pod`
+# 2) fastlane sets GEM_PATH to its libexec; Homebrew pod then can't resolve
+#    deps (e.g. MissingSpecError: minitest) even though `pod` works in a
+#    clean shell.
+def with_clean_ruby_env
+  keys = %w[
+    BUNDLE_GEMFILE BUNDLE_BIN_PATH BUNDLE_PATH BUNDLE_WITHOUT
+    BUNDLE_APP_CONFIG BUNDLE_IGNORE_CONFIG BUNDLE_FROZEN
+    RUBYOPT RUBYLIB
+    GEM_HOME GEM_PATH
+  ]
+  saved = keys.to_h { |k| [k, ENV[k]] }
+  saved_path = ENV["PATH"]
+  begin
+    keys.each { |k| ENV.delete(k) }
+    # Prefer Homebrew pod / ruby / fvm over any bundler binstubs.
+    ENV["PATH"] = ["/opt/homebrew/bin", "/usr/local/bin", saved_path].compact.join(":")
+    yield
+  ensure
+    keys.each do |k|
+      v = saved[k]
+      v ? ENV[k] = v : ENV.delete(k)
+    end
+    ENV["PATH"] = saved_path if saved_path
+  end
+end
+
+def flutter(*args)
+  sh("fvm", "flutter", *args)
+end
+
+# Bumps pubspec `version: x.y.z+N` → N+1 (Android versionCode & iOS build from Flutter).
+# Set SKIP_FLUTTER_BUILD_BUMP=1 to leave pubspec unchanged (e.g. retry upload).
+def increment_flutter_build_number!
+  return if ENV["SKIP_FLUTTER_BUILD_BUMP"] == "1"
+
+  path = File.join(flutter_project_root, "pubspec.yaml")
+  UI.user_error!("Missing #{path}") unless File.file?(path)
+
+  content = File.read(path, encoding: "UTF-8")
+  bumped = nil
+
+  # Do not use /m with .+ here: "." would match newlines and swallow the rest of the file.
+  new_content = content.sub(/^(version:\s*)(\S+)(\s*(?:#.*)?)$/) do
+    prefix = Regexp.last_match(1)
+    raw = Regexp.last_match(2)
+    suffix = Regexp.last_match(3)
+    unless raw =~ /^(.+)\+(\d+)$/
+      UI.user_error!(
+        "pubspec version must include +build (e.g. 1.0.1+1). Got: #{raw.inspect}"
+      )
+    end
+    name = Regexp.last_match(1)
+    code = Regexp.last_match(2).to_i
+    bumped = "#{name}+#{code + 1}"
+    "#{prefix}#{bumped}#{suffix}"
+  end
+
+  UI.user_error!("No version: line found in pubspec.yaml") if bumped.nil?
+
+  File.write(path, new_content)
+  UI.success("pubspec → #{bumped}")
+end
+
+def build_release_ipa
+  increment_flutter_build_number!
+  Dir.chdir(flutter_project_root) do
+    with_clean_ruby_env do
+      sh("pod", "--version")
+      flutter(
+        "build", "ipa", "--release",
+        "--target", "lib/main.dart",
+        "--export-options-plist", "ios/ExportOptions.plist"
+      )
+    end
+  end
+end
+
+def release_ipa
+  ipa = Dir[File.join(flutter_project_root, "build/ios/ipa/*.ipa")].first
+  UI.user_error!("No .ipa found in build/ios/ipa/") if ipa.nil?
+  ipa
+end
+
+def build_release_appbundle
+  increment_flutter_build_number!
+  Dir.chdir(flutter_project_root) do
+    with_clean_ruby_env do
+      flutter(
+        "build", "appbundle", "--release",
+        "--flavor", "store",
+        "--target", "lib/main.dart"
+      )
+    end
+  end
+end
+
+def build_release_cloud_apk
+  increment_flutter_build_number!
+  Dir.chdir(flutter_project_root) do
+    with_clean_ruby_env do
+      flutter(
+        "build", "apk", "--release",
+        "--flavor", "cloud",
+        "--target", "lib/main_cloud.dart"
+      )
+    end
+  end
+end
+
+def build_release_cnstore_apk
+  increment_flutter_build_number!
+  Dir.chdir(flutter_project_root) do
+    with_clean_ruby_env do
+      flutter(
+        "build", "apk", "--release",
+        "--flavor", "store",
+        "--target", "lib/main_store.dart"
+      )
+    end
+  end
+end
+
+platform :ios do
+  desc "Build and upload a new beta build to TestFlight"
+  lane :beta do
+    build_release_ipa
+    upload_to_testflight(
+      api_key_path: ios_api_key_path,
+      ipa: release_ipa,
+      uses_non_exempt_encryption: false
+    )
+  end
+
+  desc "Upload an already-built IPA to TestFlight (no rebuild)"
+  lane :upload_beta do
+    upload_to_testflight(
+      api_key_path: ios_api_key_path,
+      ipa: release_ipa,
+      uses_non_exempt_encryption: false
+    )
+  end
+
+  desc "Build and upload a new release build to the App Store (binary + metadata in fastlane/metadata)"
+  lane :release do
+    build_release_ipa
+    upload_to_app_store(
+      api_key_path: ios_api_key_path,
+      ipa: release_ipa,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      force: true # skip the HTML preview confirmation prompt
+    )
+  end
+
+  desc "Upload App Store listing metadata only — no binary (reads fastlane/metadata/<locale>)"
+  lane :metadata do
+    upload_to_app_store(
+      api_key_path: ios_api_key_path,
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      run_precheck_before_submit: false,
+      force: true
+    )
+  end
+
+  desc "Download current App Store metadata into fastlane/metadata (overwrites local text)"
+  lane :download_metadata do
+    sh("bundle", "exec", "fastlane", "deliver", "download_metadata",
+       "--api_key_path", ios_api_key_path,
+       "--app_identifier", "com.bapaws.planbook")
+  end
+end
+
+platform :android do
+  desc "Build release AAB and upload to Play internal testing (with listing metadata + changelog)"
+  lane :beta do
+    build_release_appbundle
+    upload_to_play_store(
+      track: "internal",
+      aab: release_aab
+    )
+  end
+
+  desc "Upload an already-built AAB to Play internal testing (no rebuild)"
+  lane :upload_beta do
+    upload_to_play_store(
+      track: "internal",
+      aab: release_aab
+    )
+  end
+
+  desc "Deploy a new version to Google Play production (binary + metadata in fastlane/metadata/android)"
+  lane :deploy do
+    build_release_appbundle
+    upload_to_play_store(aab: release_aab)
+  end
+
+  desc "Upload Play Store listing metadata only — no AAB (title/short/full description per locale)"
+  lane :metadata do
+    upload_to_play_store(
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: true, # changelogs are version-bound; uploaded by beta/deploy
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Build release APK for China sideload (--flavor cloud, in-app APK install)"
+  lane :build_cn do
+    build_release_cloud_apk
+    UI.success("CN APK: #{release_cloud_apk}")
+  end
+
+  desc "Build release APK for China app stores (--flavor store, no self-update)"
+  lane :build_cnstore do
+    build_release_cnstore_apk
+    UI.success("CN store APK: #{release_cnstore_apk}")
+  end
+
+  desc "Download current Play Store metadata into fastlane/metadata/android (overwrites local text)"
+  lane :download_metadata do
+    sh("bundle", "exec", "fastlane", "supply", "init")
+  end
+end

@@ -45,14 +45,22 @@ fvm flutter run --target lib/main_store.dart --flavor store
 fvm flutter run --target lib/main_cloud.dart --flavor cloud
 ```
 
-Fastlane release lanes (run inside `ios/` or `android/`):
+Release automation is fastlane from the Flutter project root (`flutter_planbook/`):
 
 ```bash
-cd ios && fastlane beta        # TestFlight
-cd ios && fastlane release     # App Store
-cd android && fastlane beta    # Play internal testing
-cd android && fastlane deploy  # Play production
+bundle exec fastlane ios beta            # TestFlight（递增 pubspec build + IPA）
+bundle exec fastlane ios upload_beta     # 只上传已有 IPA
+bundle exec fastlane ios release         # App Store（binary + fastlane/metadata）
+bundle exec fastlane ios metadata        # 只上传 App Store 文案
+bundle exec fastlane android beta        # Play 内部测试（store flavor AAB）
+bundle exec fastlane android upload_beta # 只上传已有 AAB
+bundle exec fastlane android deploy      # Play 正式版
+bundle exec fastlane android metadata    # 只上传 Play 商店文案
+bundle exec fastlane android build_cn    # 国内自分发 APK（cloud + main_cloud.dart）
+bundle exec fastlane android build_cnstore # 国内应用市场 APK（store + main_store.dart）
 ```
+
+Store metadata lives under `fastlane/metadata/`. App Store Connect API key: `fastlane/AuthKey.json` (gitignored). Play API key: `fastlane/play-api.json` or `SUPPLY_JSON_KEY_PATH`. Retry an upload without bumping `pubspec.yaml` via `SKIP_FLUTTER_BUILD_BUMP=1`.
 
 Verification:
 

@@ -16,6 +16,7 @@ import 'package:planbook_api/planbook_api.dart';
 /// 当前支持的 URL Scheme：
 /// - `planbook.bapaws://task/new?priority=high|medium|low|none&dueAt=yyyy-MM-dd`
 /// - `planbook.bapaws://task/today?view=timeBlock`
+/// - `planbook.bapaws://task/detail?taskId=...&occurrenceAt=...`
 /// - `planbook.bapaws://note/new`
 /// - `planbook.bapaws://purchases`
 class AppLinksHandler {
@@ -80,6 +81,22 @@ class AppLinksHandler {
         _router.push(TaskNewRoute(dueAt: dueAt, priority: priority));
       case '/today':
         _openToday(view: uri.queryParameters['view']);
+      case '/detail':
+        final taskId = uri.queryParameters['taskId'];
+        if (taskId == null || taskId.isEmpty) return;
+
+        final occurrenceAtRaw = uri.queryParameters['occurrenceAt'];
+        Jiffy? occurrenceAt;
+        if (occurrenceAtRaw != null && occurrenceAtRaw.isNotEmpty) {
+          try {
+            occurrenceAt = Jiffy.parse(occurrenceAtRaw);
+          } on Object {
+            occurrenceAt = null;
+          }
+        }
+        _router.push(
+          TaskDetailRoute(taskId: taskId, occurrenceAt: occurrenceAt),
+        );
     }
   }
 

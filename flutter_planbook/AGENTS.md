@@ -430,6 +430,17 @@ fvm flutter build apk --flavor store --target lib/main_store.dart
 fvm flutter build apk --flavor cloud --target lib/main_cloud.dart
 ```
 
+Fastlane 在 **Flutter 工程根目录**（`flutter_planbook/`）运行，不要再 `cd ios` / `cd android`：
+
+```bash
+bundle exec fastlane ios beta              # TestFlight
+bundle exec fastlane ios release           # App Store
+bundle exec fastlane android beta          # Play 内部测试
+bundle exec fastlane android deploy        # Play 正式版
+bundle exec fastlane android build_cn      # 国内自分发 APK
+bundle exec fastlane android build_cnstore # 国内应用市场 APK
+```
+
 ## Code Style Guidelines
 
 ### Analysis Configuration

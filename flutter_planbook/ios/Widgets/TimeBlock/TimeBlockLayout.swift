@@ -121,12 +121,13 @@ enum TimeBlockLayout {
     }
 
     static func formatHourLabel(_ hour: Int) -> String {
-        String(format: "%02d:00", hour)
+        String(format: "%02d", hour)
     }
 
     static func mediumWindow(nowMinutes: Int, visibleMinutes: Int = 4 * 60) -> (start: Int, end: Int) {
         let maxStart = max(0, dayMinutes - visibleMinutes)
-        let start = min(max(nowMinutes - visibleMinutes / 3, 0), maxStart)
+        let currentHourStart = max(nowMinutes, 0) / 60 * 60
+        let start = min(currentHourStart, maxStart)
         return (start, start + visibleMinutes)
     }
 
@@ -151,7 +152,10 @@ enum TimeBlockLayout {
         max(14, hourHeight * (appMinBlockHeight / appHourHeight))
     }
 
-    /// 对应 Dart `buildTaskTimeBlockLayoutItems`，先裁剪到窗口再分列。
+    /// 对应 Dart `buildTaskTimeBlockLayoutItems`。
+    ///
+    /// 分栏必须先按全天任务统一计算，再裁剪到展示窗口。否则跨越 12 点的任务
+    /// 会在上午、下午两列分别参与分栏，导致同一任务的两段宽度不一致。
     static func layout(
         tasks: [TimeBlockTask],
         windowStart: Int,
@@ -159,16 +163,16 @@ enum TimeBlockLayout {
         hourHeight: CGFloat
     ) -> [TimeBlockLayoutItem] {
         let minHeight = minBlockHeight(hourHeight: hourHeight)
-        var items: [TimeBlockLayoutItem] = []
+        var dayItems: [TimeBlockLayoutItem] = []
 
         for task in tasks {
-            var start = max(task.startMinutes, windowStart)
-            var end = min(task.endMinutes, windowEnd)
+            let start = max(task.startMinutes, 0)
+            var end = min(task.endMinutes, dayMinutes)
             if end <= start { continue }
-            if end - start < 5 { end = min(start + 15, windowEnd) }
+            if end - start < 5 { end = min(start + 15, dayMinutes) }
             if end <= start { continue }
 
-            let top = CGFloat(start - windowStart) / 60 * hourHeight
+            let top = CGFloat(start) / 60 * hourHeight
             var height = CGFloat(end - start) / 60 * hourHeight
             if height < minHeight {
                 height = minHeight
@@ -176,7 +180,7 @@ enum TimeBlockLayout {
 
             let startDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(TimeInterval(start * 60))
             let endDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(TimeInterval(end * 60))
-            items.append(
+            dayItems.append(
                 TimeBlockLayoutItem(
                     task: task,
                     top: top,
@@ -191,10 +195,10 @@ enum TimeBlockLayout {
             )
         }
 
-        items.sort { $0.top < $1.top }
+        dayItems.sort { $0.top < $1.top }
 
         var clusters: [[TimeBlockLayoutItem]] = []
-        for item in items {
+        for item in dayItems {
             var added = false
             for i in clusters.indices {
                 if let last = clusters[i].last, item.top < last.top + last.height {
@@ -208,7 +212,7 @@ enum TimeBlockLayout {
             }
         }
 
-        var result: [TimeBlockLayoutItem] = []
+        var assignedItems: [TimeBlockLayoutItem] = []
         for cluster in clusters {
             var columns: [[TimeBlockLayoutItem]] = []
             for item in cluster {
@@ -227,9 +231,38 @@ enum TimeBlockLayout {
             let columnCount = columns.count
             for (columnIndex, column) in columns.enumerated() {
                 for item in column {
-                    result.append(item.withColumn(count: columnCount, index: columnIndex))
+                    assignedItems.append(item.withColumn(count: columnCount, index: columnIndex))
                 }
             }
+        }
+
+        var result: [TimeBlockLayoutItem] = []
+        for item in assignedItems {
+            let start = max(item.startMinutes, windowStart)
+            var end = min(item.endMinutes, windowEnd)
+            if end <= start { continue }
+            if end - start < 5 { end = min(start + 15, windowEnd) }
+            if end <= start { continue }
+
+            let top = CGFloat(start - windowStart) / 60 * hourHeight
+            let rawHeight = CGFloat(end - start) / 60 * hourHeight
+            let remainingHeight = CGFloat(windowEnd - start) / 60 * hourHeight
+            let height = min(max(rawHeight, minHeight), remainingHeight)
+            let startDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(TimeInterval(start * 60))
+            let endDate = Calendar.current.startOfDay(for: Date()).addingTimeInterval(TimeInterval(end * 60))
+            result.append(
+                TimeBlockLayoutItem(
+                    task: item.task,
+                    top: top,
+                    height: height,
+                    startMinutes: start,
+                    endMinutes: end,
+                    timeRangeLabel: formatTimeRange(start: startDate, end: endDate),
+                    columnCount: item.columnCount,
+                    columnIndex: item.columnIndex,
+                    widthFactor: item.widthFactor
+                )
+            )
         }
 
         result.sort { $0.top < $1.top }

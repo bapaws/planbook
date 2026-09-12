@@ -2136,6 +2136,7 @@ class TaskSourcePanelPickerRoute
   TaskSourcePanelPickerRoute({
     required _i76.TaskSourcePanelType initialSourceType,
     required List<_i70.TagEntity> tags,
+    bool showSourceTypeSelector = true,
     _i69.Key? key,
     List<_i64.PageRouteInfo>? children,
   }) : super(
@@ -2143,6 +2144,7 @@ class TaskSourcePanelPickerRoute
          args: TaskSourcePanelPickerRouteArgs(
            initialSourceType: initialSourceType,
            tags: tags,
+           showSourceTypeSelector: showSourceTypeSelector,
            key: key,
          ),
          initialChildren: children,
@@ -2157,6 +2159,7 @@ class TaskSourcePanelPickerRoute
       return _i60.TaskSourcePanelPickerPage(
         initialSourceType: args.initialSourceType,
         tags: args.tags,
+        showSourceTypeSelector: args.showSourceTypeSelector,
         key: args.key,
       );
     },
@@ -2167,6 +2170,7 @@ class TaskSourcePanelPickerRouteArgs {
   const TaskSourcePanelPickerRouteArgs({
     required this.initialSourceType,
     required this.tags,
+    this.showSourceTypeSelector = true,
     this.key,
   });
 
@@ -2174,11 +2178,13 @@ class TaskSourcePanelPickerRouteArgs {
 
   final List<_i70.TagEntity> tags;
 
+  final bool showSourceTypeSelector;
+
   final _i69.Key? key;
 
   @override
   String toString() {
-    return 'TaskSourcePanelPickerRouteArgs{initialSourceType: $initialSourceType, tags: $tags, key: $key}';
+    return 'TaskSourcePanelPickerRouteArgs{initialSourceType: $initialSourceType, tags: $tags, showSourceTypeSelector: $showSourceTypeSelector, key: $key}';
   }
 
   @override
@@ -2187,6 +2193,7 @@ class TaskSourcePanelPickerRouteArgs {
     if (other is! TaskSourcePanelPickerRouteArgs) return false;
     return initialSourceType == other.initialSourceType &&
         const _i72.ListEquality<_i70.TagEntity>().equals(tags, other.tags) &&
+        showSourceTypeSelector == other.showSourceTypeSelector &&
         key == other.key;
   }
 
@@ -2194,6 +2201,7 @@ class TaskSourcePanelPickerRouteArgs {
   int get hashCode =>
       initialSourceType.hashCode ^
       const _i72.ListEquality<_i70.TagEntity>().hash(tags) ^
+      showSourceTypeSelector.hashCode ^
       key.hashCode;
 }
 

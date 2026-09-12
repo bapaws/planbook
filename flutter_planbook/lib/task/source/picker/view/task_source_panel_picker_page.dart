@@ -20,16 +20,21 @@ import 'package:pull_down_button/pull_down_button.dart';
 /// 右侧任务来源选择器，以 bottom sheet 形式展示
 ///
 /// 支持在「收集箱 / 标签 / 日期 / 隐藏」之间切换，并选择具体的标签或日期。
+/// 当 [showSourceTypeSelector] 为 false 时，类型已在外部选定，只展示标签或日期。
 @RoutePage()
 class TaskSourcePanelPickerPage extends StatelessWidget {
   const TaskSourcePanelPickerPage({
     required this.initialSourceType,
     required this.tags,
+    this.showSourceTypeSelector = true,
     super.key,
   });
 
   final TaskSourcePanelType initialSourceType;
   final List<TagEntity> tags;
+
+  /// 是否显示「收集箱 / 标签 / 日期 / 隐藏」分段控件。
+  final bool showSourceTypeSelector;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +59,7 @@ class TaskSourcePanelPickerPage extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         child: _TaskSourcePanelPicker(
           initialSourceType: initialSourceType,
+          showSourceTypeSelector: showSourceTypeSelector,
         ),
       ),
     );
@@ -63,9 +69,11 @@ class TaskSourcePanelPickerPage extends StatelessWidget {
 class _TaskSourcePanelPicker extends StatefulWidget {
   const _TaskSourcePanelPicker({
     required this.initialSourceType,
+    required this.showSourceTypeSelector,
   });
 
   final TaskSourcePanelType initialSourceType;
+  final bool showSourceTypeSelector;
 
   @override
   State<_TaskSourcePanelPicker> createState() => _TaskSourcePanelPickerState();
@@ -102,10 +110,12 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
         AppBar(
           automaticallyImplyLeading: false,
           forceMaterialTransparency: true,
-          // title: Text(context.l10n.selectSource),
+          title: widget.showSourceTypeSelector
+              ? null
+              : Text(_lockedTitle(context)),
           leading: const NavigationBarCloseButton(),
         ),
-        _buildSourceTypeTile(context),
+        if (widget.showSourceTypeSelector) _buildSourceTypeTile(context),
         AnimatedSwitcher(
           duration: Durations.medium1,
           transitionBuilder: (child, animation) => SizeTransition(
@@ -317,6 +327,16 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
     );
   }
 
+  String _lockedTitle(BuildContext context) {
+    final l10n = context.l10n;
+    return switch (_tab) {
+      TaskSourcePanelTab.tag => l10n.selectTag,
+      TaskSourcePanelTab.date => l10n.selectDate,
+      TaskSourcePanelTab.inbox => l10n.inbox,
+      TaskSourcePanelTab.hide => l10n.hide,
+    };
+  }
+
   void _closePanel() {
     context.router.maybePop(
       const TaskSourcePanelPickerResult(closePanel: true),
@@ -339,15 +359,29 @@ class _TaskSourcePanelPickerState extends State<_TaskSourcePanelPicker> {
       return;
     }
 
+    final isPremium = context.read<AppPurchasesBloc>().state.isPremium;
+    if (!isPremium &&
+        (_tab == TaskSourcePanelTab.tag || _tab == TaskSourcePanelTab.date)) {
+      context.router.push(const AppPurchasesRoute());
+      return;
+    }
+
     final TaskSourcePanelType result;
     switch (_tab) {
       case TaskSourcePanelTab.inbox:
         result = const TaskSourcePanelInbox();
       case TaskSourcePanelTab.tag:
         final selected = _selectedTags();
-        result = selected.isNotEmpty
-            ? TaskSourcePanelTag(selected)
-            : const TaskSourcePanelInbox();
+        if (selected.isEmpty) {
+          // 类型已锁定时不能退回收集箱，取消本次选择。
+          if (!widget.showSourceTypeSelector) {
+            context.router.maybePop();
+            return;
+          }
+          result = const TaskSourcePanelInbox();
+        } else {
+          result = TaskSourcePanelTag(selected);
+        }
       case TaskSourcePanelTab.date:
         result = TaskSourcePanelDate(
           _selectedDate,

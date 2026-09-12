@@ -113,4 +113,5 @@ func reloadTaskWidgets() {
     WidgetCenter.shared.reloadTimelines(ofKind: kQuadrantWidgetSmallKind)
     WidgetCenter.shared.reloadTimelines(ofKind: kTimeBlockWidgetLargeKind)
     WidgetCenter.shared.reloadTimelines(ofKind: kTimeBlockWidgetMediumKind)
+    WidgetCenter.shared.reloadTimelines(ofKind: kTimeBlockWidgetSmallKind)
 }

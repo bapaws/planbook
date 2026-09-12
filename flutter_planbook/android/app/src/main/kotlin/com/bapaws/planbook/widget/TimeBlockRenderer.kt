@@ -9,7 +9,7 @@ import android.graphics.Typeface
 import android.text.TextPaint
 import android.text.TextUtils
 import com.bapaws.planbook.R
-import java.text.SimpleDateFormat
+import java.text.DateFormat
 import java.util.Date
 import java.util.Locale
 
@@ -34,32 +34,32 @@ object TimeBlockRenderer {
             return bitmap to emptyList()
         }
 
-        val pad = 8f * density
+        val pad = 10f * density
+        val compact = widthPx / density < 220f
         val headerH = TimeBlockLayout.HEADER_HEIGHT_DP * density
-        val contentTop = pad + headerH + 4f * density
-        val contentLeft = pad
+        val contentTop = pad + headerH + 6f * density
+        val contentLeft = if (compact) 0f else pad
         val contentRight = widthPx - pad
         val contentBottom = heightPx - pad
         val contentH = (contentBottom - contentTop).coerceAtLeast(1f)
         val contentW = (contentRight - contentLeft).coerceAtLeast(1f)
         val nowMinutes = TimeBlockLayout.nowMinutes()
 
-        drawHeader(context, canvas, contentLeft, pad, contentW, headerH, density, colorScheme)
+        drawHeader(
+            context, canvas, pad, pad,
+            widthPx - pad * 2f, headerH, density, colorScheme,
+            showEmpty = tasks.isEmpty(),
+            compact = compact,
+        )
 
         val hits = mutableListOf<TimeBlockHit>()
         if (isLarge) {
-            val gap = 6f * density
+            val gap = 10f * density
             val colW = (contentW - gap) / 2f
             hits += drawColumn(
                 canvas, tasks, 0, 12 * 60,
                 contentLeft, contentTop, colW, contentH, density, isDark, colorScheme, nowMinutes,
             )
-            val dividerX = contentLeft + colW + gap / 2f
-            val dividerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = colorScheme.surfaceContainerHighestColor()
-                strokeWidth = 1f * density
-            }
-            canvas.drawLine(dividerX, contentTop, dividerX, contentBottom, dividerPaint)
             hits += drawColumn(
                 canvas, tasks, 12 * 60, 24 * 60,
                 contentLeft + colW + gap, contentTop, colW, contentH, density, isDark, colorScheme, nowMinutes,
@@ -69,20 +69,6 @@ object TimeBlockRenderer {
             hits += drawColumn(
                 canvas, tasks, window.first, window.second,
                 contentLeft, contentTop, contentW, contentH, density, isDark, colorScheme, nowMinutes,
-            )
-        }
-
-        if (tasks.isEmpty()) {
-            val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = colorScheme.outlineColor()
-                textSize = 12f * density
-                textAlign = Paint.Align.CENTER
-            }
-            canvas.drawText(
-                context.getString(R.string.widget_time_block_empty),
-                widthPx / 2f,
-                contentTop + contentH / 2f,
-                textPaint,
             )
         }
 
@@ -98,6 +84,8 @@ object TimeBlockRenderer {
         height: Float,
         density: Float,
         colorScheme: FlutterColorScheme,
+        showEmpty: Boolean,
+        compact: Boolean,
     ) {
         val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorScheme.onSurfaceColor()
@@ -108,12 +96,115 @@ object TimeBlockRenderer {
             color = colorScheme.outlineColor()
             textSize = 11f * density
         }
-        val titleY = top + height - titlePaint.descent()
-        canvas.drawText(context.getString(R.string.widget_time_block_today), left, titleY, titlePaint)
-        val dateFmt = SimpleDateFormat("MMM d", Locale.getDefault())
+        val centerY = top + height / 2f
+        val titleY = centerY - (titlePaint.ascent() + titlePaint.descent()) / 2f
+        val accentWidth = 3f * density
+        val accentHeight = 14f * density
+        val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorScheme.primaryColor()
+        }
+        canvas.drawRoundRect(
+            RectF(
+                left,
+                centerY - accentHeight / 2f,
+                left + accentWidth,
+                centerY + accentHeight / 2f,
+            ),
+            accentWidth / 2f,
+            accentWidth / 2f,
+            accentPaint,
+        )
+
+        val titleLeft = left + 8f * density
+        val title = context.getString(R.string.widget_time_block_today)
+        canvas.drawText(title, titleLeft, titleY, titlePaint)
+
+        val dateFmt = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
         val date = dateFmt.format(Date())
-        val dateW = datePaint.measureText(date)
-        canvas.drawText(date, left + width - dateW, titleY, datePaint)
+        val dateHorizontalPadding = 6f * density
+        val dateVerticalPadding = 3f * density
+        val dateW = if (compact) 0f else datePaint.measureText(date)
+        val dateHeight = datePaint.descent() - datePaint.ascent() + dateVerticalPadding * 2f
+        val createButtonSize = 20f * density
+        val createButtonGap = 6f * density
+        val createButtonRight = left + width
+        val createButtonLeft = createButtonRight - createButtonSize
+        val dateRight = createButtonLeft - createButtonGap
+        val dateLeft = if (compact) {
+            createButtonLeft
+        } else {
+            dateRight - dateW - dateHorizontalPadding * 2f
+        }
+        if (!compact) {
+            val dateBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = colorScheme.surfaceContainerHighestColor()
+                alpha = 184
+            }
+            canvas.drawRoundRect(
+                RectF(
+                    dateLeft,
+                    centerY - dateHeight / 2f,
+                    dateRight,
+                    centerY + dateHeight / 2f,
+                ),
+                dateHeight / 2f,
+                dateHeight / 2f,
+                dateBackgroundPaint,
+            )
+            val dateY = centerY - (datePaint.ascent() + datePaint.descent()) / 2f
+            canvas.drawText(date, dateLeft + dateHorizontalPadding, dateY, datePaint)
+        }
+
+        val createBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorScheme.primaryContainerColor()
+            alpha = 224
+        }
+        val createCenterX = (createButtonLeft + createButtonRight) / 2f
+        canvas.drawCircle(
+            createCenterX,
+            centerY,
+            createButtonSize / 2f,
+            createBackgroundPaint,
+        )
+        val createPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = colorScheme.primaryColor()
+            strokeWidth = 1.5f * density
+            strokeCap = Paint.Cap.ROUND
+        }
+        val plusRadius = 3.5f * density
+        canvas.drawLine(
+            createCenterX - plusRadius,
+            centerY,
+            createCenterX + plusRadius,
+            centerY,
+            createPaint,
+        )
+        canvas.drawLine(
+            createCenterX,
+            centerY - plusRadius,
+            createCenterX,
+            centerY + plusRadius,
+            createPaint,
+        )
+
+        if (!compact && showEmpty) {
+            val emptyPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = colorScheme.outlineColor()
+                textSize = 10f * density
+            }
+            val titleW = titlePaint.measureText(title)
+            val emptyLeft = titleLeft + titleW + 6f * density
+            val availableWidth = (dateLeft - 8f * density - emptyLeft).coerceAtLeast(0f)
+            if (availableWidth > 0f) {
+                val empty = TextUtils.ellipsize(
+                    context.getString(R.string.widget_time_block_empty),
+                    emptyPaint,
+                    availableWidth,
+                    TextUtils.TruncateAt.END,
+                )
+                canvas.drawText(empty.toString(), emptyLeft, titleY, emptyPaint)
+            }
+        }
     }
 
     private fun drawColumn(
@@ -131,13 +222,15 @@ object TimeBlockRenderer {
         nowMinutes: Int,
     ): List<TimeBlockHit> {
         val hours = ((windowEnd - windowStart) / 60f).coerceAtLeast(1f)
-        val hourHeight = height / hours
+        val gridTopInset = TimeBlockLayout.GRID_TOP_INSET_DP * density
+        val hourHeight = (height - gridTopInset).coerceAtLeast(1f) / hours
         val labelW = TimeBlockLayout.TIME_LABEL_WIDTH_DP * density
         val gridLeft = left + labelW
         val gridW = (width - labelW).coerceAtLeast(1f)
         val labelPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colorScheme.outlineColor()
-            textSize = 9f * density
+            textSize = 8f * density
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.NORMAL)
             textAlign = Paint.Align.CENTER
         }
         val linePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -146,14 +239,17 @@ object TimeBlockRenderer {
         }
 
         for (hour in TimeBlockLayout.visibleHours(windowStart, windowEnd)) {
-            val y = top + (hour * 60 - windowStart) / 60f * hourHeight
+            val labelTop = top + (hour * 60 - windowStart) / 60f * hourHeight
+            val lineY = labelTop + gridTopInset
+            val fm = labelPaint.fontMetrics
             canvas.drawText(
                 TimeBlockLayout.formatHourLabel(hour),
                 left + labelW / 2f,
-                y + 10f * density,
+                labelTop - fm.ascent,
                 labelPaint,
             )
-            canvas.drawLine(gridLeft, y, left + width, y, linePaint)
+            linePaint.strokeWidth = if (hour == 0 || hour == 12) density else 0.5f * density
+            canvas.drawLine(gridLeft, lineY, left + width, lineY, linePaint)
         }
 
         val items = TimeBlockLayout.layout(tasks, windowStart, windowEnd, hourHeight)
@@ -162,73 +258,122 @@ object TimeBlockRenderer {
             val theme = item.task.priority.getColorScheme(isDark)
             val blockW = gridW * item.widthFactor
             val blockLeft = gridLeft + gridW * (item.columnIndex / item.columnCount.toFloat())
-            val blockTop = top + item.top
-            val rect = RectF(blockLeft, blockTop, blockLeft + blockW - 2f * density, blockTop + item.height)
+            val blockTop = top + gridTopInset + item.top
+            val rect = RectF(blockLeft, blockTop, blockLeft + blockW, blockTop + item.height)
             val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = theme.primaryContainerColor()
             }
-            canvas.drawRoundRect(rect, 5f * density, 5f * density, bgPaint)
+            canvas.drawRoundRect(rect, 6f * density, 6f * density, bgPaint)
+
+            val accent = if (item.task.isCompleted) theme.outlineColor() else theme.primaryColor()
+            val accentPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = accent }
+            val accentRect = RectF(
+                rect.left + 2f * density,
+                rect.top + 2f * density,
+                rect.left + 5f * density,
+                rect.bottom - 2f * density,
+            )
+            canvas.drawRoundRect(accentRect, 1.5f * density, 1.5f * density, accentPaint)
 
             val titlePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = if (item.task.isCompleted) theme.outlineColor() else theme.primaryColor()
-                textSize = 10f * density
+                textSize = 9f * density
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 isStrikeThruText = item.task.isCompleted
             }
+            val completeSize = 14f * density
+            val completePad = 4f * density
+            val completeCx = rect.right - completePad - completeSize / 2f
+            val completeCy = rect.top + completePad + completeSize / 2f
+            val completePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                color = accent
+                strokeWidth = 1.4f * density
+                style = if (item.task.isCompleted) Paint.Style.FILL else Paint.Style.STROKE
+            }
+            canvas.drawCircle(completeCx, completeCy, completeSize / 2f, completePaint)
+            if (item.task.isCompleted) {
+                val checkPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                    color = theme.primaryContainerColor()
+                    strokeWidth = 1.4f * density
+                    strokeCap = Paint.Cap.ROUND
+                    style = Paint.Style.STROKE
+                }
+                canvas.drawLine(
+                    completeCx - 2.4f * density,
+                    completeCy,
+                    completeCx - 0.4f * density,
+                    completeCy + 2.2f * density,
+                    checkPaint,
+                )
+                canvas.drawLine(
+                    completeCx - 0.4f * density,
+                    completeCy + 2.2f * density,
+                    completeCx + 2.8f * density,
+                    completeCy - 2.2f * density,
+                    checkPaint,
+                )
+            }
+
+            val titleMaxWidth = (rect.width() - 14f * density - completeSize - completePad).coerceAtLeast(8f)
             val title = TextUtils.ellipsize(
                 item.task.title,
                 titlePaint,
-                (rect.width() - 16f * density).coerceAtLeast(8f),
+                titleMaxWidth,
                 TextUtils.TruncateAt.END,
             ).toString()
-            canvas.drawText(title, rect.left + 4f * density, rect.top + 12f * density, titlePaint)
-            if (item.height >= 28f) {
+            canvas.drawText(title, rect.left + 8f * density, rect.top + 11f * density, titlePaint)
+            if (item.height >= 32f) {
                 val timePaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-                    color = if (item.task.isCompleted) theme.outlineColor() else theme.primaryColor()
+                    color = accent
                     textSize = 8f * density
-                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 }
                 canvas.drawText(
                     item.timeRangeLabel,
-                    rect.left + 4f * density,
-                    rect.top + 22f * density,
+                    rect.left + 8f * density,
+                    rect.top + 21f * density,
                     timePaint,
                 )
             }
+            val completeHitSize = (completeSize + completePad * 2f).coerceAtMost(item.height)
             hits.add(
                 TimeBlockHit(
                     task = item.task,
                     left = blockLeft,
                     top = blockTop,
-                    width = blockW,
+                    width = (blockW - completeHitSize).coerceAtLeast(8f),
                     height = item.height,
+                    completeLeft = rect.right - completeHitSize,
+                    completeTop = blockTop,
+                    completeWidth = completeHitSize,
+                    completeHeight = completeHitSize,
                 ),
             )
         }
 
         if (nowMinutes in windowStart until windowEnd) {
-            val nowY = top + (nowMinutes - windowStart) / 60f * hourHeight
+            val nowY = top + gridTopInset + (nowMinutes - windowStart) / 60f * hourHeight
             val error = colorScheme.errorColor()
             val onError = colorScheme.onErrorColor()
             val nowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = error }
             val label = TimeBlockLayout.formatNowLabel(nowMinutes)
             val nowText = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = onError
-                textSize = 8f * density
+                textSize = 7f * density
                 typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
                 textAlign = Paint.Align.CENTER
             }
             val badgeW = nowText.measureText(label) + 6f * density
-            val badgeH = 12f * density
+            val badgeH = 11f * density
             val badgeRect = RectF(
                 left + (labelW - badgeW) / 2f,
                 nowY - badgeH / 2f,
                 left + (labelW + badgeW) / 2f,
                 nowY + badgeH / 2f,
             )
-            canvas.drawRoundRect(badgeRect, 3f * density, 3f * density, nowPaint)
-            canvas.drawText(label, badgeRect.centerX(), nowY + 3f * density, nowText)
-            canvas.drawCircle(gridLeft, nowY, 3f * density, nowPaint)
-            canvas.drawRect(gridLeft, nowY - density, left + width, nowY + density, nowPaint)
+            canvas.drawRoundRect(badgeRect, badgeH / 2f, badgeH / 2f, nowPaint)
+            canvas.drawText(label, badgeRect.centerX(), nowY - (nowText.fontMetrics.ascent + nowText.fontMetrics.descent) / 2f, nowText)
+            canvas.drawCircle(gridLeft, nowY, 2.5f * density, nowPaint)
+            canvas.drawRect(gridLeft, nowY - 0.75f * density, left + width, nowY + 0.75f * density, nowPaint)
         }
 
         return hits

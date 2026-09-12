@@ -25,6 +25,11 @@ const _kTimeBlockMediumIOSKind = 'TimeBlockWidgetMedium';
 const _kTimeBlockMediumAndroidClass =
     'com.bapaws.planbook.widget.TimeBlockWidgetMediumProvider';
 
+/// 时间块小号小组件标识
+const _kTimeBlockSmallIOSKind = 'TimeBlockWidgetSmall';
+const _kTimeBlockSmallAndroidClass =
+    'com.bapaws.planbook.widget.TimeBlockWidgetSmallProvider';
+
 /// 会员状态，供时间块小组件门控。缺省（从未写入）视为非会员。
 const kWidgetIsPremiumKey = 'widget_is_premium';
 
@@ -85,7 +90,7 @@ class AppHomeWidget {
     await refreshTaskWidgets();
   }
 
-  /// 刷新时间块大号 + 中号。会员状态变化时单独调用即可。
+  /// 刷新时间块大号、中号和小号。会员状态变化时单独调用即可。
   static Future<void> refreshTimeBlockWidgets() async {
     try {
       await Future.wait([
@@ -96,6 +101,10 @@ class AppHomeWidget {
         HomeWidget.updateWidget(
           iOSName: _kTimeBlockMediumIOSKind,
           qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockSmallIOSKind,
+          qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
         ),
       ]);
     } on Object {
@@ -122,6 +131,10 @@ class AppHomeWidget {
         HomeWidget.updateWidget(
           iOSName: _kTimeBlockMediumIOSKind,
           qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockSmallIOSKind,
+          qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
         ),
       ]);
     } on Object {

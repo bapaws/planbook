@@ -39,6 +39,10 @@ data class TimeBlockHit(
     val top: Float,
     val width: Float,
     val height: Float,
+    val completeLeft: Float,
+    val completeTop: Float,
+    val completeWidth: Float,
+    val completeHeight: Float,
 )
 
 /**
@@ -48,8 +52,10 @@ object TimeBlockLayout {
     const val DAY_MINUTES = 24 * 60
     const val APP_HOUR_HEIGHT = 60f
     const val APP_MIN_BLOCK_HEIGHT = 24f
+    // 完整容纳 App 使用的 `HH:00` 刻度和当前时间徽标。
     const val TIME_LABEL_WIDTH_DP = 36f
     const val HEADER_HEIGHT_DP = 22f
+    const val GRID_TOP_INSET_DP = 6f
 
     fun minutesFromTodayStart(millis: Long): Int {
         val cal = Calendar.getInstance()
@@ -81,7 +87,7 @@ object TimeBlockLayout {
         return "${fmt.format(Date(startMillis))} – ${fmt.format(Date(endMillis))}"
     }
 
-    fun formatHourLabel(hour: Int): String = String.format(Locale.US, "%02d:00", hour)
+    fun formatHourLabel(hour: Int): String = String.format(Locale.US, "%02d", hour)
 
     fun formatNowLabel(minutes: Int): String {
         val hour = minutes / 60
@@ -91,7 +97,8 @@ object TimeBlockLayout {
 
     fun mediumWindow(nowMinutes: Int, visibleMinutes: Int = 4 * 60): Pair<Int, Int> {
         val maxStart = maxOf(0, DAY_MINUTES - visibleMinutes)
-        val start = minOf(maxOf(nowMinutes - visibleMinutes / 3, 0), maxStart)
+        val currentHourStart = maxOf(nowMinutes, 0) / 60 * 60
+        val start = minOf(currentHourStart, maxStart)
         return start to (start + visibleMinutes)
     }
 
@@ -148,19 +155,20 @@ object TimeBlockLayout {
         hourHeight: Float,
     ): List<TimeBlockLayoutItem> {
         val minHeight = minBlockHeight(hourHeight)
-        val items = mutableListOf<TimeBlockLayoutItem>()
+        // 先按全天统一分栏，再裁剪到窗口，保证跨 12 点任务的两段宽度一致。
+        val dayItems = mutableListOf<TimeBlockLayoutItem>()
         for (task in tasks) {
-            var start = maxOf(task.startMinutes, windowStart)
-            var end = minOf(task.endMinutes, windowEnd)
+            val start = maxOf(task.startMinutes, 0)
+            var end = minOf(task.endMinutes, DAY_MINUTES)
             if (end <= start) continue
-            if (end - start < 5) end = minOf(start + 15, windowEnd)
+            if (end - start < 5) end = minOf(start + 15, DAY_MINUTES)
             if (end <= start) continue
-            val top = (start - windowStart) / 60f * hourHeight
+            val top = start / 60f * hourHeight
             var height = (end - start) / 60f * hourHeight
             if (height < minHeight) height = minHeight
             val startMillis = todayStartMillis() + start * 60_000L
             val endMillis = todayStartMillis() + end * 60_000L
-            items.add(
+            dayItems.add(
                 TimeBlockLayoutItem(
                     task = task,
                     top = top,
@@ -171,10 +179,10 @@ object TimeBlockLayout {
                 ),
             )
         }
-        items.sortBy { it.top }
+        dayItems.sortBy { it.top }
 
         val clusters = mutableListOf<MutableList<TimeBlockLayoutItem>>()
-        for (item in items) {
+        for (item in dayItems) {
             var added = false
             for (cluster in clusters) {
                 val last = cluster.last()
@@ -187,7 +195,7 @@ object TimeBlockLayout {
             if (!added) clusters.add(mutableListOf(item))
         }
 
-        val result = mutableListOf<TimeBlockLayoutItem>()
+        val assignedItems = mutableListOf<TimeBlockLayoutItem>()
         for (cluster in clusters) {
             val columns = mutableListOf<MutableList<TimeBlockLayoutItem>>()
             for (item in cluster) {
@@ -205,7 +213,7 @@ object TimeBlockLayout {
             val columnCount = columns.size
             columns.forEachIndexed { columnIndex, column ->
                 for (item in column) {
-                    result.add(
+                    assignedItems.add(
                         item.copy(
                             columnCount = columnCount,
                             columnIndex = columnIndex,
@@ -214,6 +222,30 @@ object TimeBlockLayout {
                     )
                 }
             }
+        }
+
+        val result = mutableListOf<TimeBlockLayoutItem>()
+        for (item in assignedItems) {
+            val start = maxOf(item.startMinutes, windowStart)
+            var end = minOf(item.endMinutes, windowEnd)
+            if (end <= start) continue
+            if (end - start < 5) end = minOf(start + 15, windowEnd)
+            if (end <= start) continue
+            val top = (start - windowStart) / 60f * hourHeight
+            val rawHeight = (end - start) / 60f * hourHeight
+            val remainingHeight = (windowEnd - start) / 60f * hourHeight
+            val height = maxOf(rawHeight, minHeight).coerceAtMost(remainingHeight)
+            val startMillis = todayStartMillis() + start * 60_000L
+            val endMillis = todayStartMillis() + end * 60_000L
+            result.add(
+                item.copy(
+                    top = top,
+                    height = height,
+                    startMinutes = start,
+                    endMinutes = end,
+                    timeRangeLabel = formatTimeRange(startMillis, endMillis),
+                ),
+            )
         }
         result.sortBy { it.top }
         return result

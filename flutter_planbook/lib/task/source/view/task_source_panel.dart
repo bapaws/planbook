@@ -16,8 +16,12 @@ import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
 import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
 import 'package:flutter_planbook/task/source/model/task_source_panel_type.dart';
 import 'package:flutter_planbook/task/source/picker/model/task_source_panel_picker_result.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+
+/// 侧栏外观：独立右侧栏，或嵌入八宫格第一格。
+enum TaskSourcePanelVariant { sidebar, embedded }
 
 /// 右侧任务列
 ///
@@ -25,7 +29,19 @@ import 'package:planbook_repository/planbook_repository.dart';
 ///
 /// 需在上层提供 [TaskSourcePanelBloc]。
 class TaskSourcePanel extends StatelessWidget {
-  const TaskSourcePanel({super.key});
+  const TaskSourcePanel({
+    this.variant = TaskSourcePanelVariant.sidebar,
+    this.showTitle = true,
+    super.key,
+  });
+
+  /// 嵌入八宫格第一格：无固定宽度、底栏边距和圆角卡片。
+  const TaskSourcePanel.embedded({super.key})
+    : variant = TaskSourcePanelVariant.embedded,
+      showTitle = false;
+
+  final TaskSourcePanelVariant variant;
+  final bool showTitle;
 
   /// 投放到当前数据源是否会产生实际变更。
   ///
@@ -56,14 +72,111 @@ class TaskSourcePanel extends StatelessWidget {
     }
   }
 
+  static String titleOf(BuildContext context, TaskSourcePanelType sourceType) {
+    final l10n = context.l10n;
+    return switch (sourceType) {
+      TaskSourcePanelInbox() => l10n.inbox,
+      TaskSourcePanelTag(tags: final tags) =>
+        tags.map((t) => t.name).join(', '),
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.all,
+      ) =>
+        date.Md,
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.allDay,
+      ) =>
+        '${date.Md}(${l10n.allDay})',
+      TaskSourcePanelDate(
+        date: final date,
+        filter: TaskSourcePanelDateFilter.notAllDay,
+      ) =>
+        '${date.Md}(${l10n.notAllDay})',
+    };
+  }
+
+  static IconData iconOf(TaskSourcePanelType sourceType) {
+    return switch (sourceType) {
+      TaskSourcePanelInbox() => CupertinoIcons.tray,
+      TaskSourcePanelTag() => CupertinoIcons.tag,
+      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.allDay) =>
+        CupertinoIcons.sun_max,
+      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.notAllDay) =>
+        CupertinoIcons.clock,
+      TaskSourcePanelDate() => CupertinoIcons.calendar,
+    };
+  }
+
+  /// 打开数据源选择器，并按 [variant] 处理「隐藏」结果。
+  static Future<void> openPicker(
+    BuildContext context, {
+    required TaskSourcePanelType initialSourceType,
+    TaskSourcePanelVariant variant = TaskSourcePanelVariant.sidebar,
+    bool showSourceTypeSelector = true,
+  }) async {
+    final tags = context.read<RootHomeBloc>().state.topLevelTags;
+    final result = await context.router.push<TaskSourcePanelPickerResult?>(
+      TaskSourcePanelPickerRoute(
+        initialSourceType: initialSourceType,
+        tags: tags,
+        showSourceTypeSelector: showSourceTypeSelector,
+      ),
+    );
+    if (result == null || !context.mounted) return;
+    applyPickerResult(context, result, variant: variant);
+  }
+
+  static void applyPickerResult(
+    BuildContext context,
+    TaskSourcePanelPickerResult result, {
+    TaskSourcePanelVariant variant = TaskSourcePanelVariant.sidebar,
+  }) {
+    if (result.closePanel) {
+      if (variant == TaskSourcePanelVariant.embedded) {
+        context.read<RootTaskBloc>().add(
+          const RootTaskWeekGridCellKindChanged(
+            kind: TaskWeekGridCellKind.note,
+          ),
+        );
+      } else {
+        context.read<RootTaskBloc>().add(
+          const RootTaskSourcePanelVisibilityChanged(showSourcePanel: false),
+        );
+      }
+      return;
+    }
+    final sourceType = result.sourceType;
+    if (sourceType == null) return;
+    context.read<TaskSourcePanelBloc>().add(
+      TaskSourcePanelSourceChanged(sourceType),
+    );
+    if (variant == TaskSourcePanelVariant.embedded) {
+      context.read<RootTaskBloc>().add(
+        const RootTaskWeekGridCellKindChanged(
+          kind: TaskWeekGridCellKind.source,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const _TaskSourcePanelView();
+    return _TaskSourcePanelView(
+      variant: variant,
+      showTitle: showTitle,
+    );
   }
 }
 
 class _TaskSourcePanelView extends StatelessWidget {
-  const _TaskSourcePanelView();
+  const _TaskSourcePanelView({
+    required this.variant,
+    required this.showTitle,
+  });
+
+  final TaskSourcePanelVariant variant;
+  final bool showTitle;
 
   @override
   Widget build(BuildContext context) {
@@ -109,6 +222,16 @@ class _TaskSourcePanelView extends StatelessWidget {
         },
         builder: (context, child, candidateData) {
           final isHovering = candidateData.isNotEmpty;
+          if (variant == TaskSourcePanelVariant.embedded) {
+            return SizedBox.expand(
+              child: ColoredBox(
+                color: isHovering
+                    ? theme.colorScheme.primary.withValues(alpha: 0.08)
+                    : Colors.transparent,
+                child: child,
+              ),
+            );
+          }
           return Container(
             margin: EdgeInsets.only(
               right: 8,
@@ -136,7 +259,7 @@ class _TaskSourcePanelView extends StatelessWidget {
         },
         child: Column(
           children: [
-            const _SourcePanelTitle(),
+            if (showTitle) _SourcePanelTitle(variant: variant),
             Expanded(
               child: BlocBuilder<TaskSourcePanelBloc, TaskSourcePanelState>(
                 builder: (context, state) {
@@ -241,7 +364,9 @@ class _TaskSourcePanelView extends StatelessWidget {
 }
 
 class _SourcePanelTitle extends StatelessWidget {
-  const _SourcePanelTitle();
+  const _SourcePanelTitle({required this.variant});
+
+  final TaskSourcePanelVariant variant;
 
   @override
   Widget build(BuildContext context) {
@@ -252,14 +377,22 @@ class _SourcePanelTitle extends StatelessWidget {
         return CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           minimumSize: const Size(kMinInteractiveDimension, 36),
-          onPressed: () => _openPicker(context, state),
+          onPressed: () => TaskSourcePanel.openPicker(
+            context,
+            initialSourceType: state.sourceType,
+            variant: variant,
+          ),
           child: Row(
             children: [
-              _buildSourceIcon(state.sourceType, colorScheme),
+              Icon(
+                TaskSourcePanel.iconOf(state.sourceType),
+                size: 14,
+                color: colorScheme.primary,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  _buildTitle(context, state),
+                  TaskSourcePanel.titleOf(context, state.sourceType),
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w600,
                     color: colorScheme.onSurface,
@@ -278,69 +411,6 @@ class _SourcePanelTitle extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildSourceIcon(
-    TaskSourcePanelType sourceType,
-    ColorScheme colorScheme,
-  ) {
-    final icon = switch (sourceType) {
-      TaskSourcePanelInbox() => CupertinoIcons.tray,
-      TaskSourcePanelTag() => CupertinoIcons.tag,
-      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.allDay) =>
-        CupertinoIcons.sun_max,
-      TaskSourcePanelDate(filter: TaskSourcePanelDateFilter.notAllDay) =>
-        CupertinoIcons.clock,
-      TaskSourcePanelDate() => CupertinoIcons.calendar,
-    };
-    return Icon(icon, size: 14, color: colorScheme.primary);
-  }
-
-  String _buildTitle(BuildContext context, TaskSourcePanelState state) {
-    final l10n = context.l10n;
-    return switch (state.sourceType) {
-      TaskSourcePanelInbox() => l10n.inbox,
-      TaskSourcePanelTag(tags: final tags) =>
-        tags.map((t) => t.name).join(', '),
-      TaskSourcePanelDate(
-        date: final date,
-        filter: TaskSourcePanelDateFilter.all,
-      ) =>
-        date.Md,
-      TaskSourcePanelDate(
-        date: final date,
-        filter: TaskSourcePanelDateFilter.allDay,
-      ) =>
-        '${date.Md}(${l10n.allDay})',
-      TaskSourcePanelDate(
-        date: final date,
-        filter: TaskSourcePanelDateFilter.notAllDay,
-      ) =>
-        '${date.Md}(${l10n.notAllDay})',
-    };
-  }
-
-  Future<void> _openPicker(
-    BuildContext context,
-    TaskSourcePanelState state,
-  ) async {
-    final tags = context.read<RootHomeBloc>().state.topLevelTags;
-    final result = await context.router.push<TaskSourcePanelPickerResult?>(
-      TaskSourcePanelPickerRoute(
-        initialSourceType: state.sourceType,
-        tags: tags,
-      ),
-    );
-    if (result == null || !context.mounted) return;
-    if (result.closePanel) {
-      context.read<RootTaskBloc>().add(
-        const RootTaskSourcePanelVisibilityChanged(showSourcePanel: false),
-      );
-      return;
-    }
-    context.read<TaskSourcePanelBloc>().add(
-      TaskSourcePanelSourceChanged(result.sourceType!),
     );
   }
 }

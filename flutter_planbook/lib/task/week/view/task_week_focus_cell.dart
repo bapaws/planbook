@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
-import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
-import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
-import 'package:flutter_planbook/task/today/view/task_focus_header_view.dart';
-import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 import 'package:planbook_core/planbook_core.dart';
 
+/// 八宫格第一格的笔记正文（本周重点 / 本周总结）。
 class TaskWeekFocusCell extends StatelessWidget {
   const TaskWeekFocusCell({
     required this.note,
@@ -49,89 +45,39 @@ class TaskWeekFocusCell extends StatelessWidget {
             ),
           );
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            TaskFocusHeaderView(
-              noteType: noteType,
-              tab: RootTaskTab.week,
-              onMindMapTapped: () {
-                _addDiscoverEvent(context, noteType);
-                _navigateToRootDiscover(context, noteType);
-              },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+              vertical: 8,
             ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 8,
-                  ),
-                  child: isEmpty
-                      ? onTaskDropped != null
-                            ? SequentialRotatingText(
-                                key: ValueKey(noteType),
-                                messages: [
-                                  noteType.getHintText(context.l10n),
-                                  context.l10n.taskFocusEmptyDragTaskHint,
-                                ],
-                                style: emptyStyle,
-                              )
-                            : Text(
-                                noteType.getHintText(context.l10n),
-                                style: emptyStyle,
-                              )
+            child: isEmpty
+                ? onTaskDropped != null
+                      ? SequentialRotatingText(
+                          key: ValueKey(noteType),
+                          messages: [
+                            noteType.getHintText(context.l10n),
+                            context.l10n.taskFocusEmptyDragTaskHint,
+                          ],
+                          style: emptyStyle,
+                        )
                       : Text(
-                          note!.content!,
-                          style: filledStyle,
-                        ),
-                ),
-              ),
-            ),
-          ],
+                          noteType.getHintText(context.l10n),
+                          style: emptyStyle,
+                        )
+                : Text(
+                    note!.content!,
+                    style: filledStyle,
+                  ),
+          ),
         ),
       ),
     );
 
-    return Expanded(
-      child: TaskDragTarget(
-        onAccept: onTaskDropped,
-        operation: TaskDragOperation.noteAppend,
-        child: child,
-      ),
-    );
-  }
-
-  void _addDiscoverEvent(BuildContext context, NoteType noteType) {
-    final date = context.read<TaskWeekBloc>().state.date;
-    context.read<RootDiscoverBloc>().add(
-      noteType.isFocus
-          ? RootDiscoverFocusDateChanged(
-              date: date,
-              type: noteType,
-            )
-          : RootDiscoverSummaryDateChanged(
-              date: date,
-              type: noteType,
-            ),
-    );
-  }
-
-  void _navigateToRootDiscover(BuildContext context, NoteType noteType) {
-    AutoRouter.of(context).navigate(
-      RootHomeRoute(
-        children: [
-          RootDiscoverRoute(
-            children: [
-              if (noteType.isFocus)
-                const DiscoverFocusRoute()
-              else
-                const DiscoverSummaryRoute(),
-            ],
-          ),
-        ],
-      ),
+    return TaskDragTarget(
+      onAccept: onTaskDropped,
+      operation: TaskDragOperation.noteAppend,
+      child: SizedBox.expand(child: child),
     );
   }
 }

@@ -524,6 +524,12 @@ fun refreshTimeBlockWidgets(context: Context) {
     for (id in mediumIds) {
         TimeBlockWidgetMediumProvider.updateWidget(context, appWidgetManager, id)
     }
+
+    val smallComponent = ComponentName(context, TimeBlockWidgetSmallProvider::class.java)
+    val smallIds = appWidgetManager.getAppWidgetIds(smallComponent)
+    for (id in smallIds) {
+        TimeBlockWidgetSmallProvider.updateWidget(context, appWidgetManager, id)
+    }
 }
 
 fun refreshAllTaskWidgets(context: Context) {

@@ -11,7 +11,7 @@ struct TimeBlockWidgetLarge: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: TimeBlockProvider()) { entry in
-            TimeBlockView(entry: entry, family: .systemLarge)
+            TimeBlockView(entry: entry)
                 .containerBackground(for: .widget) {
                     WidgetTiledBackground(config: WidgetBackgroundConfig.current())
                 }
@@ -28,7 +28,7 @@ struct TimeBlockWidgetMedium: Widget {
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: TimeBlockProvider()) { entry in
-            TimeBlockView(entry: entry, family: .systemMedium)
+            TimeBlockView(entry: entry)
                 .containerBackground(for: .widget) {
                     WidgetTiledBackground(config: WidgetBackgroundConfig.current())
                 }
@@ -37,5 +37,22 @@ struct TimeBlockWidgetMedium: Widget {
         .configurationDisplayName(String(localized: "widget.timeBlock.medium.name"))
         .description(String(localized: "widget.timeBlock.medium.description"))
         .supportedFamilies([.systemMedium])
+    }
+}
+
+struct TimeBlockWidgetSmall: Widget {
+    static let kind = kTimeBlockWidgetSmallKind
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: Self.kind, provider: TimeBlockProvider()) { entry in
+            TimeBlockView(entry: entry)
+                .containerBackground(for: .widget) {
+                    WidgetTiledBackground(config: WidgetBackgroundConfig.current())
+                }
+        }
+        .contentMarginsDisabled()
+        .configurationDisplayName(String(localized: "widget.timeBlock.small.name"))
+        .description(String(localized: "widget.timeBlock.small.description"))
+        .supportedFamilies([.systemSmall])
     }
 }

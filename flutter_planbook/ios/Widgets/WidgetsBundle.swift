@@ -15,6 +15,7 @@ struct WidgetsBundle: WidgetBundle {
         QuadrantWidgetSmall()
         TimeBlockWidgetLarge()
         TimeBlockWidgetMedium()
+        TimeBlockWidgetSmall()
         QuickNoteWidget()
     }
 }

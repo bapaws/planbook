@@ -1,6 +1,5 @@
 package com.bapaws.planbook.widget
 
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
@@ -22,6 +21,15 @@ class TimeBlockWidgetLargeProvider : AppWidgetProvider() {
         }
     }
 
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle,
+    ) {
+        updateWidget(context, appWidgetManager, appWidgetId)
+    }
+
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             TimeBlockWidgetUpdater.update(context, appWidgetManager, appWidgetId, isLarge = true)
@@ -34,6 +42,38 @@ class TimeBlockWidgetMediumProvider : AppWidgetProvider() {
         for (id in appWidgetIds) {
             updateWidget(context, appWidgetManager, id)
         }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle,
+    ) {
+        updateWidget(context, appWidgetManager, appWidgetId)
+    }
+
+    companion object {
+        fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
+            TimeBlockWidgetUpdater.update(context, appWidgetManager, appWidgetId, isLarge = false)
+        }
+    }
+}
+
+class TimeBlockWidgetSmallProvider : AppWidgetProvider() {
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        for (id in appWidgetIds) {
+            updateWidget(context, appWidgetManager, id)
+        }
+    }
+
+    override fun onAppWidgetOptionsChanged(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+        newOptions: android.os.Bundle,
+    ) {
+        updateWidget(context, appWidgetManager, appWidgetId)
     }
 
     companion object {
@@ -57,7 +97,7 @@ private object TimeBlockWidgetUpdater {
             val density = context.resources.displayMetrics.density
             val widgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
             val options = appWidgetManager.getAppWidgetOptions(appWidgetId)
-            val minW = widgetInfo?.minWidth ?: if (isLarge) 250 else 250
+            val minW = widgetInfo?.minWidth ?: if (isLarge) 250 else 110
             val minH = widgetInfo?.minHeight ?: if (isLarge) 250 else 110
             val widthDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, minW)
             val heightDp = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, minH)
@@ -89,9 +129,23 @@ private object TimeBlockWidgetUpdater {
             )
             rv.setImageViewBitmap(R.id.timeline, timeline)
 
+            rv.setViewVisibility(
+                R.id.time_block_create,
+                if (isPremium) android.view.View.VISIBLE else android.view.View.GONE,
+            )
+            if (isPremium) {
+                bindOpenAppClick(
+                    rv,
+                    context,
+                    R.id.time_block_create,
+                    if (isLarge) 4300 + appWidgetId else 4400 + appWidgetId,
+                    "planbook.bapaws://task/new",
+                )
+            }
+
             hideHits(context, rv)
             if (isPremium && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                bindHits(context, rv, hits, density)
+                bindHits(context, rv, hits, density, appWidgetId)
             }
 
             val deepLink = if (isPremium) {
@@ -99,7 +153,7 @@ private object TimeBlockWidgetUpdater {
             } else {
                 "planbook.bapaws://purchases"
             }
-            bindOpenAppClick(rv, context, R.id.widget_root, if (isLarge) 4100 else 4200, deepLink)
+            bindOpenAppClick(rv, context, R.id.widget_root, if (isLarge) 4100 + appWidgetId else 4200 + appWidgetId, deepLink)
 
             appWidgetManager.updateAppWidget(appWidgetId, rv)
             Log.d(TAG, "Time block widget updated large=$isLarge premium=$isPremium")
@@ -110,8 +164,14 @@ private object TimeBlockWidgetUpdater {
 
     private fun hideHits(context: Context, rv: RemoteViews) {
         for (i in 0 until HIT_COUNT) {
-            val id = hitId(context, i) ?: continue
-            rv.setViewVisibility(id, android.view.View.GONE)
+            val hitId = hitId(context, i)
+            if (hitId != null) {
+                rv.setViewVisibility(hitId, android.view.View.GONE)
+            }
+            val completeId = completeId(context, i)
+            if (completeId != null) {
+                rv.setViewVisibility(completeId, android.view.View.GONE)
+            }
         }
     }
 
@@ -120,38 +180,94 @@ private object TimeBlockWidgetUpdater {
         rv: RemoteViews,
         hits: List<TimeBlockHit>,
         density: Float,
+        appWidgetId: Int,
     ) {
         for (i in 0 until HIT_COUNT) {
-            val id = hitId(context, i) ?: continue
+            val id = hitId(context, i)
+            val completeViewId = completeId(context, i)
             if (i >= hits.size) {
-                rv.setViewVisibility(id, android.view.View.GONE)
+                if (id != null) rv.setViewVisibility(id, android.view.View.GONE)
+                if (completeViewId != null) rv.setViewVisibility(completeViewId, android.view.View.GONE)
                 continue
             }
             val hit = hits[i]
-            rv.setViewVisibility(id, android.view.View.VISIBLE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                rv.setViewLayoutMargin(id, RemoteViews.MARGIN_LEFT, hit.left / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-                rv.setViewLayoutMargin(id, RemoteViews.MARGIN_TOP, hit.top / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-                rv.setViewLayoutWidth(id, hit.width / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-                rv.setViewLayoutHeight(id, hit.height / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+            if (id != null) {
+                rv.setViewVisibility(id, android.view.View.VISIBLE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    rv.setViewLayoutMargin(id, RemoteViews.MARGIN_LEFT, hit.left / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+                    rv.setViewLayoutMargin(id, RemoteViews.MARGIN_TOP, hit.top / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+                    rv.setViewLayoutWidth(id, hit.width / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+                    rv.setViewLayoutHeight(id, hit.height / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+                }
+                val detailUrl = android.net.Uri.Builder()
+                    .scheme("planbook.bapaws")
+                    .authority("task")
+                    .appendPath("detail")
+                    .appendQueryParameter("taskId", hit.task.taskId)
+                    .apply {
+                        hit.task.occurrenceAt?.takeIf { it.isNotEmpty() }?.let {
+                            appendQueryParameter("occurrenceAt", it)
+                        }
+                    }
+                    .build()
+                    .toString()
+                bindOpenAppClick(
+                    rv,
+                    context,
+                    id,
+                    appWidgetId xor hit.task.taskId.hashCode() xor (hit.task.occurrenceAt?.hashCode() ?: 0),
+                    detailUrl,
+                )
             }
-            val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
-                action = WidgetClickReceiver.ACTION_COMPLETE_TASK
-                putExtra(WidgetClickReceiver.EXTRA_TASK_ID, hit.task.taskId)
-                putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, hit.task.occurrenceAt)
+            if (completeViewId != null) {
+                rv.setViewVisibility(completeViewId, android.view.View.VISIBLE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    rv.setViewLayoutMargin(
+                        completeViewId,
+                        RemoteViews.MARGIN_LEFT,
+                        hit.completeLeft / density,
+                        android.util.TypedValue.COMPLEX_UNIT_DIP,
+                    )
+                    rv.setViewLayoutMargin(
+                        completeViewId,
+                        RemoteViews.MARGIN_TOP,
+                        hit.completeTop / density,
+                        android.util.TypedValue.COMPLEX_UNIT_DIP,
+                    )
+                    rv.setViewLayoutWidth(
+                        completeViewId,
+                        hit.completeWidth / density,
+                        android.util.TypedValue.COMPLEX_UNIT_DIP,
+                    )
+                    rv.setViewLayoutHeight(
+                        completeViewId,
+                        hit.completeHeight / density,
+                        android.util.TypedValue.COMPLEX_UNIT_DIP,
+                    )
+                }
+                val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
+                    action = WidgetClickReceiver.ACTION_COMPLETE_TASK
+                    putExtra(WidgetClickReceiver.EXTRA_TASK_ID, hit.task.taskId)
+                    putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, hit.task.occurrenceAt)
+                }
+                val pending = android.app.PendingIntent.getBroadcast(
+                    context,
+                    (appWidgetId * 31) xor "complete#${hit.task.taskId}#${hit.task.occurrenceAt.orEmpty()}".hashCode(),
+                    completeIntent,
+                    android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE,
+                )
+                rv.setOnClickPendingIntent(completeViewId, pending)
             }
-            val pending = PendingIntent.getBroadcast(
-                context,
-                hit.task.taskId.hashCode() xor (hit.task.occurrenceAt?.hashCode() ?: 0),
-                completeIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            rv.setOnClickPendingIntent(id, pending)
         }
     }
 
     private fun hitId(context: Context, index: Int): Int? {
         val id = context.resources.getIdentifier("time_block_hit_$index", "id", context.packageName)
+        return id.takeIf { it != 0 }
+    }
+
+    private fun completeId(context: Context, index: Int): Int? {
+        val id = context.resources.getIdentifier("time_block_complete_$index", "id", context.packageName)
         return id.takeIf { it != 0 }
     }
 }

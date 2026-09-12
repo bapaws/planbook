@@ -119,13 +119,15 @@ app.*.map.json
 # Generated l10n files
 lib/l10n/gen/
 
-# Fastlane related
-ios/fastlane/AuthKey.json
-ios/fastlane/screenshots/
-android/fastlane/metadata/**/*.png
-**/ios/fastlane/report.xml
-**/android/fastlane/report.xml
-**/ios/fastlane/Preview.html
-**/ios/fastlane/test_output/
+# Fastlane
+fastlane/AuthKey.json
+fastlane/play-api.json
+fastlane/agc.json
+fastlane/report.xml
+fastlane/README.md
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/metadata/**/*.png
+/vendor/bundle
 **/ios/Runner.ipa
 **/ios/Runner.app.dSYM.zip
