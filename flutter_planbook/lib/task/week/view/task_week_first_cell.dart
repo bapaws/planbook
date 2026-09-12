@@ -17,6 +17,7 @@ import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:flutter_planbook/task/week/bloc/task_week_bloc.dart';
 import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:flutter_planbook/task/week/view/task_week_focus_cell.dart';
+import 'package:flutter_planbook/task/week/view/task_week_header.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/note_type.dart';
@@ -97,8 +98,7 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return BlocBuilder<TaskSourcePanelBloc, TaskSourcePanelState>(
       builder: (context, sourceState) {
         final title = kind == TaskWeekGridCellKind.note
@@ -110,70 +110,19 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
             sourceState.sourceType,
           ),
           buttonBuilder: (context, showMenu) {
-            return GestureDetector(
-              behavior: HitTestBehavior.opaque,
+            return TaskWeekHeader(
+              title: title,
+              colorScheme: colorScheme,
+              titleLeading: kind == TaskWeekGridCellKind.source
+                  ? Icon(TaskSourcePanel.iconOf(sourceState.sourceType))
+                  : null,
+              taskCount: kind == TaskWeekGridCellKind.source
+                  ? sourceState.tasks.length
+                  : null,
               onTap: showMenu,
-              child: Row(
-                children: [
-                  const SizedBox(width: 8, height: 28),
-                  Flexible(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (kind == TaskWeekGridCellKind.source) ...[
-                              Icon(
-                                TaskSourcePanel.iconOf(
-                                  sourceState.sourceType,
-                                ),
-                                size: 12,
-                                color: colorScheme.onPrimaryContainer,
-                              ),
-                              const SizedBox(width: 4),
-                            ],
-                            Flexible(
-                              child: Text(
-                                title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onPrimaryContainer,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 2),
-                            Icon(
-                              CupertinoIcons.chevron_down,
-                              size: 10,
-                              color: colorScheme.onPrimaryContainer,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (kind == TaskWeekGridCellKind.source) ...[
-                    Text(
-                      '${sourceState.tasks.length}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: colorScheme.outline,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ] else
-                    CupertinoButton(
+              showDropdownAffordance: true,
+              action: kind == TaskWeekGridCellKind.note
+                  ? CupertinoButton(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       sizeStyle: CupertinoButtonSize.small,
                       minimumSize: const Size.square(28),
@@ -183,9 +132,8 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
                         size: 14,
                         color: noteType.getColorScheme(context).primary,
                       ),
-                    ),
-                ],
-              ),
+                    )
+                  : null,
             );
           },
         );

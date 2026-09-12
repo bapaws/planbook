@@ -263,37 +263,30 @@ class _TaskSourcePanelView extends StatelessWidget {
             Expanded(
               child: BlocBuilder<TaskSourcePanelBloc, TaskSourcePanelState>(
                 builder: (context, state) {
+                  final titleTextStyle =
+                      variant == TaskSourcePanelVariant.embedded
+                      ? Theme.of(context).textTheme.bodySmall
+                      : null;
+                  if (variant == TaskSourcePanelVariant.embedded) {
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      itemCount: state.tasks.length,
+                      itemBuilder: (context, index) {
+                        return _buildTaskTile(
+                          context,
+                          state.tasks[index],
+                          titleTextStyle: titleTextStyle,
+                        );
+                      },
+                    );
+                  }
                   return ListView.separated(
                     itemCount: state.tasks.length,
                     separatorBuilder: (context, index) {
                       return const SizedBox(height: 4);
                     },
                     itemBuilder: (context, index) {
-                      final task = state.tasks[index];
-                      return TaskListTile.week(
-                        key: ValueKey(task),
-                        task: task,
-                        contentWrapper: (child) => TaskDraggable(
-                          task: task,
-                          feedbackBuilder: _buildDragFeedback,
-                          onDragCompleted: (task) {
-                            context.read<TaskSourcePanelBloc>().add(
-                              TaskSourcePanelTaskDragCompleted(task),
-                            );
-                          },
-                          child: child,
-                        ),
-                        onPressed: (task) => _openTaskDetail(context, task),
-                        onEdited: (task) => _openTaskEdit(context, task),
-                        onDeleted: (task) => unawaited(
-                          _deleteTask(context, task),
-                        ),
-                        onCompleted: (task) {
-                          context.read<TaskSourcePanelBloc>().add(
-                            TaskSourcePanelTaskCompleted(task),
-                          );
-                        },
-                      );
+                      return _buildTaskTile(context, state.tasks[index]);
                     },
                   );
                 },
@@ -305,7 +298,40 @@ class _TaskSourcePanelView extends StatelessWidget {
     );
   }
 
+  Widget _buildTaskTile(
+    BuildContext context,
+    TaskEntity task, {
+    TextStyle? titleTextStyle,
+  }) {
+    return TaskListTile.week(
+      key: ValueKey(task),
+      task: task,
+      titleTextStyle: titleTextStyle,
+      contentWrapper: (child) => TaskDraggable(
+        task: task,
+        feedbackBuilder: _buildDragFeedback,
+        onDragCompleted: (task) {
+          context.read<TaskSourcePanelBloc>().add(
+            TaskSourcePanelTaskDragCompleted(task),
+          );
+        },
+        child: child,
+      ),
+      onPressed: (task) => _openTaskDetail(context, task),
+      onEdited: (task) => _openTaskEdit(context, task),
+      onDeleted: (task) => unawaited(
+        _deleteTask(context, task),
+      ),
+      onCompleted: (task) {
+        context.read<TaskSourcePanelBloc>().add(
+          TaskSourcePanelTaskCompleted(task),
+        );
+      },
+    );
+  }
+
   Widget _buildDragFeedback(BuildContext context, TaskEntity task) {
+    final isEmbedded = variant == TaskSourcePanelVariant.embedded;
     return Material(
       elevation: 4,
       borderRadius: BorderRadius.circular(8),
@@ -315,15 +341,20 @@ class _TaskSourcePanelView extends StatelessWidget {
         children: [
           SizedBox(
             width: MediaQuery.of(context).size.width / 2,
-            height: 36,
-            child: TaskListTile.week(task: task),
+            height: isEmbedded ? 28 : 36,
+            child: TaskListTile.week(
+              task: task,
+              titleTextStyle: isEmbedded
+                  ? Theme.of(context).textTheme.bodySmall
+                  : null,
+            ),
           ),
-          const Positioned(
+          Positioned(
             top: -8,
             right: -8,
             child: FaIcon(
               FontAwesomeIcons.circlePlus,
-              size: 24,
+              size: isEmbedded ? 18 : 24,
               color: Colors.green,
             ),
           ),
