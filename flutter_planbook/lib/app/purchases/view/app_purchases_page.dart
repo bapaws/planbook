@@ -247,7 +247,10 @@ class _AppPurchasesPage extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            launchUrlString(l10n.privacyAgreementUrl);
+                            launchUrlString(
+                              l10n.privacyAgreementUrl,
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
                         ),
                         const Text('|'),
@@ -259,7 +262,10 @@ class _AppPurchasesPage extends StatelessWidget {
                             ),
                           ),
                           onPressed: () {
-                            launchUrlString(l10n.userAgreementUrl);
+                            launchUrlString(
+                              l10n.userAgreementUrl,
+                              mode: LaunchMode.externalApplication,
+                            );
                           },
                         ),
                         if (AppPurchases.instance.usesChinaPay) ...[
@@ -268,6 +274,7 @@ class _AppPurchasesPage extends StatelessWidget {
                             onPressed: () {
                               launchUrlString(
                                 'https://uxsyr9xrl46.feishu.cn/wiki/MBNrwTS1JijUdNkJWsKcTnu5nYe',
+                                mode: LaunchMode.externalApplication,
                               );
                             },
                             child: Text(

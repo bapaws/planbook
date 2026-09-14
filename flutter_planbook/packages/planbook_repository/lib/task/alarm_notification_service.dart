@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -32,6 +34,10 @@ class AlarmNotificationService implements TaskAlarmScheduler {
 
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
+  static const _ohosChannel = MethodChannel(
+    'com.bapaws.planbook/task_reminder',
+  );
 
   bool _initialized = false;
 
@@ -67,6 +73,10 @@ class AlarmNotificationService implements TaskAlarmScheduler {
   Future<void> _initialize() async {
     if (_initialized) return;
     if (kIsWeb) {
+      _initialized = true;
+      return;
+    }
+    if (kIsOhos) {
       _initialized = true;
       return;
     }
@@ -123,6 +133,9 @@ class AlarmNotificationService implements TaskAlarmScheduler {
     await _initialize();
 
     if (!_initialized || kIsWeb) return null;
+    if (kIsOhos) {
+      return _ohosChannel.invokeMethod<bool>('requestPermission');
+    }
     if (Platform.isAndroid) {
       await _plugin
           .resolvePlatformSpecificImplementation<
@@ -231,6 +244,19 @@ class AlarmNotificationService implements TaskAlarmScheduler {
   }
 
   Future<void> _scheduleOne(int id, String title, Jiffy triggerAt) async {
+    if (kIsOhos) {
+      try {
+        await _ohosChannel.invokeMethod<void>('schedule', {
+          'notificationId': id,
+          'title': title,
+          'content': _effectiveChannelDescription,
+          'triggerAt': triggerAt.dateTime.millisecondsSinceEpoch,
+        });
+      } on Exception catch (e) {
+        debugPrint('AlarmNotificationService: OHOS schedule failed id=$id $e');
+      }
+      return;
+    }
     final tzDate = tz.TZDateTime.from(triggerAt.dateTime, tz.local);
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
@@ -265,6 +291,25 @@ class AlarmNotificationService implements TaskAlarmScheduler {
   Future<void> cancelForTask(String taskId) async {
     await _initialize();
     if (!_initialized || kIsWeb) return;
+
+    if (kIsOhos) {
+      final notificationIds = <int>[
+        for (
+          var occurrenceIndex = 0;
+          occurrenceIndex < _maxScheduledOccurrences;
+          occurrenceIndex++
+        )
+          for (var alarmIndex = 0; alarmIndex < _maxAlarmsPerTask; alarmIndex++)
+            _notificationId(taskId, occurrenceIndex, alarmIndex),
+      ];
+      try {
+        await _ohosChannel.invokeMethod<void>(
+          'cancelMany',
+          {'notificationIds': notificationIds},
+        );
+      } on Object catch (_) {}
+      return;
+    }
 
     for (var occIndex = 0; occIndex < _maxScheduledOccurrences; occIndex++) {
       for (var alarmIndex = 0; alarmIndex < _maxAlarmsPerTask; alarmIndex++) {

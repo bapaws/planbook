@@ -254,6 +254,7 @@ class AppPurchasesFooter extends StatelessWidget {
             recognizer: TapGestureRecognizer()
               ..onTap = () => launchUrlString(
                 'https://uxsyr9xrl46.feishu.cn/wiki/Y8qhw3DLriHC1CkeT2pcUvbunye',
+                mode: LaunchMode.externalApplication,
               ),
           ),
         ],

@@ -50,6 +50,7 @@
     ],
     "requestPermissions": [
       {"name" :  "ohos.permission.INTERNET"},
+      {"name" :  "ohos.permission.PUBLISH_AGENT_REMINDER"},
     ],
     // 查询第三方 App 是否安装：fluwx（微信）/ tobias（支付宝）鸿蒙端要求
     "querySchemes": [

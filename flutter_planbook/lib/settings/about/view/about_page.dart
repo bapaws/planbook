@@ -90,7 +90,10 @@ class _AboutPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        launchUrlString(l10n.privacyAgreementUrl);
+                        launchUrlString(
+                          l10n.privacyAgreementUrl,
+                          mode: LaunchMode.externalApplication,
+                        );
                       },
                     ),
                     const Text('  |  '),
@@ -103,7 +106,10 @@ class _AboutPage extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        launchUrlString(l10n.userAgreementUrl);
+                        launchUrlString(
+                          l10n.userAgreementUrl,
+                          mode: LaunchMode.externalApplication,
+                        );
                       },
                     ),
                     const Spacer(),
