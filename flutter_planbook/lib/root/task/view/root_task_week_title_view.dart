@@ -56,12 +56,13 @@ class RootTaskWeekTitleView extends StatelessWidget {
                 kMinInteractiveDimension,
               ),
             ),
+            alignment: Alignment.center,
             child: BlocSelector<TaskWeekBloc, TaskWeekState, bool>(
               selector: (state) => state.isCalendarExpanded,
               builder: (context, isCalendarExpanded) => AnimatedRotation(
                 turns: isCalendarExpanded ? 0.25 : 0,
                 duration: Durations.medium1,
-                child: Icon(
+                child: FaIcon(
                   FontAwesomeIcons.chevronRight,
                   size: 12,
                   color: theme.colorScheme.primary,

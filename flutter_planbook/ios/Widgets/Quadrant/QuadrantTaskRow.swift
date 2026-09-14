@@ -20,7 +20,7 @@ struct QuadrantTaskRow: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            Button(intent: CompleteTaskIntent(taskId: task.id)) {
+            Button(intent: CompleteTaskIntent(taskId: task.id, occurrenceAt: task.occurrenceAt)) {
                 Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 15))
                     .foregroundStyle(iconColor)

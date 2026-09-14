@@ -512,7 +512,7 @@ class _TaskNewRecurrenceRuleYearlyViewState
               const Spacer(),
               CupertinoButton(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(
+                child: FaIcon(
                   FontAwesomeIcons.chevronLeft,
                   size: 16,
                   color: theme.colorScheme.onSurface,
@@ -525,7 +525,7 @@ class _TaskNewRecurrenceRuleYearlyViewState
               ),
               CupertinoButton(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Icon(
+                child: FaIcon(
                   FontAwesomeIcons.chevronRight,
                   size: 16,
                   color: theme.colorScheme.onSurface,

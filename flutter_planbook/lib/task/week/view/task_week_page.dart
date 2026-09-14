@@ -4,7 +4,6 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
-import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
@@ -14,7 +13,7 @@ import 'package:flutter_planbook/task/week/model/task_week_day_color.dart';
 import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:flutter_planbook/task/week/view/task_week_calendar_view.dart';
 import 'package:flutter_planbook/task/week/view/task_week_cell.dart';
-import 'package:flutter_planbook/task/week/view/task_week_focus_cell.dart';
+import 'package:flutter_planbook/task/week/view/task_week_first_cell.dart';
 import 'package:flutter_planbook/task/week/view/task_week_list_view.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -25,18 +24,44 @@ class TaskWeekPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<TaskWeekBloc, TaskWeekState>(
-      builder: (context, state) {
-        return BlocSelector<RootTaskBloc, RootTaskState, TaskWeekViewMode>(
-          selector: (rootState) => rootState.weekViewMode,
-          builder: (context, viewMode) {
-            return _TaskWeekPage(
-              weekDays: state.weekDays,
-              viewMode: viewMode,
+    return BlocProvider(
+      create: (context) =>
+          TaskSourcePanelBloc(
+            tasksRepository: context.read(),
+            tagsRepository: context.read(),
+            taskActionService: context.read(),
+          )..add(
+            TaskSourcePanelLoaded(
+              isCompleted: context.read<RootTaskBloc>().isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
+            ),
+          ),
+      child: BlocListener<RootTaskBloc, RootTaskState>(
+        listenWhen: (previous, current) =>
+            previous.showCompleted != current.showCompleted ||
+            previous.selectedTagIds != current.selectedTagIds,
+        listener: (context, state) {
+          context.read<TaskSourcePanelBloc>().add(
+            TaskSourcePanelFilterChanged(
+              isCompleted: state.isCompleted,
+              selectedTagIds: state.selectedTagIds,
+            ),
+          );
+        },
+        child: BlocBuilder<TaskWeekBloc, TaskWeekState>(
+          builder: (context, state) {
+            return BlocSelector<RootTaskBloc, RootTaskState, TaskWeekViewMode>(
+              selector: (rootState) => rootState.weekViewMode,
+              builder: (context, viewMode) {
+                return _TaskWeekPage(
+                  weekDays: state.weekDays,
+                  viewMode: viewMode,
+                );
+              },
             );
           },
-        );
-      },
+        ),
+      ),
     );
   }
 }
@@ -67,7 +92,6 @@ class _TaskWeekPage extends StatelessWidget {
   }
 
   Widget _buildListLayout(BuildContext context) {
-    final rootTaskState = context.read<RootTaskBloc>().state;
     return BlocSelector<AppPurchasesBloc, AppPurchasesState, bool>(
       selector: (state) => state.isPremium,
       builder: (context, isPremium) {
@@ -76,22 +100,8 @@ class _TaskWeekPage extends StatelessWidget {
           builder: (context, showSourcePanel) {
             // 演示模式也展示侧栏，投放操作由 isDemo 引导付费
             final trailing = showSourcePanel
-                ? BlocProvider(
-                    key: const ValueKey('week_source_panel'),
-                    create: (context) =>
-                        TaskSourcePanelBloc(
-                          tasksRepository: context.read(),
-                          tagsRepository: context.read(),
-                          taskActionService: context.read(),
-                        )..add(
-                          TaskSourcePanelLoaded(
-                            isCompleted: context
-                                .read<RootTaskBloc>()
-                                .isCompleted,
-                            selectedTagIds: rootTaskState.selectedTagIds,
-                          ),
-                        ),
-                    child: const TaskSourcePanel(),
+                ? const TaskSourcePanel(
+                    key: ValueKey('week_source_panel'),
                   )
                 : null;
             return TaskWeekListView(
@@ -136,7 +146,7 @@ class _TaskWeekPage extends StatelessWidget {
         Expanded(
           child: Row(
             children: [
-              _buildInboxCell(context),
+              _buildFirstCell(),
               _buildDayCell(context, 0),
               _buildDayCell(context, 1),
               _buildDayCell(context, 2),
@@ -175,7 +185,7 @@ class _TaskWeekPage extends StatelessWidget {
           child: IntrinsicHeight(
             child: Row(
               children: [
-                _buildInboxCell(context),
+                _buildFirstCell(),
                 VerticalDivider(
                   width: 1,
                   color: theme.colorScheme.surfaceContainer,
@@ -254,29 +264,8 @@ class _TaskWeekPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInboxCell(BuildContext context) {
-    return BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
-      selector: (state) =>
-          state.tabFocusNoteTypes[RootTaskTab.week] ?? NoteType.weeklyFocus,
-      builder: (context, noteType) {
-        final bloc = context.read<TaskWeekBloc>();
-        final note = noteType.isFocus
-            ? bloc.state.focusNote
-            : bloc.state.summaryNote;
-        return TaskWeekFocusCell(
-          note: note,
-          noteType: noteType,
-          onTaskDropped: (task) {
-            context.read<TaskWeekBloc>().add(
-              TaskWeekNoteTaskAppended(
-                task: task,
-                noteType: noteType,
-              ),
-            );
-          },
-        );
-      },
-    );
+  Widget _buildFirstCell() {
+    return const TaskWeekFirstCell();
   }
 
   Widget _buildDayCell(BuildContext context, int index) {

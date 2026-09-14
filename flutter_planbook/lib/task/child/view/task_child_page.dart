@@ -168,7 +168,7 @@ class _TaskChildOverlay extends StatelessWidget {
                     // 展开图标
                     Padding(
                       padding: const EdgeInsets.all(16),
-                      child: Icon(
+                      child: FaIcon(
                         FontAwesomeIcons.listCheck,
                         size: 18,
                         color: colorScheme.onSurface,

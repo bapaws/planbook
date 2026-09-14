@@ -135,39 +135,49 @@ class _TaskMonthPage extends StatelessWidget {
   }
 
   Widget _buildFocusCell(BuildContext context) {
-    return BlocSelector<RootTaskBloc, RootTaskState, NoteType>(
-      selector: (state) =>
-          state.tabFocusNoteTypes[RootTaskTab.month] ?? NoteType.monthlyFocus,
+    return BlocSelector<RootTaskBloc, RootTaskState, NoteType?>(
+      selector: (state) => state.tabFocusNoteTypes[RootTaskTab.month],
       builder: (context, noteType) {
-        final bloc = context.read<TaskMonthBloc>();
-        final note = noteType.isFocus
-            ? bloc.state.focusNote
-            : bloc.state.summaryNote;
-        return TaskFocusView(
-          note: note,
-          noteType: noteType,
-          onTap: () {
-            final focusAt = context.read<TaskMonthBloc>().state.date;
-            context.router.push(
-              NoteNewTypeRoute(
-                initialNote: note,
-                type: noteType,
-                focusAt: focusAt,
-              ),
-            );
-          },
-          onMindMapTapped: () {
-            _addDiscoverEvent(context, noteType);
-            _navigateToRootDiscover(context, noteType);
-          },
-          onTaskDropped: (task) {
-            context.read<TaskMonthBloc>().add(
-              TaskMonthNoteTaskAppended(
-                task: task,
-                noteType: noteType,
-              ),
-            );
-          },
+        return AnimatedSwitcher(
+          duration: Durations.medium1,
+          transitionBuilder: (child, animation) =>
+              SizeTransition(sizeFactor: animation, child: child),
+          child: noteType == null
+              ? const SizedBox.shrink()
+              : _buildFocusView(context, noteType),
+        );
+      },
+    );
+  }
+
+  Widget _buildFocusView(BuildContext context, NoteType noteType) {
+    final bloc = context.read<TaskMonthBloc>();
+    final note = noteType.isFocus
+        ? bloc.state.focusNote
+        : bloc.state.summaryNote;
+    return TaskFocusView(
+      note: note,
+      noteType: noteType,
+      onTap: () {
+        final focusAt = context.read<TaskMonthBloc>().state.date;
+        context.router.push(
+          NoteNewTypeRoute(
+            initialNote: note,
+            type: noteType,
+            focusAt: focusAt,
+          ),
+        );
+      },
+      onMindMapTapped: () {
+        _addDiscoverEvent(context, noteType);
+        _navigateToRootDiscover(context, noteType);
+      },
+      onTaskDropped: (task) {
+        context.read<TaskMonthBloc>().add(
+          TaskMonthNoteTaskAppended(
+            task: task,
+            noteType: noteType,
+          ),
         );
       },
     );

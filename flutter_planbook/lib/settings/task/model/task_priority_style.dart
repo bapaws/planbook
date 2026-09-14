@@ -9,7 +9,7 @@ extension TaskPriorityStyleX on TaskPriorityStyle {
     TaskPriorityStyle.numberIcon => context.l10n.numberIcon,
   };
 
-  IconData getIcon() => switch (this) {
+  FaIconData getIcon() => switch (this) {
     TaskPriorityStyle.solidColorBackground => FontAwesomeIcons.solidSquare,
     TaskPriorityStyle.numberIcon => FontAwesomeIcons.hashtag,
   };

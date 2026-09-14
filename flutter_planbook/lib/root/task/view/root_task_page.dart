@@ -1,8 +1,8 @@
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_planbook/app/activity/view/app_activity_notice_app_bar_action.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
@@ -87,7 +87,7 @@ class _RootTaskPage extends StatelessWidget {
         forceMaterialTransparency: true,
         leading: CupertinoButton(
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          child: const Icon(FontAwesomeIcons.bars),
+          child: const FaIcon(FontAwesomeIcons.bars),
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -128,12 +128,12 @@ class _RootTaskPage extends StatelessWidget {
           },
         ),
         actions: [
-          const AppActivityNoticeAppBarActions(),
+          const AppHubNoticeAppBarAction(),
           CupertinoButton(
             padding: EdgeInsets.zero,
             minimumSize: const Size.square(kMinInteractiveDimension),
             onPressed: () => context.router.push(const SearchRoute()),
-            child: const Icon(FontAwesomeIcons.magnifyingGlass, size: 18),
+            child: const FaIcon(FontAwesomeIcons.magnifyingGlass, size: 18),
           ),
           _buildViewTypeSwitcher(context, tab),
           PullDownButton(
@@ -146,7 +146,7 @@ class _RootTaskPage extends StatelessWidget {
                 if (tab == RootTaskTab.inbox || tab == RootTaskTab.overdue) ...[
                   PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
                   PullDownMenuItem.selectable(
-                    icon: FontAwesomeIcons.list,
+                    icon: FontAwesomeIcons.list.data,
                     iconColor: theme.colorScheme.primary,
                     title: context.l10n.list,
                     selected: bloc.state.dayViewType == RootTaskViewType.list,
@@ -157,7 +157,7 @@ class _RootTaskPage extends StatelessWidget {
                     ),
                   ),
                   PullDownMenuItem.selectable(
-                    icon: FontAwesomeIcons.solidFlag,
+                    icon: FontAwesomeIcons.solidFlag.data,
                     iconColor: theme.colorScheme.primary,
                     title: context.l10n.quadrant,
                     selected:
@@ -174,7 +174,7 @@ class _RootTaskPage extends StatelessWidget {
                 PullDownMenuTitle(title: Text(context.l10n.showAndHide)),
                 if (tab != RootTaskTab.overdue)
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.solidCircleCheck,
+                    icon: FontAwesomeIcons.solidCircleCheck.data,
                     iconColor: theme.colorScheme.primary,
                     title: bloc.state.showCompleted
                         ? context.l10n.hideCompleted
@@ -185,7 +185,7 @@ class _RootTaskPage extends StatelessWidget {
                   ),
                 if (tab == RootTaskTab.day || tab == RootTaskTab.month) ...[
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.arrowsToDot,
+                    icon: FontAwesomeIcons.arrowsToDot.data,
                     iconColor: theme.colorScheme.primary,
                     title: bloc.state.tabFocusNoteTypes[tab] == null
                         ? context.l10n.showFocusNote
@@ -212,7 +212,7 @@ class _RootTaskPage extends StatelessWidget {
                     tab == RootTaskTab.week ||
                     tab == RootTaskTab.overdue)
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.tableColumns,
+                    icon: FontAwesomeIcons.tableColumns.data,
                     iconColor: theme.colorScheme.primary,
                     title: bloc.state.showSourcePanel
                         ? context.l10n.hideSourcePanel
@@ -223,7 +223,7 @@ class _RootTaskPage extends StatelessWidget {
                   ),
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.arrowsRotate,
+                  icon: FontAwesomeIcons.arrowsRotate.data,
                   iconColor: theme.colorScheme.primary,
                   title: context.l10n.refresh,
                   onTap: () {
@@ -238,7 +238,7 @@ class _RootTaskPage extends StatelessWidget {
               padding: EdgeInsets.zero,
               minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis, size: 18),
+              child: const FaIcon(FontAwesomeIcons.ellipsis, size: 18),
             ),
           ),
         ],
@@ -257,7 +257,7 @@ class _RootTaskPage extends StatelessWidget {
             itemBuilder: (context) => [
               PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.hashtag,
+                icon: FontAwesomeIcons.hashtag.data,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.tagList,
                 selected: dayViewType == RootTaskViewType.list,
@@ -268,7 +268,7 @@ class _RootTaskPage extends StatelessWidget {
                 ),
               ),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.solidFlag,
+                icon: FontAwesomeIcons.solidFlag.data,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.quadrant,
                 selected: dayViewType == RootTaskViewType.priority,
@@ -279,7 +279,7 @@ class _RootTaskPage extends StatelessWidget {
                 ),
               ),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.tableList,
+                icon: FontAwesomeIcons.tableList.data,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.timeBlock,
                 selected: dayViewType == RootTaskViewType.timeBlock,
@@ -304,7 +304,7 @@ class _RootTaskPage extends StatelessWidget {
                   RootTaskDayViewTypeChanged(dayViewType: next),
                 );
               },
-              child: Icon(
+              child: FaIcon(
                 switch (dayViewType) {
                   RootTaskViewType.list => FontAwesomeIcons.hashtag,
                   RootTaskViewType.priority => FontAwesomeIcons.solidFlag,
@@ -322,7 +322,7 @@ class _RootTaskPage extends StatelessWidget {
             itemBuilder: (context) => [
               PullDownMenuTitle(title: Text(context.l10n.selectViewType)),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.gripVertical,
+                icon: FontAwesomeIcons.gripVertical.data,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.octant,
                 selected: viewMode == TaskWeekViewMode.grid,
@@ -333,7 +333,7 @@ class _RootTaskPage extends StatelessWidget {
                 ),
               ),
               PullDownMenuItem.selectable(
-                icon: FontAwesomeIcons.list,
+                icon: FontAwesomeIcons.list.data,
                 iconColor: theme.colorScheme.primary,
                 title: context.l10n.list,
                 selected: viewMode == TaskWeekViewMode.list,
@@ -356,7 +356,7 @@ class _RootTaskPage extends StatelessWidget {
                   RootTaskWeekViewModeChanged(weekViewMode: next),
                 );
               },
-              child: Icon(
+              child: FaIcon(
                 viewMode == TaskWeekViewMode.grid
                     ? FontAwesomeIcons.gripVertical
                     : FontAwesomeIcons.list,

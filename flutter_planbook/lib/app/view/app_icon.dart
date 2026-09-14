@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class AppIcon extends StatelessWidget {
   const AppIcon(
@@ -23,10 +24,13 @@ class AppIcon extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(
-        icon,
-        size: size / 2,
-        color: foregroundColor,
+      // FA 11 需用 FaIcon，避免 Material Icon 方形裁切。
+      child: Center(
+        child: FaIcon(
+          FaIconData(icon),
+          size: size / 2,
+          color: foregroundColor,
+        ),
       ),
     );
   }

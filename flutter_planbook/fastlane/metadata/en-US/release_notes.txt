@@ -1,0 +1,8 @@
+What's New:
+- New Time Block widget
+- Week Octant view now supports Inbox
+- Bug fixes and improvements
+
+Recent updates:
+- Search support
+- Task sidebar

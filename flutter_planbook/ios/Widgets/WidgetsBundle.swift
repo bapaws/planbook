@@ -13,6 +13,9 @@ struct WidgetsBundle: WidgetBundle {
     var body: some Widget {
         QuadrantWidgetLarge()
         QuadrantWidgetSmall()
+        TimeBlockWidgetLarge()
+        TimeBlockWidgetMedium()
+        TimeBlockWidgetSmall()
         QuickNoteWidget()
     }
 }

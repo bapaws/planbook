@@ -16,6 +16,24 @@ const _kQuadrantSmallIOSKind = 'QuadrantWidgetSmall';
 const _kQuadrantSmallAndroidClass =
     'com.bapaws.planbook.widget.QuadrantWidgetSmallProvider';
 
+/// 时间块大号小组件标识
+const _kTimeBlockLargeIOSKind = 'TimeBlockWidgetLarge';
+const _kTimeBlockLargeAndroidClass =
+    'com.bapaws.planbook.widget.TimeBlockWidgetLargeProvider';
+
+/// 时间块中号小组件标识
+const _kTimeBlockMediumIOSKind = 'TimeBlockWidgetMedium';
+const _kTimeBlockMediumAndroidClass =
+    'com.bapaws.planbook.widget.TimeBlockWidgetMediumProvider';
+
+/// 时间块小号小组件标识
+const _kTimeBlockSmallIOSKind = 'TimeBlockWidgetSmall';
+const _kTimeBlockSmallAndroidClass =
+    'com.bapaws.planbook.widget.TimeBlockWidgetSmallProvider';
+
+/// 会员状态，供时间块小组件门控。缺省（从未写入）视为非会员。
+const kWidgetIsPremiumKey = 'widget_is_premium';
+
 /// App home widget
 class AppHomeWidget {
   /// Initializes the HomeWidget plugin with the given app group ID.
@@ -62,10 +80,48 @@ class AppHomeWidget {
     );
   }
 
-  /// 一键刷新四象限相关的所有小组件（大号 + 中号）。
+  /// 把会员状态写入小组件配置。时间块小组件据此决定展示日程还是锁定态。
+  static Future<void> syncPremium({required bool isPremium}) async {
+    try {
+      await saveWidgetData(kWidgetIsPremiumKey, isPremium);
+      await refreshTimeBlockWidgets();
+    } on Object {
+      // 容错：配置同步失败不影响主流程
+    }
+  }
+
+  /// 一键刷新四象限 + 时间块相关小组件。
   ///
   /// 任务被创建/修改/完成/删除时调用。失败不抛异常，避免影响业务流程。
   static Future<void> refreshQuadrantWidgets() async {
+    await refreshTaskWidgets();
+  }
+
+  /// 刷新时间块大号、中号和小号。会员状态变化时单独调用即可。
+  static Future<void> refreshTimeBlockWidgets() async {
+    if (kIsOhos) return;
+    try {
+      await Future.wait([
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockLargeIOSKind,
+          qualifiedAndroidName: _kTimeBlockLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockMediumIOSKind,
+          qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockSmallIOSKind,
+          qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
+        ),
+      ]);
+    } on Object {
+      // 容错：即使插件未注册或无对应平台实现也不影响主流程
+    }
+  }
+
+  /// 刷新所有任务类小组件（四象限 + 时间块）。
+  static Future<void> refreshTaskWidgets() async {
     if (kIsOhos) return;
     try {
       await Future.wait([
@@ -76,6 +132,18 @@ class AppHomeWidget {
         HomeWidget.updateWidget(
           iOSName: _kQuadrantSmallIOSKind,
           qualifiedAndroidName: _kQuadrantSmallAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockLargeIOSKind,
+          qualifiedAndroidName: _kTimeBlockLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockMediumIOSKind,
+          qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kTimeBlockSmallIOSKind,
+          qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
         ),
       ]);
     } on Object {

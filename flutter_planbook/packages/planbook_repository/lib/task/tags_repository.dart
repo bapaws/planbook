@@ -14,6 +14,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/tag/supabase_tag_api.dart';
 import 'package:uuid/uuid.dart';
 
+/// 标签移动后会形成父子循环。
+final class TagHierarchyCycleException implements Exception {
+  const TagHierarchyCycleException();
+}
+
 class TagsRepository {
   TagsRepository({
     required AppDatabase db,
@@ -45,17 +50,28 @@ class TagsRepository {
     );
   }
 
-  Future<void> syncTags({bool force = false}) async {
-    final tags = await _supabaseTagApi.getLatestTags(force: force);
-    await _db.transaction(() async {
-      for (final tag in tags) {
-        // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
-        final hasPending = await _tagApi.hasPendingChanges(tag.id);
-        if (hasPending) continue;
+  Future<Set<String>> getTagAndDescendantIds(String id) {
+    return _tagApi.getTagAndDescendantIds(id: id, userId: userId);
+  }
 
-        await _db.into(_db.tags).insertOnConflictUpdate(tag);
-      }
-    });
+  Future<void> syncTags({bool force = false}) async {
+    try {
+      // 先修复本地已有的历史脏数据，离线时也能恢复标签；远端合并后再检查一次。
+      await _tagApi.repairHierarchyCycles(userId: userId);
+      final tags = await _supabaseTagApi.getLatestTags(force: force);
+      await _db.transaction(() async {
+        for (final tag in tags) {
+          // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
+          final hasPending = await _tagApi.hasPendingChanges(tag.id);
+          if (hasPending) continue;
+
+          await _db.into(_db.tags).insertOnConflictUpdate(tag);
+        }
+      });
+      await _tagApi.repairHierarchyCycles(userId: userId);
+    } on Object catch (e, st) {
+      debugPrint('TagsRepository.syncTags failed: $e\n$st');
+    }
   }
 
   Future<TagEntity?> getTagEntityById(String id) async {
@@ -85,6 +101,14 @@ class TagsRepository {
     );
     if (existingEntity != null) return;
 
+    if (id != null && parentTag != null) {
+      final createsCycle = await _tagApi.wouldCreateHierarchyCycle(
+        tagId: id,
+        parentId: parentTag.id,
+      );
+      if (createsCycle) throw const TagHierarchyCycleException();
+    }
+
     final tag = Tag(
       id: id ?? const Uuid().v4(),
       name: trimmedName,
@@ -108,6 +132,14 @@ class TagsRepository {
   }) async {
     final tag = await _tagApi.getTagById(id);
     if (tag == null) return;
+
+    if (parentTag != null) {
+      final createsCycle = await _tagApi.wouldCreateHierarchyCycle(
+        tagId: id,
+        parentId: parentTag.id,
+      );
+      if (createsCycle) throw const TagHierarchyCycleException();
+    }
 
     final newTag = tag.copyWith(
       name: name?.trim(),

@@ -90,7 +90,7 @@ class TaskWeekCell extends StatelessWidget {
           const Positioned(
             top: -8,
             right: -8,
-            child: Icon(
+            child: FaIcon(
               FontAwesomeIcons.circlePlus,
               size: 18,
               color: Colors.green,
@@ -119,6 +119,17 @@ class TaskWeekCell extends StatelessWidget {
                 task: task,
                 titleTextStyle: Theme.of(context).textTheme.bodySmall,
                 isExpanded: nextTask?.parentId == task.id,
+                contentWrapper: day == null
+                    ? null
+                    : (child) => TaskDraggable(
+                        task: task,
+                        feedbackBuilder: _buildDragFeedback,
+                        onDragCompleted: (task) =>
+                            context.read<TaskListBloc>().add(
+                              TaskListTaskDragCompleted(task: task),
+                            ),
+                        child: child,
+                      ),
                 onPressed: (t) => context.router.push(
                   TaskDetailRoute(
                     taskId: t.id,
@@ -141,15 +152,7 @@ class TaskWeekCell extends StatelessWidget {
                   TaskListTaskExpanded(task: t),
                 ),
               );
-              if (day == null) return tile;
-              return TaskDraggable(
-                task: task,
-                feedbackBuilder: _buildDragFeedback,
-                onDragCompleted: (task) => context.read<TaskListBloc>().add(
-                  TaskListTaskDragCompleted(task: task),
-                ),
-                child: tile,
-              );
+              return tile;
             },
           ),
         );

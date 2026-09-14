@@ -90,7 +90,7 @@ class _TaskAlarmPageState extends State<TaskAlarmPage> {
                         : () {
                             context.router.maybePop(_alarms);
                           },
-                    child: const Icon(FontAwesomeIcons.check),
+                    child: const FaIcon(FontAwesomeIcons.check),
                   ),
                 ],
               ),
@@ -110,7 +110,7 @@ class _TaskAlarmPageState extends State<TaskAlarmPage> {
                   children: [
                     const SizedBox(width: 4),
                     // const Icon(
-                    //   FontAwesomeIcons.caretRight,
+                    //   FontAwesomeIcons.caretRight.data,
                     //   size: 16,
                     // ),
                     Expanded(
@@ -275,7 +275,7 @@ class _TaskAlarmPageState extends State<TaskAlarmPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(FontAwesomeIcons.plus, size: 16),
+                      const FaIcon(FontAwesomeIcons.plus, size: 16),
                       const SizedBox(width: 8),
                       Text(context.l10n.add),
                     ],

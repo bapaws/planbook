@@ -62,6 +62,19 @@ final class RootTaskShowCompletedChanged extends RootTaskEvent {
   List<Object?> get props => [showCompleted];
 }
 
+final class RootTaskWeekGridCellKindChanged extends RootTaskEvent {
+  const RootTaskWeekGridCellKindChanged({
+    required this.kind,
+    this.noteType,
+  });
+
+  final TaskWeekGridCellKind kind;
+  final NoteType? noteType;
+
+  @override
+  List<Object?> get props => [kind, noteType];
+}
+
 final class RootTaskSourcePanelVisibilityChanged extends RootTaskEvent {
   const RootTaskSourcePanelVisibilityChanged({this.showSourcePanel});
 

@@ -50,10 +50,11 @@ class RootTaskMonthTitleView extends StatelessWidget {
                     kMinInteractiveDimension,
                   ),
                 ),
+                alignment: Alignment.center,
                 child: AnimatedRotation(
                   turns: state.isCalendarExpanded ? 0.25 : 0,
                   duration: Durations.medium1,
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.chevronRight,
                     size: 12,
                     color: theme.colorScheme.primary,

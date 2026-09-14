@@ -35,20 +35,20 @@ class TagListTile extends StatelessWidget {
       itemBuilder: (context) => [
         if (onDetail != null)
           PullDownMenuItem(
-            icon: FontAwesomeIcons.circleInfo,
+            icon: FontAwesomeIcons.circleInfo.data,
             title: context.l10n.viewDetails,
             onTap: onDetail,
           ),
         if (onEdited != null)
           PullDownMenuItem(
-            icon: FontAwesomeIcons.penToSquare,
+            icon: FontAwesomeIcons.penToSquare.data,
             title: context.l10n.edit,
             onTap: onEdited,
           ),
         if (onDeleted != null) ...[
           const PullDownMenuDivider.large(),
           PullDownMenuItem(
-            icon: FontAwesomeIcons.trash,
+            icon: FontAwesomeIcons.trash.data,
             title: context.l10n.delete,
             isDestructive: true,
             onTap: onDeleted,
@@ -74,7 +74,7 @@ class TagListTile extends StatelessWidget {
             ),
             const Spacer(),
             if (isSelected != null)
-              Icon(
+              FaIcon(
                 isSelected!
                     ? FontAwesomeIcons.solidCircleCheck
                     : FontAwesomeIcons.circle,

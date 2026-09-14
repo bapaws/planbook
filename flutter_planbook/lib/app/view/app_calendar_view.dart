@@ -63,10 +63,12 @@ class AppCalendarDateView extends StatelessWidget {
             child: AnimatedRotation(
               turns: calendarFormat == CalendarFormat.week ? 0 : 0.25,
               duration: Durations.medium1,
-              child: Icon(
-                FontAwesomeIcons.chevronRight,
-                size: 12,
-                color: theme.colorScheme.primary,
+              child: Center(
+                child: FaIcon(
+                  FontAwesomeIcons.chevronRight,
+                  size: 12,
+                  color: theme.colorScheme.primary,
+                ),
               ),
             ),
           ),

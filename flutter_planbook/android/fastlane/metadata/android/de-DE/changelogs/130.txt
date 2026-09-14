@@ -1,8 +1,0 @@
-Neu in dieser Version:
-- Suche
-- Einige bekannte Probleme behoben
-
-Vor Kurzem hinzugefügt:
-- Aufgaben-Seitenleiste
-- Tagesansicht mit Zeitblöcken
-- Wochenlistenansicht

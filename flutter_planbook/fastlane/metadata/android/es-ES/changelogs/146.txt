@@ -1,0 +1,8 @@
+Novedades:
+- Nuevo widget de bloques horarios
+- La vista Octante semanal ahora admite la bandeja de entrada
+- Corrección de algunos problemas conocidos
+
+Actualizaciones recientes:
+- Compatibilidad con búsqueda
+- Barra lateral de tareas

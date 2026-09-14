@@ -59,7 +59,7 @@ class _SettingsTaskPage extends StatelessWidget {
                 isPlaying: !isPlayingCompletedSound,
               );
             },
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.solidBell,
               size: 20,
               color: Colors.blue,
@@ -88,7 +88,7 @@ class _SettingsTaskPage extends StatelessWidget {
                 for (final style in TaskPriorityStyle.values)
                   PullDownMenuItem.selectable(
                     title: style.getTitle(context),
-                    iconWidget: Icon(
+                    iconWidget: FaIcon(
                       style.getIcon(),
                       size: 20,
                     ),
@@ -114,7 +114,7 @@ class _SettingsTaskPage extends StatelessWidget {
                   selector: (state) => state.priorityStyle,
                   builder: (context, priorityStyle) => SettingsRow(
                     onPressed: showMenu,
-                    leading: const Icon(
+                    leading: const FaIcon(
                       FontAwesomeIcons.solidFlag,
                       size: 20,
                       color: Colors.lime,
@@ -137,7 +137,7 @@ class _SettingsTaskPage extends StatelessWidget {
               }
               context.router.push(const SettingsQuadrantRoute());
             },
-            leading: const Icon(
+            leading: const FaIcon(
               FontAwesomeIcons.tableCellsLarge,
               size: 20,
               color: Colors.deepPurple,
@@ -157,7 +157,7 @@ class _SettingsTaskPage extends StatelessWidget {
               leading: RotatedBox(
                 quarterTurns: 1,
                 child: AppIcon(
-                  FontAwesomeIcons.shareNodes,
+                  FontAwesomeIcons.shareNodes.data,
                   size: 20,
                   foregroundColor: theme.colorScheme.primary,
                   backgroundColor: theme.colorScheme.primaryContainer,

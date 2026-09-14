@@ -1,0 +1,8 @@
+Nouveautés :
+- Nouveau widget Blocs horaires
+- La vue Octant de la semaine prend en charge la boîte de réception
+- Correctifs de problèmes connus
+
+Mises à jour récentes :
+- Prise en charge de la recherche
+- Barre latérale des tâches

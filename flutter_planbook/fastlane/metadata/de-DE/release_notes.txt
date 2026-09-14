@@ -1,0 +1,8 @@
+Neu in dieser Version:
+- Neues Zeitblock-Widget
+- Die Wochen-Oktant-Ansicht unterstützt jetzt den Posteingang
+- Einige bekannte Probleme behoben
+
+Vor Kurzem hinzugefügt:
+- Suche
+- Aufgaben-Seitenleiste

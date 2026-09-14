@@ -142,6 +142,16 @@ class _TaskOverdueListPage extends StatelessWidget {
                     task: task,
                     titleTextStyle: Theme.of(context).textTheme.titleMedium,
                     isExpanded: nextTask?.parentId == task.id,
+                    contentWrapper: (child) => TaskDraggable(
+                      task: task,
+                      feedbackBuilder: taskListTileDragFeedbackBuilder,
+                      onDragCompleted: (task) {
+                        context.read<TaskListBloc>().add(
+                          TaskListTaskDragCompleted(task: task),
+                        );
+                      },
+                      child: child,
+                    ),
                     onPressed: (task) {
                       context.router.push(
                         TaskDetailRoute(
@@ -175,16 +185,7 @@ class _TaskOverdueListPage extends StatelessWidget {
                     },
                   );
                   // 支持拖到侧栏改期 / 加标签 / 回收集箱
-                  return TaskDraggable(
-                    task: task,
-                    feedbackBuilder: taskListTileDragFeedbackBuilder,
-                    onDragCompleted: (task) {
-                      context.read<TaskListBloc>().add(
-                        TaskListTaskDragCompleted(task: task),
-                      );
-                    },
-                    child: tile,
-                  );
+                  return tile;
                 },
               ),
               SliverToBoxAdapter(

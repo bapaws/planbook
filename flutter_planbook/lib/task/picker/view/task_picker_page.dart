@@ -55,7 +55,7 @@ class _TaskPickerPage extends StatelessWidget {
           builder: (context, inboxTasks) => TaskSliverList(
             tasks: inboxTasks,
             header: TaskTagHeader(
-              icon: FontAwesomeIcons.inbox,
+              icon: FontAwesomeIcons.inbox.data,
               title: context.l10n.inbox,
               backgroundColor: Colors.blue,
             ),
@@ -72,7 +72,7 @@ class _TaskPickerPage extends StatelessWidget {
           builder: (context, todayTasks) => TaskSliverList(
             tasks: todayTasks,
             header: TaskTagHeader(
-              icon: FontAwesomeIcons.calendar,
+              icon: FontAwesomeIcons.calendar.data,
               title: context.l10n.today,
               backgroundColor: Colors.red,
             ),

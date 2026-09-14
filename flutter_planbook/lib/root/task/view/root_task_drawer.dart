@@ -1,7 +1,7 @@
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/activity/view/app_activity_notice_drawer_section.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -26,7 +26,7 @@ class RootTaskDrawer extends StatelessWidget {
       child: Column(
         children: [
           const RootUserHeader(),
-          const AppActivityNoticeDrawerSection(),
+          const AppHubNoticeBanners(),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -76,7 +76,7 @@ class RootTaskDrawer extends StatelessWidget {
                           builder: (context, hasFilter) => PullDownButton(
                             itemBuilder: (context) => [
                               PullDownMenuItem(
-                                icon: FontAwesomeIcons.plus,
+                                icon: FontAwesomeIcons.plus.data,
                                 title: context.l10n.addTag,
                                 onTap: () {
                                   _onAddTagTapped(context);
@@ -85,7 +85,7 @@ class RootTaskDrawer extends StatelessWidget {
                               if (hasFilter) ...[
                                 const PullDownMenuDivider.large(),
                                 PullDownMenuItem(
-                                  icon: FontAwesomeIcons.filterCircleXmark,
+                                  icon: FontAwesomeIcons.filterCircleXmark.data,
                                   title: context.l10n.clear,
                                   onTap: () {
                                     context.read<RootTaskBloc>().add(
@@ -100,7 +100,9 @@ class RootTaskDrawer extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   sizeStyle: CupertinoButtonSize.small,
                                   onPressed: showMenu,
-                                  child: const Icon(FontAwesomeIcons.ellipsis),
+                                  child: const FaIcon(
+                                    FontAwesomeIcons.ellipsis,
+                                  ),
                                 ),
                           ),
                         ),

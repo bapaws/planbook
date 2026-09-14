@@ -53,6 +53,10 @@ class TaskSourcePanelBloc
       _onTaskCompleted,
       transformer: sequential(),
     );
+    on<TaskSourcePanelTaskDeleted>(
+      _onTaskDeleted,
+      transformer: sequential(),
+    );
   }
 
   final TasksRepository _tasksRepository;
@@ -379,6 +383,35 @@ class TaskSourcePanelBloc
     }
   }
 
+  Future<void> _onTaskDeleted(
+    TaskSourcePanelTaskDeleted event,
+    Emitter<TaskSourcePanelState> emit,
+  ) async {
+    final task = event.task;
+    final mode = event.mode;
+
+    emit(
+      state.copyWith(
+        tasks: _removeTask(state.tasks, task.id),
+        optimisticRemovedTaskIds: {
+          ...state.optimisticRemovedTaskIds,
+          task.id,
+        },
+      ),
+    );
+
+    if (task.recurrenceRule == null ||
+        mode == RecurringTaskDeleteMode.allEvents) {
+      await _taskActionService.deleteTask(task.id);
+    } else {
+      await _taskActionService.deleteRecurringTask(
+        entity: task,
+        mode: mode,
+        occurrenceAt: task.occurrence?.occurrenceAt,
+      );
+    }
+  }
+
   /// 跨 BLoC 拖出被接受后，是否应对源列表做乐观移除。
   ///
   /// - 收集箱：落到时间块/日期后离开收集箱 → 移除
@@ -403,8 +436,7 @@ class TaskSourcePanelBloc
 
   /// 用 [newTask] 替换列表中相同 ID 的任务；不满足当前完成状态筛选时改为移除。
   List<TaskEntity> _optimisticTasksWith(TaskEntity newTask) {
-    if (state.isCompleted != null &&
-        newTask.isCompleted != state.isCompleted) {
+    if (state.isCompleted != null && newTask.isCompleted != state.isCompleted) {
       return _removeTask(state.tasks, newTask.id);
     }
     return _replaceTask(state.tasks, newTask);

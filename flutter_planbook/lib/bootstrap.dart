@@ -6,9 +6,6 @@ import 'package:database_planbook_api/database_planbook_api.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_planbook/app/activity/bloc/app_activity_bloc.dart';
-import 'package:flutter_planbook/app/activity/repository/app_activity_repository.dart';
-import 'package:flutter_planbook/app/activity/repository/app_store_repository.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/privacy/view/privacy_consent_page.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
@@ -168,6 +165,9 @@ Future<Widget> _initApp() async {
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 
+  /// 本地库损坏时先隔离文件；下面的路径迁移逻辑会清同步时间戳以便重拉。
+  await AppDatabase.recoverCorruptIfNeeded();
+
   /// Migration database path
   /// 当前情况是将数据库从 habits.sqlite 迁移到 planbook.sqlite
   /// 清除一些缓存数据，重新获取数据
@@ -241,12 +241,6 @@ Future<Widget> _initApp() async {
       RepositoryProvider.value(value: taskActionService),
       RepositoryProvider.value(value: UsersRepository.instance),
       RepositoryProvider(
-        create: (context) => AppActivityRepository(
-          appStoreRepository: AppStoreRepository(sp: sp),
-          sp: sp,
-        ),
-      ),
-      RepositoryProvider(
         create: (context) => DiscoverCoverRepository(
           supabase: AppSupabase.client,
           assetsRepository: assetsRepository,
@@ -279,12 +273,6 @@ Future<Widget> _initApp() async {
                 )
                 ..add(const AppInitialized())
                 ..add(const AppUserRequested()),
-        ),
-        BlocProvider(
-          create: (context) => AppActivityBloc(
-            appActivityRepository: context.read(),
-            settingsRepository: context.read(),
-          )..add(const AppActivityFetched()),
         ),
       ],
       child: const App(),

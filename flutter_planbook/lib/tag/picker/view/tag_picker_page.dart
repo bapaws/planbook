@@ -67,7 +67,7 @@ class _TagPickerPage extends StatelessWidget {
                   onSelected(selectedTags);
                   context.router.maybePop();
                 },
-                child: const Icon(FontAwesomeIcons.check),
+                child: const FaIcon(FontAwesomeIcons.check),
               ),
             ],
           ),

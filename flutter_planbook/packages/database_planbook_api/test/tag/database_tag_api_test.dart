@@ -1,6 +1,5 @@
 import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
-import 'package:drift/drift.dart' show Value;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
@@ -10,14 +9,16 @@ import '../test_helper.dart';
 
 Tag _testTag({
   required String id,
-  String? userId,
   required String name,
+  String? userId,
   String? color,
   int order = 0,
   String? parentId,
   int level = 0,
   ColorScheme? lightColorScheme,
   ColorScheme? darkColorScheme,
+  Jiffy? createdAt,
+  Jiffy? updatedAt,
 }) {
   return Tag(
     id: id,
@@ -29,7 +30,8 @@ Tag _testTag({
     level: level,
     lightColorScheme: lightColorScheme,
     darkColorScheme: darkColorScheme,
-    createdAt: Jiffy.now(),
+    createdAt: createdAt ?? Jiffy.now(),
+    updatedAt: updatedAt,
   );
 }
 
@@ -358,6 +360,15 @@ void main() {
         expect(tags.first.id, 'tag-1');
       });
 
+      test('excludes deleted top-level tags', () async {
+        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
+        await tagApi.deleteById('tag-1');
+
+        final tags = await tagApi.getTopLevelTags(userId: null).first;
+
+        expect(tags, isEmpty);
+      });
+
       test('filters by userId', () async {
         await tagApi.create(
           tag: _testTag(id: 'tag-1', name: 'A', userId: 'user-1'),
@@ -416,6 +427,31 @@ void main() {
         expect(tags, hasLength(1));
         expect(tags.first.id, 'tag-2');
       });
+
+      test('returns tags when parent hierarchy contains a cycle', () async {
+        await tagApi.create(
+          tag: _testTag(
+            id: 'tag-1',
+            name: 'A',
+            parentId: 'tag-2',
+            level: 2,
+          ),
+        );
+        await tagApi.create(
+          tag: _testTag(
+            id: 'tag-2',
+            name: 'B',
+            parentId: 'tag-1',
+            level: 1,
+          ),
+        );
+
+        final tags = await tagApi.getAllTags(userId: null).first;
+
+        expect(tags.map((tag) => tag.id), containsAll(['tag-1', 'tag-2']));
+        expect(tags, hasLength(2));
+        expect(tags.every((tag) => tag.parent?.parent == null), isTrue);
+      });
     });
 
     group('getTagEntityById', () {
@@ -449,6 +485,103 @@ void main() {
       test('returns null for non-existent tag', () async {
         final entity = await tagApi.getTagEntityById('non-existent');
         expect(entity, isNull);
+      });
+
+      test('truncates a cyclic parent hierarchy', () async {
+        await tagApi.create(
+          tag: _testTag(id: 'tag-1', name: 'A', parentId: 'tag-2'),
+        );
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B', parentId: 'tag-1'),
+        );
+
+        final entity = await tagApi.getTagEntityById('tag-1');
+
+        expect(entity, isNotNull);
+        expect(entity!.parent?.id, 'tag-2');
+        expect(entity.parent?.parent, isNull);
+      });
+    });
+
+    group('tag hierarchy validation', () {
+      test('returns the tag itself and all descendants', () async {
+        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B', parentId: 'tag-1'),
+        );
+        await tagApi.create(
+          tag: _testTag(id: 'tag-3', name: 'C', parentId: 'tag-2'),
+        );
+
+        final ids = await tagApi.getTagAndDescendantIds(
+          id: 'tag-1',
+          userId: null,
+        );
+
+        expect(ids, {'tag-1', 'tag-2', 'tag-3'});
+      });
+
+      test('detects self and descendant parents', () async {
+        await tagApi.create(tag: _testTag(id: 'tag-1', name: 'A'));
+        await tagApi.create(
+          tag: _testTag(id: 'tag-2', name: 'B', parentId: 'tag-1'),
+        );
+        await tagApi.create(tag: _testTag(id: 'tag-3', name: 'C'));
+
+        expect(
+          await tagApi.wouldCreateHierarchyCycle(
+            tagId: 'tag-1',
+            parentId: 'tag-1',
+          ),
+          isTrue,
+        );
+        expect(
+          await tagApi.wouldCreateHierarchyCycle(
+            tagId: 'tag-1',
+            parentId: 'tag-2',
+          ),
+          isTrue,
+        );
+        expect(
+          await tagApi.wouldCreateHierarchyCycle(
+            tagId: 'tag-1',
+            parentId: 'tag-3',
+          ),
+          isFalse,
+        );
+      });
+
+      test('repairs a cycle by detaching its latest updated tag', () async {
+        final oldTime = Jiffy.parse('2026-08-27T12:18:24+08:00');
+        final newTime = Jiffy.parse('2026-08-27T12:19:14+08:00');
+        await tagApi.create(
+          tag: _testTag(
+            id: 'tag-1',
+            name: 'A',
+            parentId: 'tag-2',
+            level: 3,
+            updatedAt: newTime,
+          ),
+        );
+        await tagApi.create(
+          tag: _testTag(
+            id: 'tag-2',
+            name: 'B',
+            parentId: 'tag-1',
+            level: 2,
+            updatedAt: oldTime,
+          ),
+        );
+
+        final count = await tagApi.repairHierarchyCycles(userId: null);
+        final first = await tagApi.getTagById('tag-1');
+        final second = await tagApi.getTagById('tag-2');
+
+        expect(count, 2);
+        expect(first!.parentId, isNull);
+        expect(first.level, 0);
+        expect(second!.parentId, 'tag-1');
+        expect(second.level, 1);
       });
     });
 

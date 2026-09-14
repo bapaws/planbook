@@ -26,7 +26,7 @@ class AppTagIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppIcon(
-      FontAwesomeIcons.hashtag,
+      FontAwesomeIcons.hashtag.data,
       foregroundColor: foregroundColor,
       backgroundColor: backgroundColor,
       size: size,

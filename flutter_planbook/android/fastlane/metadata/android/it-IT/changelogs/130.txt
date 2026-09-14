@@ -1,8 +1,0 @@
-Novità di questa versione:
-- Supporto alla ricerca
-- Risolti alcuni problemi noti
-
-Aggiornamenti recenti:
-- Barra laterale attività
-- Vista a blocchi orari del giorno
-- Vista elenco settimanale

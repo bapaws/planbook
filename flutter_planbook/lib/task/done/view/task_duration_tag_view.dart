@@ -30,7 +30,7 @@ class TaskDurationTagView extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
+          FaIcon(
             FontAwesomeIcons.solidClock,
             size: 12,
             color: colorScheme?.tertiary,

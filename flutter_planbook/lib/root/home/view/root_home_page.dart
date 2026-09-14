@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:app_hub/app_hub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/links/widget_deep_link.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
@@ -128,38 +132,99 @@ class RootHomePage extends StatelessWidget {
   }
 }
 
-class _RootHomePage extends StatelessWidget {
+class _RootHomePage extends StatefulWidget {
   const _RootHomePage();
 
   @override
+  State<_RootHomePage> createState() => _RootHomePageState();
+}
+
+class _RootHomePageState extends State<_RootHomePage> {
+  bool _isWidgetCreateTaskOpen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetDeepLink.bind(_onWidgetDayViewType);
+    WidgetDeepLink.bindCreateTask(_onWidgetCreateTask);
+  }
+
+  @override
+  void dispose() {
+    WidgetDeepLink.unbind(_onWidgetDayViewType);
+    WidgetDeepLink.unbindCreateTask(_onWidgetCreateTask);
+    super.dispose();
+  }
+
+  void _onWidgetDayViewType(RootTaskViewType viewType) {
+    if (!mounted) return;
+    context.read<RootTaskBloc>().add(
+      RootTaskDayViewTypeChanged(dayViewType: viewType),
+    );
+  }
+
+  void _onWidgetCreateTask(WidgetCreateTaskRequest request) {
+    final rootRouter = context.router.root;
+    if (_isWidgetCreateTaskOpen ||
+        rootRouter.stackData.any(
+          (route) => route.name == TaskNewRoute.name,
+        )) {
+      return;
+    }
+    _isWidgetCreateTaskOpen = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        _isWidgetCreateTaskOpen = false;
+        return;
+      }
+      if (rootRouter.stackData.any(
+        (route) => route.name == TaskNewRoute.name,
+      )) {
+        _isWidgetCreateTaskOpen = false;
+        return;
+      }
+      unawaited(
+        rootRouter
+            .push(
+              TaskNewRoute(dueAt: request.dueAt, priority: request.priority),
+            )
+            .whenComplete(() => _isWidgetCreateTaskOpen = false),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AppPageScaffold(
-      child: AutoTabsRouter(
-        routes: const [
-          RootTaskRoute(),
-          RootDiscoverRoute(),
-          RootNoteRoute(),
-        ],
-        builder: (context, child) {
-          return Stack(
-            alignment: Alignment.bottomCenter,
-            children: [
-              child,
-              const Positioned(
-                left: 24,
-                right: 24,
-                bottom: 22,
-                child: RootHomeBottomBar(),
-              ),
-            ],
-          );
-        },
-        transitionBuilder: (context, child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: child,
-          );
-        },
+    return AppHubNoticeAlertListener(
+      child: AppPageScaffold(
+        child: AutoTabsRouter(
+          routes: const [
+            RootTaskRoute(),
+            RootDiscoverRoute(),
+            RootNoteRoute(),
+          ],
+          builder: (context, child) {
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                child,
+                const Positioned(
+                  left: 24,
+                  right: 24,
+                  bottom: 22,
+                  child: RootHomeBottomBar(),
+                ),
+              ],
+            );
+          },
+          transitionBuilder: (context, child, animation) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+        ),
       ),
     );
   }

@@ -76,7 +76,7 @@ class _UpdatePasswordPage extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 16, 12),
                 prefix: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.lock,
                     size: 18,
                   ),
@@ -100,7 +100,7 @@ class _UpdatePasswordPage extends StatelessWidget {
                 padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 16, 12),
                 prefix: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.lock,
                     size: 18,
                   ),

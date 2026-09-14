@@ -118,6 +118,11 @@ void main() {
     mockTagApi = MockDatabaseTagApi();
     mockDb = FakeAppDatabase();
     mockSp = MockSharedPreferences();
+    when(
+      () => mockTagApi.repairHierarchyCycles(
+        userId: any(named: 'userId'),
+      ),
+    ).thenAnswer((_) async => 0);
     repository = TagsRepository(
       db: mockDb,
       tagApi: mockTagApi,
@@ -164,6 +169,25 @@ void main() {
       verify(
         () => mockTagApi.getAllTags(
           notIncludeTagIds: {'tag-2'},
+          userId: null,
+        ),
+      ).called(1);
+    });
+
+    test('getTagAndDescendantIds proxies to tagApi', () async {
+      when(
+        () => mockTagApi.getTagAndDescendantIds(
+          id: 'tag-1',
+          userId: any(named: 'userId'),
+        ),
+      ).thenAnswer((_) async => {'tag-1', 'tag-2'});
+
+      final result = await repository.getTagAndDescendantIds('tag-1');
+
+      expect(result, {'tag-1', 'tag-2'});
+      verify(
+        () => mockTagApi.getTagAndDescendantIds(
+          id: 'tag-1',
           userId: null,
         ),
       ).called(1);
@@ -256,6 +280,30 @@ void main() {
       await repository.updateTag(id: 'unknown', name: 'New Name');
 
       verify(() => mockTagApi.getTagById('unknown')).called(1);
+      verifyNever(() => mockTagApi.update(tag: any(named: 'tag')));
+    });
+
+    test('updateTag rejects a descendant as the parent', () async {
+      final tag = _testTag(id: 'tag-1', name: 'Parent');
+      final descendant = _testTagEntity(
+        id: 'tag-2',
+        name: 'Descendant',
+        level: 1,
+        parentId: 'tag-1',
+      );
+      when(() => mockTagApi.getTagById('tag-1')).thenAnswer((_) async => tag);
+      when(
+        () => mockTagApi.wouldCreateHierarchyCycle(
+          tagId: 'tag-1',
+          parentId: 'tag-2',
+        ),
+      ).thenAnswer((_) async => true);
+
+      await expectLater(
+        repository.updateTag(id: 'tag-1', parentTag: descendant),
+        throwsA(isA<TagHierarchyCycleException>()),
+      );
+
       verifyNever(() => mockTagApi.update(tag: any(named: 'tag')));
     });
 

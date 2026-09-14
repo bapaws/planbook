@@ -37,13 +37,18 @@ object WidgetActionDispatcher {
     suspend fun completeTask(
         context: Context,
         taskId: String,
+        occurrenceAt: String? = null,
         timeoutMs: Long = 30000L,
     ): Boolean {
         val channel = obtainChannel(context, timeoutMs) ?: run {
             Log.w(TAG, "completeTask: channel not ready within ${timeoutMs}ms")
             return false
         }
-        return invokeOnMain(channel, "completeTask", mapOf("taskId" to taskId), timeoutMs)
+        val args = mutableMapOf<String, Any>("taskId" to taskId)
+        if (!occurrenceAt.isNullOrEmpty()) {
+            args["occurrenceAt"] = occurrenceAt
+        }
+        return invokeOnMain(channel, "completeTask", args, timeoutMs)
     }
 
     /**

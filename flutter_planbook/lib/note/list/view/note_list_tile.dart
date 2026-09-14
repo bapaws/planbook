@@ -33,7 +33,7 @@ class NoteListTile extends StatelessWidget {
     return PullDownButton(
       itemBuilder: (context) => [
         PullDownMenuItem(
-          icon: FontAwesomeIcons.penToSquare,
+          icon: FontAwesomeIcons.penToSquare.data,
           title: context.l10n.edit,
           onTap: () {
             context.router.push(NoteNewRoute(initialNote: note));
@@ -41,7 +41,7 @@ class NoteListTile extends StatelessWidget {
         ),
         const PullDownMenuDivider.large(),
         PullDownMenuItem(
-          icon: FontAwesomeIcons.trash,
+          icon: FontAwesomeIcons.trash.data,
           title: context.l10n.delete,
           isDestructive: true,
           onTap: onDeleted,
@@ -60,7 +60,7 @@ class NoteListTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Row(
                 children: [
-                  Icon(
+                  FaIcon(
                     FontAwesomeIcons.circle,
                     size: 12,
                     color: theme.colorScheme.tertiary,
@@ -86,7 +86,7 @@ class NoteListTile extends StatelessWidget {
                           TaskDetailRoute(taskId: note.task!.id),
                         );
                       },
-                      child: const Icon(FontAwesomeIcons.link, size: 14),
+                      child: const FaIcon(FontAwesomeIcons.link, size: 14),
                     ),
                 ],
               ),

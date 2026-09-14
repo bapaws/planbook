@@ -4,7 +4,9 @@ import Intents
 import UIKit
 import WidgetKit
 
-public class HomeWidgetPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
+public class HomeWidgetPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
+  FlutterSceneLifeCycleDelegate
+{
 
   @available(iOS 17.0, *)
   private static var configurationLookup: [String: any WidgetConfigurationIntent.Type] = [:]
@@ -52,10 +54,8 @@ public class HomeWidgetPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
       return
     }
 
-    let selector = NSSelectorFromString("addApplicationDelegate:")
-    if registrar.responds(to: selector) {
-      registrar.perform(selector, with: instance)
-    }
+    registrar.addApplicationDelegate(instance)
+    registrar.addSceneDelegate(instance)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -395,6 +395,32 @@ public class HomeWidgetPlugin: NSObject, FlutterPlugin, FlutterStreamHandler {
       initialUrl = launchUrl?.absoluteURL
       latestUrl = initialUrl
     }
+    return true
+  }
+
+  public func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions?
+  ) -> Bool {
+    guard let url = connectionOptions?.urlContexts.first?.url,
+      isWidgetUrl(url: url)
+    else {
+      return false
+    }
+    initialUrl = url
+    latestUrl = url
+    return true
+  }
+
+  public func scene(
+    _ scene: UIScene,
+    openURLContexts URLContexts: Set<UIOpenURLContext>
+  ) -> Bool {
+    guard let url = URLContexts.first(where: { isWidgetUrl(url: $0.url) })?.url else {
+      return false
+    }
+    latestUrl = url
     return true
   }
 

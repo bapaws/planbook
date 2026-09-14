@@ -67,7 +67,7 @@ class _NoteNewViewState extends State<NoteNewView> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 foregroundColor: colorScheme.error,
                 onPressed: _showDeleteConfirmation,
-                child: const Icon(FontAwesomeIcons.trash),
+                child: const FaIcon(FontAwesomeIcons.trash),
               ),
           ],
         ),
@@ -284,7 +284,7 @@ class _NoteNewViewState extends State<NoteNewView> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            FaIcon(
                               FontAwesomeIcons.paperclip,
                               color: colorScheme.onSurface,
                               size: 12,

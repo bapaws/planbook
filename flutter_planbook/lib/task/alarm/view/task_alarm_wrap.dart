@@ -40,7 +40,7 @@ class TaskAlarmWrap extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Icon(
+                FaIcon(
                   FontAwesomeIcons.solidCircleXmark,
                   size: 12,
                   color: theme.colorScheme.onSurfaceVariant,

@@ -9,6 +9,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/entity/task_entity.dart';
 
+/// 包在滑动内容（而非整个 `Slidable`）外的包装器。
+///
+/// 长按拖拽必须包在 action 按钮里面，否则左滑露出的编辑/删除
+/// 点击会被拖拽手势吃掉。
+typedef TaskListTileContentWrapper = Widget Function(Widget child);
+
 /// 统一的任务列表项组件
 ///
 /// 提供三种预设样式：
@@ -27,6 +33,7 @@ class TaskListTile extends StatefulWidget {
     this.isExpanded = false,
     this.titleTextStyle,
     this.onExpanded,
+    this.contentWrapper,
     super.key,
   }) : checkboxPadding = const EdgeInsets.all(12),
        checkboxMinimumSize = kMinInteractiveDimension,
@@ -43,6 +50,7 @@ class TaskListTile extends StatefulWidget {
     this.isExpanded = false,
     this.titleTextStyle,
     this.onExpanded,
+    this.contentWrapper,
     super.key,
   }) : checkboxPadding = const EdgeInsets.all(8),
        checkboxMinimumSize = 36,
@@ -59,6 +67,7 @@ class TaskListTile extends StatefulWidget {
     this.titleTextStyle,
     this.onExpanded,
     this.onDelayed,
+    this.contentWrapper,
     super.key,
   }) : checkboxPadding = const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
        checkboxMinimumSize = 28,
@@ -71,6 +80,9 @@ class TaskListTile extends StatefulWidget {
   final ValueChanged<TaskEntity>? onEdited;
   final ValueChanged<TaskEntity>? onDelayed;
   final ValueChanged<TaskEntity>? onExpanded;
+
+  /// 仅包装滑动主体，不要包住 [Slidable] 的 action 按钮。
+  final TaskListTileContentWrapper? contentWrapper;
 
   final bool isExpanded;
 
@@ -174,12 +186,43 @@ class _TaskListTileState extends State<TaskListTile>
 
   @override
   Widget build(BuildContext context) {
+    final button = _buildButton(context);
+    final content = widget.contentWrapper?.call(button) ?? button;
     if (widget.onDeleted == null &&
         widget.onEdited == null &&
         widget.onDelayed == null) {
-      return _buildButton(context);
+      return content;
     }
     final theme = Theme.of(context);
+    final endActions = <Widget>[
+      if (widget.onEdited != null)
+        SlidableAction(
+          onPressed: (context) {
+            widget.onEdited?.call(_task);
+          },
+          backgroundColor: theme.colorScheme.primaryContainer,
+          foregroundColor: theme.colorScheme.primary,
+          icon: FontAwesomeIcons.pencil.data,
+        ),
+      if (widget.onDeleted != null)
+        SlidableAction(
+          onPressed: (context) {
+            widget.onDeleted?.call(_task);
+          },
+          backgroundColor: theme.colorScheme.errorContainer,
+          foregroundColor: theme.colorScheme.error,
+          icon: FontAwesomeIcons.trash.data,
+        ),
+      if (_isOverdue && widget.onDelayed != null)
+        SlidableAction(
+          onPressed: (context) {
+            widget.onDelayed?.call(_task);
+          },
+          backgroundColor: theme.colorScheme.tertiaryContainer,
+          foregroundColor: theme.colorScheme.tertiary,
+          icon: FontAwesomeIcons.calendarDay.data,
+        ),
+    ];
     return ClipRRect(
       key: ValueKey(task.id),
       child: Slidable(
@@ -195,42 +238,18 @@ class _TaskListTileState extends State<TaskListTile>
               },
               backgroundColor: theme.colorScheme.primaryContainer,
               foregroundColor: theme.colorScheme.primary,
-              icon: FontAwesomeIcons.listCheck,
+              icon: FontAwesomeIcons.listCheck.data,
             ),
           ],
         ),
-        endActionPane: ActionPane(
-          motion: const ScrollMotion(),
-          extentRatio: _isOverdue ? 0.6 : 0.5,
-          children: [
-            SlidableAction(
-              onPressed: (context) {
-                widget.onEdited?.call(_task);
-              },
-              backgroundColor: theme.colorScheme.primaryContainer,
-              foregroundColor: theme.colorScheme.primary,
-              icon: FontAwesomeIcons.pencil,
-            ),
-            SlidableAction(
-              onPressed: (context) {
-                widget.onDeleted?.call(_task);
-              },
-              backgroundColor: theme.colorScheme.errorContainer,
-              foregroundColor: theme.colorScheme.error,
-              icon: FontAwesomeIcons.trash,
-            ),
-            if (_isOverdue && widget.onDelayed != null)
-              SlidableAction(
-                onPressed: (context) {
-                  widget.onDelayed?.call(_task);
-                },
-                backgroundColor: theme.colorScheme.tertiaryContainer,
-                foregroundColor: theme.colorScheme.tertiary,
-                icon: FontAwesomeIcons.calendarDay,
+        endActionPane: endActions.isEmpty
+            ? null
+            : ActionPane(
+                motion: const ScrollMotion(),
+                extentRatio: (endActions.length * 0.25).clamp(0.25, 0.75),
+                children: endActions,
               ),
-          ],
-        ),
-        child: _buildButton(context),
+        child: content,
       ),
     );
   }

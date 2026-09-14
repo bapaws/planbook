@@ -93,7 +93,7 @@ class _RootDiscoverPage extends StatelessWidget {
         forceMaterialTransparency: true,
         leading: CupertinoButton(
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          child: const Icon(FontAwesomeIcons.bars),
+          child: const FaIcon(FontAwesomeIcons.bars),
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -154,7 +154,7 @@ class _RootDiscoverPage extends StatelessWidget {
             itemBuilder: (context) => switch (tab) {
               RootDiscoverTab.journal => [
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.play,
+                  icon: FontAwesomeIcons.play.data,
                   title: context.l10n.autoPlay,
                   onTap: () {
                     context.read<RootDiscoverBloc>().add(
@@ -164,7 +164,7 @@ class _RootDiscoverPage extends StatelessWidget {
                 ),
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.bookOpen,
+                  icon: FontAwesomeIcons.bookOpen.data,
                   title: context.l10n.journalSetYearCover,
                   onTap: () {
                     final journalState = context
@@ -180,7 +180,7 @@ class _RootDiscoverPage extends StatelessWidget {
                 ),
                 const PullDownMenuDivider.large(),
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.magnifyingGlass,
+                  icon: FontAwesomeIcons.magnifyingGlass.data,
                   title: context.l10n.journalEnlargeLeftPage,
                   subtitle: context.l10n.journalEnlargeLeftPageSubtitle,
                   onTap: () {
@@ -190,7 +190,7 @@ class _RootDiscoverPage extends StatelessWidget {
                   },
                 ),
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.magnifyingGlass,
+                  icon: FontAwesomeIcons.magnifyingGlass.data,
                   title: context.l10n.journalEnlargeRightPage,
                   subtitle: context.l10n.journalEnlargeRightPageSubtitle,
                   onTap: () {
@@ -203,7 +203,7 @@ class _RootDiscoverPage extends StatelessWidget {
               RootDiscoverTab.focusMindMap ||
               RootDiscoverTab.summaryMindMap => [
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.calendarMinus,
+                  icon: FontAwesomeIcons.calendarMinus.data,
                   title: context.l10n.thisWeek,
                   onTap: () {
                     context.read<DiscoverFocusBloc>().add(
@@ -218,7 +218,7 @@ class _RootDiscoverPage extends StatelessWidget {
             },
             buttonBuilder: (context, showMenu) => CupertinoButton(
               onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+              child: const FaIcon(FontAwesomeIcons.ellipsis),
             ),
           ),
         ],

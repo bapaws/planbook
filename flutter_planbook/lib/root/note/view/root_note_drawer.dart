@@ -33,7 +33,7 @@ class RootNoteDrawer extends StatelessWidget {
                   ),
                 ),
                 RootDrawerListTile(
-                  icon: FontAwesomeIcons.timeline,
+                  icon: FontAwesomeIcons.timeline.data,
                   iconBackgroundColor: Colors.orange,
                   title: context.l10n.timeline,
                   isSelected:
@@ -47,7 +47,7 @@ class RootNoteDrawer extends StatelessWidget {
                   },
                 ),
                 RootDrawerListTile(
-                  icon: FontAwesomeIcons.filePen,
+                  icon: FontAwesomeIcons.filePen.data,
                   iconBackgroundColor: Colors.blue,
                   title: context.l10n.note,
                   isSelected:
@@ -61,7 +61,7 @@ class RootNoteDrawer extends StatelessWidget {
                   },
                 ),
                 RootDrawerListTile(
-                  icon: FontAwesomeIcons.listCheck,
+                  icon: FontAwesomeIcons.listCheck.data,
                   iconBackgroundColor: Colors.brown,
                   title: context.l10n.task,
                   isSelected:
@@ -74,7 +74,7 @@ class RootNoteDrawer extends StatelessWidget {
                   },
                 ),
                 RootDrawerListTile(
-                  icon: FontAwesomeIcons.image,
+                  icon: FontAwesomeIcons.image.data,
                   iconBackgroundColor: Colors.green,
                   title: context.l10n.gallery,
                   isSelected:
@@ -102,7 +102,7 @@ class RootNoteDrawer extends StatelessWidget {
                         PullDownButton(
                           itemBuilder: (context) => [
                             PullDownMenuItem(
-                              icon: FontAwesomeIcons.plus,
+                              icon: FontAwesomeIcons.plus.data,
                               title: context.l10n.addTag,
                               onTap: () {
                                 _onAddTagTapped(context);
@@ -113,7 +113,7 @@ class RootNoteDrawer extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             sizeStyle: CupertinoButtonSize.small,
                             onPressed: showMenu,
-                            child: const Icon(FontAwesomeIcons.ellipsis),
+                            child: const FaIcon(FontAwesomeIcons.ellipsis),
                           ),
                         ),
                       ],

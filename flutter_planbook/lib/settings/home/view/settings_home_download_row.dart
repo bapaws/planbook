@@ -35,7 +35,7 @@ class SettingsHomeDownloadRow extends StatelessWidget {
         final isDownloading =
             state.apkDownloadStatus == AppApkDownloadStatus.downloading;
         return SettingsRow(
-          leading: const Icon(
+          leading: const FaIcon(
             FontAwesomeIcons.solidCircleDown,
             color: Colors.blue,
             size: 20,

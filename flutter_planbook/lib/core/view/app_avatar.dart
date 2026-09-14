@@ -25,7 +25,7 @@ class AppAvatar extends StatelessWidget {
       child: SizedBox(
         width: radius * 2,
         height: radius * 2,
-        child: Icon(
+        child: FaIcon(
           FontAwesomeIcons.user,
           color: Theme.of(context).disabledColor,
           size: radius,

@@ -1,0 +1,8 @@
+Novità di questa versione:
+- Nuovo widget Blocchi orari
+- La vista Ottante settimanale supporta ora Inbox
+- Risolti alcuni problemi noti
+
+Aggiornamenti recenti:
+- Supporto alla ricerca
+- Barra laterale attività

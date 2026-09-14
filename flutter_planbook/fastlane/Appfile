@@ -1,0 +1,22 @@
+for_platform :ios do
+  app_identifier("com.bapaws.planbook") # The bundle identifier of your app
+  apple_id("dev@bapaws.com") # Your Apple Developer Portal username
+
+  itc_team_id("124970979") # App Store Connect Team ID
+  team_id("GM4766U38W") # Developer Portal Team ID
+end
+
+for_platform :android do
+  # Prefer project-local copy (gitignored). Override with SUPPLY_JSON_KEY_PATH / PLAY_STORE_JSON_KEY.
+  local_json = File.expand_path("play-api.json", __dir__)
+  json_key =
+    ENV["SUPPLY_JSON_KEY_PATH"] ||
+    ENV["PLAY_STORE_JSON_KEY"] ||
+    (File.exist?(local_json) ? local_json : nil) ||
+    "/Users/zhangminchao/Desktop/TimeCal/Sign/lunar-clone-491812-u4-a2cc78736289.json"
+  json_key_file(json_key)
+  package_name("com.bapaws.planbook")
+end
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

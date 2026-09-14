@@ -4,6 +4,7 @@ import 'package:app_links/app_links.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/app/links/widget_deep_link.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -13,12 +14,15 @@ import 'package:planbook_api/planbook_api.dart';
 /// - App 后台运行时通过 [AppLinks.uriLinkStream] 监听 deep link
 ///
 /// 当前支持的 URL Scheme：
-/// - `planbook.bapaws://task/new?priority=high|medium|low|none&dueAt=yyyy-MM-dd`
+/// - `planbook.bapaws://task/new?priority=high|medium|low|none&dueAt=yyyy-MM-dd|today`
+/// - `planbook.bapaws://task/today?view=timeBlock`
+/// - `planbook.bapaws://task/detail?taskId=...&occurrenceAt=...`
 /// - `planbook.bapaws://note/new`
+/// - `planbook.bapaws://purchases`
 class AppLinksHandler {
-  AppLinksHandler({required RootStackRouter router}) : _router = router;
+  AppLinksHandler({required this.router});
 
-  final RootStackRouter _router;
+  final RootStackRouter router;
   StreamSubscription<Uri>? _subscription;
 
   /// 初始化监听，应在应用最顶层（如 App 的 initState）调用。
@@ -51,12 +55,18 @@ class AppLinksHandler {
         _handleTask(uri);
       case 'note':
         _handleNote(uri);
+      case 'purchases':
+        router.push(const AppPurchasesRoute());
     }
   }
 
   void _handleTask(Uri uri) {
     switch (uri.path) {
       case '/new':
+        if (router.stackData.any((route) => route.name == TaskNewRoute.name)) {
+          return;
+        }
+
         final priorityValue = uri.queryParameters['priority'];
         final dueAtStr = uri.queryParameters['dueAt'];
 
@@ -68,18 +78,60 @@ class AppLinksHandler {
           _ => null,
         };
 
-        final dueAt = dueAtStr != null
-            ? Jiffy.parse(dueAtStr, pattern: 'yyyy-MM-dd')
-            : null;
+        Jiffy? dueAt;
+        if (dueAtStr == 'today') {
+          dueAt = Jiffy.now().startOf(Unit.day);
+        } else if (dueAtStr != null) {
+          try {
+            dueAt = Jiffy.parse(dueAtStr, pattern: 'yyyy-MM-dd');
+          } on Object {
+            dueAt = null;
+          }
+        }
 
-        _router.push(TaskNewRoute(dueAt: dueAt, priority: priority));
+        WidgetDeepLink.openCreateTask(dueAt: dueAt, priority: priority);
+      case '/today':
+        _openToday(view: uri.queryParameters['view']);
+      case '/detail':
+        final taskId = uri.queryParameters['taskId'];
+        if (taskId == null || taskId.isEmpty) return;
+
+        final occurrenceAtRaw = uri.queryParameters['occurrenceAt'];
+        Jiffy? occurrenceAt;
+        if (occurrenceAtRaw != null && occurrenceAtRaw.isNotEmpty) {
+          try {
+            occurrenceAt = Jiffy.parse(occurrenceAtRaw);
+          } on Object {
+            occurrenceAt = null;
+          }
+        }
+        router.push(
+          TaskDetailRoute(taskId: taskId, occurrenceAt: occurrenceAt),
+        );
+    }
+  }
+
+  void _openToday({String? view}) {
+    unawaited(
+      router.navigate(
+        const RootHomeRoute(
+          children: [
+            RootTaskRoute(
+              children: [TaskTodayRoute()],
+            ),
+          ],
+        ),
+      ),
+    );
+    if (view == 'timeBlock') {
+      WidgetDeepLink.openTodayTimeBlock();
     }
   }
 
   void _handleNote(Uri uri) {
     switch (uri.path) {
       case '/new':
-        _router.push(NoteNewRoute());
+        router.push(NoteNewRoute());
     }
   }
 }

@@ -86,7 +86,7 @@ class _TaskDurationPageState extends State<TaskDurationPage> {
                   onPressed: () {
                     context.router.maybePop(_entity);
                   },
-                  child: const Icon(FontAwesomeIcons.check),
+                  child: const FaIcon(FontAwesomeIcons.check),
                 ),
               ],
             ),

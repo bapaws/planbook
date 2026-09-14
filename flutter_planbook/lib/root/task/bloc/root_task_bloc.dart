@@ -30,6 +30,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
 
     on<RootTaskDayViewTypeChanged>(_onDayViewTypeChanged);
     on<RootTaskWeekViewModeChanged>(_onWeekViewModeChanged);
+    on<RootTaskWeekGridCellKindChanged>(_onWeekGridCellKindChanged);
     on<RootTaskShowCompletedChanged>(_onShowCompletedChanged);
     on<RootTaskSourcePanelVisibilityChanged>(
       _onSourcePanelVisibilityChanged,
@@ -53,17 +54,20 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
   @override
   RootTaskState? fromJson(Map<String, dynamic> json) {
     // 兼容旧键 viewType
-    final dayViewTypeName =
-        (json['dayViewType'] ?? json['viewType']) as String;
+    final dayViewTypeName = (json['dayViewType'] ?? json['viewType']) as String;
     final dayViewType = RootTaskViewType.values.byName(dayViewTypeName);
     final showSourcePanel = json['showSourcePanel'] as bool? ?? true;
     final weekViewModeName = json['weekViewMode'] as String?;
+    final weekGridCellKindName = json['weekGridCellKind'] as String?;
     return RootTaskState(
       status: PageStatus.values.byName(json['status'] as String),
       dayViewType: dayViewType,
       weekViewMode: weekViewModeName == null
           ? TaskWeekViewMode.grid
           : TaskWeekViewMode.values.byName(weekViewModeName),
+      weekGridCellKind: weekGridCellKindName == null
+          ? TaskWeekGridCellKind.note
+          : TaskWeekGridCellKind.values.byName(weekGridCellKindName),
       showCompleted: json['showCompleted'] as bool,
       showSourcePanel:
           dayViewType == RootTaskViewType.timeBlock || showSourcePanel,
@@ -90,6 +94,7 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
       'status': state.status.name,
       'dayViewType': state.dayViewType.name,
       'weekViewMode': state.weekViewMode.name,
+      'weekGridCellKind': state.weekGridCellKind.name,
       'showCompleted': state.showCompleted,
       'showSourcePanel': state.showSourcePanel,
       'tabFocusNoteTypes': jsonEncode(
@@ -177,6 +182,23 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
             ? TaskWeekViewMode.list
             : TaskWeekViewMode.grid);
     emit(state.copyWith(weekViewMode: newViewMode));
+  }
+
+  Future<void> _onWeekGridCellKindChanged(
+    RootTaskWeekGridCellKindChanged event,
+    Emitter<RootTaskState> emit,
+  ) async {
+    emit(
+      state.copyWith(
+        weekGridCellKind: event.kind,
+        tabFocusNoteTypes: event.noteType == null
+            ? state.tabFocusNoteTypes
+            : {
+                ...state.tabFocusNoteTypes,
+                RootTaskTab.week: event.noteType,
+              },
+      ),
+    );
   }
 
   Future<void> _onShowCompletedChanged(

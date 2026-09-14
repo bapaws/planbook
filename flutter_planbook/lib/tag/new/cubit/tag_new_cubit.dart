@@ -73,21 +73,26 @@ class TagNewCubit extends Cubit<TagNewState> {
     }
 
     emit(state.copyWith(status: PageStatus.loading));
-    if (state.initialTag != null) {
-      await _tagsRepository.updateTag(
-        id: state.initialTag!.id,
-        name: state.name,
-        lightColorScheme: state.light,
-        darkColorScheme: state.dark,
-        parentTag: state.parentTag,
-      );
-    } else {
-      await _tagsRepository.createTag(
-        name: state.name,
-        lightColorScheme: state.light!,
-        darkColorScheme: state.dark!,
-        parentTag: state.parentTag,
-      );
+    try {
+      if (state.initialTag != null) {
+        await _tagsRepository.updateTag(
+          id: state.initialTag!.id,
+          name: state.name,
+          lightColorScheme: state.light,
+          darkColorScheme: state.dark,
+          parentTag: state.parentTag,
+        );
+      } else {
+        await _tagsRepository.createTag(
+          name: state.name,
+          lightColorScheme: state.light!,
+          darkColorScheme: state.dark!,
+          parentTag: state.parentTag,
+        );
+      }
+    } on TagHierarchyCycleException {
+      emit(state.copyWith(status: PageStatus.failure));
+      return;
     }
     emit(state.copyWith(status: PageStatus.success));
   }

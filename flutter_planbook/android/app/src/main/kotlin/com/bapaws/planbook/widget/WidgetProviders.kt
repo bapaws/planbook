@@ -68,7 +68,8 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
 
                 // 获取数据并应用 pending 覆盖（乐观 UI）
                 val groups = runBlocking(Dispatchers.IO) {
-                    val raw = WidgetDatabase.getInstance(context)?.fetchQuadrantTasks(filterMode) ?: emptyList()
+                    val raw = WidgetDatabase.open(context) { it.fetchQuadrantTasks(filterMode) }
+                        ?: emptyList()
                     applyPendingCompletions(context, raw)
                 }
 
@@ -141,9 +142,10 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                             val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
                                 action = WidgetClickReceiver.ACTION_COMPLETE_TASK
                                 putExtra(WidgetClickReceiver.EXTRA_TASK_ID, task.id)
+                                putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, task.occurrenceAt)
                             }
                             val completePending = PendingIntent.getBroadcast(
-                                context, task.id.hashCode(), completeIntent,
+                                context, "${task.id}#${task.occurrenceAt.orEmpty()}".hashCode(), completeIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                             )
                             rv.setOnClickPendingIntent(taskRowId, completePending)
@@ -250,7 +252,9 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
 
                 // 获取选中象限的任务并应用 pending 覆盖（乐观 UI）
                 val tasks = runBlocking(Dispatchers.IO) {
-                    val raw = WidgetDatabase.getInstance(context)?.fetchTasks(selectedPriority, filterMode, 4) ?: emptyList()
+                    val raw = WidgetDatabase.open(context) {
+                        it.fetchTasks(selectedPriority, filterMode, 4)
+                    } ?: emptyList()
                     val pending = WidgetSettings.getPendingCompletions(context)
                     if (pending.isEmpty()) {
                         raw
@@ -286,9 +290,10 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                         val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
                             action = WidgetClickReceiver.ACTION_COMPLETE_TASK
                             putExtra(WidgetClickReceiver.EXTRA_TASK_ID, task.id)
+                            putExtra(WidgetClickReceiver.EXTRA_OCCURRENCE_AT, task.occurrenceAt)
                         }
                         val completePending = PendingIntent.getBroadcast(
-                            context, task.id.hashCode(), completeIntent,
+                            context, "${task.id}#${task.occurrenceAt.orEmpty()}".hashCode(), completeIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                         )
                         rv.setOnClickPendingIntent(taskRowId, completePending)
@@ -372,7 +377,7 @@ class QuickNoteWidgetProvider : AppWidgetProvider() {
 /**
  * 创建圆角平铺背景 Bitmap
  */
-private fun createRoundedTiledBackground(
+internal fun createRoundedTiledBackground(
     context: Context,
     tileResId: Int,
     width: Int,
@@ -508,9 +513,36 @@ fun refreshQuadrantWidgets(context: Context) {
     }
 }
 
+fun refreshTimeBlockWidgets(context: Context) {
+    val appWidgetManager = AppWidgetManager.getInstance(context)
+
+    val largeComponent = ComponentName(context, TimeBlockWidgetLargeProvider::class.java)
+    val largeIds = appWidgetManager.getAppWidgetIds(largeComponent)
+    for (id in largeIds) {
+        TimeBlockWidgetLargeProvider.updateWidget(context, appWidgetManager, id)
+    }
+
+    val mediumComponent = ComponentName(context, TimeBlockWidgetMediumProvider::class.java)
+    val mediumIds = appWidgetManager.getAppWidgetIds(mediumComponent)
+    for (id in mediumIds) {
+        TimeBlockWidgetMediumProvider.updateWidget(context, appWidgetManager, id)
+    }
+
+    val smallComponent = ComponentName(context, TimeBlockWidgetSmallProvider::class.java)
+    val smallIds = appWidgetManager.getAppWidgetIds(smallComponent)
+    for (id in smallIds) {
+        TimeBlockWidgetSmallProvider.updateWidget(context, appWidgetManager, id)
+    }
+}
+
+fun refreshAllTaskWidgets(context: Context) {
+    refreshQuadrantWidgets(context)
+    refreshTimeBlockWidgets(context)
+}
+
 /** 绑定打开 App 首页的点击事件 */
-private fun bindOpenAppClick(rv: RemoteViews, context: Context, viewId: Int, requestCode: Int) {
-    val openIntent = WidgetActionUtils.createOpenAppIntent(context)
+internal fun bindOpenAppClick(rv: RemoteViews, context: Context, viewId: Int, requestCode: Int, deepLink: String? = null) {
+    val openIntent = WidgetActionUtils.createOpenAppIntent(context, deepLink)
     val openPending = PendingIntent.getActivity(
         context, requestCode, openIntent,
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE

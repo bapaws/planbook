@@ -116,6 +116,17 @@ class TaskSliverList extends StatelessWidget {
               task: task,
               titleTextStyle: Theme.of(context).textTheme.titleMedium,
               isExpanded: nextTask?.parentId == task.id,
+              contentWrapper: targetDay == null
+                  ? null
+                  : (child) => TaskDraggable(
+                      task: task,
+                      feedbackBuilder: taskListTileDragFeedbackBuilder,
+                      onDragCompleted: (task) =>
+                          context.read<TaskListBloc>().add(
+                            TaskListTaskDragCompleted(task: task),
+                          ),
+                      child: child,
+                    ),
               onPressed: (task) {
                 if (onTaskPressed != null) {
                   onTaskPressed!(task);
@@ -167,14 +178,7 @@ class TaskSliverList extends StatelessWidget {
             if (targetDay == null) return tile;
             return TaskDropArea(
               targetDay: targetDay,
-              child: TaskDraggable(
-                task: task,
-                feedbackBuilder: taskListTileDragFeedbackBuilder,
-                onDragCompleted: (task) => context.read<TaskListBloc>().add(
-                  TaskListTaskDragCompleted(task: task),
-                ),
-                child: tile,
-              ),
+              child: tile,
             );
           },
         ),

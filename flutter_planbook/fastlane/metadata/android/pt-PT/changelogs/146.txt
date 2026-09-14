@@ -1,0 +1,8 @@
+Novidades:
+- Novo widget de blocos horários
+- A vista Octante semanal passa a suportar a caixa de entrada
+- Correção de alguns problemas conhecidos
+
+Atualizações recentes:
+- Suporte à pesquisa
+- Barra lateral de tarefas

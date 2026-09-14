@@ -17,16 +17,21 @@ public enum WidgetActionDispatcher {
     /// - Returns: `true` 表示 Flutter 端已成功收到并执行；`false` 表示超时 / 错误。
     public static func completeTask(
         taskId: String,
+        occurrenceAt: String? = nil,
         timeout: TimeInterval = 30
     ) async -> Bool {
         guard let channel = await EngineReadyTracker.shared.awaitChannel(timeout: timeout) else {
             NSLog("[PlanbookWidget] completeTask: channel not ready within %.1fs", timeout)
             return false
         }
+        var arguments: [String: Any] = ["taskId": taskId]
+        if let occurrenceAt, !occurrenceAt.isEmpty {
+            arguments["occurrenceAt"] = occurrenceAt
+        }
         return await invokeOnMain(
             channel: channel,
             method: "completeTask",
-            arguments: ["taskId": taskId]
+            arguments: arguments
         )
     }
 

@@ -22,7 +22,7 @@ class TaskDetailDateView extends StatelessWidget {
     return TaskDetailSliverTile(
       onPressed: onPressed,
       leading: AppIcon(
-        FontAwesomeIcons.solidCalendarDays,
+        FontAwesomeIcons.solidCalendarDays.data,
         backgroundColor: theme.colorScheme.tertiaryContainer,
         foregroundColor: theme.colorScheme.tertiary,
       ),

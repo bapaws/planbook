@@ -32,7 +32,7 @@ class RootDrawerListTile extends StatelessWidget {
           spacing: 8,
           children: [
             if (isSelected)
-              Icon(
+              FaIcon(
                 FontAwesomeIcons.check,
                 size: 16,
                 color: theme.colorScheme.primary,

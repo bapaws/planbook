@@ -26,7 +26,8 @@ func overlayPendingCompletions(on groups: [QuadrantGroup]) -> [QuadrantGroup] {
                 priority: task.priority.rawValue,
                 isCompleted: target,
                 hasAlarm: task.hasAlarm,
-                tagNames: task.tagNames
+                tagNames: task.tagNames,
+                occurrenceAt: task.occurrenceAt
             )
         }
         return QuadrantGroup(priority: group.priority, tasks: overlaid)

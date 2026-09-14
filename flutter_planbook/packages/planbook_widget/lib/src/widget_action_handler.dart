@@ -9,4 +9,5 @@
 ///   - 处理重复任务的 occurrenceAt
 ///   - 处理自动笔记规则（widget 端无法弹编辑器，所以 `edit` / `createAndEdit`
 ///     都应降级为 `create`）
-typedef WidgetCompleteTaskHandler = Future<void> Function(String taskId);
+typedef WidgetCompleteTaskHandler =
+    Future<void> Function(String taskId, {String? occurrenceAt});

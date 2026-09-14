@@ -94,7 +94,7 @@ class _TagDetailPage extends StatelessWidget {
                 final theme = Theme.of(context);
                 return [
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.penToSquare,
+                    icon: FontAwesomeIcons.penToSquare.data,
                     iconColor: theme.colorScheme.primary,
                     title: context.l10n.edit,
                     onTap: () {
@@ -104,7 +104,7 @@ class _TagDetailPage extends StatelessWidget {
                   ),
                   const PullDownMenuDivider.large(),
                   PullDownMenuItem(
-                    icon: FontAwesomeIcons.trash,
+                    icon: FontAwesomeIcons.trash.data,
                     title: context.l10n.delete,
                     isDestructive: true,
                     onTap: () => _showDeleteConfirmation(context),
@@ -115,7 +115,7 @@ class _TagDetailPage extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 minimumSize: const Size.square(kMinInteractiveDimension),
                 onPressed: showMenu,
-                child: const Icon(FontAwesomeIcons.ellipsis),
+                child: const FaIcon(FontAwesomeIcons.ellipsis),
               ),
             ),
           ],

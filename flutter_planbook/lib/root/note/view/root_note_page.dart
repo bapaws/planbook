@@ -84,7 +84,7 @@ class _RootNotePage extends StatelessWidget {
         forceMaterialTransparency: true,
         leading: CupertinoButton(
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-          child: const Icon(FontAwesomeIcons.bars),
+          child: const FaIcon(FontAwesomeIcons.bars),
         ),
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -147,14 +147,14 @@ class _RootNotePage extends StatelessWidget {
             padding: EdgeInsets.zero,
             minimumSize: const Size.square(kMinInteractiveDimension),
             onPressed: () => context.router.push(const SearchRoute()),
-            child: const Icon(FontAwesomeIcons.magnifyingGlass),
+            child: const FaIcon(FontAwesomeIcons.magnifyingGlass),
           ),
           PullDownButton(
             itemBuilder: (context) {
               final theme = Theme.of(context);
               return [
                 PullDownMenuItem(
-                  icon: FontAwesomeIcons.arrowsRotate,
+                  icon: FontAwesomeIcons.arrowsRotate.data,
                   iconColor: theme.colorScheme.primary,
                   title: context.l10n.refresh,
                   onTap: () {
@@ -169,7 +169,7 @@ class _RootNotePage extends StatelessWidget {
               padding: EdgeInsets.zero,
               minimumSize: const Size.square(kMinInteractiveDimension),
               onPressed: showMenu,
-              child: const Icon(FontAwesomeIcons.ellipsis),
+              child: const FaIcon(FontAwesomeIcons.ellipsis),
             ),
           ),
         ],

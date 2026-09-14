@@ -140,7 +140,7 @@ class TaskNewPriorityBottomView extends StatelessWidget {
                   left: priority.isUrgent ? null : 0,
                   right: !priority.isUrgent ? null : 0,
                   bottom: priority.isImportant ? 0 : null,
-                  child: Icon(
+                  child: FaIcon(
                     FontAwesomeIcons.solidFlag,
                     size: 16,
                     color: quadrantColor,

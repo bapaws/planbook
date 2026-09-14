@@ -70,24 +70,6 @@ class AppRouter extends RootStackRouter {
     );
   }
 
-  AutoRoute _buildDialogRoute(
-    PageInfo page, {
-    List<AutoRoute>? children,
-  }) {
-    return CustomRoute<void>(
-      page: page,
-      children: children,
-      customRouteBuilder: <T>(context, child, page) {
-        return DialogRoute<T>(
-          context: context,
-          settings: page,
-          builder: (context) => child,
-          barrierColor: Colors.black.withValues(alpha: 0.4),
-        );
-      },
-    );
-  }
-
   @override
   List<AutoRoute> get routes => [
     AutoRoute(initial: true, page: SplashRoute.page),
@@ -192,10 +174,16 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: MineProfileRoute.page),
     AutoRoute(page: MineDeleteRoute.page),
 
-    AutoRoute(page: AppActivityRoute.page),
-    AutoRoute(page: AppActivityRedeemRoute.page),
-    AutoRoute(page: AppActivityListRoute.page),
-    _buildDialogRoute(AppActivityAlertRoute.page),
+    AutoRoute(path: '/activity/list', page: AppActivityListRoute.page),
+    AutoRoute(
+      path: '/activity/redeem-list',
+      page: AppActivityRedeemListRoute.page,
+    ),
+    AutoRoute(path: '/activity/:activityId', page: AppActivityRoute.page),
+    AutoRoute(
+      path: '/activity/:activityId/redeem',
+      page: AppActivityRedeemRoute.page,
+    ),
 
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
 

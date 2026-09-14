@@ -38,7 +38,7 @@ class DiscoverJournalDateChangeView extends StatelessWidget {
                   if (date.isCoverPage) return;
                   onDateChanged(date.previous);
                 },
-          child: const Icon(
+          child: const FaIcon(
             FontAwesomeIcons.chevronLeft,
             size: 14,
           ),
@@ -57,7 +57,7 @@ class DiscoverJournalDateChangeView extends StatelessWidget {
                   if (date.isBackCoverPage) return;
                   onDateChanged(date.next);
                 },
-          child: const Icon(
+          child: const FaIcon(
             FontAwesomeIcons.chevronRight,
             size: 14,
           ),
