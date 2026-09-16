@@ -1,4 +1,5 @@
 import { FlutterEngine, Log } from '@ohos/flutter_ohos';
+import IntegrationTestPlugin from 'integration_test';
 import UrlLauncherPlugin from 'url_launcher_ohos';
 import TobiasPlugin from 'tobias';
 import SaverGalleryPlugin from 'saver_gallery';
@@ -29,6 +30,7 @@ export class GeneratedPluginRegistrant {
 
   static registerWith(flutterEngine: FlutterEngine) {
     try {
+      flutterEngine.getPlugins()?.add(new IntegrationTestPlugin());
       flutterEngine.getPlugins()?.add(new UrlLauncherPlugin());
       flutterEngine.getPlugins()?.add(new TobiasPlugin());
       flutterEngine.getPlugins()?.add(new SaverGalleryPlugin());
