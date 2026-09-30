@@ -124,6 +124,54 @@
                 android:resource="@xml/time_block_widget_small_info" />
         </receiver>
 
+        <receiver
+            android:name=".widget.WeekListWidgetLargeProvider"
+            android:exported="true"
+            android:label="@string/widget_week_list_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/week_list_widget_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.WeekGridWidgetLargeProvider"
+            android:exported="true"
+            android:label="@string/widget_week_grid_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/week_grid_widget_large_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.MonthWeekWidgetMediumProvider"
+            android:exported="true"
+            android:label="@string/widget_month_week_medium_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/month_week_widget_medium_info" />
+        </receiver>
+
+        <receiver
+            android:name=".widget.MonthWeekWidgetLargeProvider"
+            android:exported="true"
+            android:label="@string/widget_month_week_large_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/month_week_widget_large_info" />
+        </receiver>
+
         <!-- Widget 配置界面 -->
         <activity
             android:name=".widget.WidgetConfigureActivity"

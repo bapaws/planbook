@@ -7,7 +7,6 @@
 
 import AppIntents
 import SwiftUI
-import SwiftUIX
 import WidgetKit
 
 private let kQuadrantLargeSpacing: CGFloat = 12
@@ -57,9 +56,9 @@ struct QuadrantColorHeader: View {
             Spacer(minLength: 0)
         }
         .foregroundStyle(theme.onPrimaryContainerColor)
-        .padding(.leading, .small)
-        .padding(.trailing, .extraSmall)
-        .height(20)
+        .padding(.leading, 8)
+        .padding(.trailing, 4)
+        .frame(height: 20)
         .background(headerBackground)
         .clipShape(.rect(cornerRadius: 8, style: .continuous))
     }

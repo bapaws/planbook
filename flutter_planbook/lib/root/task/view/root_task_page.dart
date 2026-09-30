@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/app/links/widget_deep_link.dart';
 import 'package:flutter_planbook/app/view/app_calendar_view.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -60,11 +61,62 @@ class RootTaskPage extends StatelessWidget {
             TaskWeekRoute(),
             TaskMonthRoute(),
           ],
-          builder: (context, child, controller) => _RootTaskPage(child: child),
+          builder: (context, child, controller) => _WidgetOpenTaskBinder(
+            child: _RootTaskPage(child: child),
+          ),
         ),
       ),
     );
   }
+}
+
+class _WidgetOpenTaskBinder extends StatefulWidget {
+  const _WidgetOpenTaskBinder({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_WidgetOpenTaskBinder> createState() => _WidgetOpenTaskBinderState();
+}
+
+class _WidgetOpenTaskBinderState extends State<_WidgetOpenTaskBinder> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetDeepLink.bindOpenTask(_onOpenTask);
+  }
+
+  @override
+  void dispose() {
+    WidgetDeepLink.unbindOpenTask(_onOpenTask);
+    super.dispose();
+  }
+
+  void _onOpenTask(WidgetOpenTaskRequest request) {
+    if (!mounted) return;
+    context.tabsRouter.setActiveIndex(request.tab.index);
+    final date = request.date;
+    if (request.tab == RootTaskTab.day && date != null) {
+      final isCompleted = context.read<RootTaskBloc>().isCompleted;
+      context.read<TaskTodayBloc>().add(
+        TaskTodayDateSelected(date: date, isCompleted: isCompleted),
+      );
+    }
+    if (request.tab == RootTaskTab.week) {
+      if (date != null) {
+        context.read<TaskWeekBloc>().add(TaskWeekDateSelected(date: date));
+      }
+      final weekViewMode = request.weekViewMode;
+      if (weekViewMode != null) {
+        context.read<RootTaskBloc>().add(
+          RootTaskWeekViewModeChanged(weekViewMode: weekViewMode),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _RootTaskPage extends StatelessWidget {

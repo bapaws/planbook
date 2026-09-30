@@ -69,3 +69,18 @@ data class QuadrantGroup(
     val priority: TaskPriority,
     val tasks: List<QuadrantTask>
 )
+
+data class WeekTask(
+    val taskId: String,
+    val title: String,
+    val priority: TaskPriority,
+    val isCompleted: Boolean,
+    val occurrenceAt: String? = null,
+    val startAt: Long? = null,
+    val endAt: Long? = null,
+    val dueAt: Long? = null,
+    val detachedRecurrenceAt: Long? = null,
+) {
+    val id: String
+        get() = if (!occurrenceAt.isNullOrEmpty()) "$taskId#$occurrenceAt" else taskId
+}

@@ -87,14 +87,15 @@ public class HomeWidgetPlugin: NSObject, FlutterPlugin, FlutterStreamHandler,
         let data = myArgs["data"]
       {
         let preferences = UserDefaults.init(suiteName: HomeWidgetPlugin.groupId)
-        if data != nil {
-          if let binaryData = data as? FlutterStandardTypedData {
-            preferences?.setValue(Data(binaryData.data), forKey: id)
-          } else {
-            preferences?.setValue(data, forKey: id)
-          }
-        } else {
+        // Flutter 的 null 过 MethodChannel 后是 NSNull，不是 Swift nil。
+        // 直接 setValue 会触发
+        // "Attempt to insert non-property list object null" 并杀掉进程。
+        if data is NSNull {
           preferences?.removeObject(forKey: id)
+        } else if let binaryData = data as? FlutterStandardTypedData {
+          preferences?.setValue(Data(binaryData.data), forKey: id)
+        } else {
+          preferences?.setValue(data, forKey: id)
         }
         result(true)
       } else {

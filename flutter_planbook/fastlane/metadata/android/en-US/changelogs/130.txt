@@ -1,8 +1,0 @@
-What's New:
-- Search support
-- Bug fixes and improvements
-
-Recent updates:
-- Task sidebar
-- Day time-block view
-- Week list view

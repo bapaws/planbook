@@ -1,6 +1,7 @@
 package com.bapaws.planbook.widget
 
 import android.content.Context
+import java.util.Calendar
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -202,5 +203,18 @@ fun TaskPriority.getColorScheme(isDarkMode: Boolean): FlutterColorScheme {
         TaskPriority.MEDIUM -> if (isDarkMode) AppFlutterColorSchemes.blueDark else AppFlutterColorSchemes.blueLight
         TaskPriority.LOW -> if (isDarkMode) AppFlutterColorSchemes.amberDark else AppFlutterColorSchemes.amberLight
         TaskPriority.NONE -> if (isDarkMode) AppFlutterColorSchemes.lightGreenDark else AppFlutterColorSchemes.lightGreenLight
+    }
+}
+
+/** 与 Flutter `colorSchemeForWeekDay` 对齐：Calendar.SUNDAY=1 … SATURDAY=7 */
+fun weekdayColorScheme(calendarWeekday: Int, isDarkMode: Boolean): FlutterColorScheme {
+    return when (calendarWeekday) {
+        Calendar.MONDAY -> if (isDarkMode) AppFlutterColorSchemes.greyDark else AppFlutterColorSchemes.greyLight
+        Calendar.TUESDAY -> if (isDarkMode) AppFlutterColorSchemes.indigoDark else AppFlutterColorSchemes.indigoLight
+        Calendar.WEDNESDAY -> if (isDarkMode) AppFlutterColorSchemes.pinkDark else AppFlutterColorSchemes.pinkLight
+        Calendar.THURSDAY -> if (isDarkMode) AppFlutterColorSchemes.purpleDark else AppFlutterColorSchemes.purpleLight
+        Calendar.FRIDAY -> if (isDarkMode) AppFlutterColorSchemes.blueDark else AppFlutterColorSchemes.blueLight
+        Calendar.SATURDAY -> if (isDarkMode) AppFlutterColorSchemes.redDark else AppFlutterColorSchemes.redLight
+        else -> if (isDarkMode) AppFlutterColorSchemes.amberDark else AppFlutterColorSchemes.amberLight
     }
 }

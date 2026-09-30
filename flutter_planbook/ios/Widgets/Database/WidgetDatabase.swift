@@ -187,10 +187,17 @@ final class WidgetDatabase {
           AND COALESCE(t.is_all_day, 0) = 0
           AND t.start_at IS NOT NULL
           AND t.detached_from_task_id IS NOT NULL
-          AND t.detached_recurrence_at IS NOT NULL
           \(userClause)
-          AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime'))
-              = date('now', 'localtime')
+          AND datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime')
+              < datetime('now', 'localtime', 'start of day', '+1 day')
+          AND (
+              (t.end_at IS NOT NULL
+               AND datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime')
+                   >= datetime('now', 'localtime', 'start of day'))
+              OR (t.end_at IS NULL
+                  AND date(datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime'))
+                      = date('now', 'localtime'))
+          )
         UNION ALL
         SELECT DISTINCT
             t.id, t.title, t.priority,
@@ -380,8 +387,20 @@ final class WidgetDatabase {
                 s."order" AS task_order, s.created_at AS task_created
             FROM scoped s
             WHERE s.detached_from_task_id IS NOT NULL
-              AND s.detached_recurrence_at IS NOT NULL
-              AND \(sqlLocalDate("s.detached_recurrence_at")) = date('now', 'localtime')
+              AND (
+                  (s.start_at IS NOT NULL
+                   AND \(sqlLocalDateTime("s.start_at"))
+                       < datetime('now', 'localtime', 'start of day', '+1 day')
+                   AND (
+                       (s.end_at IS NOT NULL
+                        AND \(sqlLocalDateTime("s.end_at"))
+                            >= datetime('now', 'localtime', 'start of day'))
+                       OR (s.end_at IS NULL
+                           AND \(sqlLocalDate("s.start_at")) = date('now', 'localtime'))
+                   ))
+                  OR (s.due_at IS NOT NULL
+                      AND \(sqlLocalDate("s.due_at")) = date('now', 'localtime'))
+              )
             UNION ALL
             SELECT
                 s.id, s.title, s.priority, s.alarms,
@@ -455,8 +474,10 @@ final class WidgetDatabase {
                 s."order" AS task_order, s.created_at AS task_created
             FROM scoped s
             WHERE s.detached_from_task_id IS NOT NULL
-              AND s.detached_recurrence_at IS NOT NULL
-              AND \(sqlLocalDate("s.detached_recurrence_at")) < date('now', 'localtime')
+              AND (
+                  (s.due_at IS NOT NULL AND \(sqlLocalDate("s.due_at")) < date('now', 'localtime'))
+                  OR (s.end_at IS NOT NULL AND \(sqlLocalDateTime("s.end_at")) < datetime('now', 'localtime'))
+              )
               AND (s.detached_reason IS NULL OR s.detached_reason != 'completed')
               AND NOT EXISTS (
                   SELECT 1 FROM task_activities ta
@@ -490,6 +511,184 @@ final class WidgetDatabase {
             LIMIT ?
             """
         }
+    }
+
+    /// 指定本地日历日区间内的顶层任务（[start, end)）。
+    func fetchWeekTasks(startDate: Date, endDate: Date) -> [WeekTask] {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        let start = formatter.string(from: Calendar.current.startOfDay(for: startDate))
+        let end = formatter.string(from: Calendar.current.startOfDay(for: endDate))
+        let userId = WidgetSettings.currentUserId
+        let scopedUserClause = userId == nil ? "AND t.user_id IS NULL" : "AND t.user_id = ?"
+        var args: [DatabaseValueConvertible] = []
+        if let userId {
+            args.append(userId)
+        }
+
+        let completedByOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at = toc.occurrence_at
+            ) THEN '1' END
+        """
+        let completedWithoutOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at IS NULL
+            ) THEN '1' END
+        """
+        let sql = """
+        WITH scoped AS (
+            SELECT * FROM tasks t
+            WHERE t.deleted_at IS NULL
+              AND t.parent_id IS NULL
+              \(scopedUserClause)
+        )
+        SELECT
+            s.id, s.title, s.priority,
+            s.start_at, s.end_at, s.due_at, s.detached_recurrence_at,
+            NULL AS occurrence_at,
+            \(completedWithoutOccurrence) AS completed_at,
+            NULL AS activity_deleted_at,
+            s."order" AS task_order, s.created_at AS task_created
+        FROM scoped s
+        WHERE s.recurrence_rule IS NULL
+          AND s.detached_from_task_id IS NULL
+          AND (
+              (s.start_at IS NOT NULL
+               AND \(sqlLocalDateTime("s.start_at")) < datetime('\(end)')
+               AND (
+                   (s.end_at IS NOT NULL
+                    AND \(sqlLocalDateTime("s.end_at")) >= datetime('\(start)'))
+                   OR (s.end_at IS NULL
+                       AND \(sqlLocalDate("s.start_at")) >= '\(start)'
+                       AND \(sqlLocalDate("s.start_at")) < '\(end)')
+               ))
+              OR (s.due_at IS NOT NULL
+                  AND \(sqlLocalDate("s.due_at")) >= '\(start)'
+                  AND \(sqlLocalDate("s.due_at")) < '\(end)')
+          )
+        UNION ALL
+        SELECT
+            s.id, s.title, s.priority,
+            s.start_at, s.end_at, s.due_at, s.detached_recurrence_at,
+            NULL AS occurrence_at,
+            \(completedWithoutOccurrence) AS completed_at,
+            NULL AS activity_deleted_at,
+            s."order" AS task_order, s.created_at AS task_created
+        FROM scoped s
+        WHERE s.detached_from_task_id IS NOT NULL
+          AND (
+              (s.start_at IS NOT NULL
+               AND \(sqlLocalDateTime("s.start_at")) < datetime('\(end)')
+               AND (
+                   (s.end_at IS NOT NULL
+                    AND \(sqlLocalDateTime("s.end_at")) >= datetime('\(start)'))
+                   OR (s.end_at IS NULL
+                       AND \(sqlLocalDate("s.start_at")) >= '\(start)'
+                       AND \(sqlLocalDate("s.start_at")) < '\(end)')
+               ))
+              OR (s.due_at IS NOT NULL
+                  AND \(sqlLocalDate("s.due_at")) >= '\(start)'
+                  AND \(sqlLocalDate("s.due_at")) < '\(end)')
+          )
+        UNION ALL
+        SELECT
+            s.id, s.title, s.priority,
+            COALESCE(toc.start_at, s.start_at) AS start_at,
+            COALESCE(toc.end_at, s.end_at) AS end_at,
+            COALESCE(toc.due_at, s.due_at) AS due_at,
+            s.detached_recurrence_at,
+            toc.occurrence_at,
+            \(completedByOccurrence) AS completed_at,
+            NULL AS activity_deleted_at,
+            s."order" AS task_order, s.created_at AS task_created
+        FROM scoped s
+        INNER JOIN task_occurrences toc
+            ON toc.task_id = s.id
+            AND toc.deleted_at IS NULL
+            AND \(sqlOccurrenceInRange(start: start, end: end))
+        WHERE s.recurrence_rule IS NOT NULL
+          AND s.detached_from_task_id IS NULL
+        ORDER BY task_order ASC, task_created ASC
+        LIMIT 200
+        """
+
+        do {
+            return try dbQueue.read { db in
+                try WeekTask.fetchAll(db, sql: sql, arguments: StatementArguments(args))
+            }
+        } catch {
+            print("[Widget] Failed to fetch week tasks: \(error)")
+            return []
+        }
+    }
+
+    /// 本周重点笔记正文。
+    func fetchWeeklyFocus(startDate: Date) -> String? {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        let start = formatter.string(from: Calendar.current.startOfDay(for: startDate))
+        guard let endDate = Calendar.current.date(byAdding: .day, value: 7, to: Calendar.current.startOfDay(for: startDate)) else {
+            return nil
+        }
+        let end = formatter.string(from: endDate)
+        let userId = WidgetSettings.currentUserId
+        let userClause = userId == nil ? "AND user_id IS NULL" : "AND user_id = ?"
+        var args: [DatabaseValueConvertible] = []
+        if let userId {
+            args.append(userId)
+        }
+        let sql = """
+        SELECT content
+        FROM notes
+        WHERE deleted_at IS NULL
+          AND type = 'weeklyFocus'
+          \(userClause)
+          AND focus_at IS NOT NULL
+          AND \(sqlLocalDate("focus_at")) >= '\(start)'
+          AND \(sqlLocalDate("focus_at")) < '\(end)'
+        ORDER BY updated_at DESC
+        LIMIT 1
+        """
+        do {
+            return try dbQueue.read { db in
+                try String.fetchOne(db, sql: sql, arguments: StatementArguments(args))
+            }
+        } catch {
+            print("[Widget] Failed to fetch weekly focus: \(error)")
+            return nil
+        }
+    }
+
+    /// 重复任务实例是否落在 [start, end) 本地日。
+    private func sqlOccurrenceInRange(start: String, end: String, alias: String = "toc") -> String {
+        """
+        (
+            (\(alias).due_at IS NOT NULL
+             AND \(sqlLocalDate("\(alias).due_at")) >= '\(start)'
+             AND \(sqlLocalDate("\(alias).due_at")) < '\(end)')
+            OR (
+                \(alias).start_at IS NOT NULL AND \(alias).end_at IS NOT NULL
+                AND \(sqlLocalDateTime("\(alias).start_at")) < datetime('\(end)')
+                AND \(sqlLocalDateTime("\(alias).end_at")) >= datetime('\(start)')
+            )
+            OR (
+                \(alias).due_at IS NULL AND \(alias).start_at IS NULL
+                AND \(sqlLocalDate("\(alias).occurrence_at")) >= '\(start)'
+                AND \(sqlLocalDate("\(alias).occurrence_at")) < '\(end)'
+            )
+        )
+        """
     }
 
     private func defaultQuadrantGroups() -> [QuadrantGroup] {

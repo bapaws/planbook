@@ -7,7 +7,6 @@
 
 import AppIntents
 import SwiftUI
-import SwiftUIX
 import WidgetKit
 
 struct QuadrantTaskRow: View {
@@ -24,9 +23,9 @@ struct QuadrantTaskRow: View {
                 Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
                     .font(.system(size: 15))
                     .foregroundStyle(iconColor)
-                    .padding(.leading, family == .systemSmall ? .extraSmall : .small)
-                    .padding(.horizontal, .small)
-                    .padding(.vertical, .extraSmall)
+                    .padding(.leading, family == .systemSmall ? 4 : 8)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
             }
             .buttonStyle(.plain)
 

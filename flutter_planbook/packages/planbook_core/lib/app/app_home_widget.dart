@@ -30,6 +30,22 @@ const _kTimeBlockSmallIOSKind = 'TimeBlockWidgetSmall';
 const _kTimeBlockSmallAndroidClass =
     'com.bapaws.planbook.widget.TimeBlockWidgetSmallProvider';
 
+const _kWeekListLargeIOSKind = 'WeekListWidgetLarge';
+const _kWeekListLargeAndroidClass =
+    'com.bapaws.planbook.widget.WeekListWidgetLargeProvider';
+
+const _kWeekGridLargeIOSKind = 'WeekGridWidgetLarge';
+const _kWeekGridLargeAndroidClass =
+    'com.bapaws.planbook.widget.WeekGridWidgetLargeProvider';
+
+const _kMonthWeekMediumIOSKind = 'MonthWeekWidgetMedium';
+const _kMonthWeekMediumAndroidClass =
+    'com.bapaws.planbook.widget.MonthWeekWidgetMediumProvider';
+
+const _kMonthWeekLargeIOSKind = 'MonthWeekWidgetLarge';
+const _kMonthWeekLargeAndroidClass =
+    'com.bapaws.planbook.widget.MonthWeekWidgetLargeProvider';
+
 /// 会员状态，供时间块小组件门控。缺省（从未写入）视为非会员。
 const kWidgetIsPremiumKey = 'widget_is_premium';
 
@@ -112,7 +128,7 @@ class AppHomeWidget {
     }
   }
 
-  /// 刷新所有任务类小组件（四象限 + 时间块）。
+  /// 刷新所有任务类小组件（四象限 + 时间块 + 一周）。
   static Future<void> refreshTaskWidgets() async {
     try {
       await Future.wait([
@@ -135,6 +151,22 @@ class AppHomeWidget {
         HomeWidget.updateWidget(
           iOSName: _kTimeBlockSmallIOSKind,
           qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kWeekListLargeIOSKind,
+          qualifiedAndroidName: _kWeekListLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kWeekGridLargeIOSKind,
+          qualifiedAndroidName: _kWeekGridLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kMonthWeekMediumIOSKind,
+          qualifiedAndroidName: _kMonthWeekMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kMonthWeekLargeIOSKind,
+          qualifiedAndroidName: _kMonthWeekLargeAndroidClass,
         ),
       ]);
     } on Object {

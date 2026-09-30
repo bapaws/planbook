@@ -27,6 +27,31 @@ class _MineProfileNameTileState extends State<MineProfileNameTile> {
   }
 
   @override
+  void didUpdateWidget(covariant MineProfileNameTile oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!_focusNode.hasFocus && widget.name != oldWidget.name) {
+      _controller.text = widget.name;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _controller.text.trim();
+    if (_controller.text != name) {
+      _controller.text = name;
+    }
+    if (name != widget.name) {
+      widget.onChanged(name);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AppTile.text(
@@ -51,8 +76,14 @@ class _MineProfileNameTileState extends State<MineProfileNameTile> {
             contentPadding: EdgeInsets.zero,
             isDense: true,
           ),
-          onSubmitted: (value) {
-            widget.onChanged(value);
+          textInputAction: TextInputAction.done,
+          onTapOutside: (_) {
+            _submit();
+            _focusNode.unfocus();
+          },
+          onSubmitted: (_) {
+            _submit();
+            _focusNode.unfocus();
           },
         ),
       ),

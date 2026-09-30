@@ -98,16 +98,23 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isBiggerOrEqualValue(startOfDayDateTime) &
                 db.tasks.dueAt.isSmallerOrEqualValue(endOfDayDateTime)));
 
-    // 分离实例：detachedRecurrenceAt 匹配指定日期
+    // 分离实例按实际安排的 start/end/due 落在这一天。
+    // detachedRecurrenceAt 只记录被替换的原始重复日，改期后不能再用它决定显示日期。
     final detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isBiggerOrEqualValue(
-          startOfDayDateTime,
-        ) &
-        db.tasks.detachedRecurrenceAt.isSmallerOrEqualValue(
-          endOfDayDateTime,
-        ) &
+        ((db.tasks.startAt.isNotNull() &
+                db.tasks.startAt.isSmallerOrEqualValue(endOfDayDateTime) &
+                ((db.tasks.endAt.isNotNull() &
+                        db.tasks.endAt.isBiggerOrEqualValue(
+                          startOfDayDateTime,
+                        )) |
+                    (db.tasks.endAt.isNull() &
+                        db.tasks.startAt.isBiggerOrEqualValue(
+                          startOfDayDateTime,
+                        )))) |
+            (db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isBiggerOrEqualValue(startOfDayDateTime) &
+                db.tasks.dueAt.isSmallerOrEqualValue(endOfDayDateTime))) &
         // 排除已完成分离的实例
         (db.tasks.detachedReason.isNull() |
             db.tasks.detachedReason.isNotValue(DetachedReason.completed.name));
@@ -269,16 +276,19 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isBiggerOrEqualValue(startOfDay) &
                 db.tasks.dueAt.isSmallerOrEqualValue(endOfDay)));
 
-    // 分离实例：detachedRecurrenceAt 匹配指定日期
+    // 分离实例按实际安排的 start/end/due 落在这一天。
+    // detachedRecurrenceAt 只记录被替换的原始重复日。
     var detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isBiggerOrEqualValue(
-          startOfDay,
-        ) &
-        db.tasks.detachedRecurrenceAt.isSmallerOrEqualValue(
-          endOfDay,
-        );
+        ((db.tasks.startAt.isNotNull() &
+                db.tasks.startAt.isSmallerOrEqualValue(endOfDay) &
+                ((db.tasks.endAt.isNotNull() &
+                        db.tasks.endAt.isBiggerOrEqualValue(startOfDay)) |
+                    (db.tasks.endAt.isNull() &
+                        db.tasks.startAt.isBiggerOrEqualValue(startOfDay)))) |
+            (db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isBiggerOrEqualValue(startOfDay) &
+                db.tasks.dueAt.isSmallerOrEqualValue(endOfDay)));
 
     // 根据 isCompleted 参数决定是否排除已完成分离的实例
     if (isCompleted != null && !isCompleted) {
@@ -481,16 +491,19 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isBiggerOrEqualValue(startOfDay) &
                 db.tasks.dueAt.isSmallerThanValue(endOfDay)));
 
-    // 分离实例：detachedRecurrenceAt 匹配指定日期
+    // 分离实例按实际安排的 start/end/due 落在这一天。
+    // detachedRecurrenceAt 只记录被替换的原始重复日。
     var detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isBiggerOrEqualValue(
-          startOfDay,
-        ) &
-        db.tasks.detachedRecurrenceAt.isSmallerOrEqualValue(
-          endOfDay,
-        );
+        ((db.tasks.startAt.isNotNull() &
+                db.tasks.startAt.isSmallerThanValue(endOfDay) &
+                ((db.tasks.endAt.isNotNull() &
+                        db.tasks.endAt.isBiggerOrEqualValue(startOfDay)) |
+                    (db.tasks.endAt.isNull() &
+                        db.tasks.startAt.isBiggerOrEqualValue(startOfDay)))) |
+            (db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isBiggerOrEqualValue(startOfDay) &
+                db.tasks.dueAt.isSmallerThanValue(endOfDay)));
     // 根据 isCompleted 参数决定是否排除已完成分离的实例
     if (isCompleted != null && !isCompleted) {
       detachedInstanceCondition &=

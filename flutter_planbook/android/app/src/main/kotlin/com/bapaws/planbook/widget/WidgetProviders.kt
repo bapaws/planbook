@@ -538,6 +538,7 @@ fun refreshTimeBlockWidgets(context: Context) {
 fun refreshAllTaskWidgets(context: Context) {
     refreshQuadrantWidgets(context)
     refreshTimeBlockWidgets(context)
+    refreshWeekWidgets(context)
 }
 
 /** 绑定打开 App 首页的点击事件 */

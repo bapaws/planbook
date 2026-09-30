@@ -1,6 +1,0 @@
-• Vue du jour par blocs horaires
-• Barre latérale des tâches
-• Vue liste de la semaine
-• Correctifs de bugs
-
-Récent : nouveau calendrier mensuel Focus dans le Journal, noms de quadrants personnalisés, widgets d’accueil

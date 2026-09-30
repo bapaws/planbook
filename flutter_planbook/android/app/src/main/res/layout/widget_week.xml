@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/widget_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <ImageView
+        android:id="@+id/week_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY" />
+
+    <ImageView
+        android:id="@+id/week_create"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="10dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/widget_task_new" />
+    <ImageView
+        android:id="@+id/week_complete_0"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_1"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_2"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_3"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_4"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_5"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_6"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_7"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_8"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_9"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_10"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_11"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_12"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_13"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_14"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_15"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_16"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_17"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_18"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_19"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_20"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_21"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_22"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_23"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_24"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_25"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_26"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_complete_27"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_0"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_1"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_2"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_3"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_4"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_5"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_6"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_7"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_8"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_9"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_10"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_11"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_12"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_13"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_14"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+    <ImageView
+        android:id="@+id/week_day_15"
+        android:layout_width="40dp"
+        android:layout_height="24dp"
+        android:layout_gravity="top|start"
+        android:visibility="gone"
+        android:background="@android:color/transparent" />
+</FrameLayout>

@@ -8,9 +8,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/core/model/user_gender.dart';
+import 'package:flutter_planbook/core/view/app_avatar.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/mine/profile/cubit/mine_profile_cubit.dart';
+import 'package:flutter_planbook/mine/profile/view/mine_profile_name_tile.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -85,6 +87,22 @@ class _MineProfilePage extends StatelessWidget {
                 Expanded(
                   child: ListView(
                     children: [
+                      const SizedBox(height: 8),
+                      _ProfileAvatar(user: user),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: MineProfileNameTile(
+                          name: user?.name ?? '',
+                          onChanged: (name) {
+                            unawaited(
+                              context.read<MineProfileCubit>().onNameChanged(
+                                name,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
                       SettingsRow(
                         leading: const FaIcon(
                           FontAwesomeIcons.fingerprint,
@@ -408,6 +426,75 @@ class _MineProfilePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({required this.user});
+
+  final UserEntity? user;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return BlocSelector<MineProfileCubit, MineProfileState, bool>(
+      selector: (state) => state.isUpdatingAvatar,
+      builder: (context, isUpdatingAvatar) {
+        return Center(
+          child: CupertinoButton(
+            padding: const EdgeInsets.all(8),
+            minimumSize: const Size.square(112),
+            onPressed: isUpdatingAvatar
+                ? null
+                : context.read<MineProfileCubit>().onAvatarChanged,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                AppAvatar(
+                  url: user?.avatar,
+                  radius: 48,
+                ),
+                if (isUpdatingAvatar)
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.scrim.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Center(
+                        child: CupertinoActivityIndicator(color: Colors.white),
+                      ),
+                    ),
+                  )
+                else
+                  Positioned(
+                    right: -2,
+                    bottom: -2,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: theme.colorScheme.surface,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.all(7),
+                        child: Icon(
+                          CupertinoIcons.camera_fill,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

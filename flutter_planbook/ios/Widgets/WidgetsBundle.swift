@@ -17,5 +17,9 @@ struct WidgetsBundle: WidgetBundle {
         TimeBlockWidgetMedium()
         TimeBlockWidgetSmall()
         QuickNoteWidget()
+        WeekListWidgetLarge()
+        WeekGridWidgetLarge()
+        MonthWeekWidgetMedium()
+        MonthWeekWidgetLarge()
     }
 }

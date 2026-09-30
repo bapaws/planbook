@@ -74,14 +74,15 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
       nonRecurringExp &= db.tasks.priority.equals(priority.name);
     }
 
-    // 查询 3: 分离实例的逾期
-    // detachedRecurrenceAt < 今天 且未完成
+    // 查询 3: 分离实例的逾期，按实际 due/end，而不是原始重复日
     final detachedExp =
         db.tasks.parentId.isNull() &
         db.tasks.deletedAt.isNull() &
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isSmallerThanValue(startOfDay) &
+        ((db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isSmallerThanValue(startOfDay)) |
+            (db.tasks.endAt.isNotNull() &
+                db.tasks.endAt.isSmallerThanValue(startOfDay))) &
         // 排除已完成分离的实例
         (db.tasks.detachedReason.isNull() |
             db.tasks.detachedReason.isNotValue(DetachedReason.completed.name)) &
@@ -236,11 +237,14 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isSmallerThanValue(startOfDay))) &
         db.tasks.deletedAt.isNull();
 
-    // 分离实例条件：detachedRecurrenceAt < 今天
+    // 分离实例按实际 due/end 判断逾期，而不是原始重复日
     final detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isSmallerThanValue(startOfDay) &
+        ((db.tasks.endAt.isNotNull() &
+                db.tasks.endAt.isSmallerThanValue(date.dateTime)) |
+            (db.tasks.endAt.isNull() &
+                db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isSmallerThanValue(startOfDay))) &
         // 排除已完成分离的实例
         (db.tasks.detachedReason.isNull() |
             db.tasks.detachedReason.isNotValue(DetachedReason.completed.name));
@@ -390,11 +394,14 @@ class DatabaseTaskOverdueApi extends DatabaseTaskApi {
                 db.tasks.dueAt.isNotNull() &
                 db.tasks.dueAt.isSmallerThanValue(startOfDay)));
 
-    // 分离实例条件：detachedRecurrenceAt < 今天
+    // 分离实例按实际 due/end 判断逾期，而不是原始重复日
     final detachedInstanceCondition =
         db.tasks.detachedFromTaskId.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isNotNull() &
-        db.tasks.detachedRecurrenceAt.isSmallerThanValue(startOfDay) &
+        ((db.tasks.endAt.isNotNull() &
+                db.tasks.endAt.isSmallerThanValue(date.dateTime)) |
+            (db.tasks.endAt.isNull() &
+                db.tasks.dueAt.isNotNull() &
+                db.tasks.dueAt.isSmallerThanValue(startOfDay))) &
         // 排除已完成分离的实例
         (db.tasks.detachedReason.isNull() |
             db.tasks.detachedReason.isNotValue(DetachedReason.completed.name));

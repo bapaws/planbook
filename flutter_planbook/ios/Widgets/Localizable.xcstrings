@@ -1,2639 +1,3707 @@
 {
-  "sourceLanguage" : "en",
-  "strings" : {
-    "%lld" : {
-
-    },
-    "%lld. " : {
-
-    },
-    "config.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard-Quadrant zum Anzeigen auswählen"
+  "sourceLanguage": "en",
+  "strings": {
+    "%lld": {},
+    "%lld. ": {},
+    "config.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard-Quadrant zum Anzeigen auswählen"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select the default quadrant to display"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Select the default quadrant to display"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Selecciona el cuadrante predeterminado a mostrar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Selecciona el cuadrante predeterminado a mostrar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sélectionnez le quadrant par défaut à afficher"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sélectionnez le quadrant par défaut à afficher"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seleziona il quadrante predefinito da visualizzare"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleziona il quadrante predefinito da visualizzare"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デフォルトで表示する象限を選択"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デフォルトで表示する象限を選択"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "표시할 기본 사분면 선택"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "표시할 기본 사분면 선택"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Seleciona o quadrante padrão a mostrar"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleciona o quadrante padrão a mostrar"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выберите квадрант по умолчанию для отображения"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выберите квадрант по умолчанию для отображения"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "选择默认展示的象限"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择默认展示的象限"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇預設展示的象限"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇預設展示的象限"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "選擇預設展示的象限"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "選擇預設展示的象限"
           }
         }
       }
     },
-    "config.parameter.filterMode" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datenquelle"
+    "config.parameter.filterMode": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenquelle"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Data Source"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Data Source"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fuente de datos"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fuente de datos"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Source de données"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Source de données"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fonte dati"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonte dati"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "データソース"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "データソース"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "데이터 소스"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "데이터 소스"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fonte de dados"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fonte de dados"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Источник данных"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Источник данных"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "数据来源"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "数据来源"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料來源"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資料來源"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "資料來源"
-          }
-        }
-      }
-    },
-    "config.parameter.priority" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priorität"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priority"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prioridad"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priorité"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Priorità"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "優先度"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "우선순위"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Prioridade"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Приоритет"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "优先级"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "優先級"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "優先級"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "資料來源"
           }
         }
       }
     },
-    "config.parameter.selectedPriority" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Standard-Quadrant"
+    "config.parameter.priority": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Priorität"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Default Quadrant"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Priority"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuadrante predeterminado"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prioridad"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant par défaut"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Priorité"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante predefinito"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Priorità"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "デフォルト象限"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "優先度"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기본 사분면"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "우선순위"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante padrão"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prioridade"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Квадрант по умолчанию"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Приоритет"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "默认象限"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "优先级"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設象限"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "優先級"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "預設象限"
-          }
-        }
-      }
-    },
-    "config.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant-Konfiguration"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant Configuration"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configuración de cuadrante"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configuration du quadrant"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurazione quadrante"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限設定"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사분면 구성"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configuração do quadrante"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Настройка квадранта"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限配置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限配置"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限配置"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "優先級"
           }
         }
       }
     },
-    "empty" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Leeren"
+    "config.parameter.selectedPriority": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Standard-Quadrant"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Clear"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Default Quadrant"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limpiar"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuadrante predeterminado"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Effacer"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant par défaut"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancella"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante predefinito"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "クリア"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "デフォルト象限"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "지우기"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기본 사분면"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limpar"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante padrão"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Очистить"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Квадрант по умолчанию"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "默认象限"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預設象限"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "清除"
-          }
-        }
-      }
-    },
-    "filter.mode.inbox" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eingang"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Inbox"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bandeja de entrada"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boîte de réception"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In arrivo"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "受信箱"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "수신함"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Caixa de entrada"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Входящие"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "收集箱"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "收集箱"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "收集箱"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "預設象限"
           }
         }
       }
     },
-    "filter.mode.overdue" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Überfällig"
+    "config.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant-Konfiguration"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Overdue"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant Configuration"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Atrasado"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuración de cuadrante"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "En retard"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuration du quadrant"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Scaduto"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configurazione quadrante"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "期限切れ"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限設定"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "기한 초과"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사분면 구성"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Atrasado"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuração do quadrante"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Просрочено"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Настройка квадранта"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "逾期"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限配置"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "逾期"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限配置"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "逾期"
-          }
-        }
-      }
-    },
-    "filter.mode.today" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Today"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoy"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aujourd'hui"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oggi"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoje"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сегодня"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限配置"
           }
         }
       }
     },
-    "intent.completeTask.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aufgabe als erledigt markieren oder rückgängig machen"
+    "empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leeren"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mark task as completed or undo completion"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Marcar tarea como completada o deshacer completado"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpiar"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Marquer la tâche comme terminée ou annuler"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacer"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Segna attività come completata o annulla"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancella"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タスクを完了としてマークまたは取り消し"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "クリア"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "작업을 완료로 표시 또는 완료 취소"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "지우기"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Marcar tarefa como concluída ou desfazer"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Limpar"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Отметить задачу как выполненную или отменить"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Очистить"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "标记任务为完成或撤销完成状态"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "標記任務為完成或撤銷完成狀態"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "標記任務為完成或撤銷完成狀態"
-          }
-        }
-      }
-    },
-    "intent.completeTask.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aufgabe erledigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Complete Task"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Completar tarea"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Terminer la tâche"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Completa attività"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タスクを完了"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "작업 완료"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Concluir tarefa"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Выполнить задачу"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完成任务"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完成任務"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "完成任務"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "清除"
           }
         }
       }
     },
-    "intent.createNote.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planbook öffnen, um eine neue Notiz zu erstellen"
+    "filter.mode.inbox": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingang"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Planbook to create a new note"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inbox"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Planbook para crear una nueva nota"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bandeja de entrada"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ouvrir Planbook pour créer une nouvelle note"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boîte de réception"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apri Planbook per creare una nuova nota"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In arrivo"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planbook を開いて新しいメモを作成"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "受信箱"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "새 노트를 만들기 위해 Planbook 열기"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수신함"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrir Planbook para criar uma nova nota"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caixa de entrada"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Открыть Planbook для создания новой заметки"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Входящие"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打开计划本 App 创建新笔记"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收集箱"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打開計劃本 App 建立新筆記"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收集箱"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "打開計劃本 App 建立新筆記"
-          }
-        }
-      }
-    },
-    "intent.createNote.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Neue Notiz"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New Note"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nueva nota"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nouvelle note"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nuova nota"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新規メモ"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "새 노트"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nova nota"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Новая заметка"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新建笔记"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新建筆記"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "新建筆記"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收集箱"
           }
         }
       }
     },
-    "intent.switchQuadrant.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant im mittleren Widget wechseln"
+    "filter.mode.overdue": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Überfällig"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Switch the displayed quadrant in the medium widget"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overdue"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar el cuadrante mostrado en el widget mediano"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atrasado"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changer le quadrant affiché dans le widget moyen"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En retard"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambia il quadrante mostrato nel widget medio"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scaduto"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "中サイズウィジェットの象限を切り替え"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "期限切れ"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "중간 위젯에 표시된 사분면 전환"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "기한 초과"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mudar o quadrante mostrado no widget médio"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atrasado"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Переключить отображаемый квадрант в среднем виджете"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Просрочено"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切换中号四象限组件展示的象限"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "逾期"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切換中號四象限元件展示的象限"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "逾期"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切換中號四象限元件展示的象限"
-          }
-        }
-      }
-    },
-    "intent.switchQuadrant.title" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant wechseln"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Switch Quadrant"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar cuadrante"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changer de quadrant"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambia quadrante"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "象限を切り替え"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사분면 전환"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mudar quadrante"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Переключить квадрант"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切换象限"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切換象限"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "切換象限"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "逾期"
           }
         }
       }
     },
-    "more" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mehr"
+    "filter.mode.today": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "More"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Más"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plus"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aujourd'hui"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Altro"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oggi"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "もっと見る"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "더보기"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mais"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoje"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Еще"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "更多"
-          }
-        }
-      }
-    },
-    "Occurrence At" : {
-
-    },
-    "Priority" : {
-
-    },
-    "quadrant.high" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wichtig & Dringend"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Important & Urgent"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante y urgente"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Important et urgent"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante e urgente"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要かつ緊急"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "중요하고 긴급함"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante e Urgente"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Важно и срочно"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要且紧急"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要且緊急"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要且緊急"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
           }
         }
       }
     },
-    "quadrant.low" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dringend & Unwichtig"
+    "intent.completeTask.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufgabe als erledigt markieren oder rückgängig machen"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Urgent & Unimportant"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mark task as completed or undo completion"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Urgente y no importante"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar tarea como completada o deshacer completado"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Urgent et peu important"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marquer la tâche comme terminée ou annuler"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Urgente e non importante"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Segna attività come completata o annulla"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊急だが重要ではない"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクを完了としてマークまたは取り消し"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "긴급하지만 중요하지 않음"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업을 완료로 표시 또는 완료 취소"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Urgente e Não Importante"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marcar tarefa como concluída ou desfazer"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Срочно и не важно"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отметить задачу как выполненную или отменить"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "紧急不重要"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "标记任务为完成或撤销完成状态"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊急但不重要"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "標記任務為完成或撤銷完成狀態"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊急但不重要"
-          }
-        }
-      }
-    },
-    "quadrant.medium" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Wichtig & Nicht dringend"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Important & Not Urgent"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante y no urgente"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Important et non urgent"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante e non urgente"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要だが緊急ではない"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "중요하지만 긴급하지 않음"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Importante e Não Urgente"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Важно и не срочно"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要不紧急"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要但不緊急"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "重要但不緊急"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "標記任務為完成或撤銷完成狀態"
           }
         }
       }
     },
-    "quadrant.none" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht dringend & Unwichtig"
+    "intent.completeTask.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufgabe erledigen"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not Urgent & Unimportant"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete Task"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ni urgente ni importante"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completar tarea"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ni urgent ni important"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminer la tâche"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Non urgente e non importante"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completa attività"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊急でも重要でもない"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクを完了"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "긴급하지도 중요하지도 않음"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 완료"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não Urgente e Não Importante"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Concluir tarefa"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не срочно и не важно"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выполнить задачу"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不紧急不重要"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成任务"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不緊急且不重要"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成任務"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "不緊急且不重要"
-          }
-        }
-      }
-    },
-    "Task ID" : {
-
-    },
-    "widget.large.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eisenhower-Matrix-Quadranten-Aufgabenverteilung anzeigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Display Eisenhower Matrix quadrant task distribution"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar distribución de tareas del cuadrante de la Matriz Eisenhower"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Afficher la distribution des tâches par quadrant de la matrice Eisenhower"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Visualizza la distribuzione delle attività per quadrante della Matrice Eisenhower"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eisenhower Matrix の四象限タスク分布を表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eisenhower Matrix 사분면 작업 분포 표시"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostrar distribuição de tarefas do quadrante da Matriz Eisenhower"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Отображение распределения задач по квадрантам матрицы Эйзенхауэра"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "展示 Eisenhower Matrix 四象限任务分布"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "展示 Eisenhower Matrix 四象限任務分布"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "展示 Eisenhower Matrix 四象限任務分布"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成任務"
           }
         }
       }
     },
-    "widget.large.name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Groß)"
+    "intent.createNote.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook öffnen, um eine neue Notiz zu erstellen"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Large)"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Planbook to create a new note"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuadrante (Grande)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Planbook para crear una nueva nota"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Grand)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouvrir Planbook pour créer une nouvelle note"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante (Grande)"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apri Planbook per creare una nuova nota"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（大）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planbook を開いて新しいメモを作成"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사분면 (대)"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 노트를 만들기 위해 Planbook 열기"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante (Grande)"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abrir Planbook para criar uma nova nota"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Квадрант (Большой)"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Открыть Planbook для создания новой заметки"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（大号）"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开计划本 App 创建新笔记"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（大號）"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打開計劃本 App 建立新筆記"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（大號）"
-          }
-        }
-      }
-    },
-    "widget.medium.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadranten links wechseln, Aufgabenliste rechts anzeigen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Switch quadrants on the left, show task list on the right"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambiar cuadrantes a la izquierda, mostrar lista de tareas a la derecha"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changer de quadrant à gauche, afficher la liste des tâches à droite"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cambia quadrante a sinistra, mostra elenco attività a destra"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左側で象限を切り替え、右側にタスクリストを表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "왼쪽에서 사분면 전환, 오른쪽에 작업 목록 표시"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mudar quadrantes à esquerda, mostrar lista de tarefas à direita"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Переключение квадрантов слева, список задач справа"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左侧切换象限，右侧展示任务列表"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左側切換象限，右側展示任務列表"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左側切換象限，右側展示任務列表"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打開計劃本 App 建立新筆記"
           }
         }
       }
     },
-    "widget.medium.name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Mittel)"
+    "intent.createNote.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Neue Notiz"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Medium)"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New Note"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cuadrante (Mediano)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueva nota"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrant (Moyen)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nouvelle note"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante (Medio)"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuova nota"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（中）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新規メモ"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "사분면 (중)"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "새 노트"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quadrante (Médio)"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nova nota"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Квадрант (Средний)"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Новая заметка"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（中号）"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建笔记"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（中號）"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建筆記"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "四象限（中號）"
-          }
-        }
-      }
-    },
-    "widget.task.new" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aufgabe erstellen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create Task"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crear tarea"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Créer une tâche"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Crea attività"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タスクを作成"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "작업 만들기"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Criar tarefa"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Создать задачу"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "创建任务"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "建立任務"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "建立任務"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建筆記"
           }
         }
       }
     },
-    "widget.timeBlock.empty" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute keine Zeitblöcke"
+    "intent.switchQuadrant.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant im mittleren Widget wechseln"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No time blocks today"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch the displayed quadrant in the medium widget"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay bloques de tiempo hoy"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar el cuadrante mostrado en el widget mediano"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aucun bloc de temps aujourd'hui"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changer le quadrant affiché dans le widget moyen"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nessun blocco orario oggi"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia il quadrante mostrato nel widget medio"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日のタイムブロックはありません"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中サイズウィジェットの象限を切り替え"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘 시간 블록이 없습니다"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중간 위젯에 표시된 사분면 전환"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sem blocos de tempo hoje"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar o quadrante mostrado no widget médio"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сегодня нет временных блоков"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переключить отображаемый квадрант в среднем виджете"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天还没有时间块"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切换中号四象限组件展示的象限"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天還沒有時間塊"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切換中號四象限元件展示的象限"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天還沒有時間塊"
-          }
-        }
-      }
-    },
-    "widget.timeBlock.large.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heutiger Zeitplan in zwei Spalten, vormittags und nachmittags"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Today's schedule in two columns, morning and afternoon"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Horario de hoy en dos columnas, mañana y tarde"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Planning du jour en deux colonnes, matin et après-midi"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Programma di oggi in due colonne, mattina e pomeriggio"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日のタイムブロックを午前・午後の2列で表示"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘의 시간 블록을 오전/오후 두 열로 표시"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Agenda de hoje em duas colunas, manhã e tarde"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сегодняшнее расписание в двух колонках, утро и день"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左右两列展示今天的时间块"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左右兩列展示今天的時間塊"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "左右兩列展示今天的時間塊"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切換中號四象限元件展示的象限"
           }
         }
       }
     },
-    "widget.timeBlock.large.name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitblock (Groß)"
+    "intent.switchQuadrant.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant wechseln"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time Block (Large)"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch Quadrant"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloque de tiempo (Grande)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar cuadrante"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloc de temps (Grand)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changer de quadrant"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocco orario (Grande)"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia quadrante"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タイムブロック（大）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "象限を切り替え"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시간 블록 (대)"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사분면 전환"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloco de tempo (Grande)"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar quadrante"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Временной блок (Большой)"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переключить квадрант"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时间块（大号）"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切换象限"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（大號）"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切換象限"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（大號）"
-          }
-        }
-      }
-    },
-    "widget.timeBlock.locked" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Upgrade auf PRO, um Zeitblöcke freizuschalten"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Upgrade to PRO to unlock Time Block"
-          }
-        },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Actualiza a PRO para desbloquear el bloque de tiempo"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passez à PRO pour débloquer le bloc de temps"
-          }
-        },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passa a PRO per sbloccare il blocco orario"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PRO にアップグレードしてタイムブロックを解除"
-          }
-        },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "PRO로 업그레이드하여 시간 블록 잠금 해제"
-          }
-        },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Atualize para PRO para desbloquear o bloco de tempo"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Обновитесь до PRO, чтобы открыть временные блоки"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "升级 PRO 解锁时间块"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "升級 PRO 解鎖時間塊"
-          }
-        },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "升級 PRO 解鎖時間塊"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切換象限"
           }
         }
       }
     },
-    "widget.timeBlock.medium.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitblöcke rund um die aktuelle Uhrzeit"
+    "more": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mehr"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Upcoming time blocks around now"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloques de tiempo alrededor de ahora"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocs de temps autour de maintenant"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocchi orari intorno ad ora"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Altro"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "現在時刻付近のタイムブロックを表示"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "もっと見る"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "현재 시각 근처의 시간 블록 표시"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "더보기"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocos de tempo em torno de agora"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Временные блоки около текущего времени"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Еще"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "显示当前时刻附近的时间块"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示當前時刻附近的時間塊"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "顯示當前時刻附近的時間塊"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更多"
           }
         }
       }
     },
-    "widget.timeBlock.medium.name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitblock (Mittel)"
+    "Occurrence At": {},
+    "Priority": {},
+    "quadrant.high": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wichtig & Dringend"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time Block (Medium)"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Important & Urgent"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloque de tiempo (Mediano)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante y urgente"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloc de temps (Moyen)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Important et urgent"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocco orario (Medio)"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante e urgente"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タイムブロック（中）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要かつ緊急"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시간 블록 (중)"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중요하고 긴급함"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloco de tempo (Médio)"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante e Urgente"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Временной блок (Средний)"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Важно и срочно"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时间块（中号）"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要且紧急"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（中號）"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要且緊急"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（中號）"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要且緊急"
           }
         }
       }
     },
-    "widget.timeBlock.small.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeigt vier Stunden ab der aktuellen Stunde kompakt an"
+    "quadrant.low": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dringend & Unwichtig"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compactly shows four hours from the current hour"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urgent & Unimportant"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Muestra de forma compacta cuatro horas desde la hora actual"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urgente y no importante"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Affiche quatre heures à partir de l’heure actuelle dans un format compact"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urgent et peu important"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra in modo compatto quattro ore a partire dall’ora corrente"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urgente e non importante"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "現在の時刻から4時間をコンパクトに表示します"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊急だが重要ではない"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "현재 정시부터 4시간을 간결하게 표시합니다"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "긴급하지만 중요하지 않음"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mostra quatro horas a partir da hora atual de forma compacta"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Urgente e Não Importante"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Компактно показывает четыре часа, начиная с текущего часа"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Срочно и не важно"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "紧凑显示当前整点起的四小时时间块"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紧急不重要"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊湊顯示目前整點起的四小時時間塊"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊急但不重要"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "緊湊顯示目前整點起的四小時時間塊"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊急但不重要"
           }
         }
       }
     },
-    "widget.timeBlock.small.name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitblöcke (Klein)"
+    "quadrant.medium": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wichtig & Nicht dringend"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time Blocks (Small)"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Important & Not Urgent"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bloques de tiempo (Pequeño)"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante y no urgente"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocs de temps (Petit)"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Important et non urgent"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocchi orari (Piccolo)"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante e non urgente"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "タイムブロック（小）"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要だが緊急ではない"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "시간 블록 (소형)"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "중요하지만 긴급하지 않음"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Blocos de tempo (Pequeno)"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Importante e Não Urgente"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Временные блоки (Малый)"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Важно и не срочно"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "时间块（小号）"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要不紧急"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（小號）"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要但不緊急"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "時間塊（小號）"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重要但不緊急"
           }
         }
       }
     },
-    "widget.timeBlock.today" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Heute"
+    "quadrant.none": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht dringend & Unwichtig"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Today"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not Urgent & Unimportant"
           }
         },
-        "es" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoy"
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ni urgente ni importante"
           }
         },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aujourd'hui"
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ni urgent ni important"
           }
         },
-        "it" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Oggi"
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non urgente e non importante"
           }
         },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今日"
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊急でも重要でもない"
           }
         },
-        "ko" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "오늘"
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "긴급하지도 중요하지도 않음"
           }
         },
-        "pt" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hoje"
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não Urgente e Não Importante"
           }
         },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Сегодня"
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не срочно и не важно"
           }
         },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不紧急不重要"
           }
         },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不緊急且不重要"
           }
         },
-        "zh-HK" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "今天"
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不緊急且不重要"
+          }
+        }
+      }
+    },
+    "Task ID": {},
+    "widget.large.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eisenhower-Matrix-Quadranten-Aufgabenverteilung anzeigen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display Eisenhower Matrix quadrant task distribution"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar distribución de tareas del cuadrante de la Matriz Eisenhower"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Afficher la distribution des tâches par quadrant de la matrice Eisenhower"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visualizza la distribuzione delle attività per quadrante della Matrice Eisenhower"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eisenhower Matrix の四象限タスク分布を表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eisenhower Matrix 사분면 작업 분포 표시"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar distribuição de tarefas do quadrante da Matriz Eisenhower"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отображение распределения задач по квадрантам матрицы Эйзенхауэра"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "展示 Eisenhower Matrix 四象限任务分布"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "展示 Eisenhower Matrix 四象限任務分布"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "展示 Eisenhower Matrix 四象限任務分布"
+          }
+        }
+      }
+    },
+    "widget.large.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Groß)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Large)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuadrante (Grande)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Grand)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante (Grande)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（大）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사분면 (대)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante (Grande)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Квадрант (Большой)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（大号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（大號）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（大號）"
+          }
+        }
+      }
+    },
+    "widget.medium.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadranten links wechseln, Aufgabenliste rechts anzeigen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch quadrants on the left, show task list on the right"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambiar cuadrantes a la izquierda, mostrar lista de tareas a la derecha"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changer de quadrant à gauche, afficher la liste des tâches à droite"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cambia quadrante a sinistra, mostra elenco attività a destra"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左側で象限を切り替え、右側にタスクリストを表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "왼쪽에서 사분면 전환, 오른쪽에 작업 목록 표시"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mudar quadrantes à esquerda, mostrar lista de tarefas à direita"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Переключение квадрантов слева, список задач справа"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左侧切换象限，右侧展示任务列表"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左側切換象限，右側展示任務列表"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左側切換象限，右側展示任務列表"
+          }
+        }
+      }
+    },
+    "widget.medium.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Mittel)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Medium)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuadrante (Mediano)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrant (Moyen)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante (Medio)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（中）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "사분면 (중)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quadrante (Médio)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Квадрант (Средний)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（中号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（中號）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "四象限（中號）"
+          }
+        }
+      }
+    },
+    "widget.task.new": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufgabe erstellen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create Task"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crear tarea"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Créer une tâche"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crea attività"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タスクを作成"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "작업 만들기"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Criar tarefa"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Создать задачу"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "创建任务"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建立任務"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "建立任務"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute keine Zeitblöcke"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No time blocks today"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No hay bloques de tiempo hoy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun bloc de temps aujourd'hui"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nessun blocco orario oggi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のタイムブロックはありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘 시간 블록이 없습니다"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sem blocos de tempo hoje"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня нет временных блоков"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天还没有时间块"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天還沒有時間塊"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天還沒有時間塊"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.large.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heutiger Zeitplan in zwei Spalten, vormittags und nachmittags"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today's schedule in two columns, morning and afternoon"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Horario de hoy en dos columnas, mañana y tarde"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planning du jour en deux colonnes, matin et après-midi"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Programma di oggi in due colonne, mattina e pomeriggio"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日のタイムブロックを午前・午後の2列で表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘의 시간 블록을 오전/오후 두 열로 표시"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agenda de hoje em duas colunas, manhã e tarde"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодняшнее расписание в двух колонках, утро и день"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左右两列展示今天的时间块"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左右兩列展示今天的時間塊"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左右兩列展示今天的時間塊"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.large.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitblock (Groß)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time Block (Large)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloque de tiempo (Grande)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloc de temps (Grand)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocco orario (Grande)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイムブロック（大）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시간 블록 (대)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloco de tempo (Grande)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Временной блок (Большой)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "时间块（大号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（大號）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（大號）"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.locked": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade auf PRO, um Zeitblöcke freizuschalten"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upgrade to PRO to unlock Time Block"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiza a PRO para desbloquear el bloque de tiempo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passez à PRO pour débloquer le bloc de temps"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passa a PRO per sbloccare il blocco orario"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PRO にアップグレードしてタイムブロックを解除"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PRO로 업그레이드하여 시간 블록 잠금 해제"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atualize para PRO para desbloquear o bloco de tempo"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обновитесь до PRO, чтобы открыть временные блоки"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升级 PRO 解锁时间块"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升級 PRO 解鎖時間塊"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "升級 PRO 解鎖時間塊"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.medium.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitblöcke rund um die aktuelle Uhrzeit"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upcoming time blocks around now"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloques de tiempo alrededor de ahora"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocs de temps autour de maintenant"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocchi orari intorno ad ora"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在時刻付近のタイムブロックを表示"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 시각 근처의 시간 블록 표시"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocos de tempo em torno de agora"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Временные блоки около текущего времени"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示当前时刻附近的时间块"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示當前時刻附近的時間塊"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示當前時刻附近的時間塊"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.medium.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitblock (Mittel)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time Block (Medium)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloque de tiempo (Mediano)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloc de temps (Moyen)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocco orario (Medio)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイムブロック（中）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시간 블록 (중)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloco de tempo (Médio)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Временной блок (Средний)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "时间块（中号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（中號）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（中號）"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.small.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeigt vier Stunden ab der aktuellen Stunde kompakt an"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compactly shows four hours from the current hour"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muestra de forma compacta cuatro horas desde la hora actual"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affiche quatre heures à partir de l’heure actuelle dans un format compact"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra in modo compatto quattro ore a partire dall’ora corrente"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在の時刻から4時間をコンパクトに表示します"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "현재 정시부터 4시간을 간결하게 표시합니다"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostra quatro horas a partir da hora atual de forma compacta"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Компактно показывает четыре часа, начиная с текущего часа"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "紧凑显示当前整点起的四小时时间块"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊湊顯示目前整點起的四小時時間塊"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "緊湊顯示目前整點起的四小時時間塊"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.small.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zeitblöcke (Klein)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Time Blocks (Small)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bloques de tiempo (Pequeño)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocs de temps (Petit)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocchi orari (Piccolo)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "タイムブロック（小）"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "시간 블록 (소형)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blocos de tempo (Pequeno)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Временные блоки (Малый)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "时间块（小号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（小號）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "時間塊（小號）"
+          }
+        }
+      }
+    },
+    "widget.timeBlock.today": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Heute"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Today"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoy"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aujourd'hui"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oggi"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "오늘"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hoje"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сегодня"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今天"
+          }
+        }
+      }
+    },
+    "widget.week.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本周"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週"
+          }
+        }
+      }
+    },
+    "widget.week.twoWeeks": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two weeks"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "两周"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "兩週"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "兩週"
+          }
+        }
+      }
+    },
+    "widget.week.empty": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No tasks this week"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本周还没有任务"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週還沒有任務"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週還沒有任務"
+          }
+        }
+      }
+    },
+    "widget.week.focus": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本周重点"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週重點"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週重點"
+          }
+        }
+      }
+    },
+    "widget.week.focusEmpty": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add weekly focus"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加本周重点"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新增本週重點"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新增本週重點"
+          }
+        }
+      }
+    },
+    "widget.week.weeksCapsule": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "W%lld–W%lld"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第%lld–%lld周"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第%lld–%lld週"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第%lld–%lld週"
+          }
+        }
+      }
+    },
+    "widget.weekList.large.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week list (Large)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "周列表（大号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "週列表（大）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "週列表（大）"
+          }
+        }
+      }
+    },
+    "widget.weekList.large.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week’s tasks grouped by day"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按天列出本周任务"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按天列出本週任務"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按天列出本週任務"
+          }
+        }
+      }
+    },
+    "widget.weekGrid.large.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week grid (Large)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "周八宫格（大号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "週八宮格（大）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "週八宮格（大）"
+          }
+        }
+      }
+    },
+    "widget.weekGrid.large.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weekly focus plus seven day cells"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本周重点和七天任务格"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週重點和七天任務格"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週重點和七天任務格"
+          }
+        }
+      }
+    },
+    "widget.monthWeek.medium.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Week calendar (Medium)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式一周（中号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式一週（中）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式一週（中）"
+          }
+        }
+      }
+    },
+    "widget.monthWeek.medium.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One week of month-style task chips"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月视图风格的一周任务"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月視圖風格的一週任務"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月視圖風格的一週任務"
+          }
+        }
+      }
+    },
+    "widget.monthWeek.large.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Two-week calendar (Large)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式两周（大号）"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式兩週（大）"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月式兩週（大）"
+          }
+        }
+      }
+    },
+    "widget.monthWeek.large.description": {
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This week and next week as month rows"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本周和下周的月视图格子"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週和下週的月視圖格子"
+          }
+        },
+        "zh-HK": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "本週和下週的月視圖格子"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

@@ -1,8 +1,0 @@
-Novidades:
-- Suporte à pesquisa
-- Correção de alguns problemas conhecidos
-
-Atualizações recentes:
-- Barra lateral de tarefas
-- Vista de blocos horários do dia
-- Vista de lista semanal

@@ -15,7 +15,6 @@
 		882014752F987D3100FBEE1C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 882014742F987D3100FBEE1C /* WidgetKit.framework */; };
 		882014772F987D3100FBEE1C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 882014762F987D3100FBEE1C /* SwiftUI.framework */; };
 		882014842F987D3200FBEE1C /* WidgetsExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 882014732F987D3100FBEE1C /* WidgetsExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		882015092F98DA2400FBEE1C /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = 882015082F98DA2400FBEE1C /* SwiftUIX */; };
 		886AE5E12F9A2D8D00C2AF06 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 886AE5E02F9A2D8D00C2AF06 /* GRDB */; };
 		8876308B2FAC2E2000805343 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 8876308A2FAC2E2000805343 /* GRDB */; };
 		88C746422EE054880061FE2C /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 88C746412EE054880061FE2C /* InfoPlist.xcstrings */; };
@@ -24,6 +23,10 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A10000000000000000000001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* SceneDelegate.swift */; };
+		B10000000000000000000001 /* WeekModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000005 /* WeekModels.swift */; };
+		B10000000000000000000002 /* WeekListWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000006 /* WeekListWidget.swift */; };
+		B10000000000000000000003 /* WeekGridWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000007 /* WeekGridWidget.swift */; };
+		B10000000000000000000004 /* MonthWeekWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000008 /* MonthWeekWidget.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +95,10 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A10000000000000000000002 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		A547B50DDFBF35B786C96398 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B10000000000000000000005 /* WeekModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeekModels.swift; path = Widgets/WeekModels.swift; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000006 /* WeekListWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeekListWidget.swift; path = Widgets/WeekListWidget.swift; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000007 /* WeekGridWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WeekGridWidget.swift; path = Widgets/WeekGridWidget.swift; sourceTree = SOURCE_ROOT; };
+		B10000000000000000000008 /* MonthWeekWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MonthWeekWidget.swift; path = Widgets/MonthWeekWidget.swift; sourceTree = SOURCE_ROOT; };
 		E5E965615949670ABDBF3A23 /* Pods-RunnerTests.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.profile.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.profile.xcconfig"; sourceTree = "<group>"; };
 		E88A3F7D1FF28FF738EF015F /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBD096547ADA6C5792DEC6B3 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -154,7 +161,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				882015092F98DA2400FBEE1C /* SwiftUIX in Frameworks */,
 				882014772F987D3100FBEE1C /* SwiftUI.framework in Frameworks */,
 				882014752F987D3100FBEE1C /* WidgetKit.framework in Frameworks */,
 				886AE5E12F9A2D8D00C2AF06 /* GRDB in Frameworks */,
@@ -209,6 +215,10 @@
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				882014782F987D3100FBEE1C /* Widgets */,
+				B10000000000000000000005 /* WeekModels.swift */,
+				B10000000000000000000006 /* WeekListWidget.swift */,
+				B10000000000000000000007 /* WeekGridWidget.swift */,
+				B10000000000000000000008 /* MonthWeekWidget.swift */,
 				97C146EF1CF9000F007C117D /* Products */,
 				331C8082294A63A400263BE5 /* RunnerTests */,
 				A75FC634C3DAEA8F029410C3 /* Pods */,
@@ -369,7 +379,6 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				882015072F98DA2400FBEE1C /* XCRemoteSwiftPackageReference "SwiftUIX" */,
 				886AE5DF2F9A2D8D00C2AF06 /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
@@ -536,6 +545,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B10000000000000000000001 /* WeekModels.swift in Sources */,
+				B10000000000000000000002 /* WeekListWidget.swift in Sources */,
+				B10000000000000000000003 /* WeekGridWidget.swift in Sources */,
+				B10000000000000000000004 /* MonthWeekWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1072,14 +1085,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		882015072F98DA2400FBEE1C /* XCRemoteSwiftPackageReference "SwiftUIX" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftUIX/SwiftUIX.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.0;
-			};
-		};
 		886AE5DF2F9A2D8D00C2AF06 /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/groue/GRDB.swift.git";
@@ -1091,11 +1096,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		882015082F98DA2400FBEE1C /* SwiftUIX */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 882015072F98DA2400FBEE1C /* XCRemoteSwiftPackageReference "SwiftUIX" */;
-			productName = SwiftUIX;
-		};
 		886AE5E02F9A2D8D00C2AF06 /* GRDB */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 886AE5DF2F9A2D8D00C2AF06 /* XCRemoteSwiftPackageReference "GRDB.swift" */;
