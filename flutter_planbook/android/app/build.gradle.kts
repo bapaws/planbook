@@ -43,21 +43,29 @@ android {
         }
     }
 
-    signingConfigs {
-        create("release") {
-            val keyProperties = Properties()
-            keyProperties.load(project.rootProject.file("key.properties").inputStream())
+    // key.properties 被 gitignore，本机没有时仍允许 debug 使用默认调试签名。
+    val keyPropertiesFile = rootProject.file("key.properties")
+    val keyProperties = Properties()
+    if (keyPropertiesFile.exists()) {
+        keyProperties.load(keyPropertiesFile.inputStream())
+    }
 
-            storeFile = file(keyProperties.getProperty("storeFile"))
-            storePassword = keyProperties.getProperty("storePassword")
-            keyAlias = keyProperties.getProperty("keyAlias")
-            keyPassword = keyProperties.getProperty("keyPassword")
+    signingConfigs {
+        if (keyPropertiesFile.exists()) {
+            create("release") {
+                storeFile = file(keyProperties.getProperty("storeFile"))
+                storePassword = keyProperties.getProperty("storePassword")
+                keyAlias = keyProperties.getProperty("keyAlias")
+                keyPassword = keyProperties.getProperty("keyPassword")
+            }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            if (keyPropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 }
