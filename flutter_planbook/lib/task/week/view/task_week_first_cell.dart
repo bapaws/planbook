@@ -133,7 +133,20 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
                         color: noteType.getColorScheme(context).primary,
                       ),
                     )
-                  : null,
+                  : CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      sizeStyle: CupertinoButtonSize.small,
+                      minimumSize: const Size.square(28),
+                      onPressed: () => _createTaskForSource(
+                        context,
+                        sourceState.sourceType,
+                      ),
+                      child: FaIcon(
+                        FontAwesomeIcons.plus,
+                        size: 14,
+                        color: colorScheme.primary,
+                      ),
+                    ),
             );
           },
         );
@@ -235,6 +248,24 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
       variant: TaskSourcePanelVariant.embedded,
       showSourceTypeSelector: false,
     );
+  }
+
+  void _createTaskForSource(
+    BuildContext context,
+    TaskSourcePanelType sourceType,
+  ) {
+    final route = switch (sourceType) {
+      TaskSourcePanelInbox() => TaskNewRoute(),
+      TaskSourcePanelTag(tags: final tags) => TaskNewRoute(
+        initialTags: tags,
+      ),
+      TaskSourcePanelDate(date: final date, filter: final filter) =>
+        TaskNewRoute(
+          dueAt: date,
+          isAllDay: filter != TaskSourcePanelDateFilter.notAllDay,
+        ),
+    };
+    context.router.push(route);
   }
 
   void _openMindMap(BuildContext context, NoteType noteType) {

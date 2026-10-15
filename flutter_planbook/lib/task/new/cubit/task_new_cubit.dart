@@ -18,18 +18,26 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
     TaskEntity? initialTask,
     Jiffy? dueAt,
     TaskPriority? priority,
+    List<TagEntity> initialTags = const [],
+    bool? isAllDay,
   }) : _tasksRepository = tasksRepository,
        _taskActionService = taskActionService,
+       _initialTags = initialTags,
+       _initialIsAllDay = isAllDay,
        super(
          TaskNewState.fromData(
            task: initialTask,
            dueAt: dueAt,
            priority: priority,
+           initialTags: initialTags,
+           isAllDay: isAllDay,
          ),
        );
 
   final TasksRepository _tasksRepository;
   final TaskActionService _taskActionService;
+  final List<TagEntity> _initialTags;
+  final bool? _initialIsAllDay;
 
   @override
   TaskNewState? fromJson(Map<String, dynamic> json) {
@@ -37,7 +45,7 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
       title: json['title'] as String? ?? '',
       priority:
           TaskPriority.fromValue(json['priority'] as int?) ?? TaskPriority.none,
-      isAllDay: json['isAllDay'] as bool? ?? false,
+      isAllDay: _initialIsAllDay ?? (json['isAllDay'] as bool? ?? false),
       recurrenceRule: json['recurrenceRule'] != null
           ? () => RecurrenceRule.fromJson(
               json['recurrenceRule'] as Map<String, dynamic>,
@@ -49,9 +57,11 @@ class TaskNewCubit extends HydratedCubit<TaskNewState> {
                 .toList()
           : null,
       tags: json['tags'] != null
-          ? (json['tags'] as List<dynamic>)
-                .map((e) => TagEntity.fromJson(e as Map<String, dynamic>))
-                .toList()
+          ? _initialTags.isNotEmpty
+                ? _initialTags
+                : (json['tags'] as List<dynamic>)
+                      .map((e) => TagEntity.fromJson(e as Map<String, dynamic>))
+                      .toList()
           : null,
       children: json['children'] != null
           ? (json['children'] as List<dynamic>)

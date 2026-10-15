@@ -43,15 +43,17 @@ class _MineEmailPageState extends State<_MineEmailPage> {
   final _codeController = TextEditingController();
   bool _canSendCode = true;
   int _countdown = 60;
+  Timer? _countdownTimer;
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _emailController.dispose();
     _codeController.dispose();
     super.dispose();
   }
 
-  void _handleSendCode() {
+  Future<void> _handleSendCode() async {
     if (_emailController.text.trim().isEmpty) {
       Fluttertoast.showToast(
         msg: context.l10n.emailMessage,
@@ -70,8 +72,10 @@ class _MineEmailPageState extends State<_MineEmailPage> {
       return;
     }
 
-    context.read<MineEmailCubit>().sendCode(_emailController.text.trim());
-    _startCountdown();
+    final sent = await context.read<MineEmailCubit>().sendCode(
+      _emailController.text.trim(),
+    );
+    if (sent && mounted) _startCountdown();
   }
 
   void _save() {
@@ -89,17 +93,19 @@ class _MineEmailPageState extends State<_MineEmailPage> {
       _countdown = 60;
     });
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
       setState(() {
         _countdown--;
+        if (_countdown <= 0) _canSendCode = true;
       });
 
-      if (_countdown <= 0) {
-        setState(() {
-          _canSendCode = true;
-        });
-        timer.cancel();
-      }
+      if (_countdown <= 0) timer.cancel();
     });
   }
 
@@ -167,11 +173,7 @@ class _MineEmailPageState extends State<_MineEmailPage> {
                         child: SignButton(
                           // height: 48,
                           text: _canSendCode ? l10n.sendCode : '${_countdown}s',
-                          onPressed:
-                              (_canSendCode &&
-                                  state.status == PageStatus.initial)
-                              ? _handleSendCode
-                              : () {},
+                          onPressed: _canSendCode ? _handleSendCode : () {},
                           isLoading: state.status == PageStatus.loading,
                           style: SignButtonStyle.outlined,
                         ),

@@ -27,27 +27,53 @@ class MineEmailCubit extends Cubit<MineEmailState> {
     emit(state.copyWith(code: code));
   }
 
-  void sendCode(String email) {
+  Future<bool> sendCode(String email) async {
     if (email.trim() == _usersRepository.user?.email) {
-      emit(state.copyWith(status: PageStatus.failure));
       Fluttertoast.showToast(
         msg: _l10n.emailSameAsCurrent,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
       );
-      return;
+      return false;
     }
 
-    emit(state.copyWith(status: PageStatus.loading, isSent: true));
-    _usersRepository.updateUser(email: email);
+    emit(state.copyWith(status: PageStatus.loading, isSent: false));
+    try {
+      await _usersRepository.updateUser(email: email);
+      emit(state.copyWith(status: PageStatus.initial, isSent: true));
+      Fluttertoast.showToast(
+        msg: _l10n.codeSentSuccess,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+      return true;
+    } on Exception catch (error) {
+      emit(state.copyWith(status: PageStatus.initial, isSent: false));
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+      return false;
+    }
   }
 
-  void verifyCode(String email, String code) {
+  Future<void> verifyCode(String email, String code) async {
     emit(state.copyWith(status: PageStatus.loading, isSent: false));
-    _usersRepository.verifyOTP(
-      type: OtpType.emailChange,
-      email: email,
-      captchaToken: code,
-    );
+    try {
+      await _usersRepository.verifyOTP(
+        type: OtpType.emailChange,
+        email: email,
+        token: code,
+      );
+      emit(state.copyWith(status: PageStatus.success));
+    } on Exception catch (error) {
+      emit(state.copyWith(status: PageStatus.initial));
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+    }
   }
 }

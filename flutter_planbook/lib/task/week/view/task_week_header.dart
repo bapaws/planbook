@@ -44,61 +44,56 @@ class TaskWeekHeader extends StatelessWidget {
         Expanded(
           child: Row(
             children: [
-              Flexible(
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isToday
-                          ? colorScheme.primary
-                          : colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (titleLeading != null) ...[
-                          IconTheme(
-                            data: IconThemeData(
-                              size: theme.textTheme.bodySmall?.fontSize ?? 12,
-                              color: isToday
-                                  ? colorScheme.onPrimary
-                                  : colorScheme.onPrimaryContainer,
-                            ),
-                            child: titleLeading!,
-                          ),
-                          const SizedBox(width: 4),
-                        ],
-                        Flexible(
-                          child: Text(
-                            title,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: isToday
-                                  ? colorScheme.onPrimary
-                                  : colorScheme.onPrimaryContainer,
-                            ),
-                          ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: isToday
+                      ? colorScheme.primary
+                      : colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (titleLeading != null) ...[
+                      IconTheme(
+                        data: IconThemeData(
+                          size: theme.textTheme.bodySmall?.fontSize ?? 12,
+                          color: isToday
+                              ? colorScheme.onPrimary
+                              : colorScheme.onPrimaryContainer,
                         ),
-                        if (showDropdownAffordance) ...[
-                          const SizedBox(width: 2),
-                          Icon(
-                            CupertinoIcons.chevron_down,
-                            size: 10,
-                            color: isToday
-                                ? colorScheme.onPrimary
-                                : colorScheme.onPrimaryContainer,
-                          ),
-                        ],
-                      ],
+                        child: titleLeading!,
+                      ),
+                      const SizedBox(width: 4),
+                    ],
+                    Flexible(
+                      child: Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isToday
+                              ? colorScheme.onPrimary
+                              : colorScheme.onPrimaryContainer,
+                        ),
+                      ),
                     ),
-                  ),
+                    if (showDropdownAffordance) ...[
+                      const SizedBox(width: 2),
+                      Icon(
+                        CupertinoIcons.chevron_down,
+                        size: 10,
+                        color: isToday
+                            ? colorScheme.onPrimary
+                            : colorScheme.onPrimaryContainer,
+                      ),
+                    ],
+                  ],
                 ),
               ),
               if (subtitle != null) ...[

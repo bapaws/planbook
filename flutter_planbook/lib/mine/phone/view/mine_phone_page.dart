@@ -42,15 +42,17 @@ class _MinePhonePageState extends State<_MinePhonePage> {
   final _codeController = TextEditingController();
   bool _canSendCode = true;
   int _countdown = 60;
+  Timer? _countdownTimer;
 
   @override
   void dispose() {
+    _countdownTimer?.cancel();
     _phoneController.dispose();
     _codeController.dispose();
     super.dispose();
   }
 
-  void _handleSendCode() {
+  Future<void> _handleSendCode() async {
     if (_phoneController.text.trim().isEmpty) {
       Fluttertoast.showToast(
         msg: '请输入手机号',
@@ -71,8 +73,10 @@ class _MinePhonePageState extends State<_MinePhonePage> {
       return;
     }
 
-    context.read<MinePhoneCubit>().sendCode(_phoneController.text.trim());
-    _startCountdown();
+    final sent = await context.read<MinePhoneCubit>().sendCode(
+      _phoneController.text.trim(),
+    );
+    if (sent && mounted) _startCountdown();
   }
 
   void _save() {
@@ -90,17 +94,19 @@ class _MinePhonePageState extends State<_MinePhonePage> {
       _countdown = 60;
     });
 
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+
       setState(() {
         _countdown--;
+        if (_countdown <= 0) _canSendCode = true;
       });
 
-      if (_countdown <= 0) {
-        setState(() {
-          _canSendCode = true;
-        });
-        timer.cancel();
-      }
+      if (_countdown <= 0) timer.cancel();
     });
   }
 
@@ -168,11 +174,7 @@ class _MinePhonePageState extends State<_MinePhonePage> {
                         child: SignButton(
                           // height: 48,
                           text: _canSendCode ? l10n.sendCode : '${_countdown}s',
-                          onPressed:
-                              (_canSendCode &&
-                                  state.status == PageStatus.initial)
-                              ? _handleSendCode
-                              : () {},
+                          onPressed: _canSendCode ? _handleSendCode : () {},
                           isLoading: state.status == PageStatus.loading,
                           style: SignButtonStyle.outlined,
                         ),

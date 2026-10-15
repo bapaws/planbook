@@ -31,17 +31,31 @@ final class TaskNewState extends Equatable {
     TaskEntity? task,
     Jiffy? dueAt,
     TaskPriority? priority,
+    List<TagEntity> initialTags = const [],
+    bool? isAllDay,
   }) {
+    final resolvedIsAllDay = task?.isAllDay ?? isAllDay ?? true;
+    final initialStartAt =
+        task?.startAt ??
+        (dueAt == null
+            ? null
+            : resolvedIsAllDay
+            ? dueAt
+            : dueAt.startOf(Unit.day).add(hours: 9));
     return TaskNewState(
       initialTask: task,
       title: task?.title ?? '',
-      startAt: task?.startAt ?? dueAt,
-      endAt: task?.endAt,
-      isAllDay: task?.isAllDay ?? true,
+      startAt: initialStartAt,
+      endAt:
+          task?.endAt ??
+          (resolvedIsAllDay || initialStartAt == null
+              ? null
+              : initialStartAt.add(hours: 1)),
+      isAllDay: resolvedIsAllDay,
       recurrenceRule: task?.recurrenceRule,
       priority: task?.priority ?? priority ?? TaskPriority.none,
       alarms: task?.alarms ?? const [],
-      tags: task?.tags ?? const [],
+      tags: task?.tags ?? initialTags,
       children: task?.children ?? const [],
     );
   }

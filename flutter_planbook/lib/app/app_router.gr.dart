@@ -1821,6 +1821,8 @@ class TaskNewRoute extends _i64.PageRouteInfo<TaskNewRouteArgs> {
     _i66.TaskEntity? initialTask,
     _i66.Jiffy? dueAt,
     _i66.TaskPriority? priority,
+    List<_i66.TagEntity> initialTags = const [],
+    bool? isAllDay,
     _i69.Key? key,
     List<_i64.PageRouteInfo>? children,
   }) : super(
@@ -1829,6 +1831,8 @@ class TaskNewRoute extends _i64.PageRouteInfo<TaskNewRouteArgs> {
            initialTask: initialTask,
            dueAt: dueAt,
            priority: priority,
+           initialTags: initialTags,
+           isAllDay: isAllDay,
            key: key,
          ),
          initialChildren: children,
@@ -1846,6 +1850,8 @@ class TaskNewRoute extends _i64.PageRouteInfo<TaskNewRouteArgs> {
         initialTask: args.initialTask,
         dueAt: args.dueAt,
         priority: args.priority,
+        initialTags: args.initialTags,
+        isAllDay: args.isAllDay,
         key: args.key,
       );
     },
@@ -1857,6 +1863,8 @@ class TaskNewRouteArgs {
     this.initialTask,
     this.dueAt,
     this.priority,
+    this.initialTags = const [],
+    this.isAllDay,
     this.key,
   });
 
@@ -1866,11 +1874,15 @@ class TaskNewRouteArgs {
 
   final _i66.TaskPriority? priority;
 
+  final List<_i66.TagEntity> initialTags;
+
+  final bool? isAllDay;
+
   final _i69.Key? key;
 
   @override
   String toString() {
-    return 'TaskNewRouteArgs{initialTask: $initialTask, dueAt: $dueAt, priority: $priority, key: $key}';
+    return 'TaskNewRouteArgs{initialTask: $initialTask, dueAt: $dueAt, priority: $priority, initialTags: $initialTags, isAllDay: $isAllDay, key: $key}';
   }
 
   @override
@@ -1880,12 +1892,22 @@ class TaskNewRouteArgs {
     return initialTask == other.initialTask &&
         dueAt == other.dueAt &&
         priority == other.priority &&
+        const _i72.ListEquality<_i66.TagEntity>().equals(
+          initialTags,
+          other.initialTags,
+        ) &&
+        isAllDay == other.isAllDay &&
         key == other.key;
   }
 
   @override
   int get hashCode =>
-      initialTask.hashCode ^ dueAt.hashCode ^ priority.hashCode ^ key.hashCode;
+      initialTask.hashCode ^
+      dueAt.hashCode ^
+      priority.hashCode ^
+      const _i72.ListEquality<_i66.TagEntity>().hash(initialTags) ^
+      isAllDay.hashCode ^
+      key.hashCode;
 }
 
 /// generated route for

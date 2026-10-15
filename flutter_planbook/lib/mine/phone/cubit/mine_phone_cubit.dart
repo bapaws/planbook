@@ -27,26 +27,53 @@ class MinePhoneCubit extends Cubit<MinePhoneState> {
     emit(state.copyWith(code: code));
   }
 
-  void sendCode(String phone) {
+  Future<bool> sendCode(String phone) async {
     if (phone.trim() == _usersRepository.user?.phone) {
-      emit(state.copyWith(status: PageStatus.failure));
       Fluttertoast.showToast(
         msg: _l10n.phoneNumberSameAsCurrent,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
       );
-      return;
+      return false;
     }
-    emit(state.copyWith(status: PageStatus.loading, isSent: true));
-    _usersRepository.updateUser(phone: phone);
+
+    emit(state.copyWith(status: PageStatus.loading, isSent: false));
+    try {
+      await _usersRepository.updateUser(phone: phone);
+      emit(state.copyWith(status: PageStatus.initial, isSent: true));
+      Fluttertoast.showToast(
+        msg: _l10n.codeSentSuccess,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+      );
+      return true;
+    } on Exception catch (error) {
+      emit(state.copyWith(status: PageStatus.initial, isSent: false));
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+      return false;
+    }
   }
 
-  void verifyCode(String phone, String code) {
+  Future<void> verifyCode(String phone, String code) async {
     emit(state.copyWith(status: PageStatus.loading, isSent: false));
-    _usersRepository.verifyOTP(
-      type: OtpType.phoneChange,
-      phone: phone,
-      captchaToken: code,
-    );
+    try {
+      await _usersRepository.verifyOTP(
+        type: OtpType.phoneChange,
+        phone: phone,
+        token: code,
+      );
+      emit(state.copyWith(status: PageStatus.success));
+    } on Exception catch (error) {
+      emit(state.copyWith(status: PageStatus.initial));
+      Fluttertoast.showToast(
+        msg: error.toString(),
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.CENTER,
+      );
+    }
   }
 }

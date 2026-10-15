@@ -39,6 +39,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Ucrop.CropTheme" />
+
         <!-- 微信登录回调 Activity -->
         <activity
             android:name=".wxapi.WXEntryActivity"
