@@ -36,6 +36,12 @@ class MineProfileCubit extends Cubit<MineProfileState> {
   }
 
   Future<void> onAvatarChanged() async {
+    void resetUpdating() {
+      if (!isClosed) {
+        emit(state.copyWith(isUpdatingAvatar: false));
+      }
+    }
+
     try {
       // 设置加载状态
       emit(state.copyWith(isUpdatingAvatar: true));
@@ -92,24 +98,27 @@ class MineProfileCubit extends Cubit<MineProfileState> {
       await _usersRepository.updateUserProfile(avatar: avatarUrl);
 
       final previousAvatar = state.user?.avatar;
+      // 旧头像删除失败不影响新头像的设置
       if (previousAvatar != null &&
           previousAvatar.contains(AssetsRepository.host)) {
-        unawaited(
-          _assetsRepository.removeImages([
+        try {
+          await _assetsRepository.removeImages([
             previousAvatar,
-          ], ResBucket.userAvatars),
-        );
+          ], ResBucket.userAvatars);
+        } on Object catch (_) {}
       }
 
       // 更新本地状态
+      if (isClosed) return;
       emit(
         state.copyWith(
           user: _usersRepository.user,
           isUpdatingAvatar: false,
         ),
       );
-    } on Exception catch (_) {
-      emit(state.copyWith(isUpdatingAvatar: false));
+    } on Object catch (_) {
+      // 需要捕获 Error（如 emit 产生的 StateError），不能只 catch Exception
+      resetUpdating();
     }
   }
 

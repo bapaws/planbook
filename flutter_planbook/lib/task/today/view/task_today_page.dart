@@ -314,6 +314,8 @@ class _TaskTodayListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               date: state.date,
+              isCompleted: context.read<RootTaskBloc>().state.isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
               tagId: tag?.id,
             ),
           );
@@ -353,6 +355,8 @@ class _TaskTodayListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               date: state.date,
+              isCompleted: context.read<RootTaskBloc>().state.isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
               tagId: tag?.id,
             ),
           );
