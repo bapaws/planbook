@@ -160,7 +160,7 @@ void main() {
           final now = Jiffy.now().startOf(Unit.day);
           final task = _sampleTask(
             startAt: now,
-            recurrenceRule: RecurrenceRule(
+            recurrenceRule: const RecurrenceRule(
               frequency: RecurrenceFrequency.daily,
             ),
           );
@@ -281,7 +281,6 @@ void main() {
 
         final stream = api.getCompletedTaskCount(
           date: today,
-          userId: null,
         );
 
         final count = await stream.first;
@@ -360,19 +359,14 @@ void main() {
         final task = _sampleTask(
           title: 'Recurring',
           startAt: today,
-          recurrenceRule: RecurrenceRule(frequency: RecurrenceFrequency.daily),
+          recurrenceRule: const RecurrenceRule(
+            frequency: RecurrenceFrequency.daily,
+          ),
         );
         await baseApi.create(task: task);
 
         final occurrenceAt = today;
-        await db
-            .into(db.taskOccurrences)
-            .insert(
-              TaskOccurrencesCompanion.insert(
-                taskId: Value(task.id),
-                occurrenceAt: occurrenceAt,
-              ),
-            );
+        await baseApi.preGenerateTaskOccurrences(fromDate: occurrenceAt);
 
         final entity = await baseApi.getTaskEntityById(
           task.id,
@@ -473,21 +467,14 @@ void main() {
           final today = Jiffy.now().startOf(Unit.day);
           final task = _sampleTask(
             startAt: today,
-            recurrenceRule: RecurrenceRule(
+            recurrenceRule: const RecurrenceRule(
               frequency: RecurrenceFrequency.daily,
             ),
           );
           await baseApi.create(task: task);
 
           final occurrenceAt = today.add(days: 1);
-          await db
-              .into(db.taskOccurrences)
-              .insert(
-                TaskOccurrencesCompanion.insert(
-                  taskId: Value(task.id),
-                  occurrenceAt: occurrenceAt,
-                ),
-              );
+          await baseApi.preGenerateTaskOccurrences(fromDate: occurrenceAt);
 
           final entity = await baseApi.getTaskEntityById(
             task.id,

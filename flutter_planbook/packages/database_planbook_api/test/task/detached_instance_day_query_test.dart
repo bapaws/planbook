@@ -41,18 +41,7 @@ void main() {
       ),
     );
     await apis.taskApi.create(task: series);
-    await apis.db
-        .into(apis.db.taskOccurrences)
-        .insert(
-          TaskOccurrence(
-            id: const Uuid().v4(),
-            taskId: series.id,
-            occurrenceAt: originalDay.startOf(Unit.day),
-            startAt: originalDay,
-            endAt: originalDay.add(hours: 1),
-            createdAt: originalDay,
-          ),
-        );
+    await apis.taskApi.preGenerateTaskOccurrences(fromDate: originalDay);
 
     final prepared = delayApi.prepareDelayTask(
       entity: TaskEntity(

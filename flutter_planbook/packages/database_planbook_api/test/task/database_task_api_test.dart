@@ -152,7 +152,7 @@ void main() {
         final now = Jiffy.now().startOf(Unit.day);
         final task = _sampleTask(
           startAt: now,
-          recurrenceRule: RecurrenceRule(
+          recurrenceRule: const RecurrenceRule(
             frequency: RecurrenceFrequency.daily,
           ),
         );
@@ -160,7 +160,7 @@ void main() {
         await api.create(task: task);
 
         // 等待异步的 preGenerateTaskOccurrences 完成
-        await Future.delayed(const Duration(milliseconds: 200));
+        await Future<void>.delayed(const Duration(milliseconds: 200));
 
         final occurrences = await (db.select(
           db.taskOccurrences,
@@ -344,6 +344,118 @@ void main() {
         final fetched = await api.getTaskById(task.id);
         expect(fetched, isNotNull);
         expect(fetched!.title, 'Updated');
+      });
+
+      test('rebuilds cached dates for interval and count changes', () async {
+        final start = Jiffy.parse('2026-08-27');
+        final task = _sampleTask(
+          startAt: start,
+          recurrenceRule: const RecurrenceRule(
+            frequency: RecurrenceFrequency.daily,
+          ),
+        );
+        await api.insertOrUpdate(task: task);
+        await api.preGenerateTaskOccurrences(fromDate: start);
+
+        await api.insertOrUpdate(
+          task: task.copyWith(
+            recurrenceRule: Value(
+              RecurrenceRule.withOccurrenceCount(
+                frequency: RecurrenceFrequency.daily,
+                interval: 2,
+                occurrenceCount: 3,
+              ),
+            ),
+          ),
+        );
+
+        final cached = await db.select(db.taskOccurrences).get();
+        expect(
+          cached.map((o) => o.occurrenceAt.format(pattern: 'yyyy-MM-dd')),
+          unorderedEquals(['2026-08-27', '2026-08-29', '2026-08-31']),
+        );
+      });
+
+      test('refreshes instance times inside the cached window', () async {
+        final start = Jiffy.parse('2026-08-27T09:00:00');
+        final task = _sampleTask(
+          startAt: start,
+          endAt: start.add(hours: 1),
+          dueAt: start.add(hours: 2),
+          recurrenceRule: const RecurrenceRule(
+            frequency: RecurrenceFrequency.daily,
+          ),
+        );
+        await api.insertOrUpdate(task: task);
+        await api.preGenerateTaskOccurrences(fromDate: start);
+        final count = (await db.select(db.taskOccurrences).get()).length;
+
+        await api.insertOrUpdate(
+          task: task.copyWith(
+            startAt: Value(start.add(hours: 3)),
+            endAt: Value(start.add(hours: 4)),
+            dueAt: Value(start.add(hours: 5)),
+          ),
+        );
+
+        final cached = await db.select(db.taskOccurrences).get();
+        expect(cached, hasLength(count));
+        for (final occurrence in cached) {
+          expect(occurrence.startAt!.hour, 12);
+          expect(occurrence.endAt!.hour, 13);
+          expect(occurrence.dueAt!.hour, 14);
+        }
+      });
+
+      test('removes cached instances when recurrence is removed', () async {
+        final start = Jiffy.parse('2026-08-27');
+        final task = _sampleTask(
+          startAt: start,
+          recurrenceRule: const RecurrenceRule(
+            frequency: RecurrenceFrequency.daily,
+          ),
+        );
+        await api.insertOrUpdate(task: task);
+        await api.preGenerateTaskOccurrences(fromDate: start);
+
+        await api.insertOrUpdate(
+          task: task.copyWith(recurrenceRule: const Value(null)),
+        );
+
+        expect(await db.select(db.taskOccurrences).get(), isEmpty);
+      });
+
+      test('concurrent generation cannot restore expired instances', () async {
+        final start = Jiffy.parse('2026-08-27');
+        final end = start.add(days: 2);
+        final task = _sampleTask(
+          startAt: start,
+          recurrenceRule: const RecurrenceRule(
+            frequency: RecurrenceFrequency.daily,
+          ),
+        );
+        await api.insertOrUpdate(task: task);
+
+        await Future.wait([
+          api.preGenerateTaskOccurrences(fromDate: start),
+          api.insertOrUpdate(
+            task: task.copyWith(
+              recurrenceRule: Value(
+                RecurrenceRule.withEndAt(
+                  frequency: RecurrenceFrequency.daily,
+                  endAt: end,
+                ),
+              ),
+            ),
+          ),
+        ]);
+
+        final cached = await db.select(db.taskOccurrences).get();
+        expect(cached, hasLength(3));
+        expect(
+          cached.where((o) => o.occurrenceAt.isAfter(end, unit: Unit.day)),
+          isEmpty,
+        );
       });
     });
   });

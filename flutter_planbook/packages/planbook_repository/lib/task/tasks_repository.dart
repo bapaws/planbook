@@ -226,7 +226,8 @@ class TasksRepository {
         if (hasPending) continue;
 
         syncedTasks.add(task);
-        await _db.into(_db.tasks).insertOnConflictUpdate(task);
+        // 同步规则与本地实例缓存，强制刷新时也修复旧版本遗留的过期实例。
+        await _dbTaskApi.insertOrUpdate(task: task, refreshOccurrences: force);
 
         // 分离实例到达时，压制主系列对应日期的 occurrence，避免他机重复显示。
         final detachedFromId = task.detachedFromTaskId;

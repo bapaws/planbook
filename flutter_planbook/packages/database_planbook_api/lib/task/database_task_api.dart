@@ -44,8 +44,58 @@ class DatabaseTaskApi {
 
   Future<void> insertOrUpdate({
     required Task task,
+    bool refreshOccurrences = false,
   }) async {
-    await db.into(db.tasks).insertOnConflictUpdate(task);
+    await db.transaction(() async {
+      final existingTask = await getTaskById(task.id);
+      await db.into(db.tasks).insertOnConflictUpdate(task);
+      final scheduleChanged =
+          existingTask?.recurrenceRule != task.recurrenceRule ||
+          existingTask?.startAt != task.startAt ||
+          existingTask?.endAt != task.endAt ||
+          existingTask?.dueAt != task.dueAt ||
+          existingTask?.deletedAt != task.deletedAt ||
+          existingTask?.parentId != task.parentId ||
+          existingTask?.detachedFromTaskId != task.detachedFromTaskId;
+      if (scheduleChanged || refreshOccurrences) {
+        await _refreshCachedTaskOccurrences(task);
+      }
+    });
+  }
+
+  /// 按最新规则重建已缓存的日期范围，保留单次删除或分离实例的隐藏标记。
+  Future<void> _refreshCachedTaskOccurrences(Task task) async {
+    final cached =
+        await (db.select(db.taskOccurrences)
+              ..where((o) => o.taskId.equals(task.id))
+              ..orderBy([(o) => OrderingTerm.asc(o.occurrenceAt)]))
+            .get();
+    if (cached.isEmpty) return;
+
+    await (db.delete(db.taskOccurrences)..where(
+          (o) => o.taskId.equals(task.id) & o.deletedAt.isNull(),
+        ))
+        .go();
+    if (task.deletedAt != null ||
+        task.parentId != null ||
+        task.detachedFromTaskId != null ||
+        task.recurrenceRule == null) {
+      return;
+    }
+
+    // 保持原有缓存窗口，确保正在浏览的历史或未来日期也能立即刷新。
+    final occurrences = _generateTaskOccurrences(
+      task: task,
+      rangeStart: cached.first.occurrenceAt,
+      rangeEnd: cached.last.occurrenceAt,
+    );
+    await db.batch((batch) {
+      batch.insertAll(
+        db.taskOccurrences,
+        occurrences,
+        mode: InsertMode.insertOrIgnore,
+      );
+    });
   }
 
   List<TaskTag>? generateTaskTags({
@@ -279,6 +329,19 @@ class DatabaseTaskApi {
   Future<void> preGenerateTaskOccurrences({
     required Jiffy fromDate,
     int monthsAhead = 3,
+  }) {
+    // 与同步更新使用同一事务边界，避免旧规则生成的实例在缓存刷新后写回。
+    return db.transaction(
+      () => _preGenerateTaskOccurrences(
+        fromDate: fromDate,
+        monthsAhead: monthsAhead,
+      ),
+    );
+  }
+
+  Future<void> _preGenerateTaskOccurrences({
+    required Jiffy fromDate,
+    required int monthsAhead,
   }) async {
     final startOfDay = fromDate.startOf(Unit.day);
     final endOfDay = fromDate.endOf(Unit.day);
@@ -331,40 +394,13 @@ class DatabaseTaskApi {
     // 为每个任务生成所有实例
     final occurrencesToInsert = <TaskOccurrencesCompanion>[];
     for (final task in recurringTasks) {
-      final startDate = task.startAt ?? task.dueAt;
-      if (startDate == null) continue;
-
-      // 生成所有实例日期
-      final occurrenceDates = RecurrenceRuleCalculator.generateOccurrences(
-        rule: task.recurrenceRule!,
-        startDate: startDate,
-        rangeStart: fromDate,
-        rangeEnd: rangeEnd,
+      occurrencesToInsert.addAll(
+        _generateTaskOccurrences(
+          task: task,
+          rangeStart: fromDate,
+          rangeEnd: rangeEnd,
+        ),
       );
-
-      if (occurrenceDates.isEmpty) continue;
-
-      // 为每个实例日期生成 TaskOccurrence
-      for (final occurrenceDate in occurrenceDates) {
-        // 按日历日差偏移，避免带时分的 startAt 被 Jiffy.diff(day) 按 24h 截断少算一天
-        final daysDiff = occurrenceDate
-            .startOf(Unit.day)
-            .diff(startDate.startOf(Unit.day), unit: Unit.day)
-            .toInt();
-        final occurrenceStartAt = task.startAt?.add(days: daysDiff);
-        final occurrenceEndAt = task.endAt?.add(days: daysDiff);
-        final occurrenceDueAt = task.dueAt?.add(days: daysDiff);
-
-        occurrencesToInsert.add(
-          TaskOccurrencesCompanion.insert(
-            taskId: Value(task.id),
-            occurrenceAt: occurrenceDate.startOf(Unit.day),
-            startAt: Value(occurrenceStartAt),
-            endAt: Value(occurrenceEndAt),
-            dueAt: Value(occurrenceDueAt),
-          ),
-        );
-      }
     }
 
     // 批量插入实例
@@ -379,6 +415,36 @@ class DatabaseTaskApi {
         }
       });
     }
+  }
+
+  List<TaskOccurrencesCompanion> _generateTaskOccurrences({
+    required Task task,
+    required Jiffy rangeStart,
+    required Jiffy rangeEnd,
+  }) {
+    final startDate = task.startAt ?? task.dueAt;
+    if (startDate == null || task.recurrenceRule == null) return [];
+
+    final dates = RecurrenceRuleCalculator.generateOccurrences(
+      rule: task.recurrenceRule!,
+      startDate: startDate,
+      rangeStart: rangeStart,
+      rangeEnd: rangeEnd,
+    );
+    return dates.map((date) {
+      // 按日历日差偏移，避免带时分的 startAt 被 Jiffy.diff(day) 按 24h 截断少算一天。
+      final daysDiff = date
+          .startOf(Unit.day)
+          .diff(startDate.startOf(Unit.day), unit: Unit.day)
+          .toInt();
+      return TaskOccurrencesCompanion.insert(
+        taskId: Value(task.id),
+        occurrenceAt: date.startOf(Unit.day),
+        startAt: Value(task.startAt?.add(days: daysDiff)),
+        endAt: Value(task.endAt?.add(days: daysDiff)),
+        dueAt: Value(task.dueAt?.add(days: daysDiff)),
+      );
+    }).toList();
   }
 
   Stream<int> getPlannedTaskCountByDateRange(

@@ -215,6 +215,112 @@ void main() {
       },
     );
 
+    for (final alreadySynced in [false, true]) {
+      test(
+        'syncTasks removes cached occurrences after recurrence end '
+        '(already synced: $alreadySynced)',
+        () async {
+          final sp = await SharedPreferences.getInstance();
+          final outboxApi = OutboxApi(db: db);
+          final tagApi = DatabaseTagApi(db: db, outboxApi: outboxApi);
+          final taskApi = DatabaseTaskApi(
+            db: db,
+            tagApi: tagApi,
+            outboxApi: outboxApi,
+          );
+          final todayApi = DatabaseTaskTodayApi(
+            db: db,
+            tagApi: tagApi,
+            outboxApi: outboxApi,
+          );
+          final mockSupabase = _MockSupabaseTaskApi();
+          final syncRepository = TasksRepository(
+            sp: sp,
+            tagApi: tagApi,
+            db: db,
+            outboxApi: outboxApi,
+            supabaseTaskApi: mockSupabase,
+          );
+          final start = Jiffy.parse('2026-08-27');
+          final end = Jiffy.parse('2026-08-29');
+          final afterEnd = Jiffy.parse('2026-08-30');
+          final task =
+              _testTask(
+                id: 'sync-ended-series',
+                title: '手机创建的重复任务',
+                startAt: start,
+              ).copyWith(
+                recurrenceRule: const Value(
+                  RecurrenceRule(frequency: RecurrenceFrequency.daily),
+                ),
+              );
+          // 模拟 iPad 在手机设置结束日期之前已生成未来实例。
+          await db.into(db.tasks).insert(task);
+          await taskApi.preGenerateTaskOccurrences(fromDate: start);
+          expect(await todayApi.getTodayTaskCount(date: afterEnd).first, 1);
+          final hiddenDate = start.add(days: 1);
+          await (db.update(db.taskOccurrences)..where(
+                (o) => o.occurrenceAt.equals(hiddenDate.dateTime),
+              ))
+              .write(TaskOccurrencesCompanion(deletedAt: Value(start)));
+          final completion = TaskActivity(
+            id: 'completed-before-end',
+            taskId: task.id,
+            occurrenceAt: start,
+            completedAt: start,
+            createdAt: start,
+          );
+          await db.into(db.taskActivities).insert(completion);
+
+          final endedTask = task.copyWith(
+            recurrenceRule: Value(
+              RecurrenceRule.withEndAt(
+                frequency: RecurrenceFrequency.daily,
+                endAt: end,
+              ),
+            ),
+          );
+          if (alreadySynced) {
+            // 模拟旧版本已同步规则，但留下了过期实例的状态。
+            await db.into(db.tasks).insertOnConflictUpdate(endedTask);
+          }
+          when(
+            () => mockSupabase.getLatestTasks(force: any(named: 'force')),
+          ).thenAnswer((_) async => [endedTask.toJson()]);
+
+          await syncRepository.syncTasks(force: alreadySynced);
+
+          final entity = await syncRepository.getTaskEntityById(task.id);
+          expect(entity!.task.recurrenceRule!.recurrenceEnd!.endAt, end);
+          expect(await todayApi.getTodayTaskCount(date: afterEnd).first, 0);
+          expect(
+            await todayApi.getAllTodayTaskEntities(day: afterEnd).first,
+            isEmpty,
+          );
+          // 截止当天仍应保留。
+          expect(await todayApi.getTodayTaskCount(date: end).first, 1);
+          final cached = await db.select(db.taskOccurrences).get();
+          expect(
+            cached.where((o) => o.occurrenceAt.isAfter(end, unit: Unit.day)),
+            isEmpty,
+          );
+          expect(await todayApi.getTodayTaskCount(date: hiddenDate).first, 0);
+          expect(
+            cached.singleWhere((o) => o.occurrenceAt == hiddenDate).deletedAt,
+            start,
+          );
+          expect(
+            await todayApi
+                .getTodayTaskCount(date: start, isCompleted: true)
+                .first,
+            1,
+          );
+          expect(await db.select(db.taskActivities).getSingle(), completion);
+          expect(await outboxApi.getPending(), isEmpty);
+        },
+      );
+    }
+
     test('deleteRecurringTask thisAndFutureEvents ends recurrence', () async {
       final now = Jiffy.now().startOf(Unit.day);
       final task =
@@ -289,9 +395,9 @@ void main() {
     });
 
     test('create with children sets parent and layer', () async {
-      final parent = _testTask(id: 'parent-1', title: 'Parent', layer: 0);
+      final parent = _testTask(id: 'parent-1', title: 'Parent');
       final child = TaskEntity(
-        task: _testTask(id: 'child-1', title: 'Child', layer: 0),
+        task: _testTask(id: 'child-1', title: 'Child'),
       );
 
       await repository.create(task: parent, children: [child]);
