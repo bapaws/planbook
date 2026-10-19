@@ -205,15 +205,23 @@ class _RootHomePageState extends State<_RootHomePage> {
             RootNoteRoute(),
           ],
           builder: (context, child) {
+            final mediaQuery = MediaQuery.of(context);
+            final navigationBarInset =
+                Theme.of(context).platform == TargetPlatform.android
+                    ? (mediaQuery.viewPadding.bottom -
+                              mediaQuery.systemGestureInsets.bottom)
+                          .clamp(0.0, double.infinity)
+                          .toDouble()
+                    : 0.0;
             return Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 child,
-                const Positioned(
+                Positioned(
                   left: 24,
                   right: 24,
-                  bottom: 22,
-                  child: RootHomeBottomBar(),
+                  bottom: 22 + navigationBarInset,
+                  child: const RootHomeBottomBar(),
                 ),
               ],
             );

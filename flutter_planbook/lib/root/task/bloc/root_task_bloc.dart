@@ -138,21 +138,31 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     RootTaskTaskCountRequested event,
     Emitter<RootTaskState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
-    final stream = _tasksRepository.getTaskCount(
-      mode: event.mode,
-      isCompleted: false,
-    );
-    await emit.forEach(
-      stream,
-      onData: (count) => state.copyWith(
-        status: PageStatus.success,
-        taskCounts: {
-          ...state.taskCounts,
-          event.mode: count,
-        },
-      ),
-    );
+    try {
+      emit(state.copyWith(status: PageStatus.loading));
+      final stream = _tasksRepository.getTaskCount(
+        mode: event.mode,
+        isCompleted: false,
+      );
+      await emit.forEach(
+        stream,
+        onData: (count) => state.copyWith(
+          status: PageStatus.success,
+          taskCounts: {
+            ...state.taskCounts,
+            event.mode: count,
+          },
+        ),
+        onError: _onCountError,
+      );
+    } on Object catch (error, stackTrace) {
+      emit(_onCountError(error, stackTrace));
+    }
+  }
+
+  RootTaskState _onCountError(Object error, StackTrace stackTrace) {
+    addError(error, stackTrace);
+    return state.copyWith(status: PageStatus.failure);
   }
 
   Future<void> _onDayViewTypeChanged(
@@ -237,18 +247,26 @@ class RootTaskBloc extends HydratedBloc<RootTaskEvent, RootTaskState> {
     RootTaskDailyTaskCountRequested event,
     Emitter<RootTaskState> emit,
   ) async {
-    emit(state.copyWith(status: PageStatus.loading));
-    final stream = _tasksRepository.getTaskCount(
-      date: event.date,
-      mode: TaskListMode.today,
-    );
-    await emit.forEach(
-      stream,
-      onData: (count) => state.copyWith(
-        status: PageStatus.success,
-        dailyTaskCounts: {...state.dailyTaskCounts, event.date.dateKey: count},
-      ),
-    );
+    try {
+      emit(state.copyWith(status: PageStatus.loading));
+      final stream = _tasksRepository.getTaskCount(
+        date: event.date,
+        mode: TaskListMode.today,
+      );
+      await emit.forEach(
+        stream,
+        onData: (count) => state.copyWith(
+          status: PageStatus.success,
+          dailyTaskCounts: {
+            ...state.dailyTaskCounts,
+            event.date.dateKey: count,
+          },
+        ),
+        onError: _onCountError,
+      );
+    } on Object catch (error, stackTrace) {
+      emit(_onCountError(error, stackTrace));
+    }
   }
 
   Future<void> _onTabFocusNoteTypeChanged(

@@ -8,9 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:planbook_repository/sync/apply_remote_batch.dart';
+import 'package:planbook_repository/sync/database_pull_lock.dart';
+import 'package:planbook_repository/sync/merge_remote_rows.dart';
+import 'package:planbook_repository/sync/pull_sync_coordinator.dart';
+import 'package:planbook_repository/sync/pull_write_fence.dart';
 import 'package:planbook_repository/task/alarm_notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_planbook_api/sync/remote_table_pull.dart';
 import 'package:supabase_planbook_api/task/supabase_task_api.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class TasksRepository {
@@ -21,6 +28,7 @@ class TasksRepository {
     required OutboxApi outboxApi,
     SupabaseTaskApi? supabaseTaskApi,
   }) : _db = db,
+       _sp = sp,
        _tagApi = tagApi,
        _supabaseTaskApi = supabaseTaskApi ?? SupabaseTaskApi(sp: sp),
        _dbTaskApi = DatabaseTaskApi(
@@ -61,6 +69,8 @@ class TasksRepository {
        );
 
   final AppDatabase _db;
+  final SharedPreferences _sp;
+  final _pullSync = PullSyncCoordinator();
   final DatabaseTagApi _tagApi;
 
   final DatabaseTaskApi _dbTaskApi;
@@ -77,6 +87,10 @@ class TasksRepository {
   String? get userId => AppSupabase.client?.auth.currentUser?.id;
 
   Future<int> getTotalCount() => _dbTaskApi.getTotalCount(userId: userId);
+
+  /// 提前填充现有实例缓存，复用首页的生成入口，不触发同步、提醒或订阅。
+  Future<void> prepareForHome({required Jiffy date}) =>
+      _dbTaskApi.preGenerateTaskOccurrences(fromDate: date);
 
   Future<void> create({
     required Task task,
@@ -210,99 +224,216 @@ class TasksRepository {
     return hasDetached;
   }
 
-  Future<void> syncTasks({
-    bool force = false,
+  Future<void> syncTasks({bool force = false}) {
+    final account = userId;
+    return _pullSync.run(
+      userId: account,
+      force: force,
+      action: ({required force}) => DatabasePullLock.run(
+        _db,
+        () => _syncTasks(force: force, account: account),
+      ),
+    );
+  }
+
+  Future<void> _syncTasks({
+    required bool force,
+    required String? account,
   }) async {
+    void validateAccount() {
+      if (userId != account) throw StateError('同步账号已变化，丢弃旧请求');
+    }
+
+    validateAccount();
+    final generation =
+        _sp.getString(RemoteTablePull.generationKey) ?? 'existing';
+    final repairKey =
+        'occurrence_repair_v1__${generation}__${account ?? "guest"}';
+    if (force || _sp.getBool(repairKey) != true) {
+      await _dbTaskApi.repairLegacyOccurrences(
+        userId: account,
+        validateAccount: validateAccount,
+      );
+      validateAccount();
+      if (!await _sp.setBool(repairKey, true)) throw StateError('旧实例修复标记保存失败');
+    }
+    final fence = await PullWriteFence.capture(_db);
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
-    if (list.isEmpty) return;
+    validateAccount();
+    if (list.isEmpty && list is! RemoteSyncRows) return;
 
     final syncedTasks = <Task>[];
-    await _db.transaction(() async {
-      for (final item in list) {
-        final task = Task.fromJson(item);
+    for (final item in list) {
+      final task = Task.fromJson(item);
+      if (task.userId != account) throw StateError('远程任务不属于请求账号');
+      final accepted = await _dbTaskApi.applySyncedTask(
+        task: task,
+        refreshOccurrences: false,
+        protectLocal: fence.protects,
+        validateAccount: validateAccount,
+        writeRelated: () async {
+          // 分离实例到达时，压制主系列对应日期的 occurrence，避免他机重复显示。
+          final detachedFromId = task.detachedFromTaskId;
+          final detachedAt = task.detachedRecurrenceAt;
+          if (detachedFromId != null && detachedAt != null) {
+            final parent = await (_db.select(
+              _db.tasks,
+            )..where((t) => t.id.equals(detachedFromId))).getSingleOrNull();
+            if (parent != null) {
+              await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
+                taskId: detachedFromId,
+                occurrenceAt: detachedAt,
+                task: parent,
+              );
+            }
+          }
 
-        // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
-        final hasPending = await _dbTaskApi.hasPendingChanges(task.id);
-        if (hasPending) continue;
+          final tags = <Tag>[];
+          final links = <TaskTag>[];
+          final activities = <TaskActivity>[];
+          if (item['task_tags'] is List<dynamic>) {
+            for (final taskTag in item['task_tags'] as List<dynamic>) {
+              final map = taskTag as Map<String, dynamic>;
+              final tagMap = map['tag'] as Map<String, dynamic>?;
+              if (tagMap == null) continue;
+              final tag = Tag.fromJson(tagMap);
+              tags.add(tag);
+              links.add(TaskTag.fromJson(map));
+            }
+          }
 
+          if (item['task_activities'] is List<dynamic>) {
+            for (final taskActivity
+                in item['task_activities'] as List<dynamic>) {
+              final map = taskActivity as Map<String, dynamic>;
+              final taskActivityMap = TaskActivity.fromJson(map);
+              activities.add(taskActivityMap);
+            }
+          }
+          await mergeRemoteRows(
+            db: _db,
+            protectedIds: fence.blocked,
+            table: _db.tags,
+            idColumn: _db.tags.id,
+            rows: tags,
+          );
+          await mergeRemoteRows(
+            db: _db,
+            protectedIds: fence.blocked,
+            table: _db.taskTags,
+            idColumn: _db.taskTags.id,
+            rows: links,
+          );
+          await mergeRemoteRows(
+            db: _db,
+            protectedIds: fence.blocked,
+            table: _db.taskActivities,
+            idColumn: _db.taskActivities.id,
+            rows: activities,
+          );
+        },
+      );
+      if (accepted) {
         syncedTasks.add(task);
-        // 同步规则与本地实例缓存，强制刷新时也修复旧版本遗留的过期实例。
-        await _dbTaskApi.insertOrUpdate(task: task, refreshOccurrences: force);
-
-        // 分离实例到达时，压制主系列对应日期的 occurrence，避免他机重复显示。
-        final detachedFromId = task.detachedFromTaskId;
-        final detachedAt = task.detachedRecurrenceAt;
-        if (detachedFromId != null && detachedAt != null) {
-          final parent = await (_db.select(
-            _db.tasks,
-          )..where((t) => t.id.equals(detachedFromId))).getSingleOrNull();
-          if (parent != null) {
-            await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
-              taskId: detachedFromId,
-              occurrenceAt: detachedAt,
-              task: parent,
-            );
-          }
-        }
-
-        if (item['task_tags'] is List<dynamic>) {
-          for (final taskTag in item['task_tags'] as List<dynamic>) {
-            final map = taskTag as Map<String, dynamic>;
-            final tagMap = map['tag'] as Map<String, dynamic>?;
-            if (tagMap == null) continue;
-            final tag = Tag.fromJson(tagMap);
-            await _db.into(_db.tags).insertOnConflictUpdate(tag);
-            await _db
-                .into(_db.taskTags)
-                .insertOnConflictUpdate(
-                  TaskTag.fromJson(map),
-                );
-          }
-        }
-
-        if (item['task_activities'] is List<dynamic>) {
-          for (final taskActivity in item['task_activities'] as List<dynamic>) {
-            final map = taskActivity as Map<String, dynamic>;
-            final taskActivityMap = TaskActivity.fromJson(map);
-            await _db
-                .into(_db.taskActivities)
-                .insertOnConflictUpdate(taskActivityMap);
-          }
+        if (list is RemoteSyncRows) list.batches['tasks']!.accept([task.id]);
+      }
+    }
+    validateAccount();
+    if (list is RemoteSyncRows) {
+      for (final batch in list.batches.values) {
+        if (batch.table == 'tasks') {
+          await batch.commit();
+        } else {
+          await applyRemoteBatch(
+            db: _db,
+            fence: fence,
+            batch: batch,
+            account: account!,
+            validateAccount: validateAccount,
+          );
         }
       }
-    });
+    }
+    final cursor = list is RemoteSyncRows
+        ? null
+        : maxTimestampFromSyncItems(list);
+    if (cursor != null) {
+      final key = SupabaseTaskApi.cursorKey(account);
+      final previous = _sp.getInt(key);
+      if (previous == null || cursor > previous) {
+        if (!await _sp.setInt(key, cursor)) throw StateError('任务同步游标保存失败');
+      }
+    }
 
-    // scheduleForTask 内部会先 cancelForTask(task.id) 再调度，不会重复创建
-    for (final task in syncedTasks) {
-      if (task.alarms.isEmpty) continue;
-      final startAt = task.startAt ?? task.dueAt;
-      if (startAt == null) continue;
-      unawaited(AlarmNotificationService.instance.scheduleForTask(task));
+    // 整批同步只发一次校正，避免逐任务读取系统列表或反复创建计算 isolate。
+    // 权威本地任务集也能移除已删除、已完成或已移除配置的预约。
+    if (syncedTasks.isNotEmpty ||
+        (list is RemoteSyncRows &&
+            list.batches['task_activities']!.rows.isNotEmpty)) {
+      unawaited(AlarmNotificationService.instance.reconcileAll());
     }
   }
 
   /// 滚动补 schedule：为所有带闹钟的重复任务重新调度，使预约窗口始终覆盖「从现在起」的未来一段时间。
   /// 应在应用启动和从后台回到前台时调用。
   Future<void> rescheduleAllRecurringAlarms() async {
-    try {
-      final tasks = await _dbTaskApi.getRecurringTasksWithAlarms(
-        userId: userId,
-      );
-      for (final task in tasks) {
-        try {
-          await AlarmNotificationService.instance.scheduleForTask(task);
-        } on Object catch (e) {
-          debugPrint(
-            'TasksRepository.rescheduleAllRecurringAlarms: '
-            'failed task=${task.id} $e',
-          );
-        }
-      }
-    } on Object catch (e, st) {
-      debugPrint(
-        'TasksRepository.rescheduleAllRecurringAlarms failed: $e\n$st',
-      );
+    await AlarmNotificationService.instance.reconcileAll();
+  }
+
+  /// 提醒迁移覆盖单次与重复任务；不创建首页订阅或修改实例表。
+  Future<List<Task>> getTasksForAlarms() async {
+    final account = userId;
+    final tasks =
+        await (_db.select(_db.tasks)..where(
+              (t) =>
+                  t.deletedAt.isNull() &
+                  t.alarms.isNotNull() &
+                  (t.startAt.isNotNull() | t.dueAt.isNotNull()) &
+                  (account == null
+                      ? t.userId.isNull()
+                      : t.userId.equals(account)),
+            ))
+            .get();
+    final completed =
+        await (_db.selectOnly(_db.taskActivities)
+              ..addColumns([_db.taskActivities.taskId])
+              ..where(
+                _db.taskActivities.completedAt.isNotNull() &
+                    _db.taskActivities.deletedAt.isNull() &
+                    _db.taskActivities.occurrenceAt.isNull(),
+              ))
+            .get();
+    final completedIds = completed
+        .map((r) => r.read(_db.taskActivities.taskId))
+        .toSet();
+    // 迁移重建不能恢复已经完成并取消提醒的单次任务；重复任务维持原窗口语义。
+    return tasks
+        .where(
+          (t) =>
+              t.alarms.isNotEmpty &&
+              (t.recurrenceRule != null || !completedIds.contains(t.id)),
+        )
+        .toList();
+  }
+
+  Future<Task?> getTaskForAlarm(String id) async {
+    final task = await _dbTaskApi.getTaskById(id);
+    if (task == null || task.userId != userId) return null;
+    if (task.recurrenceRule == null) {
+      final completed =
+          await (_db.select(_db.taskActivities)
+                ..where(
+                  (a) =>
+                      a.taskId.equals(id) &
+                      a.occurrenceAt.isNull() &
+                      a.completedAt.isNotNull() &
+                      a.deletedAt.isNull(),
+                )
+                ..limit(1))
+              .get();
+      if (completed.isNotEmpty) return null;
     }
+    return task;
   }
 
   Future<TaskEntity?> getTaskEntityById(
@@ -377,13 +508,14 @@ class TasksRepository {
         priority: priority,
         userId: userId,
       ),
-      TaskListMode.tag => tagId == null
-          ? Stream.value(const <TaskEntity>[])
-          : _dbTaskApi.getTaskEntitiesByTags(
-              tagIds: [tagId],
-              isCompleted: isCompleted,
-              userId: userId,
-            ),
+      TaskListMode.tag =>
+        tagId == null
+            ? Stream.value(const <TaskEntity>[])
+            : _dbTaskApi.getTaskEntitiesByTags(
+                tagIds: [tagId],
+                isCompleted: isCompleted,
+                userId: userId,
+              ),
     };
   }
 
@@ -438,13 +570,14 @@ class TasksRepository {
         priority: priority,
         userId: userId,
       ),
-      TaskListMode.tag => tagId == null
-          ? Stream.value(const <TaskEntity>[])
-          : _dbTaskApi.getTaskEntitiesByTags(
-              tagIds: [tagId],
-              isCompleted: isCompleted,
-              userId: userId,
-            ),
+      TaskListMode.tag =>
+        tagId == null
+            ? Stream.value(const <TaskEntity>[])
+            : _dbTaskApi.getTaskEntitiesByTags(
+                tagIds: [tagId],
+                isCompleted: isCompleted,
+                userId: userId,
+              ),
     };
   }
 

@@ -275,15 +275,13 @@ class DatabaseTagApi {
             final latest = repairedTags[latestId]!;
             final candidate = repairedTags[candidateId]!;
             final latestAt = (latest.updatedAt ?? latest.createdAt).dateTime;
-            final candidateAt = (candidate.updatedAt ?? candidate.createdAt)
-                .dateTime;
+            final candidateAt =
+                (candidate.updatedAt ?? candidate.createdAt).dateTime;
             final comparison = candidateAt.compareTo(latestAt);
             if (comparison != 0) {
               return comparison > 0 ? candidateId : latestId;
             }
-            return candidateId.compareTo(latestId) > 0
-                ? candidateId
-                : latestId;
+            return candidateId.compareTo(latestId) > 0 ? candidateId : latestId;
           });
           repairedTags[idToDetach] = repairedTags[idToDetach]!.copyWith(
             parentId: const Value(null),
@@ -337,27 +335,71 @@ class DatabaseTagApi {
     String taskId,
     String? userId,
   ) async {
-    final taskTags =
-        await (db.select(db.taskTags)
-              ..where(
-                (tt) =>
-                    tt.taskId.equals(taskId) &
-                    tt.deletedAt.isNull() &
-                    tt.linkedTagId.isNull() &
-                    (userId == null
-                        ? tt.userId.isNull()
-                        : tt.userId.equals(userId)),
-              )
-              ..orderBy([
-                (tt) => OrderingTerm.asc(tt.createdAt.datetime),
-              ]))
-            .get();
+    final tags = await getTagEntitiesByTaskIds({taskId: userId});
+    return tags[taskId] ?? const [];
+  }
 
-    final tags = await Future.wait(
-      taskTags.map((t) => getTagEntityById(t.tagId)),
-    );
+  /// 批量读取关联与父链；缓存仅在本次组装内有效，沿用逐任务查询的过滤和排序。
+  Future<Map<String, List<TagEntity>>> getTagEntitiesByTaskIds(
+    Map<String, String?> taskUserIds,
+  ) async {
+    if (taskUserIds.isEmpty) return {};
+    const batchSize = 400;
+    final taskIds = taskUserIds.keys.toList();
+    final links = <TaskTag>[];
+    for (var offset = 0; offset < taskIds.length; offset += batchSize) {
+      final ids = taskIds.skip(offset).take(batchSize).toList();
+      final rows =
+          await (db.select(db.taskTags)
+                ..where(
+                  (tt) =>
+                      tt.taskId.isIn(ids) &
+                      tt.deletedAt.isNull() &
+                      tt.linkedTagId.isNull(),
+                )
+                ..orderBy([(tt) => OrderingTerm.asc(tt.createdAt.datetime)]))
+              .get();
+      links.addAll(
+        rows.where((link) => link.userId == taskUserIds[link.taskId]),
+      );
+    }
 
-    return tags.nonNulls.toList();
+    final tagsById = <String, Tag>{};
+    final visitedIds = <String>{};
+    var pendingIds = links.map((link) => link.tagId).toSet();
+    while (pendingIds.isNotEmpty) {
+      final ids = pendingIds.toList();
+      visitedIds.addAll(ids);
+      pendingIds = {};
+      for (var offset = 0; offset < ids.length; offset += batchSize) {
+        final chunk = ids.skip(offset).take(batchSize).toList();
+        final tags =
+            await (db.select(db.tags)..where(
+                  (tag) => tag.id.isIn(chunk) & tag.deletedAt.isNull(),
+                ))
+                .get();
+        for (final tag in tags) {
+          tagsById[tag.id] = tag;
+          final parentId = tag.parentId;
+          if (parentId != null && !visitedIds.contains(parentId)) {
+            pendingIds.add(parentId);
+          }
+        }
+      }
+    }
+
+    final result = <String, List<TagEntity>>{};
+    final entitiesById = <String, TagEntity>{};
+    for (final link in links) {
+      final tag = tagsById[link.tagId];
+      if (tag == null) continue;
+      final entity = entitiesById.putIfAbsent(
+        tag.id,
+        () => _buildTagEntity(tag, tagsById),
+      );
+      result.putIfAbsent(link.taskId, () => []).add(entity);
+    }
+    return result;
   }
 
   Future<void> create({

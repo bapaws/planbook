@@ -1,8 +1,6 @@
 package com.bapaws.planbook.widget
 
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -10,14 +8,12 @@ import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
 import com.bapaws.planbook.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 
 private const val TAG = "PlanbookWeekWidget"
 private const val COMPLETE_HIT_COUNT = 28
 private const val DAY_HIT_COUNT = 16
 
-class WeekListWidgetLargeProvider : AppWidgetProvider() {
+class WeekListWidgetLargeProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         appWidgetIds.forEach { WeekWidgetUpdater.update(context, appWidgetManager, it, WeekWidgetKind.LIST, twoWeeks = false) }
     }
@@ -32,7 +28,7 @@ class WeekListWidgetLargeProvider : AppWidgetProvider() {
     }
 }
 
-class WeekGridWidgetLargeProvider : AppWidgetProvider() {
+class WeekGridWidgetLargeProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         appWidgetIds.forEach { WeekWidgetUpdater.update(context, appWidgetManager, it, WeekWidgetKind.GRID, twoWeeks = false) }
     }
@@ -47,7 +43,7 @@ class WeekGridWidgetLargeProvider : AppWidgetProvider() {
     }
 }
 
-class MonthWeekWidgetMediumProvider : AppWidgetProvider() {
+class MonthWeekWidgetMediumProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         appWidgetIds.forEach { WeekWidgetUpdater.update(context, appWidgetManager, it, WeekWidgetKind.MONTH, twoWeeks = false) }
     }
@@ -62,7 +58,7 @@ class MonthWeekWidgetMediumProvider : AppWidgetProvider() {
     }
 }
 
-class MonthWeekWidgetLargeProvider : AppWidgetProvider() {
+class MonthWeekWidgetLargeProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         appWidgetIds.forEach { WeekWidgetUpdater.update(context, appWidgetManager, it, WeekWidgetKind.MONTH, twoWeeks = true) }
     }
@@ -120,13 +116,13 @@ object WeekWidgetUpdater {
             val end = WeekCalendar.endExclusive(start, dayCount)
             val startKey = WeekCalendar.dayKey(start)
             val endKey = WeekCalendar.dayKey(end)
-            val tasks = runBlocking(Dispatchers.IO) {
+            val tasks = run {
                 WidgetDatabase.open(context) { db ->
                     WeekCalendar.overlayPending(context, db.fetchWeekTasks(startKey, endKey))
                 } ?: emptyList()
             }
             val focus = if (kind == WeekWidgetKind.GRID) {
-                runBlocking(Dispatchers.IO) {
+                run {
                     WidgetDatabase.open(context) { it.fetchWeeklyFocus(startKey, WeekCalendar.dayKey(WeekCalendar.endExclusive(start, 7))) }
                 }
             } else {
@@ -244,26 +240,10 @@ object WeekWidgetUpdater {
 }
 
 fun refreshWeekWidgets(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
     listOf(
         WeekListWidgetLargeProvider::class.java,
         WeekGridWidgetLargeProvider::class.java,
         MonthWeekWidgetMediumProvider::class.java,
         MonthWeekWidgetLargeProvider::class.java,
-    ).forEach { clazz ->
-        val ids = appWidgetManager.getAppWidgetIds(ComponentName(context, clazz))
-        ids.forEach { id ->
-            when (clazz) {
-                WeekListWidgetLargeProvider::class.java ->
-                    WeekWidgetUpdater.update(context, appWidgetManager, id, WeekWidgetKind.LIST, false)
-                WeekGridWidgetLargeProvider::class.java ->
-                    WeekWidgetUpdater.update(context, appWidgetManager, id, WeekWidgetKind.GRID, false)
-                MonthWeekWidgetMediumProvider::class.java ->
-                    WeekWidgetUpdater.update(context, appWidgetManager, id, WeekWidgetKind.MONTH, false)
-                MonthWeekWidgetLargeProvider::class.java ->
-                    WeekWidgetUpdater.update(context, appWidgetManager, id, WeekWidgetKind.MONTH, true)
-                else -> Unit
-            }
-        }
-    }
+    ).forEach { provider -> requestWidgetUpdate(context, provider) }
 }

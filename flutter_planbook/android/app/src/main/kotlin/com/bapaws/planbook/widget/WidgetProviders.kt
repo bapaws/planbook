@@ -2,8 +2,6 @@ package com.bapaws.planbook.widget
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProvider
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -18,16 +16,13 @@ import android.util.Log
 import android.text.Html
 import android.widget.RemoteViews
 import com.bapaws.planbook.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 private const val TAG = "PlanbookWidgetRV"
 
 /**
  * 大号四象限小组件 (4x4) - RemoteViews 实现
  */
-class QuadrantWidgetLargeProvider : AppWidgetProvider() {
+class QuadrantWidgetLargeProvider : BackgroundWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         Log.d(TAG, "Large onUpdate ids=${appWidgetIds.contentToString()}")
@@ -67,7 +62,7 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
                 rv.setBitmap(R.id.widget_bg, "setImageBitmap", bgBitmap)
 
                 // 获取数据并应用 pending 覆盖（乐观 UI）
-                val groups = runBlocking(Dispatchers.IO) {
+                val groups = run {
                     val raw = WidgetDatabase.open(context) { it.fetchQuadrantTasks(filterMode) }
                         ?: emptyList()
                     applyPendingCompletions(context, raw)
@@ -176,7 +171,7 @@ class QuadrantWidgetLargeProvider : AppWidgetProvider() {
 /**
  * 中号四象限小组件 (2x2) - RemoteViews 实现
  */
-class QuadrantWidgetSmallProvider : AppWidgetProvider() {
+class QuadrantWidgetSmallProvider : BackgroundWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         Log.d(TAG, "Small onUpdate ids=${appWidgetIds.contentToString()}")
@@ -251,7 +246,7 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
                 }
 
                 // 获取选中象限的任务并应用 pending 覆盖（乐观 UI）
-                val tasks = runBlocking(Dispatchers.IO) {
+                val tasks = run {
                     val raw = WidgetDatabase.open(context) {
                         it.fetchTasks(selectedPriority, filterMode, 4)
                     } ?: emptyList()
@@ -318,7 +313,7 @@ class QuadrantWidgetSmallProvider : AppWidgetProvider() {
 /**
  * 快速笔记小组件 (2x2) - RemoteViews 实现
  */
-class QuickNoteWidgetProvider : AppWidgetProvider() {
+class QuickNoteWidgetProvider : BackgroundWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         Log.d(TAG, "Quick onUpdate ids=${appWidgetIds.contentToString()}")
@@ -498,41 +493,14 @@ private fun setWidgetBackground(rv: RemoteViews, viewId: Int, bgResId: Int, isDa
  * 刷新所有四象限 widget（用于任务完成后刷新）
  */
 fun refreshQuadrantWidgets(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-
-    val largeComponent = ComponentName(context, QuadrantWidgetLargeProvider::class.java)
-    val largeIds = appWidgetManager.getAppWidgetIds(largeComponent)
-    for (id in largeIds) {
-        QuadrantWidgetLargeProvider.updateLargeWidget(context, appWidgetManager, id)
-    }
-
-    val smallComponent = ComponentName(context, QuadrantWidgetSmallProvider::class.java)
-    val smallIds = appWidgetManager.getAppWidgetIds(smallComponent)
-    for (id in smallIds) {
-        QuadrantWidgetSmallProvider.updateSmallWidget(context, appWidgetManager, id)
-    }
+    requestWidgetUpdate(context, QuadrantWidgetLargeProvider::class.java)
+    requestWidgetUpdate(context, QuadrantWidgetSmallProvider::class.java)
 }
 
 fun refreshTimeBlockWidgets(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-
-    val largeComponent = ComponentName(context, TimeBlockWidgetLargeProvider::class.java)
-    val largeIds = appWidgetManager.getAppWidgetIds(largeComponent)
-    for (id in largeIds) {
-        TimeBlockWidgetLargeProvider.updateWidget(context, appWidgetManager, id)
-    }
-
-    val mediumComponent = ComponentName(context, TimeBlockWidgetMediumProvider::class.java)
-    val mediumIds = appWidgetManager.getAppWidgetIds(mediumComponent)
-    for (id in mediumIds) {
-        TimeBlockWidgetMediumProvider.updateWidget(context, appWidgetManager, id)
-    }
-
-    val smallComponent = ComponentName(context, TimeBlockWidgetSmallProvider::class.java)
-    val smallIds = appWidgetManager.getAppWidgetIds(smallComponent)
-    for (id in smallIds) {
-        TimeBlockWidgetSmallProvider.updateWidget(context, appWidgetManager, id)
-    }
+    requestWidgetUpdate(context, TimeBlockWidgetLargeProvider::class.java)
+    requestWidgetUpdate(context, TimeBlockWidgetMediumProvider::class.java)
+    requestWidgetUpdate(context, TimeBlockWidgetSmallProvider::class.java)
 }
 
 fun refreshAllTaskWidgets(context: Context) {
@@ -575,10 +543,5 @@ private fun applyPendingCompletions(context: Context, groups: List<QuadrantGroup
  * 刷新中号 widget
  */
 fun refreshQuadrantSmallWidgets(context: Context) {
-    val appWidgetManager = AppWidgetManager.getInstance(context)
-    val component = ComponentName(context, QuadrantWidgetSmallProvider::class.java)
-    val ids = appWidgetManager.getAppWidgetIds(component)
-    for (id in ids) {
-        QuadrantWidgetSmallProvider.updateSmallWidget(context, appWidgetManager, id)
-    }
+    requestWidgetUpdate(context, QuadrantWidgetSmallProvider::class.java)
 }

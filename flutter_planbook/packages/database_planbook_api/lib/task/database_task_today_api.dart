@@ -226,12 +226,14 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
           db.taskTags.taskId.equalsExp(db.tasks.id) &
               db.taskTags.tagId.equals(tagId) &
               db.taskTags.deletedAt.isNull(),
+          useColumns: false,
         )
       else
         leftOuterJoin(
           db.taskTags,
           db.taskTags.taskId.equalsExp(db.tasks.id) &
               db.taskTags.deletedAt.isNull(),
+          useColumns: false,
         ),
       leftOuterJoin(
         childrenTasks,
@@ -333,12 +335,14 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
           db.taskTags.taskId.equalsExp(db.tasks.id) &
               db.taskTags.tagId.equals(tagId) &
               db.taskTags.deletedAt.isNull(),
+          useColumns: false,
         )
       else
         leftOuterJoin(
           db.taskTags,
           db.taskTags.taskId.equalsExp(db.tasks.id) &
               db.taskTags.deletedAt.isNull(),
+          useColumns: false,
         ),
       leftOuterJoin(
         childrenTasks,
@@ -436,6 +440,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
               db.taskTags,
               db.taskTags.taskId.equalsExp(db.tasks.id) &
                   db.taskTags.deletedAt.isNull(),
+              useColumns: false,
             ),
             leftOuterJoin(
               childrenTasks,
@@ -535,6 +540,7 @@ class DatabaseTaskTodayApi extends DatabaseTaskApi {
               db.taskTags,
               db.taskTags.taskId.equalsExp(db.tasks.id) &
                   db.taskTags.deletedAt.isNull(),
+              useColumns: false,
             ),
             leftOuterJoin(
               childrenTasks,

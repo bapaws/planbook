@@ -7,8 +7,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/sync/apply_remote_batch.dart';
+import 'package:planbook_repository/sync/database_pull_lock.dart';
+import 'package:planbook_repository/sync/merge_remote_rows.dart';
+import 'package:planbook_repository/sync/pull_sync_coordinator.dart';
+import 'package:planbook_repository/sync/pull_write_fence.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/note/supabase_note_api.dart';
+import 'package:supabase_planbook_api/sync/remote_table_pull.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class NotesRepository {
@@ -20,10 +27,12 @@ class NotesRepository {
     DatabaseNoteApi? dbNoteApi,
     DatabaseNoteTaskApi? dbNoteTaskApi,
     DatabaseTaskApi? dbTaskApi,
+    SupabaseNoteApi? supabaseNoteApi,
   }) : _dbNoteApi =
            dbNoteApi ??
            DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _supabaseNoteApi = SupabaseNoteApi(sp: sp),
+       _supabaseNoteApi = supabaseNoteApi ?? SupabaseNoteApi(sp: sp),
+       _sp = sp,
        _db = db,
        _tagApi = tagApi,
        _dbNoteTaskApi = dbNoteTaskApi ?? DatabaseNoteTaskApi(db: db),
@@ -32,6 +41,8 @@ class NotesRepository {
            DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
 
   final DatabaseNoteApi _dbNoteApi;
+  final SharedPreferences _sp;
+  final _pullSync = PullSyncCoordinator();
 
   final SupabaseNoteApi _supabaseNoteApi;
   final AppDatabase _db;
@@ -102,32 +113,73 @@ class NotesRepository {
     await _dbNoteApi.update(note: newNote, noteTags: noteTags);
   }
 
-  Future<void> syncNotes({
-    bool force = false,
+  Future<void> syncNotes({bool force = false}) {
+    final account = userId;
+    return _pullSync.run(
+      userId: account,
+      force: force,
+      action: ({required force}) => DatabasePullLock.run(
+        _db,
+        () => _syncNotes(force: force, account: account),
+      ),
+    );
+  }
+
+  Future<void> _syncNotes({
+    required bool force,
+    required String? account,
   }) async {
+    void validateAccount() {
+      if (userId != account) throw StateError('同步账号已变化，丢弃旧请求');
+    }
+
+    validateAccount();
+    final fence = await PullWriteFence.capture(_db);
     final list = await _supabaseNoteApi.getLatestNotes(force: force);
-    await _db.transaction(() async {
-      for (final item in list) {
-        final note = Note.fromJson(item);
+    validateAccount();
+    for (final item in list) {
+      final note = Note.fromJson(item);
+      if (note.userId != account) throw StateError('远程笔记不属于请求账号');
+      await _db.transaction(() async {
+        validateAccount();
 
         // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
         final hasPending = await _dbNoteApi.hasPendingChanges(note.id);
-        if (hasPending) continue;
+        if (hasPending || await fence.protects(note.id)) return;
 
-        await _db.into(_db.notes).insertOnConflictUpdate(note);
+        final accepted = await mergeRemoteRows(
+          db: _db,
+          table: _db.notes,
+          idColumn: _db.notes.id,
+          rows: [note],
+          protectedIds: fence.blocked,
+        );
+        if (list is RemoteSyncRows) list.batches['notes']!.accept(accepted);
 
+        final tags = <Tag>[];
+        final links = <NoteTag>[];
         if (item['note_tags'] is List<dynamic>) {
           for (final noteTag in item['note_tags'] as List<dynamic>) {
             final map = noteTag as Map<String, dynamic>;
             final tagMap = map['tag'] as Map<String, dynamic>?;
             if (tagMap == null) continue;
             final tag = Tag.fromJson(tagMap);
-            await _db.into(_db.tags).insertOnConflictUpdate(tag);
-            await _db
-                .into(_db.noteTags)
-                .insertOnConflictUpdate(NoteTag.fromJson(map));
+            tags.add(tag);
+            links.add(NoteTag.fromJson(map));
           }
         }
+        await mergeRemoteRows(
+          db: _db,
+          table: _db.tags,
+          idColumn: _db.tags.id,
+          rows: tags,
+        );
+        await mergeRemoteRows(
+          db: _db,
+          table: _db.noteTags,
+          idColumn: _db.noteTags.id,
+          rows: links,
+        );
 
         if (item['tasks'] is List<dynamic>) {
           for (final taskItem in item['tasks'] as List<dynamic>) {
@@ -143,8 +195,35 @@ class NotesRepository {
             await _db.into(_db.tasks).insertOnConflictUpdate(task);
           }
         }
+        validateAccount();
+      });
+    }
+    validateAccount();
+    if (list is RemoteSyncRows) {
+      for (final batch in list.batches.values) {
+        if (batch.table == 'notes') {
+          await batch.commit();
+        } else {
+          await applyRemoteBatch(
+            db: _db,
+            batch: batch,
+            fence: fence,
+            account: account!,
+            validateAccount: validateAccount,
+          );
+        }
       }
-    });
+    }
+    final cursor = list is RemoteSyncRows
+        ? null
+        : maxTimestampFromSyncItems(list);
+    if (cursor != null) {
+      final key = SupabaseNoteApi.cursorKey(account);
+      final previous = _sp.getInt(key);
+      if (previous == null || cursor > previous) {
+        if (!await _sp.setInt(key, cursor)) throw StateError('笔记同步游标保存失败');
+      }
+    }
   }
 
   Future<NoteEntity?> getNoteEntityById(String noteId) async {

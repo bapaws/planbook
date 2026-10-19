@@ -61,6 +61,13 @@ class TaskTodayPage extends StatelessWidget {
         return bloc;
       },
       child: BlocBuilder<TaskTodayBloc, TaskTodayState>(
+        // 计数仍由原订阅更新；日历和列表布局不使用 taskCounts，
+        // 不因计数结果到达而把整块日视图再次构建。
+        buildWhen: (previous, current) =>
+            previous.date != current.date ||
+            previous.calendarFormat != current.calendarFormat ||
+            previous.focusNote != current.focusNote ||
+            previous.summaryNote != current.summaryNote,
         builder: (context, todayState) {
           return Column(
             children: [

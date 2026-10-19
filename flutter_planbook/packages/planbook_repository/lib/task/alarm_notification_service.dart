@@ -1,10 +1,15 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:planbook_repository/planbook_repository.dart';
+import 'package:planbook_repository/task/alarm_reservation_store.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -34,15 +39,30 @@ class AlarmNotificationService implements TaskAlarmScheduler {
       FlutterLocalNotificationsPlugin();
 
   bool _initialized = false;
+  Future<void>? _initializing;
+  Future<AlarmReservationReconciler>? _reconciler;
+  Future<List<Task>> Function()? _loadTasks;
+  Future<Task?> Function(String)? _loadTask;
+  String? Function()? _account;
+  final _queue = AlarmRequestQueue(
+    onError: (error, stack) {
+      // 原调用多为 unawaited；保留失败意图，下次全量校正继续重试。
+      debugPrint('AlarmNotificationService: $error\n$stack');
+    },
+  );
 
-  /// 每个任务最多支持的闹钟数量，用于取消时遍历 id
-  static const int _maxAlarmsPerTask = 20;
+  /// 由 composition root 注入权威本地数据，不能用过期页面快照重建预约。
+  void configure({
+    required Future<List<Task>> Function() loadTasks,
+    required Future<Task?> Function(String) loadTask,
+    required String? Function() account,
+  }) {
+    _loadTasks = loadTasks;
+    _loadTask = loadTask;
+    _account = account;
+  }
 
-  /// 重复任务最多预约的 occurrence 数量（避免通知过多）
-  static const int _maxScheduledOccurrences = 50;
-
-  /// 重复任务预约的时间范围（天）
-  static const int _scheduleRangeDays = 60;
+  bool get _supported => !kIsWeb && (Platform.isAndroid || Platform.isIOS);
 
   /// 设置通知渠道的本地化名称与描述（应在进入主页等有 l10n 的时机调用）。
   void setChannelStrings({String? name, String? description}) {
@@ -53,19 +73,15 @@ class AlarmNotificationService implements TaskAlarmScheduler {
   String get _effectiveChannelName => _channelName ?? '任务提醒';
   String get _effectiveChannelDescription => _channelDescription ?? '任务开始前的提醒';
 
-  /// 根据任务 id、occurrence 下标、闹钟下标生成稳定的通知 id（用于取消）
-  /// 非重复任务固定使用 occurrenceIndex = 0。
-  static int _notificationId(
-    String taskId,
-    int occurrenceIndex,
-    int alarmIndex,
-  ) {
-    return Object.hash(taskId, occurrenceIndex, alarmIndex) & 0x7FFFFFFF;
+  /// 不请求通知权限；权限在 [requestPermissionIfNeeded] 中按需请求。
+  Future<void> _initialize() {
+    if (_initialized) return Future.value();
+    return _initializing ??= _initializeOnce().whenComplete(() {
+      _initializing = null;
+    });
   }
 
-  /// 不请求通知权限；权限在 [requestPermissionIfNeeded] 中按需请求。
-  Future<void> _initialize() async {
-    if (_initialized) return;
+  Future<void> _initializeOnce() async {
     if (kIsWeb) {
       _initialized = true;
       return;
@@ -145,93 +161,139 @@ class AlarmNotificationService implements TaskAlarmScheduler {
     return null;
   }
 
-  /// 为任务的所有闹钟调度本地通知。
-  ///
-  /// 非重复任务：按 [Task.startAt] 调度一次。
-  /// 重复任务：为未来 [ _scheduleRangeDays] 天内、最多 [ _maxScheduledOccurrences]
-  /// 个 occurrence 各调度一次提醒（每次重复都提醒）。
-  /// 会先取消该任务已有的闹钟通知，再按当前 alarms 重新调度。
-  /// 首次调用会先延迟初始化插件。
-  @override
-  Future<void> scheduleForTask(Task task) async {
+  Future<AlarmReservationReconciler> _getReconciler() async {
     await _initialize();
-    if (!_initialized || kIsWeb) return;
-
-    final startAt = task.startAt ?? task.dueAt;
-    if (startAt == null || task.alarms.isEmpty) return;
-
-    await cancelForTask(task.id);
-
-    final now = Jiffy.now();
-
-    if (task.recurrenceRule != null) {
-      await _scheduleRecurringTask(task, startAt, now);
-    } else {
-      await _scheduleSingleOccurrence(task, startAt, now, occurrenceIndex: 0);
-    }
+    return _reconciler ??= _createReconciler().catchError((
+      Object error,
+      StackTrace stack,
+    ) {
+      _reconciler = null;
+      Error.throwWithStackTrace(error, stack);
+    });
   }
 
-  /// 为单个 occurrence 调度该任务的所有闹钟（供单次任务或重复任务的一个 occurrence 使用）
-  Future<void> _scheduleSingleOccurrence(
-    Task task,
-    Jiffy occurrenceStartAt,
-    Jiffy now, {
-    required int occurrenceIndex,
-  }) async {
-    for (var i = 0; i < task.alarms.length; i++) {
-      final alarm = task.alarms[i];
-      final triggerAt = alarm.resolveTriggerTime(
-        occurrenceStartAt,
-        isAllDay: task.isAllDay,
-      );
-      if (triggerAt == null || !triggerAt.isAfter(now)) continue;
-
-      final id = _notificationId(task.id, occurrenceIndex, i);
-      await _scheduleOne(id, task.title, triggerAt);
-    }
-  }
-
-  /// 重复任务：生成未来 occurrence 并为每个 occurrence 调度提醒
-  Future<void> _scheduleRecurringTask(
-    Task task,
-    Jiffy seriesStartAt,
-    Jiffy now,
-  ) async {
-    final rule = task.recurrenceRule!;
-    final rangeStart = now.startOf(Unit.day);
-    final rangeEnd = now.add(days: _scheduleRangeDays);
-
-    final occurrenceDates = RecurrenceRuleCalculator.generateOccurrences(
-      rule: rule,
-      startDate: seriesStartAt,
-      rangeStart: rangeStart,
-      rangeEnd: rangeEnd,
+  Future<AlarmReservationReconciler> _createReconciler() async {
+    final directory = await getApplicationSupportDirectory();
+    return AlarmReservationReconciler(
+      store: FileAlarmReservationStore(
+        File('${directory.path}/task_alarm_reservations_v1.json'),
+      ),
+      pending: () async => {
+        for (final item in await _plugin.pendingNotificationRequests())
+          item.id: item.payload,
+      },
+      activeIds: _activeIds,
+      clearPending: _plugin.cancelAllPendingNotifications,
+      cancel: _plugin.cancel,
+      schedule: _scheduleOne,
     );
+  }
 
-    final toSchedule = occurrenceDates.take(_maxScheduledOccurrences).toList();
-
-    for (var occIndex = 0; occIndex < toSchedule.length; occIndex++) {
-      final occurrenceDay = toSchedule[occIndex];
-      final occurrenceStartAt = task.isAllDay
-          ? occurrenceDay.startOf(Unit.day)
-          : occurrenceDay
-                .startOf(Unit.day)
-                .add(
-                  hours: seriesStartAt.hour,
-                  minutes: seriesStartAt.minute,
-                  seconds: seriesStartAt.second,
-                );
-      await _scheduleSingleOccurrence(
-        task,
-        occurrenceStartAt,
-        now,
-        occurrenceIndex: occIndex,
-      );
+  Future<Set<int>> _activeIds() async {
+    try {
+      return {
+        for (final item in await _plugin.getActiveNotifications())
+          if (item.id case final int id) id,
+      };
+    } on PlatformException catch (error) {
+      // Android 5.x 无此系统查询能力，仍保留账本和 pending 列表的碰撞检测。
+      if (Platform.isAndroid && error.code == 'unsupported_os_version') {
+        return {};
+      }
+      rethrow;
     }
   }
 
-  Future<void> _scheduleOne(int id, String title, Jiffy triggerAt) async {
-    final tzDate = tz.TZDateTime.from(triggerAt.dateTime, tz.local);
+  void _validate(String? account) {
+    if (_account == null || _loadTasks == null || _loadTask == null) {
+      throw StateError('提醒服务尚未注入本地数据源');
+    }
+    if (_account!() != account) throw StateError('提醒账号已变化，停止旧请求');
+  }
+
+  Future<void> _enqueue(String key, Future<void> Function() action) {
+    return _queue.run(key, action);
+  }
+
+  /// 同批校正共用系统列表，实际修改后再核对；启动与前台恢复共用此队列。
+  Future<void> reconcileAll() {
+    if (!_supported) return Future.value();
+    final account = _account?.call();
+    return _enqueue('all', () => _performAll(account));
+  }
+
+  Future<void> _performAll(String? account, {String? excludedTaskId}) async {
+    _validate(account);
+    final reconciler = await _getReconciler();
+    final tasks = await _loadTasks!();
+    _validate(account);
+    final plans = await _plans(
+      tasks.where((t) => t.id != excludedTaskId).toList(),
+    );
+    await reconciler.reconcile(
+      plans,
+      full: true,
+      scopes: {},
+      validate: () => _validate(account),
+    );
+  }
+
+  Future<List<AlarmPlan>> _plans(List<Task> tasks) => compute(
+    buildAlarmPlans,
+    (
+      tasks: tasks.map((task) => task.toJson()).toList(),
+      now: DateTime.now().millisecondsSinceEpoch,
+      zone: tz.local.name,
+    ),
+    debugLabel: 'task-alarm-plans',
+  );
+
+  @override
+  Future<void> scheduleForTask(Task task) {
+    if (!_supported) return Future.value();
+    final account = _account?.call();
+    if (task.userId != account) return Future.value();
+    return _requestTask(task.id, account, cancel: false);
+  }
+
+  @override
+  Future<void> cancelForTask(String taskId) {
+    if (!_supported) return Future.value();
+    return _requestTask(taskId, _account?.call(), cancel: true);
+  }
+
+  Future<void> _requestTask(
+    String taskId,
+    String? account, {
+    required bool cancel,
+  }) => _enqueue(
+    jsonEncode([account, taskId]),
+    () async {
+      _validate(account);
+      final reconciler = await _getReconciler();
+      if (await reconciler.needsMigration()) {
+        await _performAll(account, excludedTaskId: cancel ? taskId : null);
+      }
+      _validate(account);
+      final task = cancel ? null : await _loadTask!(taskId);
+      final tasks =
+          task != null && task.userId == account && task.deletedAt == null
+          ? [task]
+          : <Task>[];
+      final plans = await _plans(tasks);
+      await reconciler.reconcile(
+        plans,
+        full: false,
+        scopes: {
+          jsonEncode([account, taskId]),
+        },
+        validate: () => _validate(account),
+      );
+    },
+  );
+
+  Future<void> _scheduleOne(int id, AlarmPlan plan) async {
+    final date = DateTime.fromMillisecondsSinceEpoch(plan.at, isUtc: true);
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
         _channelId,
@@ -246,33 +308,95 @@ class AlarmNotificationService implements TaskAlarmScheduler {
         presentSound: true,
       ),
     );
-    try {
-      await _plugin.zonedSchedule(
-        id,
-        title,
-        null,
-        tzDate,
-        details,
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      );
-    } on Exception catch (e) {
-      debugPrint('AlarmNotificationService: schedule failed id=$id $e');
-    }
+    // 失败必须回到协调器，不能把失败记录成预约成功。
+    await _plugin.zonedSchedule(
+      id,
+      plan.title,
+      null,
+      tz.TZDateTime.from(date, tz.local),
+      details,
+      payload: plan.payload,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    );
   }
+}
 
-  /// 取消该任务已调度的所有闹钟通知（含重复任务的所有 occurrence）。若插件尚未初始化则无操作。
-  @override
-  Future<void> cancelForTask(String taskId) async {
-    await _initialize();
-    if (!_initialized || kIsWeb) return;
+typedef AlarmPlanInput = ({
+  List<Map<String, dynamic>> tasks,
+  int now,
+  String zone,
+});
 
-    for (var occIndex = 0; occIndex < _maxScheduledOccurrences; occIndex++) {
-      for (var alarmIndex = 0; alarmIndex < _maxAlarmsPerTask; alarmIndex++) {
-        final id = _notificationId(taskId, occIndex, alarmIndex);
-        try {
-          await _plugin.cancel(id);
-        } on Object catch (_) {}
+/// 纯计算可在工作 isolate 执行；保留原 60 天、最多 50 个实例的预约范围。
+List<AlarmPlan> buildAlarmPlans(AlarmPlanInput input) {
+  final now = Jiffy.parseFromMillisecondsSinceEpoch(input.now);
+  final plans = <AlarmPlan>[];
+  for (final json in input.tasks) {
+    final task = Task.fromJson(json);
+    final start = task.startAt ?? task.dueAt;
+    if (start == null || task.alarms.isEmpty || task.deletedAt != null) {
+      continue;
+    }
+    final days = task.recurrenceRule == null
+        ? [start]
+        : RecurrenceRuleCalculator.generateOccurrences(
+                rule: task.recurrenceRule!,
+                startDate: start,
+                rangeStart: now.startOf(Unit.day),
+                rangeEnd: now.add(days: 60),
+              )
+              .take(50)
+              .map(
+                (day) => task.isAllDay
+                    ? day.startOf(Unit.day)
+                    : day
+                          .startOf(Unit.day)
+                          .add(
+                            hours: start.hour,
+                            minutes: start.minute,
+                            seconds: start.second,
+                          ),
+              )
+              .toList();
+    for (final occurrence in days) {
+      final duplicates = <String, int>{};
+      for (final alarm in task.alarms) {
+        final configuration = jsonEncode(alarm.toJson());
+        final ordinal = duplicates.update(
+          configuration,
+          (n) => n + 1,
+          ifAbsent: () => 0,
+        );
+        final at = alarm.resolveTriggerTime(
+          occurrence,
+          isAllDay: task.isAllDay,
+        );
+        if (at == null || !at.isAfter(now)) continue;
+        final key = jsonEncode([
+          task.userId,
+          task.id,
+          occurrence.dateTime.toUtc().toIso8601String(),
+          configuration,
+          ordinal,
+        ]);
+        final millis = at.dateTime.millisecondsSinceEpoch;
+        plans.add(
+          AlarmPlan(
+            key: key,
+            scope: jsonEncode([task.userId, task.id]),
+            title: task.title,
+            at: millis,
+            payload: jsonEncode({
+              'v': 1,
+              'key': key,
+              'at': millis,
+              'title': task.title,
+              'zone': input.zone,
+            }),
+          ),
+        );
       }
     }
   }
+  return plans;
 }

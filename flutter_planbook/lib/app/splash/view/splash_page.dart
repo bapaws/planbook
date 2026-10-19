@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -5,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/splash/cubit/splash_cubit.dart';
+import 'package:flutter_planbook/app/startup/startup_preparation_coordinator.dart';
 import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_svg/svg.dart';
@@ -34,6 +37,16 @@ class _SplashPageView extends StatefulWidget {
 class _SplashPageViewState extends State<_SplashPageView> {
   bool _shouldNavigate = false;
   SplashState? _pendingNavigationState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      // 先绘制动效首帧，再并行准备；页面退出后由应用级协调器继续收尾。
+      unawaited(context.read<StartupPreparationCoordinator>().prepareForHome());
+    });
+  }
 
   void _handleNavigation({SplashState? state}) {
     final splashState = state ?? context.read<SplashCubit>().state;

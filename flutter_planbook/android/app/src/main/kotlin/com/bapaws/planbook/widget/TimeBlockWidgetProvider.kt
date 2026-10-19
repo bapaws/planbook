@@ -1,7 +1,6 @@
 package com.bapaws.planbook.widget
 
 import android.appwidget.AppWidgetManager
-import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
@@ -11,8 +10,6 @@ import android.util.Log
 import android.util.SizeF
 import android.widget.RemoteViews
 import com.bapaws.planbook.R
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 
 private const val TAG = "PlanbookTimeBlockRV"
 private const val HIT_COUNT = 8
@@ -27,7 +24,7 @@ private enum class TimeBlockWidgetSize(
     SMALL(defaultWidthDp = 110, defaultHeightDp = 110),
 }
 
-class TimeBlockWidgetLargeProvider : AppWidgetProvider() {
+class TimeBlockWidgetLargeProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (id in appWidgetIds) {
             updateWidget(context, appWidgetManager, id)
@@ -57,7 +54,7 @@ class TimeBlockWidgetLargeProvider : AppWidgetProvider() {
     }
 }
 
-class TimeBlockWidgetMediumProvider : AppWidgetProvider() {
+class TimeBlockWidgetMediumProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (id in appWidgetIds) {
             updateWidget(context, appWidgetManager, id)
@@ -87,7 +84,7 @@ class TimeBlockWidgetMediumProvider : AppWidgetProvider() {
     }
 }
 
-class TimeBlockWidgetSmallProvider : AppWidgetProvider() {
+class TimeBlockWidgetSmallProvider : BackgroundWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (id in appWidgetIds) {
             updateWidget(context, appWidgetManager, id)
@@ -130,7 +127,7 @@ private object TimeBlockWidgetUpdater {
             val isPremium = WidgetSettings.isPremium(context)
             val options = updatedOptions ?: appWidgetManager.getAppWidgetOptions(appWidgetId)
             val tasks = if (isPremium) {
-                runBlocking(Dispatchers.IO) {
+                run {
                     WidgetDatabase.open(context) { it.fetchTimeBlockTasks() } ?: emptyList()
                 }
             } else {

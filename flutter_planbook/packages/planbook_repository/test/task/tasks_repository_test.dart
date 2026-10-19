@@ -70,6 +70,37 @@ void main() {
       expect(count, 0);
     });
 
+    test('prepareForHome 只生成本地缓存，不调用远端任务 API', () async {
+      final remote = _MockSupabaseTaskApi();
+      final sp = await SharedPreferences.getInstance();
+      final outbox = OutboxApi(db: db);
+      final localOnly = TasksRepository(
+        sp: sp,
+        tagApi: DatabaseTagApi(db: db, outboxApi: outbox),
+        db: db,
+        outboxApi: outbox,
+        supabaseTaskApi: remote,
+      );
+      final date = Jiffy.parse('2026-10-17');
+      await db
+          .into(db.tasks)
+          .insert(
+            TasksCompanion.insert(
+              title: '启动准备任务',
+              startAt: Value(date),
+              recurrenceRule: const Value(
+                RecurrenceRule(frequency: RecurrenceFrequency.daily),
+              ),
+            ),
+          );
+
+      await localOnly.prepareForHome(date: date);
+
+      expect(await db.select(db.taskOccurrences).get(), isNotEmpty);
+      expect(await db.select(db.syncOutbox).get(), isEmpty);
+      verifyZeroInteractions(remote);
+    });
+
     test('create and getTaskEntityById', () async {
       final task = _testTask(id: 'task-1', title: 'Test Task');
 

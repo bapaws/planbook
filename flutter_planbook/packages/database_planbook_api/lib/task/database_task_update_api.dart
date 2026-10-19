@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:database_planbook_api/task/database_task_api.dart';
@@ -420,10 +419,8 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
           (to) => to.taskId.equals(task.id),
         ))
         .go();
-    unawaited(
-      preGenerateTaskOccurrences(
-        fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
-      ),
+    preGenerateTaskOccurrencesInBackground(
+      fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
     );
   }
 }

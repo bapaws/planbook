@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
-import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
+import 'package:database_planbook_api/task/task_occurrence_generator.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
@@ -15,11 +16,19 @@ class DatabaseTaskApi {
     required this.db,
     required this.tagApi,
     required this.outboxApi,
-  });
+    TaskOccurrenceGenerator? occurrenceGenerator,
+  }) : occurrenceGenerator =
+           occurrenceGenerator ?? TaskOccurrenceGenerator.shared;
 
   final AppDatabase db;
   final DatabaseTagApi tagApi;
   final OutboxApi outboxApi;
+  final TaskOccurrenceGenerator occurrenceGenerator;
+
+  // 事务上下文分别合并，避免事务内等待排在其后面的外部写入。
+  // 请求完成后移除；并发调用要求再检查一次，防止期间创建的新任务漏生成。
+  static final _occurrenceRequests =
+      Expando<Map<(Zone, int, int), _OccurrenceRequest>>();
 
   late final $TasksTable childrenTasks = db.alias(db.tasks, 'children_tasks');
   late final $TaskActivitiesTable childrenTaskActivities = db.alias(
@@ -63,6 +72,165 @@ class DatabaseTaskApi {
     });
   }
 
+  /// 同步的规则计算在事务外执行；提交时重验本地任务、实例和 Outbox。
+  /// 关联写入仍与任务、实例一起提交；重试不覆盖期间到达的本地修改。
+  Future<bool> applySyncedTask({
+    required Task task,
+    required bool refreshOccurrences,
+    required Future<void> Function() writeRelated,
+    required void Function() validateAccount,
+    bool localRepair = false,
+    Future<bool> Function(String)? protectLocal,
+  }) async {
+    for (var attempt = 0; attempt < 8; attempt++) {
+      validateAccount();
+      if (!localRepair &&
+          (await hasPendingChanges(task.id) ||
+              (protectLocal != null && await protectLocal(task.id)))) {
+        return false;
+      }
+      final previous = await (db.select(
+        db.tasks,
+      )..where((t) => t.id.equals(task.id))).getSingleOrNull();
+      if (localRepair &&
+          jsonEncode(previous?.toJson()) != jsonEncode(task.toJson())) {
+        return false;
+      }
+      final cached =
+          await (db.select(db.taskOccurrences)
+                ..where((o) => o.taskId.equals(task.id))
+                ..orderBy([(o) => OrderingTerm.asc(o.occurrenceAt)]))
+              .get();
+      final rebuild =
+          refreshOccurrences ||
+          previous?.recurrenceRule != task.recurrenceRule ||
+          previous?.startAt != task.startAt ||
+          previous?.endAt != task.endAt ||
+          previous?.dueAt != task.dueAt ||
+          previous?.deletedAt != task.deletedAt ||
+          previous?.parentId != task.parentId ||
+          previous?.detachedFromTaskId != task.detachedFromTaskId;
+      final generated =
+          rebuild &&
+              cached.isNotEmpty &&
+              task.deletedAt == null &&
+              task.parentId == null &&
+              task.detachedFromTaskId == null &&
+              task.recurrenceRule != null
+          ? await occurrenceGenerator.generate(
+              schedules: [occurrenceScheduleOf(task)],
+              rangeStart: cached.first.occurrenceAt,
+              rangeEnd: cached.last.occurrenceAt,
+            )
+          : <TaskOccurrencesCompanion>[];
+      final hiddenDates = cached
+          .where((o) => o.deletedAt != null)
+          .map((o) => o.occurrenceAt.dateTime.microsecondsSinceEpoch)
+          .toSet();
+      final expected = {
+        for (final row in generated)
+          if (!hiddenDates.contains(
+            row.occurrenceAt.value.dateTime.microsecondsSinceEpoch,
+          ))
+            row.occurrenceAt.value.dateTime.microsecondsSinceEpoch: row,
+      };
+      final live = cached.where((o) => o.deletedAt == null).toList();
+      final cacheMatches =
+          live.length == expected.length &&
+          live.every((row) {
+            final wanted =
+                expected[row.occurrenceAt.dateTime.microsecondsSinceEpoch];
+            return wanted != null &&
+                wanted.startAt.value == row.startAt &&
+                wanted.endAt.value == row.endAt &&
+                wanted.dueAt.value == row.dueAt;
+          });
+      final result = await db.transaction<bool?>(() async {
+        validateAccount();
+        if (!localRepair &&
+            (await hasPendingChanges(task.id) ||
+                (protectLocal != null && await protectLocal(task.id)))) {
+          return false;
+        }
+        // Drift 的列表转换列默认按 List 身份比较；用序列化值核验完整快照。
+        final current = await (db.select(
+          db.tasks,
+        )..where((t) => t.id.equals(task.id))).getSingleOrNull();
+        if (jsonEncode(current?.toJson()) != jsonEncode(previous?.toJson())) {
+          return null;
+        }
+        final latest =
+            await (db.select(db.taskOccurrences)
+                  ..where((o) => o.taskId.equals(task.id))
+                  ..orderBy([(o) => OrderingTerm.asc(o.occurrenceAt)]))
+                .get();
+        if (!listEquals(cached, latest)) return null;
+        if (!localRepair &&
+            jsonEncode(previous?.toJson()) != jsonEncode(task.toJson())) {
+          await db.into(db.tasks).insertOnConflictUpdate(task);
+        }
+        // 旧实例修复与远程全量解耦；内容等价时不重写，避免唤醒全部首页订阅。
+        if (rebuild && cached.isNotEmpty && !cacheMatches) {
+          await (db.delete(db.taskOccurrences)..where(
+                (o) => o.taskId.equals(task.id) & o.deletedAt.isNull(),
+              ))
+              .go();
+          await db.batch((batch) {
+            batch.insertAll(
+              db.taskOccurrences,
+              generated,
+              mode: InsertMode.insertOrIgnore,
+            );
+          });
+        }
+        await writeRelated();
+        validateAccount();
+        return true;
+      });
+      if (result != null) return result;
+    }
+    throw StateError('同步快照持续变化，停止本次合并并保留游标重试');
+  }
+
+  /// 升级时按本地权威规则校正旧缓存。即使存在 Outbox 也只修缓存，不回写任务。
+  /// 已取消规则、已删除任务也必须清理有效实例，并保留隐藏标记。
+  Future<void> repairLegacyOccurrences({
+    required String? userId,
+    required void Function() validateAccount,
+  }) async {
+    final ids = await (db.selectOnly(
+      db.taskOccurrences,
+      distinct: true,
+    )..addColumns([db.taskOccurrences.taskId])).get();
+    for (final row in ids) {
+      final id = row.read(db.taskOccurrences.taskId)!;
+      for (var attempt = 0; ; attempt++) {
+        validateAccount();
+        final task =
+            await (db.select(db.tasks)..where(
+                  (t) =>
+                      t.id.equals(id) &
+                      (userId == null
+                          ? t.userId.isNull()
+                          : t.userId.equals(userId)),
+                ))
+                .getSingleOrNull();
+        if (task == null) break;
+        if (await applySyncedTask(
+          task: task,
+          refreshOccurrences: true,
+          localRepair: true,
+          writeRelated: () async {},
+          validateAccount: validateAccount,
+        )) {
+          break;
+        }
+        if (attempt >= 7) throw StateError('旧实例修复期间任务持续变化，保留标记重试');
+      }
+    }
+    validateAccount();
+  }
+
   /// 按最新规则重建已缓存的日期范围，保留单次删除或分离实例的隐藏标记。
   Future<void> _refreshCachedTaskOccurrences(Task task) async {
     final cached =
@@ -84,8 +252,8 @@ class DatabaseTaskApi {
     }
 
     // 保持原有缓存窗口，确保正在浏览的历史或未来日期也能立即刷新。
-    final occurrences = _generateTaskOccurrences(
-      task: task,
+    final occurrences = await occurrenceGenerator.generate(
+      schedules: [occurrenceScheduleOf(task)],
       rangeStart: cached.first.occurrenceAt,
       rangeEnd: cached.last.occurrenceAt,
     );
@@ -179,10 +347,8 @@ class DatabaseTaskApi {
     });
 
     if (task.recurrenceRule != null) {
-      unawaited(
-        preGenerateTaskOccurrences(
-          fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
-        ),
+      preGenerateTaskOccurrencesInBackground(
+        fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
       );
     }
   }
@@ -317,6 +483,23 @@ class DatabaseTaskApi {
     return childEntities;
   }
 
+  /// 创建/编辑后的派生缓存异步补齐，错误独立记录，不改变主任务的提交结果。
+  void preGenerateTaskOccurrencesInBackground({required Jiffy fromDate}) {
+    unawaited(
+      preGenerateTaskOccurrences(fromDate: fromDate).then<void>(
+        (_) {},
+        onError: (Object error, StackTrace stackTrace) {
+          developer.log(
+            '后台实例生成失败，后续查询仍可重试',
+            name: 'TaskOccurrences',
+            error: error,
+            stackTrace: stackTrace,
+          );
+        },
+      ),
+    );
+  }
+
   /// 预生成任务实例
   ///
   /// 为有重复规则的任务从指定日期开始预生成未来一段时间内的所有实例。
@@ -330,13 +513,31 @@ class DatabaseTaskApi {
     required Jiffy fromDate,
     int monthsAhead = 3,
   }) {
-    // 与同步更新使用同一事务边界，避免旧规则生成的实例在缓存刷新后写回。
-    return db.transaction(
-      () => _preGenerateTaskOccurrences(
-        fromDate: fromDate,
-        monthsAhead: monthsAhead,
-      ),
+    final requests = _occurrenceRequests[db] ??= {};
+    final key = (
+      Zone.current,
+      fromDate.startOf(Unit.day).dateTime.microsecondsSinceEpoch,
+      monthsAhead,
     );
+    final pending = requests[key];
+    if (pending != null) {
+      pending.checkAgain = true;
+      return pending.future;
+    }
+    final request = _OccurrenceRequest();
+    requests[key] = request;
+    return request.future =
+        (() async {
+          do {
+            request.checkAgain = false;
+            await _preGenerateTaskOccurrences(
+              fromDate: fromDate.startOf(Unit.day),
+              monthsAhead: monthsAhead,
+            );
+          } while (request.checkAgain);
+        })().whenComplete(() {
+          requests.remove(key);
+        });
   }
 
   Future<void> _preGenerateTaskOccurrences({
@@ -384,68 +585,176 @@ class DatabaseTaskApi {
               db.taskOccurrences.id.isNull(),
         );
 
-    final recurringTasksRows = await query.get();
-    final recurringTasks = recurringTasksRows
-        .map((row) => row.readTable(db.tasks))
-        .toList();
+    // 候选查询与规则计算都在本方法自己的写事务之外。
+    // 最后再扫描一次新任务/新规则，覆盖计算期间已到达的同步结果。
+    final processed = <TaskOccurrenceSchedule>{};
+    while (true) {
+      final rows = await query.get();
+      final candidates = rows
+          .map((row) => row.readTable(db.tasks))
+          .where((task) => !processed.contains(occurrenceScheduleOf(task)))
+          .toList();
+      if (candidates.isEmpty) return;
 
-    if (recurringTasks.isEmpty) return;
-
-    // 为每个任务生成所有实例
-    final occurrencesToInsert = <TaskOccurrencesCompanion>[];
-    for (final task in recurringTasks) {
-      occurrencesToInsert.addAll(
-        _generateTaskOccurrences(
-          task: task,
-          rangeStart: fromDate,
-          rangeEnd: rangeEnd,
-        ),
-      );
-    }
-
-    // 批量插入实例
-    if (occurrencesToInsert.isNotEmpty) {
-      await db.batch((batch) {
-        for (final occurrence in occurrencesToInsert) {
-          batch.insert(
-            db.taskOccurrences,
-            occurrence,
-            mode: InsertMode.insertOrIgnore,
+      const batchSize = 32;
+      for (var offset = 0; offset < candidates.length; offset += batchSize) {
+        var pending = candidates.skip(offset).take(batchSize).toList();
+        final covered = await _coveredSchedules(
+          pending.map(occurrenceScheduleOf).toList(),
+          fromDate,
+          rangeEnd,
+        );
+        processed.addAll(covered);
+        pending = pending
+            .where(
+              (task) => !covered.contains(occurrenceScheduleOf(task)),
+            )
+            .toList();
+        while (pending.isNotEmpty) {
+          final schedules = pending.map(occurrenceScheduleOf).toList();
+          final generated = await occurrenceGenerator.generate(
+            schedules: schedules,
+            rangeStart: fromDate,
+            rangeEnd: rangeEnd,
           );
+          pending = await _writeGeneratedOccurrences(
+            schedules: schedules,
+            generated: generated,
+            rangeStart: fromDate,
+            rangeEnd: rangeEnd,
+          );
+          processed.addAll(schedules);
         }
-      });
+      }
     }
   }
 
-  List<TaskOccurrencesCompanion> _generateTaskOccurrences({
-    required Task task,
-    required Jiffy rangeStart,
-    required Jiffy rangeEnd,
-  }) {
-    final startDate = task.startAt ?? task.dueAt;
-    if (startDate == null || task.recurrenceRule == null) return [];
-
-    final dates = RecurrenceRuleCalculator.generateOccurrences(
-      rule: task.recurrenceRule!,
-      startDate: startDate,
+  /// 纯计算摘要即使命中，也必须确认原表中每个日期仍存在（含隐藏标记）。
+  Future<Set<TaskOccurrenceSchedule>> _coveredSchedules(
+    List<TaskOccurrenceSchedule> schedules,
+    Jiffy rangeStart,
+    Jiffy rangeEnd,
+  ) async {
+    final expected = <TaskOccurrenceSchedule, List<int>>{};
+    final window = occurrenceGenerator.cacheWindowFor(
       rangeStart: rangeStart,
       rangeEnd: rangeEnd,
     );
-    return dates.map((date) {
-      // 按日历日差偏移，避免带时分的 startAt 被 Jiffy.diff(day) 按 24h 截断少算一天。
-      final daysDiff = date
-          .startOf(Unit.day)
-          .diff(startDate.startOf(Unit.day), unit: Unit.day)
-          .toInt();
-      return TaskOccurrencesCompanion.insert(
-        taskId: Value(task.id),
-        occurrenceAt: date.startOf(Unit.day),
-        startAt: Value(task.startAt?.add(days: daysDiff)),
-        endAt: Value(task.endAt?.add(days: daysDiff)),
-        dueAt: Value(task.dueAt?.add(days: daysDiff)),
+    for (final schedule in schedules) {
+      final dates = occurrenceGenerator.expectedDates(
+        cacheWindow: window,
+        schedule: schedule,
+        rangeStart: rangeStart,
+        rangeEnd: rangeEnd,
       );
-    }).toList();
+      if (dates != null) expected[schedule] = dates;
+    }
+    if (expected.isEmpty) return {};
+    final keys = <(String?, int)>{};
+    final ids = expected.entries
+        .where((e) => e.value.isNotEmpty)
+        .map((e) => e.key.taskId)
+        .toList();
+    if (ids.isNotEmpty) {
+      final rows =
+          await (db.select(db.taskOccurrences)..where(
+                (o) =>
+                    o.taskId.isIn(ids) &
+                    o.occurrenceAt.isBiggerOrEqualValue(
+                      rangeStart.startOf(Unit.day).dateTime,
+                    ) &
+                    o.occurrenceAt.isSmallerOrEqualValue(
+                      rangeEnd.endOf(Unit.day).dateTime,
+                    ),
+              ))
+              .get();
+      keys.addAll(
+        rows.map(
+          (o) => (o.taskId, o.occurrenceAt.dateTime.microsecondsSinceEpoch),
+        ),
+      );
+    }
+    return {
+      for (final entry in expected.entries)
+        if (entry.value.every(
+          (date) => keys.contains((entry.key.taskId, date)),
+        ))
+          entry.key,
+    };
   }
+
+  /// 校验和写入之间保持原子性，但不在事务里等待规则计算。
+  Future<List<Task>> _writeGeneratedOccurrences({
+    required List<TaskOccurrenceSchedule> schedules,
+    required List<TaskOccurrencesCompanion> generated,
+    required Jiffy rangeStart,
+    required Jiffy rangeEnd,
+  }) => db.transaction(() async {
+    final expected = {
+      for (final schedule in schedules) schedule.taskId: schedule,
+    };
+    final latest = await (db.select(
+      db.tasks,
+    )..where((t) => t.id.isIn(expected.keys))).get();
+    final validIds = <String>{};
+    final retry = <Task>[];
+    for (final task in latest) {
+      // 已删除、变成子任务/分离实例或移到窗口之后时，旧结果直接丢弃。
+      final anchor = rangeStart.endOf(Unit.day);
+      final eligible =
+          task.deletedAt == null &&
+          task.parentId == null &&
+          task.detachedFromTaskId == null &&
+          task.recurrenceRule != null &&
+          ((task.startAt != null && !task.startAt!.isAfter(anchor)) ||
+              (task.dueAt != null && !task.dueAt!.isAfter(anchor)));
+      if (!eligible) continue;
+      if (occurrenceScheduleOf(task) == expected[task.id]) {
+        validIds.add(task.id);
+      } else {
+        // 规则变化不能被当作准备成功，下一轮按最新快照重新计算。
+        retry.add(task);
+      }
+    }
+    if (validIds.isEmpty || generated.isEmpty) return retry;
+
+    // 包含已删除的行，保护单次删除/分离的隐藏标记；只补真正缺失的实例。
+    final existing =
+        await (db.select(db.taskOccurrences)..where(
+              (o) =>
+                  o.taskId.isIn(validIds) &
+                  o.occurrenceAt.isBiggerOrEqualValue(
+                    rangeStart.startOf(Unit.day).dateTime,
+                  ) &
+                  o.occurrenceAt.isSmallerOrEqualValue(
+                    rangeEnd.endOf(Unit.day).dateTime,
+                  ),
+            ))
+            .get();
+    final keys = {
+      for (final row in existing) (row.taskId, row.occurrenceAt.dateTime),
+    };
+    final missing = generated
+        .where(
+          (row) =>
+              validIds.contains(row.taskId.value) &&
+              !keys.contains((
+                row.taskId.value,
+                row.occurrenceAt.value.dateTime,
+              )),
+        )
+        .toList();
+    if (missing.isNotEmpty) {
+      await db.batch(
+        (batch) => batch.insertAll(
+          db.taskOccurrences,
+          missing,
+          mode: InsertMode.insertOrIgnore,
+        ),
+      );
+    }
+    return retry;
+  });
 
   Stream<int> getPlannedTaskCountByDateRange(
     Jiffy from,
@@ -488,48 +797,36 @@ class DatabaseTaskApi {
   }) async {
     if (rows.isEmpty) return [];
 
-    final tasks = <String, TaskEntity>{};
+    // JOIN 会把标签、活动、实例和子任务组合成多行；只在最终组装时创建父实体，
+    // 子任务按主键保留首次出现顺序，避免每行查找/复制不断增长的 children 列表。
+    final grouped = <String, _TaskEntityRows>{};
     for (final row in rows) {
       final task = row.readTable(db.tasks);
-      if (!tasks.containsKey(task.id)) {
-        tasks[task.id] = TaskEntity(
-          task: task,
-          tags: await tagApi.getTagEntitiesByTaskId(task.id, task.userId),
+      final group = grouped.putIfAbsent(task.id, () => _TaskEntityRows(task));
+      group.occurrence =
+          row.readTableOrNull(db.taskOccurrences) ?? group.occurrence;
+      group.activity = row.readTableOrNull(db.taskActivities) ?? group.activity;
+      final child = row.readTableOrNull(childrenTasks);
+      if (child != null && !group.children.containsKey(child.id)) {
+        group.children[child.id] = TaskEntity(
+          task: child,
+          activity: row.readTableOrNull(childrenTaskActivities),
         );
-      }
-
-      final occurrence = row.readTableOrNull(db.taskOccurrences);
-      if (occurrence != null) {
-        tasks[task.id] = tasks[task.id]!.copyWith(
-          occurrence: occurrence,
-        );
-      }
-      final activity = row.readTableOrNull(db.taskActivities);
-      if (activity != null) {
-        tasks[task.id] = tasks[task.id]!.copyWith(
-          activity: () => activity,
-        );
-      }
-
-      final children = row.readTableOrNull(childrenTasks);
-      if (children != null) {
-        final index = tasks[task.id]!.children.indexWhere(
-          (e) => e.id == children.id,
-        );
-        if (index == -1) {
-          final childrenActivities = row.readTableOrNull(
-            childrenTaskActivities,
-          );
-          tasks[task.id] = tasks[task.id]!.copyWith(
-            children: [
-              ...tasks[task.id]!.children,
-              TaskEntity(task: children, activity: childrenActivities),
-            ],
-          );
-        }
       }
     }
-    return tasks.values.toList();
+    final tagsByTaskId = await tagApi.getTagEntitiesByTaskIds({
+      for (final group in grouped.values) group.task.id: group.task.userId,
+    });
+    return [
+      for (final group in grouped.values)
+        TaskEntity(
+          task: group.task,
+          tags: tagsByTaskId[group.task.id] ?? const [],
+          occurrence: group.occurrence,
+          activity: group.activity,
+          children: group.children.values.toList(),
+        ),
+    ];
   }
 
   Future<Task?> deleteTaskById(String taskId) async {
@@ -666,19 +963,18 @@ class DatabaseTaskApi {
         db.tasks.title.like(pattern, escapeChar: r'\') |
         db.tasks.notes.like(pattern, escapeChar: r'\');
 
-    final idQuery =
-        db.selectOnly(db.tasks)
-          ..addColumns([
-            db.tasks.id,
-            db.tasks.updatedAt,
-            db.tasks.createdAt,
-          ])
-          ..where(db.tasks.deletedAt.isNull() & userExp & matchExp)
-          ..orderBy([
-            OrderingTerm.desc(db.tasks.updatedAt),
-            OrderingTerm.desc(db.tasks.createdAt),
-          ])
-          ..limit(limit);
+    final idQuery = db.selectOnly(db.tasks)
+      ..addColumns([
+        db.tasks.id,
+        db.tasks.updatedAt,
+        db.tasks.createdAt,
+      ])
+      ..where(db.tasks.deletedAt.isNull() & userExp & matchExp)
+      ..orderBy([
+        OrderingTerm.desc(db.tasks.updatedAt),
+        OrderingTerm.desc(db.tasks.createdAt),
+      ])
+      ..limit(limit);
 
     final ids = await idQuery.map((row) => row.read(db.tasks.id)!).get();
     if (ids.isEmpty) return [];
@@ -692,9 +988,23 @@ class DatabaseTaskApi {
   }
 }
 
+class _OccurrenceRequest {
+  late Future<void> future;
+  bool checkAgain = false;
+}
+
 String _escapeLikePattern(String input) {
   return input
       .replaceAll(r'\', r'\\')
       .replaceAll('%', r'\%')
       .replaceAll('_', r'\_');
+}
+
+/// 仅限一次查询结果的临时组装，不跨查询缓存业务数据。
+class _TaskEntityRows {
+  _TaskEntityRows(this.task);
+  final Task task;
+  TaskOccurrence? occurrence;
+  TaskActivity? activity;
+  final children = <String, TaskEntity>{};
 }

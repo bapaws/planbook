@@ -81,11 +81,21 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListRequested event,
     Emitter<TaskListState> emit,
   ) async {
-    if (event is TaskListDayAllRequested) {
-      await _onDayAllRequested(event, emit);
-    } else {
-      await _onRequested(event, emit);
+    try {
+      if (event is TaskListDayAllRequested) {
+        await _onDayAllRequested(event, emit);
+      } else {
+        await _onRequested(event, emit);
+      }
+    } on Object catch (error, stackTrace) {
+      emit(_onLoadError(error, stackTrace));
     }
+  }
+
+  TaskListState _onLoadError(Object error, StackTrace stackTrace) {
+    addError(error, stackTrace);
+    // 保留已显示的数据，结束 loading；同一条流恢复后仍可继续更新。
+    return state.copyWith(status: PageStatus.failure);
   }
 
   Future<void> _onRequested(
@@ -109,7 +119,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       tagId: event.tagId,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(stream, onData: _onTasksDataChanged);
+    await emit.forEach(
+      stream,
+      onData: _onTasksDataChanged,
+      onError: _onLoadError,
+    );
   }
 
   Future<void> _onDayAllRequested(
@@ -133,7 +147,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       priority: priority,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(stream, onData: _onTasksDataChanged);
+    await emit.forEach(
+      stream,
+      onData: _onTasksDataChanged,
+      onError: _onLoadError,
+    );
   }
 
   /// 解析列表日期写入 [TaskListState.date]。

@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' as material;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
+import 'package:flutter_planbook/app/startup/startup_sync_policy.dart';
 import 'package:flutter_planbook/core/apk_download_service.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
@@ -43,14 +45,20 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
          ),
        ) {
     WidgetsBinding.instance.addObserver(this);
-    on<AppInitialized>(_onInitialized);
+    on<AppInitialized>(_onInitialized, transformer: droppable());
     on<AppLaunched>(_onLaunched);
     on<AppUserRequested>(_onUserProfileRequested);
     on<AppDarkModeChanged>(_onDarkModeChanged);
     on<AppLocaleChanged>(_onLocaleChanged);
     on<AppSeedColorChanged>(_onSeedColorChanged);
-    on<AppBackgroundRequested>(_onBackgroundRequested);
-    on<AppQuadrantConfigsRequested>(_onQuadrantConfigsRequested);
+    on<AppBackgroundRequested>(
+      _onBackgroundRequested,
+      transformer: restartable(),
+    );
+    on<AppQuadrantConfigsRequested>(
+      _onQuadrantConfigsRequested,
+      transformer: restartable(),
+    );
     on<AppApkVersionRequested>(_onApkVersionRequested);
     on<AppApkDownloadRequested>(_onApkDownloadRequested);
     on<AppApkDownloadProgressUpdated>(_onApkDownloadProgressUpdated);
@@ -64,6 +72,7 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
   final UsersRepository _usersRepository;
   final SharedPreferences _sp;
   final SyncEngine _syncEngine;
+  late final _startupSync = StartupSyncPolicy(_sp);
 
   StreamSubscription<double>? _apkProgressSub;
   AppLocalizations? _apkL10n;
@@ -75,12 +84,18 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
 
       // 应用回到前台时除了排空本地 Outbox，还要主动拉取远程变更，
       // 避免其他设备的修改因增量游标问题而无法同步到本机。
-      // 游标已修复为服务端时间，这里用普通增量同步即可，无需 force。
+      // 行版本清单不依赖客户端时钟；这里复用普通增量同步。
       final userId = this.state.user?.id;
       if (userId != null && userId.isNotEmpty) {
-        unawaited(_tasksRepository.syncTasks());
-        unawaited(_notesRepository.syncNotes());
-        unawaited(_tagsRepository.syncTags());
+        unawaited(
+          Future.wait<void>([
+            _tasksRepository.syncTasks(),
+            _notesRepository.syncNotes(),
+            _tagsRepository.syncTags(),
+          ]).then<void>((_) {}).catchError((Object error, StackTrace stack) {
+            debugPrint('前台同步失败，保留基线等待重试: $error\n$stack');
+          }),
+        );
       }
     }
   }
@@ -96,6 +111,8 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     AppInitialized event,
     Emitter<AppState> emit,
   ) async {
+    // 首页标签加载完成也会请求初始化，已有配置和监听无需重复建立。
+    if (state.isInitialized) return;
     final darkMode = _settingsRepository.getDarkMode();
     final locale = _settingsRepository.getLocale();
     final seedColorHex = _settingsRepository.getSeedColorHex();
@@ -166,13 +183,26 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     await emit.forEach(
       _usersRepository.onUserEntityChange,
       onData: (user) {
-        if (user != null && user.id != state.user?.id) {
-          unawaited(_tasksRepository.syncTasks(force: true));
-          unawaited(_notesRepository.syncNotes(force: true));
-          _syncEngine.triggerSync();
+        if (user?.id != state.user?.id) {
+          // 换号/注销后清理旧账号的预约，新账号按权威本地数据补齐。
+          unawaited(_tasksRepository.rescheduleAllRecurringAlarms());
         }
+        unawaited(
+          _startupSync
+              .onAccount(user?.id, ({required force}) async {
+                _syncEngine.triggerSync();
+                await Future.wait([
+                  _tasksRepository.syncTasks(force: force),
+                  _notesRepository.syncNotes(force: force),
+                  _tagsRepository.syncTags(force: force),
+                ]);
+              })
+              .catchError((Object error, StackTrace stack) {
+                debugPrint('启动同步失败，保留已提交基线等待重试: $error\n$stack');
+              }),
+        );
         _reconcileQuadrantConfigsFromRemote(user);
-        return state.copyWith(user: user);
+        return state.copyWith(user: user, clearUser: user == null);
       },
     );
   }

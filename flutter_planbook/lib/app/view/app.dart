@@ -42,6 +42,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     _setupMethodChannelListener();
+    _setupSystemNavigationBar();
     ApkDownloadService.start(context.read());
     _appLinksHandler.init();
   }
@@ -164,6 +165,11 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AppBloc, AppState>(
+      buildWhen: (previous, current) =>
+          previous.darkMode != current.darkMode ||
+          previous.seedColor != current.seedColor ||
+          previous.locale != current.locale ||
+          previous.user?.id != current.user?.id,
       builder: (context, state) {
         _syncIntlDefaultLocale(state.locale);
         return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -176,15 +182,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             supportedLocales: AppLocalizations.supportedLocales,
             routerConfig: _appRouter.config(),
             builder: (context, child) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                // 只在 Android 上设置 edgeToEdge 模式
-                if (Platform.isAndroid) {
-                  SystemChrome.setEnabledSystemUIMode(
-                    SystemUiMode.edgeToEdge,
-                    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
-                  );
-                }
-              });
               final loaded = EasyLoading.init()(context, child);
               return AppHubHost(
                 config: _appHubConfig(),
