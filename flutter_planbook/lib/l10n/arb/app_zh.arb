@@ -902,5 +902,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "startupDatabaseUnavailable": "暂时无法检查本地数据库，因此没有打开它。已有数据仍保留在原处。",
+  "startupDatabaseRetry": "重试"
 }

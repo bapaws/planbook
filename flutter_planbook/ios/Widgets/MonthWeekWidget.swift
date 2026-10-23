@@ -108,13 +108,18 @@ struct MonthWeekView: View {
                 showEmpty: entry.totalCount == 0
             )
             weekdayHeader(weeks.first ?? [])
-            ForEach(Array(weeks.enumerated()), id: \.offset) { _, week in
-                HStack(alignment: .top, spacing: 2) {
-                    ForEach(week, id: \.timeIntervalSince1970) { day in
-                        monthDayColumn(day)
+            GeometryReader { geometry in
+                let weekHeight = max(0, (geometry.size.height - CGFloat(max(0, weeks.count - 1)) * 4) / CGFloat(max(1, weeks.count)))
+                VStack(spacing: 4) {
+                    ForEach(Array(weeks.enumerated()), id: \.offset) { _, week in
+                        HStack(alignment: .top, spacing: 2) {
+                            ForEach(week, id: \.timeIntervalSince1970) { day in
+                                monthDayColumn(day, height: weekHeight)
+                            }
+                        }
+                        .frame(height: weekHeight, alignment: .top)
                     }
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
         }
         .padding(10)
@@ -132,10 +137,12 @@ struct MonthWeekView: View {
         }
     }
 
-    private func monthDayColumn(_ day: Date) -> some View {
+    private func monthDayColumn(_ day: Date, height: CGFloat) -> some View {
         let key = WeekCalendar.dayKey(day)
         let tasks = entry.tasksByDay[key] ?? []
-        let visible = Array(tasks.prefix(3))
+        let slots = WeekTaskCapacity.slots(height: height - 18, rowHeight: 12, spacing: 2)
+        let visibleCount = WeekTaskCapacity.visibleCount(taskCount: tasks.count, slots: slots)
+        let visible = Array(tasks.prefix(visibleCount))
         let extra = tasks.count - visible.count
         let isToday = WeekCalendar.isSameDay(day, Date())
         return Link(destination: weekDayURL(day)) {
@@ -163,21 +170,23 @@ struct MonthWeekView: View {
                             .lineLimit(1)
                     }
                     .padding(.horizontal, 2)
-                    .frame(maxWidth: .infinity, minHeight: 12, alignment: .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 12)
                     .background(
                         task.isCompleted ? theme.surfaceContainerColor : theme.primaryContainerColor,
                         in: RoundedRectangle(cornerRadius: 2, style: .continuous)
                     )
                 }
-                if extra > 0 {
+                if extra > 0 && slots > 0 {
                     Text("+\(extra)")
                         .font(.system(size: 8, weight: .medium))
                         .foregroundStyle(Colors.outlineColor)
+                        .frame(height: 12)
                 }
-                Spacer(minLength: 0)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         }
         .buttonStyle(.plain)
+        .clipped()
     }
 }

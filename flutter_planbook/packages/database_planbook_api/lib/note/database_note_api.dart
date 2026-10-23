@@ -158,6 +158,7 @@ class DatabaseNoteApi {
                         ? n.userId.isNull()
                         : n.userId.equals(userId)),
               )
+              ..orderBy(_periodNoteOrder(focusAt))
               ..limit(1))
             .getSingleOrNull();
     validateAccount();
@@ -449,6 +450,17 @@ class DatabaseNoteApi {
         .asyncMap(buildNoteEntities);
   }
 
+  /// 同一周期有多条笔记时，优先精确日期，再取最近更新的一条。
+  List<OrderingTerm Function($NotesTable)> _periodNoteOrder(Jiffy focusAt) => [
+    (n) => OrderingTerm(
+      expression: n.focusAt.equals(focusAt.dateTime),
+      mode: OrderingMode.desc,
+    ),
+    (n) => OrderingTerm.desc(n.updatedAt.datetime),
+    (n) => OrderingTerm.desc(n.createdAt.datetime),
+    (n) => OrderingTerm.asc(n.id),
+  ];
+
   Stream<Note?> getNoteByFocusAt(
     Jiffy focusAt, {
     NoteType type = NoteType.dailyFocus,
@@ -476,6 +488,7 @@ class DatabaseNoteApi {
                 n.deletedAt.isNull() &
                 (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
           )
+          ..orderBy(_periodNoteOrder(focusAt))
           ..limit(1))
         .watchSingleOrNull();
   }

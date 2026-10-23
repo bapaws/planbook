@@ -917,5 +917,7 @@
         "example": "work, life"
       }
     }
-  }
+  },
+  "startupDatabaseUnavailable": "Die lokale Datenbank konnte nicht geprüft werden, deshalb wurde sie nicht geöffnet. Vorhandene Daten bleiben unverändert.",
+  "startupDatabaseRetry": "Erneut versuchen"
 }

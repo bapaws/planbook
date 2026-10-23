@@ -784,9 +784,11 @@ data class TaskRecord(
 
 | Kind | 尺寸 | 内容 |
 |------|------|------|
-| `WeekListWidgetLarge` | 大号 | 7 天列表，每天最多 4 条，整行完成 |
-| `WeekGridWidgetLarge` | 大号 | 第一格本周重点，其余七天，每格最多 3 条 |
+| `WeekListWidgetLarge` | 大号 | 7 天列表，按每日可用高度显示双列任务，整行完成 |
+| `WeekGridWidgetLarge` | 大号 | 第一格本周重点，其余七天，按格子高度显示任务 |
 | `MonthWeekWidgetMedium` | 中号 | 当前一周 7 列色条 |
-| `MonthWeekWidgetLarge` | 大号 | 本周 + 下周，每格最多 3 条色条 |
+| `MonthWeekWidgetLarge` | 大号 | 本周 + 下周，按格子高度显示色条 |
 
 点击日期打开 `planbook.bapaws://task/today?date=yyyy-MM-dd`；空白打开周视图 `task/week?view=list|grid`。查询覆盖当前周起止（月式大号到下周结束），仅顶层任务。
+
+一周、两周小组件在 Android 和 iOS 均按实际可用高度计算显示容量，扣除顶栏、日期和间距；任务溢出时预留一行显示 `+N`。Android 调整桌面尺寸后重新计算，iOS 使用实际 Widget 几何尺寸。任务刚好放下时不预留溢出行。

@@ -949,5 +949,13 @@
         "example": "work, life"
       }
     }
+  },
+  "startupDatabaseUnavailable": "The local database could not be checked, so Planbook did not open it. Your existing data was left in place.",
+  "@startupDatabaseUnavailable": {
+    "description": "Shown when startup cannot check the local database"
+  },
+  "startupDatabaseRetry": "Try again",
+  "@startupDatabaseRetry": {
+    "description": "Button to retry opening the local database"
   }
 }

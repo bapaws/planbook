@@ -905,5 +905,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "startupDatabaseUnavailable": "暫時無法檢查本機資料庫，因此沒有開啟它。既有資料仍保留在原處。",
+  "startupDatabaseRetry": "重試"
 }

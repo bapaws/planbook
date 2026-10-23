@@ -60,4 +60,24 @@ void main() {
     await again;
     expect(sp.getString(StartupSyncPolicy.accountKey), 'a');
   });
+
+  test('同一实例同步失败后可以重试，且仍为全量', () async {
+    final policy = StartupSyncPolicy(sp);
+    var calls = 0;
+    await expectLater(
+      policy.onAccount('a', ({required bool force}) async {
+        calls++;
+        expect(force, isTrue);
+        throw StateError('fail');
+      }),
+      throwsStateError,
+    );
+    expect(sp.getString(StartupSyncPolicy.accountKey), isNull);
+    await policy.onAccount('a', ({required bool force}) async {
+      calls++;
+      expect(force, isTrue);
+    });
+    expect(calls, 2);
+    expect(sp.getString(StartupSyncPolicy.accountKey), 'a');
+  });
 }

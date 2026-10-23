@@ -17,6 +17,7 @@ void main() {
     List<Map<String, dynamic>> rows, {
     Set<String>? inventory,
     Future<Set<String>> Function(List<String>)? confirmMissing,
+    Map<String, String> previous = const {},
   }) => RemoteTableBatch(
     table: table,
     rows: [
@@ -24,7 +25,7 @@ void main() {
     ],
     inventory: inventory ?? rows.map((r) => r['id']! as String).toSet(),
     confirmMissing: confirmMissing ?? (ids) async => ids.toSet(),
-    previous: const {},
+    previous: previous,
     save: (versions) async {
       saved = versions;
     },
@@ -249,5 +250,37 @@ void main() {
     );
     expect((await db.select(db.taskTags).get()).single.deletedAt, isNull);
     expect(saved, isNull);
+  });
+
+  test('版本清单已建立后，从未记录的本地关联不会被软删除', () async {
+    await db
+        .into(db.taskTags)
+        .insert(
+          TaskTag(
+            id: 'local',
+            taskId: 'task',
+            tagId: 'tag',
+            userId: 'a',
+            createdAt: date,
+          ),
+        );
+    await apply(batch('task_tags', [], previous: {'other': '1'}));
+    expect((await db.select(db.taskTags).get()).single.deletedAt, isNull);
+  });
+
+  test('版本清单里见过的关联，远程确认消失后仍软删除', () async {
+    await db
+        .into(db.taskTags)
+        .insert(
+          TaskTag(
+            id: 'link',
+            taskId: 'task',
+            tagId: 'tag',
+            userId: 'a',
+            createdAt: date,
+          ),
+        );
+    await apply(batch('task_tags', [], previous: {'link': '1'}));
+    expect((await db.select(db.taskTags).get()).single.deletedAt, isNotNull);
   });
 }

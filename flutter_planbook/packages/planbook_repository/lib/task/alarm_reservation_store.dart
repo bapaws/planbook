@@ -102,7 +102,6 @@ class AlarmReservationReconciler {
     required this.store,
     required this.pending,
     required this.activeIds,
-    required this.clearPending,
     required this.cancel,
     required this.schedule,
     int Function()? now,
@@ -111,7 +110,6 @@ class AlarmReservationReconciler {
   final AlarmReservationStore store;
   final Future<Map<int, String?>> Function() pending;
   final Future<Set<int>> Function() activeIds;
-  final Future<void> Function() clearPending;
   final Future<void> Function(int id) cancel;
   final Future<void> Function(int id, AlarmPlan plan) schedule;
   final int Function() _now;
@@ -155,6 +153,13 @@ class AlarmReservationReconciler {
 
   Future<bool> needsMigration() async => (await _read())['phase'] != 'complete';
 
+  static Set<int> reservedFromLedger(Map<String, dynamic> state) {
+    return {
+      for (final value in (state['entries'] as Map).values)
+        (value as Map)['id'] as int,
+    };
+  }
+
   Future<void> reconcile(
     List<AlarmPlan> plans, {
     required bool full,
@@ -163,21 +168,22 @@ class AlarmReservationReconciler {
   }) async {
     validate();
     final state = await _read();
-    var system = await pending();
+    final system = await pending();
     final reserved = {...system.keys, ...await activeIds()};
     validate();
     if (state['phase'] != 'complete' && !full) {
       throw StateError('提醒迁移必须读取全部单次和重复任务后执行');
     }
+    // 升级前的系统预约不在账本里。先记下它们，等新预约全部确认后再逐条取消。
+    // 不能先清空全部待触发通知：某一条排程失败时，用户会失去原来的提醒。
+    final legacyPending = {
+      for (final id in system.keys)
+        if (!reservedFromLedger(state).contains(id)) id,
+    };
     if (state['phase'] == 'legacy' || state['phase'] == 'clearing') {
-      state['phase'] = 'clearing';
-      await store.write(state);
-      validate();
-      // 仅当前服务使用本地预约插件；此 API 保留已经展示的通知。
-      await clearPending();
       state['phase'] = 'building';
       await store.write(state);
-      system = {};
+      validate();
     }
     final entries = Map<String, dynamic>.from(state['entries'] as Map);
     state['entries'] = entries;
@@ -205,6 +211,7 @@ class AlarmReservationReconciler {
     var changed = false;
     final removed = <String, Map<dynamic, dynamic>>{};
     try {
+      // 账本里已经失效的条目先取消，给新预约腾出额度。
       for (final key in entries.keys.toList()) {
         validate();
         final entry = entries[key] as Map;
@@ -219,14 +226,24 @@ class AlarmReservationReconciler {
           entries.remove(key);
         }
       }
-      // 先移除失效预约再补齐，避免系统容量限制阻止取消或导致迁移反复失败。
+      // 单条排程失败不中断其余条目，也不取消升级前的未知预约。
+      Object? scheduleError;
+      StackTrace? scheduleStack;
       for (final plan in plans) {
         validate();
         final id = (entries[plan.key] as Map)['id'] as int;
         if (plan.at > _now() && system[id] != plan.payload) {
-          await schedule(id, plan);
-          changed = true;
+          try {
+            await schedule(id, plan);
+            changed = true;
+          } on Object catch (error, stack) {
+            scheduleError ??= error;
+            scheduleStack ??= stack;
+          }
         }
+      }
+      if (scheduleError != null) {
+        Error.throwWithStackTrace(scheduleError, scheduleStack!);
       }
       if (changed) {
         final confirmed = await pending();
@@ -243,6 +260,19 @@ class AlarmReservationReconciler {
           if (plan.at > _now() && confirmed[id] != plan.payload) {
             throw StateError('系统未保留预约，保留重试状态，不标记迁移完成');
           }
+        }
+      }
+      final kept = entries.values.map((e) => (e as Map)['id'] as int).toSet();
+      final retired = legacyPending.where((id) => !kept.contains(id)).toList();
+      for (final id in retired) {
+        if (!system.containsKey(id)) continue;
+        validate();
+        await cancel(id);
+      }
+      if (retired.isNotEmpty) {
+        final confirmed = await pending();
+        if (retired.any(confirmed.containsKey)) {
+          throw StateError('系统未取消升级前的预约，保留重试');
         }
       }
       validate();

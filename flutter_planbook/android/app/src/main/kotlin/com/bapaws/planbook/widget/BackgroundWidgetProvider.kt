@@ -5,24 +5,24 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
-/** 小组件读库与绘图共用串行后台队列，广播结束前保留 PendingResult。 */
+/** 小组件读库与绘图共用串行后台队列。广播先延期，超时前结束以免系统杀掉进程。 */
 abstract class BackgroundWidgetProvider : AppWidgetProvider() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action !in setOf(
-                AppWidgetManager.ACTION_APPWIDGET_UPDATE,
-                AppWidgetManager.ACTION_APPWIDGET_OPTIONS_CHANGED,
-                AppWidgetManager.ACTION_APPWIDGET_RESTORED,
-            )
-        ) {
-            super.onReceive(context, intent)
-            return
-        }
-
         val pendingResult = goAsync()
+        val finished = AtomicBoolean(false)
+        fun finishOnce() {
+            if (finished.compareAndSet(false, true)) pendingResult?.finish()
+        }
+        val handler = Handler(Looper.getMainLooper())
+        val watchdog = Runnable { finishOnce() }
+        handler.postDelayed(watchdog, BROADCAST_BUDGET_MS)
         val appContext = context.applicationContext
         val ids = intent.getIntArrayExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS)
             ?.sorted()?.joinToString(",").orEmpty()
@@ -41,8 +41,15 @@ abstract class BackgroundWidgetProvider : AppWidgetProvider() {
                     )
                 }
             },
-            onComplete = { pendingResult?.finish() },
+            onComplete = {
+                handler.removeCallbacks(watchdog)
+                finishOnce()
+            },
         )
+    }
+
+    private companion object {
+        const val BROADCAST_BUDGET_MS = 8_000L
     }
 }
 

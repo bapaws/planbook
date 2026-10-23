@@ -10,7 +10,6 @@ import android.widget.RemoteViews
 import com.bapaws.planbook.R
 
 private const val TAG = "PlanbookWeekWidget"
-private const val COMPLETE_HIT_COUNT = 28
 private const val DAY_HIT_COUNT = 16
 
 class WeekListWidgetLargeProvider : BackgroundWidgetProvider() {
@@ -158,9 +157,7 @@ object WeekWidgetUpdater {
     }
 
     private fun hideHits(context: Context, rv: RemoteViews) {
-        for (i in 0 until COMPLETE_HIT_COUNT) {
-            completeId(context, i)?.let { rv.setViewVisibility(it, android.view.View.GONE) }
-        }
+        rv.removeAllViews(R.id.week_complete_hits)
         for (i in 0 until DAY_HIT_COUNT) {
             dayId(context, i)?.let { rv.setViewVisibility(it, android.view.View.GONE) }
         }
@@ -173,19 +170,15 @@ object WeekWidgetUpdater {
         density: Float,
         appWidgetId: Int,
     ) {
-        for (i in 0 until COMPLETE_HIT_COUNT) {
-            val id = completeId(context, i) ?: continue
-            if (i >= hits.size) {
-                rv.setViewVisibility(id, android.view.View.GONE)
-                continue
-            }
-            val hit = hits[i]
+        for (hit in hits) {
+            val id = R.id.week_complete_hit
+            val hitView = RemoteViews(context.packageName, R.layout.widget_week_complete_hit)
             val task = hit.task ?: continue
-            rv.setViewVisibility(id, android.view.View.VISIBLE)
-            rv.setViewLayoutMargin(id, RemoteViews.MARGIN_LEFT, hit.left / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-            rv.setViewLayoutMargin(id, RemoteViews.MARGIN_TOP, hit.top / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-            rv.setViewLayoutWidth(id, hit.width / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
-            rv.setViewLayoutHeight(id, hit.height / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+            hitView.setViewVisibility(id, android.view.View.VISIBLE)
+            hitView.setViewLayoutMargin(id, RemoteViews.MARGIN_LEFT, hit.left / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+            hitView.setViewLayoutMargin(id, RemoteViews.MARGIN_TOP, hit.top / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+            hitView.setViewLayoutWidth(id, hit.width / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
+            hitView.setViewLayoutHeight(id, hit.height / density, android.util.TypedValue.COMPLEX_UNIT_DIP)
             val completeIntent = Intent(context, WidgetClickReceiver::class.java).apply {
                 action = WidgetClickReceiver.ACTION_COMPLETE_TASK
                 putExtra(WidgetClickReceiver.EXTRA_TASK_ID, task.taskId)
@@ -197,7 +190,8 @@ object WeekWidgetUpdater {
                 completeIntent,
                 android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE,
             )
-            rv.setOnClickPendingIntent(id, pending)
+            hitView.setOnClickPendingIntent(id, pending)
+            rv.addView(R.id.week_complete_hits, hitView)
         }
     }
 
@@ -226,11 +220,6 @@ object WeekWidgetUpdater {
                 "planbook.bapaws://task/today?date=$dateKey",
             )
         }
-    }
-
-    private fun completeId(context: Context, index: Int): Int? {
-        val id = context.resources.getIdentifier("week_complete_$index", "id", context.packageName)
-        return id.takeIf { it != 0 }
     }
 
     private fun dayId(context: Context, index: Int): Int? {

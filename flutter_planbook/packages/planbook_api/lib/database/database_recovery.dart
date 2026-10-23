@@ -90,6 +90,14 @@ class DatabaseRecoveryException implements Exception {
   final String? backupDirectory;
   final Object? cause;
 
+  /// 锁冲突表示检查没有完成，不能当成数据库损坏。
+  bool get isTransient {
+    final error = cause;
+    if (error is! SqliteException) return false;
+    final code = error.resultCode & 0xff;
+    return code == 5 || code == 6;
+  }
+
   @override
   String toString() =>
       'DatabaseRecoveryException: $reason; database=$databasePath; '
@@ -151,6 +159,8 @@ class DatabaseFileRecovery {
     try {
       final db = sqlite3.open(path, mode: OpenMode.readOnly);
       try {
+        // 小组件可能正读着同一份 WAL。短暂等待，避免一碰到锁就中止启动。
+        db.execute('PRAGMA busy_timeout=800;');
         final rows = db.select('PRAGMA quick_check;');
         if (rows.isEmpty) {
           throw StateError('完整性检查没有返回结果');

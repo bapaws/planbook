@@ -32,9 +32,8 @@ void main() {
   late Set<int> active;
   late List<int> scheduled;
   late List<int> canceled;
-  late int cleared;
   late bool failSchedule;
-  late bool failClear;
+  late int scheduleFailuresLeft;
   late bool failCancel;
   late bool dropSchedule;
   late bool dropCancel;
@@ -44,17 +43,16 @@ void main() {
     now: () => 0,
     pending: () async => Map.of(pending),
     activeIds: () async => active,
-    clearPending: () async {
-      cleared++;
-      if (failClear) throw StateError('原生清理失败');
-      pending.clear();
-    },
     cancel: (id) async {
       if (failCancel) throw StateError('原生取消失败');
       canceled.add(id);
       if (!dropCancel) pending.remove(id);
     },
     schedule: (id, plan) async {
+      if (scheduleFailuresLeft > 0) {
+        scheduleFailuresLeft--;
+        throw StateError('原生预约失败');
+      }
       if (failSchedule) throw StateError('原生预约失败');
       scheduled.add(id);
       if (!dropSchedule) pending[id] = plan.payload;
@@ -88,9 +86,8 @@ void main() {
     active = {};
     scheduled = [];
     canceled = [];
-    cleared = 0;
     failSchedule = false;
-    failClear = false;
+    scheduleFailuresLeft = 0;
     failCancel = false;
     dropSchedule = false;
     dropCancel = false;
@@ -100,7 +97,7 @@ void main() {
     pending[99] = null;
     active = {1, 2};
     await reconcile([plan('a'), plan('b')]);
-    expect(cleared, 1);
+    expect(canceled, [99]);
     expect(active, {1, 2});
     expect(pending.keys, [3, 4]);
     expect(store.state!['phase'], 'complete');
@@ -114,7 +111,6 @@ void main() {
     expect(pending, initial);
     expect(scheduled, isEmpty);
     expect(canceled, isEmpty);
-    expect(cleared, 1);
   });
 
   test('实际三条预约只取消三条，不遍历一千个 ID', () async {
@@ -150,18 +146,33 @@ void main() {
     expect(store.state!['phase'], 'building');
     failSchedule = false;
     await reconcile([plan('a')]);
-    expect(cleared, 1);
     expect(store.state!['phase'], 'complete');
     expect(pending, hasLength(1));
   });
 
-  test('清理中断可重试，不把未完成迁移当作成功', () async {
-    failClear = true;
+  test('调度失败时保留升级前的待触发提醒，全部成功后再取消', () async {
+    pending[99] = 'legacy';
+    failSchedule = true;
     await expectLater(reconcile([plan('a')]), throwsStateError);
-    expect(store.state!['phase'], 'clearing');
-    failClear = false;
+    expect(pending.containsKey(99), isTrue);
+    expect(canceled, isEmpty);
+    expect(store.state!['phase'], 'building');
+    failSchedule = false;
     await reconcile([plan('a')]);
-    expect(cleared, 2);
+    expect(pending.containsKey(99), isFalse);
+    expect(canceled, [99]);
+    expect(store.state!['phase'], 'complete');
+  });
+
+  test('一条预约失败时其余继续，旧提醒保持到全部成功', () async {
+    pending[99] = 'legacy';
+    scheduleFailuresLeft = 1;
+    await expectLater(reconcile([plan('a'), plan('b')]), throwsStateError);
+    expect(scheduled, hasLength(1));
+    expect(pending.containsKey(99), isTrue);
+    expect(store.state!['phase'], 'building');
+    await reconcile([plan('a'), plan('b')]);
+    expect(pending.containsKey(99), isFalse);
     expect(store.state!['phase'], 'complete');
   });
 
@@ -172,7 +183,6 @@ void main() {
     dropSchedule = false;
     await reconcile([plan('a')]);
     expect(store.state!['phase'], 'complete');
-    expect(cleared, 1);
   });
 
   test('保存意图失败时不能发出原生预约', () async {
@@ -268,13 +278,13 @@ void main() {
   test('账本版本未知或 ID 冲突时不清理原生数据', () async {
     store.state = {'version': 99};
     await expectLater(reconcile([]), throwsStateError);
-    expect(cleared, 0);
     expect(canceled, isEmpty);
   });
 
   test('迁移必须覆盖全部任务，局部请求不能清空旧提醒', () async {
     await expectLater(reconcile([plan('a')], full: false), throwsStateError);
-    expect(cleared, 0);
+    expect(canceled, isEmpty);
+    expect(scheduled, isEmpty);
   });
 
   test('账号失效时停止后续原生操作，不能标记迁移完成', () async {

@@ -83,25 +83,23 @@ struct WeekGridView: View {
                 capsuleText: WeekCalendar.weekRangeLabel(from: entry.days[0], dayCount: 7),
                 showEmpty: entry.totalCount == 0
             )
-            VStack(spacing: 1) {
-                HStack(spacing: 1) {
-                    focusCell
-                    dayCell(entry.days[0])
-                }
-                HStack(spacing: 1) {
-                    dayCell(entry.days[1])
-                    dayCell(entry.days[2])
-                }
-                HStack(spacing: 1) {
-                    dayCell(entry.days[3])
-                    dayCell(entry.days[4])
-                }
-                HStack(spacing: 1) {
-                    dayCell(entry.days[5])
-                    dayCell(entry.days[6])
+            GeometryReader { geometry in
+                let cellHeight = max(0, (geometry.size.height - 3) / 4)
+                VStack(spacing: 1) {
+                    ForEach(0 ..< 4) { row in
+                        HStack(spacing: 1) {
+                            if row == 0 {
+                                focusCell
+                            } else {
+                                dayCell(entry.days[row * 2 - 1], height: cellHeight)
+                            }
+                            dayCell(entry.days[row * 2], height: cellHeight)
+                        }
+                        .frame(height: cellHeight)
+                        .clipped()
+                    }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .padding(10)
         .widgetURL(weekTabURL(view: "grid"))
@@ -150,10 +148,13 @@ struct WeekGridView: View {
             .filter { !$0.isEmpty }
     }
 
-    private func dayCell(_ day: Date) -> some View {
+    private func dayCell(_ day: Date, height: CGFloat) -> some View {
         let key = WeekCalendar.dayKey(day)
         let tasks = entry.tasksByDay[key] ?? []
-        let visible = Array(tasks.prefix(3))
+        let slots = WeekTaskCapacity.slots(height: height - 26, rowHeight: 14, spacing: 2)
+        let visibleCount = WeekTaskCapacity.visibleCount(taskCount: tasks.count, slots: slots)
+        let visible = Array(tasks.prefix(visibleCount))
+        let extra = tasks.count - visibleCount
         let theme = WeekCalendar.weekdayColorScheme(for: day, isDark: isDark)
         let isToday = WeekCalendar.isSameDay(day, Date())
         return VStack(alignment: .leading, spacing: 2) {
@@ -165,12 +166,22 @@ struct WeekGridView: View {
                     isToday: isToday,
                     useAppTheme: false
                 )
+                .frame(height: 16)
             }
             .buttonStyle(.plain)
             ForEach(visible) { task in
                 WeekCompleteRow(task: task, theme: task.priority.getColorScheme(isDarkMode: isDark))
+                    .frame(height: 14)
             }
-            Spacer(minLength: 0)
+            if extra > 0 && slots > 0 {
+                Link(destination: weekDayURL(day)) {
+                    Text("+\(extra)")
+                        .font(.system(size: 9, weight: .medium))
+                        .foregroundStyle(Colors.outlineColor)
+                        .frame(height: 14)
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding(4)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

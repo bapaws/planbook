@@ -84,21 +84,27 @@ struct WeekListView: View {
                 capsuleText: WeekCalendar.weekRangeLabel(from: entry.days[0], dayCount: 7),
                 showEmpty: entry.totalCount == 0
             )
-            VStack(spacing: 4) {
-                ForEach(entry.days, id: \.timeIntervalSince1970) { day in
-                    weekRow(day: day)
+            GeometryReader { geometry in
+                let rowHeight = max(0, (geometry.size.height - 24) / 7)
+                VStack(spacing: 4) {
+                    ForEach(entry.days, id: \.timeIntervalSince1970) { day in
+                        weekRow(day: day, height: rowHeight)
+                            .frame(height: rowHeight, alignment: .top)
+                            .clipped()
+                    }
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .padding(10)
         .widgetURL(weekTabURL(view: "list"))
     }
 
-    private func weekRow(day: Date) -> some View {
+    private func weekRow(day: Date, height: CGFloat) -> some View {
         let key = WeekCalendar.dayKey(day)
         let tasks = entry.tasksByDay[key] ?? []
-        let visible = Array(tasks.prefix(4))
+        let slots = WeekTaskCapacity.slots(height: height, rowHeight: 14, spacing: 2)
+        let visibleCount = WeekTaskCapacity.visibleCount(taskCount: tasks.count, slots: slots, columns: 2)
+        let visible = Array(tasks.prefix(visibleCount))
         let extra = tasks.count - visible.count
         let theme = WeekCalendar.weekdayColorScheme(for: day, isDark: isDark)
         let isToday = WeekCalendar.isSameDay(day, Date())
@@ -138,11 +144,16 @@ struct WeekListView: View {
                             Spacer(minLength: 0)
                         }
                     }
+                    .frame(height: 14)
                 }
-                if extra > 0 {
-                    Text("+\(extra)")
-                        .font(.system(size: 10, weight: .medium))
-                        .foregroundStyle(Colors.outlineColor)
+                if extra > 0 && slots > 0 {
+                    Link(destination: weekDayURL(day)) {
+                        Text("+\(extra)")
+                            .font(.system(size: 10, weight: .medium))
+                            .foregroundStyle(Colors.outlineColor)
+                            .frame(height: 14)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .topLeading)

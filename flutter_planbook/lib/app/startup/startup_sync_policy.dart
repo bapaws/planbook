@@ -18,16 +18,25 @@ class StartupSyncPolicy {
     _observed = true;
     _account = account;
     final epoch = ++_epoch;
-    if (account == null) {
-      if (!await sp.remove(accountKey)) throw StateError('注销同步状态保存失败');
-      return;
-    }
-    final force = !coldStart || sp.getString(accountKey) != account;
-    await synchronize(force: force);
-    // 旧账号请求晚返回，不能覆盖新账号的完成标记（包括 A→B→A）。
-    if (_epoch != epoch || _account != account) return;
-    if (!await sp.setString(accountKey, account)) {
-      throw StateError('启动同步账号保存失败');
+    try {
+      if (account == null) {
+        if (!await sp.remove(accountKey)) throw StateError('注销同步状态保存失败');
+        return;
+      }
+      final force = !coldStart || sp.getString(accountKey) != account;
+      await synchronize(force: force);
+      // 旧账号请求晚返回，不能覆盖新账号的完成标记（包括 A→B→A）。
+      if (_epoch != epoch || _account != account) return;
+      if (!await sp.setString(accountKey, account)) {
+        throw StateError('启动同步账号保存失败');
+      }
+    } on Object {
+      // 只撤回这一轮。更新的账号已经开始时，不能把观察状态清掉。
+      if (_epoch == epoch && _account == account) {
+        _observed = false;
+        _account = null;
+      }
+      rethrow;
     }
   }
 }

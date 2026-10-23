@@ -431,10 +431,18 @@ class AppDatabase extends _$AppDatabase {
   static Future<void> recoverCorruptIfNeeded() async {
     final temporaryDirectory = await _prepareSqliteRuntime();
     final file = await getDatabaseFile();
-    await recoverDatabaseFile(
-      databasePath: file.path,
-      temporaryDirectory: temporaryDirectory,
-    );
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        await recoverDatabaseFile(
+          databasePath: file.path,
+          temporaryDirectory: temporaryDirectory,
+        );
+        return;
+      } on DatabaseRecoveryException catch (error) {
+        if (!error.isTransient || attempt == 2) rethrow;
+        await Future<void>.delayed(Duration(milliseconds: 200 * (attempt + 1)));
+      }
+    }
   }
 
   static Future<void> _configureSqliteRuntime() async {

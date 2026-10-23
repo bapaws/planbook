@@ -124,16 +124,10 @@ class DatabaseTaskApi {
               rangeEnd: cached.last.occurrenceAt,
             )
           : <TaskOccurrencesCompanion>[];
-      final hiddenDates = cached
-          .where((o) => o.deletedAt != null)
-          .map((o) => o.occurrenceAt.dateTime.microsecondsSinceEpoch)
-          .toSet();
+      final visible = _omitHiddenDays(generated, cached);
       final expected = {
-        for (final row in generated)
-          if (!hiddenDates.contains(
-            row.occurrenceAt.value.dateTime.microsecondsSinceEpoch,
-          ))
-            row.occurrenceAt.value.dateTime.microsecondsSinceEpoch: row,
+        for (final row in visible)
+          row.occurrenceAt.value.dateTime.microsecondsSinceEpoch: row,
       };
       final live = cached.where((o) => o.deletedAt == null).toList();
       final cacheMatches =
@@ -179,7 +173,7 @@ class DatabaseTaskApi {
           await db.batch((batch) {
             batch.insertAll(
               db.taskOccurrences,
-              generated,
+              visible,
               mode: InsertMode.insertOrIgnore,
             );
           });
@@ -253,10 +247,13 @@ class DatabaseTaskApi {
     }
 
     // 保持原有缓存窗口，确保正在浏览的历史或未来日期也能立即刷新。
-    final occurrences = await occurrenceGenerator.generate(
-      schedules: [occurrenceScheduleOf(task)],
-      rangeStart: cached.first.occurrenceAt,
-      rangeEnd: cached.last.occurrenceAt,
+    final occurrences = _omitHiddenDays(
+      await occurrenceGenerator.generate(
+        schedules: [occurrenceScheduleOf(task)],
+        rangeStart: cached.first.occurrenceAt,
+        rangeEnd: cached.last.occurrenceAt,
+      ),
+      cached,
     );
     await db.batch((batch) {
       batch.insertAll(
@@ -266,6 +263,25 @@ class DatabaseTaskApi {
       );
     });
   }
+
+  /// 隐藏日按自然日比较。时间戳有细微偏差时也不能在旁边再插入一条可见实例。
+  static List<TaskOccurrencesCompanion> _omitHiddenDays(
+    List<TaskOccurrencesCompanion> generated,
+    List<TaskOccurrence> cached,
+  ) {
+    final hidden = <int>{
+      for (final row in cached)
+        if (row.deletedAt != null) _dayMicros(row.occurrenceAt),
+    };
+    if (hidden.isEmpty) return generated;
+    return [
+      for (final row in generated)
+        if (!hidden.contains(_dayMicros(row.occurrenceAt.value))) row,
+    ];
+  }
+
+  static int _dayMicros(Jiffy value) =>
+      value.startOf(Unit.day).dateTime.microsecondsSinceEpoch;
 
   List<TaskTag>? generateTaskTags({
     required Task task,

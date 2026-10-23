@@ -209,22 +209,27 @@ object WeekWidgetRenderer {
             dayHits.add(WeekHit(chipRect.left, chipRect.top, chipRect.width(), chipRect.height(), dateKey = WeekCalendar.dayKey(day)))
 
             val tasks = grouped[WeekCalendar.dayKey(day)].orEmpty()
-            val visible = tasks.take(4)
+            val taskRowH = 14f * density
+            val slots = WeekTaskCapacity.slots(rowH - 4f * density, taskRowH)
+            val visibleCount = WeekTaskCapacity.visibleCount(tasks.size, slots, columns = 2)
+            val visible = tasks.take(visibleCount)
             val colW = (width - chipW - 6f * density) / 2f
             val taskLeft = left + chipW + 6f * density
             visible.forEachIndexed { i, task ->
                 val col = i % 2
                 val row = i / 2
                 val tLeft = taskLeft + col * colW
-                val tTop = rowTop + row * (rowH / 2f)
-                completeHits.add(drawTaskRow(canvas, task, tLeft, tTop, colW - 4f * density, rowH / 2f - 2f * density, density, isDark))
+                val tTop = rowTop + 2f * density + row * taskRowH
+                completeHits.add(drawTaskRow(canvas, task, tLeft, tTop, colW - 4f * density, taskRowH, density, isDark))
             }
-            if (tasks.size > 4) {
+            if (tasks.size > visibleCount && slots > 0) {
                 val extraPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                     color = colorScheme.outlineColor()
                     textSize = 10f * density
                 }
-                canvas.drawText("+${tasks.size - 4}", taskLeft, rowTop + rowH - 4f * density, extraPaint)
+                canvas.drawText("+${tasks.size - visibleCount}", taskLeft, rowTop + 2f * density + (visibleCount / 2 + 1) * taskRowH - 3f * density, extraPaint)
+                dayHits.add(WeekHit(taskLeft, rowTop + 2f * density + visibleCount / 2 * taskRowH,
+                    width - chipW - 6f * density, taskRowH, dateKey = WeekCalendar.dayKey(day)))
             }
         }
     }
@@ -268,9 +273,21 @@ object WeekWidgetRenderer {
                 }
                 canvas.drawText("${tasks.size}", cellLeft + colW - 6f * density, cellTop + 14f * density, countPaint)
                 dayHits.add(WeekHit(cellLeft, cellTop, colW, 18f * density, dateKey = WeekCalendar.dayKey(day)))
-                tasks.take(3).forEachIndexed { i, task ->
+                val slots = WeekTaskCapacity.slots(rowH - 20f * density, 14f * density)
+                val visibleCount = WeekTaskCapacity.visibleCount(tasks.size, slots)
+                tasks.take(visibleCount).forEachIndexed { i, task ->
                     val tTop = cellTop + 18f * density + i * 14f * density
                     completeHits.add(drawTaskRow(canvas, task, cellLeft + 4f * density, tTop, colW - 8f * density, 14f * density, density, isDark))
+                }
+                if (tasks.size > visibleCount && slots > 0) {
+                    val extraPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
+                        color = colorScheme.outlineColor()
+                        textSize = 9f * density
+                    }
+                    canvas.drawText("+${tasks.size - visibleCount}", cellLeft + 4f * density,
+                        cellTop + 18f * density + (visibleCount + 1) * 14f * density - 3f * density, extraPaint)
+                    dayHits.add(WeekHit(cellLeft + 4f * density, cellTop + 18f * density + visibleCount * 14f * density,
+                        colW - 8f * density, 14f * density, dateKey = WeekCalendar.dayKey(day)))
                 }
             }
         }
@@ -375,7 +392,9 @@ object WeekWidgetRenderer {
                 canvas.drawText(WeekCalendar.dayNumber(day), cx, cy - (numPaint.ascent() + numPaint.descent()) / 2f, numPaint)
                 dayHits.add(WeekHit(cellLeft, weekTop, colW, weekH, dateKey = WeekCalendar.dayKey(day)))
                 val tasks = grouped[WeekCalendar.dayKey(day)].orEmpty()
-                val visible = tasks.take(3)
+                val slots = WeekTaskCapacity.slots(weekH - 20f * density, 12f * density, 2f * density)
+                val visibleCount = WeekTaskCapacity.visibleCount(tasks.size, slots)
+                val visible = tasks.take(visibleCount)
                 visible.forEachIndexed { ti, task ->
                     val theme = task.priority.getColorScheme(isDark)
                     val barTop = weekTop + 20f * density + ti * 14f * density
@@ -391,12 +410,12 @@ object WeekWidgetRenderer {
                     val text = TextUtils.ellipsize(task.title, textPaint, bar.width() - 6f * density, TextUtils.TruncateAt.END)
                     canvas.drawText(text.toString(), bar.left + 3f * density, bar.centerY() - (textPaint.ascent() + textPaint.descent()) / 2f, textPaint)
                 }
-                if (tasks.size > 3) {
+                if (tasks.size > visibleCount && slots > 0) {
                     val extraPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
                         color = colorScheme.outlineColor()
                         textSize = 8f * density
                     }
-                    canvas.drawText("+${tasks.size - 3}", cellLeft + 4f * density, weekTop + 20f * density + 3 * 14f * density, extraPaint)
+                    canvas.drawText("+${tasks.size - visibleCount}", cellLeft + 4f * density, weekTop + 20f * density + visibleCount * 14f * density + 9f * density, extraPaint)
                 }
             }
         }

@@ -80,12 +80,7 @@ class RemoteTablePull {
   Future<RemoteTableBatch> pull(String table, {required bool force}) async {
     final generation = sp.getString(generationKey) ?? 'existing';
     final key = '$statePrefix${generation}__${account}__$table';
-    final raw = sp.getString(key);
-    final previous = raw == null
-        ? <String, String>{}
-        : raw.length > 65536
-        ? await compute(_decodeVersions, raw)
-        : _decodeVersions(raw);
+    final previous = await _loadVersions(sp, key);
     List<Map<String, dynamic>> inventory;
     try {
       inventory = await _all(table, 'id,_sync_version:xmin::text');
@@ -138,14 +133,9 @@ class RemoteTablePull {
         if ((sp.getString(generationKey) ?? 'existing') != generation) {
           throw StateError('业务库已变化，停止提交同步清单');
         }
-        final encoded = value.length > 1000
-            ? await compute(_encodeVersions, value)
-            : _encodeVersions(value);
+        await _storeVersions(sp, key, value);
         if ((sp.getString(generationKey) ?? 'existing') != generation) {
           throw StateError('业务库已变化，停止提交同步清单');
-        }
-        if (!await sp.setString(key, encoded)) {
-          throw StateError('同步清单保存失败');
         }
       },
     );
@@ -180,6 +170,9 @@ class RemoteTableBatch {
   final Future<void> Function(Map<String, String>) _save;
   final _accepted = <String>{};
 
+  /// 上次清单里见过的 id。空集表示还没有基线，关联删除仍按远程确认处理。
+  Set<String> get knownIds => _previous.keys.toSet();
+
   void accept(Iterable<String> ids) => _accepted.addAll(ids);
 
   Future<void> commit() async {
@@ -189,8 +182,9 @@ class RemoteTableBatch {
         next[row['id']! as String] = row['_sync_version']! as String;
       }
     }
-    if (_accepted.isEmpty) return;
-    // 不清除消失项：如果远程重建相同 id，仍然有旧版本可供比较。
+    final present = inventory;
+    if (present != null) next.removeWhere((id, _) => !present.contains(id));
+    if (_accepted.isEmpty && next.length == _previous.length) return;
     await _save(next);
   }
 }
@@ -205,3 +199,73 @@ Map<String, String> _decodeVersions(String raw) =>
     Map<String, String>.from(jsonDecode(raw) as Map);
 
 String _encodeVersions(Map<String, String> versions) => jsonEncode(versions);
+
+const _versionShardEntries = 1500;
+
+/// 分片不完整时返回空清单，下一次全量拉取，而不是拿残缺版本永久跳过。
+Future<Map<String, String>> _loadVersions(
+  SharedPreferences sp,
+  String key,
+) async {
+  final shardCount = sp.getInt('$key#shards');
+  if (shardCount != null && shardCount > 0) {
+    final merged = <String, String>{};
+    for (var i = 0; i < shardCount; i++) {
+      final raw = sp.getString('$key#shard#$i');
+      if (raw == null) return {};
+      merged.addAll(
+        raw.length > 65536
+            ? await compute(_decodeVersions, raw)
+            : _decodeVersions(raw),
+      );
+    }
+    return merged;
+  }
+  final raw = sp.getString(key);
+  if (raw == null) return {};
+  return raw.length > 65536
+      ? await compute(_decodeVersions, raw)
+      : _decodeVersions(raw);
+}
+
+Future<void> _storeVersions(
+  SharedPreferences sp,
+  String key,
+  Map<String, String> versions,
+) async {
+  if (versions.length <= _versionShardEntries) {
+    final encoded = versions.length > 1000
+        ? await compute(_encodeVersions, versions)
+        : _encodeVersions(versions);
+    if (!await sp.setString(key, encoded)) {
+      throw StateError('同步清单保存失败');
+    }
+    final previousCount = sp.getInt('$key#shards') ?? 0;
+    await sp.remove('$key#shards');
+    for (var i = 0; i < previousCount; i++) {
+      await sp.remove('$key#shard#$i');
+    }
+    return;
+  }
+  final entries = versions.entries.toList();
+  final previousCount = sp.getInt('$key#shards') ?? 0;
+  final shardCount = (entries.length / _versionShardEntries).ceil();
+  for (var i = 0; i < shardCount; i++) {
+    final slice = Map<String, String>.fromEntries(
+      entries.skip(i * _versionShardEntries).take(_versionShardEntries),
+    );
+    final encoded = slice.length > 1000
+        ? await compute(_encodeVersions, slice)
+        : _encodeVersions(slice);
+    if (!await sp.setString('$key#shard#$i', encoded)) {
+      throw StateError('同步清单保存失败');
+    }
+  }
+  if (!await sp.setInt('$key#shards', shardCount)) {
+    throw StateError('同步清单保存失败');
+  }
+  await sp.remove(key);
+  for (var i = shardCount; i < previousCount; i++) {
+    await sp.remove('$key#shard#$i');
+  }
+}

@@ -205,4 +205,48 @@ void main() {
     source.add({'id': 'late', '_sync_version': '2'});
     expect(await batch.confirmMissing(['late', 'gone']), {'gone'});
   });
+
+  test('消失的行从版本清单移除，相同 id 重建后会重新下载', () async {
+    await commit(await pull().pull('tasks', force: false));
+    source.removeWhere((row) => row['id'] == 'id3');
+    final gone = await pull().pull('tasks', force: false);
+    expect(gone.rows, isEmpty);
+    await commit(gone);
+    source.add({
+      'id': 'id3',
+      '_sync_version': '1',
+      'user_id': 'a',
+      'created_at': '2000-01-01',
+      'title': 'old',
+    });
+    expect(
+      (await pull().pull('tasks', force: false)).rows.map((row) => row['id']),
+      ['id3'],
+    );
+  });
+
+  test('版本清单过大时分片保存，缺一片则下次全量', () async {
+    source = List.generate(
+      1501,
+      (i) => {
+        'id': 'id${i.toString().padLeft(5, '0')}',
+        '_sync_version': '1',
+        'user_id': 'a',
+        'created_at': '2000-01-01',
+        'title': 'old',
+      },
+    );
+    await commit(await pull().pull('tasks', force: false));
+    final shards = sp
+        .getKeys()
+        .where((key) => key.contains('#shard#'))
+        .toList();
+    expect(shards, hasLength(2));
+    expect(
+      sp.getInt(shards.first.replaceFirst(RegExp(r'#shard#\d+$'), '#shards')),
+      2,
+    );
+    await sp.remove(shards.first);
+    expect((await pull().pull('tasks', force: false)).rows, hasLength(1501));
+  });
 }

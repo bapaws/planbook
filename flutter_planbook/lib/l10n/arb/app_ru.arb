@@ -917,5 +917,7 @@
         "example": "work, life"
       }
     }
-  }
+  },
+  "startupDatabaseUnavailable": "Не удалось проверить локальную базу, поэтому она не открыта. Существующие данные сохранены.",
+  "startupDatabaseRetry": "Повторить"
 }

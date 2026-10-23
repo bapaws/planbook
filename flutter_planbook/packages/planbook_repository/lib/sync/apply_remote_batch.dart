@@ -108,6 +108,7 @@ Future<void> applyRemoteBatch({
           .toList();
     }
     final inventory = batch.inventory ?? batch.rows.map((r) => r['id']).toSet();
+    final known = batch.knownIds;
     final candidates = local
         .where((r) => !inventory.contains(r['id']))
         .toList();
@@ -121,6 +122,8 @@ Future<void> applyRemoteBatch({
         validateAccount();
         final ids = <String>{};
         for (final row in part.where((r) => missing.contains(r['id']))) {
+          // 清单已有基线时，只删除曾经同步过的关联。本地新建、尚未入账的关联留下。
+          if (known.isNotEmpty && !known.contains(row['id'])) continue;
           final related = <String>{
             row['id']! as String,
             row['parent_id']! as String,

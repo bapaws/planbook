@@ -86,16 +86,17 @@ object WeekCalendar {
 
     private fun dayKeys(task: WeekTask, days: List<Calendar>): List<String> {
         val rangeKeys = days.map { dayKey(it) }.toSet()
-        task.dueAt?.let {
-            val key = dayKey(millisToDay(it))
-            return if (key in rangeKeys) listOf(key) else emptyList()
-        }
+        // dueAt 通常是开始当天；有完整时间段时，按覆盖的每一天展示。
         if (task.startAt != null && task.endAt != null) {
             return days.mapNotNull { day ->
                 val start = startOfDayMillis(day)
                 val next = start + 24L * 60 * 60 * 1000
                 if (task.startAt < next && task.endAt >= start) dayKey(day) else null
             }
+        }
+        task.dueAt?.let {
+            val key = dayKey(millisToDay(it))
+            return if (key in rangeKeys) listOf(key) else emptyList()
         }
         task.startAt?.let {
             val key = dayKey(millisToDay(it))

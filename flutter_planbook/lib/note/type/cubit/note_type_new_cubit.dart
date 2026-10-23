@@ -100,9 +100,9 @@ class NoteTypeNewCubit extends Cubit<NoteTypeNewState> {
   void onContentChanged(String content) {
     if (!state.isReady || _saveFuture != null) return;
     if (state.type.isSummary) {
-      emit(state.copyWith(summaryContent: content.trim()));
+      emit(state.copyWith(summaryContent: content));
     } else {
-      emit(state.copyWith(focusContent: content.trim()));
+      emit(state.copyWith(focusContent: content));
     }
   }
 
@@ -125,7 +125,7 @@ class NoteTypeNewCubit extends Cubit<NoteTypeNewState> {
       await _notesRepository.savePeriodNote(
         target: target,
         title: current.type.noteTitle(target.focusAt, _l10n),
-        content: current.content.trim(),
+        content: current.content,
       );
       if (!isClosed) emit(state.copyWith(status: PageStatus.success));
     } on Object {

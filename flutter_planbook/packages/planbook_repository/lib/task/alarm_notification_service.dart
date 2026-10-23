@@ -183,7 +183,6 @@ class AlarmNotificationService implements TaskAlarmScheduler {
           item.id: item.payload,
       },
       activeIds: _activeIds,
-      clearPending: _plugin.cancelAllPendingNotifications,
       cancel: _plugin.cancel,
       schedule: _scheduleOne,
     );

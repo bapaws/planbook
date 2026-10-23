@@ -10,6 +10,18 @@ import WidgetKit
 
 private let kCreateTaskURL = URL(string: "planbook.bapaws://task/new?dueAt=today")!
 
+/// 按实际可用高度计算任务容量，溢出时为 +N 留出一行。
+enum WeekTaskCapacity {
+    static func slots(height: CGFloat, rowHeight: CGFloat, spacing: CGFloat = 0) -> Int {
+        max(0, Int(floor((max(0, height) + spacing) / (rowHeight + spacing))))
+    }
+
+    static func visibleCount(taskCount: Int, slots: Int, columns: Int = 1) -> Int {
+        let rows = max(0, slots)
+        return taskCount <= rows * columns ? taskCount : max(0, rows - 1) * columns
+    }
+}
+
 @available(iOS 16.0, *)
 enum WeekCalendar {
     static let dayFormatter: DateFormatter = {
@@ -116,10 +128,7 @@ enum WeekCalendar {
 
     private static func dayKeys(for task: WeekTask, days: [Date], calendar: Calendar) -> [String] {
         let rangeKeys = Set(days.map { dayKey($0, calendar: calendar) })
-        if let dueAt = task.dueAt {
-            let key = dayKey(dueAt, calendar: calendar)
-            return rangeKeys.contains(key) ? [key] : []
-        }
+        // dueAt 通常是开始当天；有完整时间段时，按覆盖的每一天展示。
         if let startAt = task.startAt, let endAt = task.endAt {
             return days.compactMap { day in
                 let start = calendar.startOfDay(for: day)
@@ -129,6 +138,10 @@ enum WeekCalendar {
                 }
                 return nil
             }
+        }
+        if let dueAt = task.dueAt {
+            let key = dayKey(dueAt, calendar: calendar)
+            return rangeKeys.contains(key) ? [key] : []
         }
         if let startAt = task.startAt {
             let key = dayKey(startAt, calendar: calendar)

@@ -423,4 +423,47 @@ void main() {
       );
     });
   }
+
+  test('同一周多条笔记时，读写都落在精确日期而不是较新的另一条', () async {
+    final monday = Jiffy.parse('2026-10-19');
+    final wednesday = Jiffy.parse('2026-10-21');
+    await db
+        .into(db.notes)
+        .insert(
+          NotesCompanion.insert(
+            id: const Value('mon'),
+            title: '周一',
+            content: const Value('精确'),
+            type: const Value(NoteType.weeklyFocus),
+            focusAt: Value(monday),
+          ),
+        );
+    await db
+        .into(db.notes)
+        .insert(
+          NotesCompanion.insert(
+            id: const Value('wed'),
+            title: '周三',
+            content: const Value('较新'),
+            type: const Value(NoteType.weeklyFocus),
+            focusAt: Value(wednesday),
+            updatedAt: Value(Jiffy.parse('2026-10-22')),
+          ),
+        );
+    final read = await notes
+        .getNoteByFocusAt(monday, type: NoteType.weeklyFocus)
+        .first;
+    expect(read?.id, 'mon');
+    final saved = await notes.savePeriodNote(
+      target: PeriodNoteTarget(date: monday, type: NoteType.weeklyFocus),
+      title: '周一',
+      content: '已改',
+    );
+    expect(saved.id, 'mon');
+    expect(saved.content, '已改');
+    final otherNote = await (db.select(
+      db.notes,
+    )..where((n) => n.id.equals('wed'))).getSingle();
+    expect(otherNote.content, '较新');
+  });
 }
