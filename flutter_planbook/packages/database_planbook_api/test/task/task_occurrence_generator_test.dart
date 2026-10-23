@@ -272,6 +272,8 @@ void main() {
   };
   for (final entry in calendarRules.entries) {
     test('${entry.key}切天复用纯计算，返回仍严格匹配原窗口', () async {
+      // 本组断言固定时差下的缓存次数；跨夏令时的精确回退另有对照测试。
+      final day = Jiffy.parse('2026-06-13');
       var calls = 0;
       final generator = TaskOccurrenceGenerator(
         computeBatch: (input) async {

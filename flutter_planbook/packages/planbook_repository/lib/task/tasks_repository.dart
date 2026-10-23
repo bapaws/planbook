@@ -88,9 +88,15 @@ class TasksRepository {
 
   Future<int> getTotalCount() => _dbTaskApi.getTotalCount(userId: userId);
 
-  /// 提前填充现有实例缓存，复用首页的生成入口，不触发同步、提醒或订阅。
-  Future<void> prepareForHome({required Jiffy date}) =>
-      _dbTaskApi.preGenerateTaskOccurrences(fromDate: date);
+  /// 提前生成实例并预组装少量日列表，不触发同步、提醒或任务订阅。
+  Future<void> prepareForHome({required Jiffy date}) async {
+    final account = userId;
+    await _dbTaskTodayApi.prepareHomeTaskEntities(
+      date: date,
+      userId: account,
+      isCurrent: () => userId == account,
+    );
+  }
 
   Future<void> create({
     required Task task,
@@ -260,34 +266,28 @@ class TasksRepository {
     final fence = await PullWriteFence.capture(_db);
     final list = await _supabaseTaskApi.getLatestTasks(force: force);
     validateAccount();
-    if (list.isEmpty && list is! RemoteSyncRows) return;
+    final detachedRepairKey =
+        'detached_occurrence_repair_v1__${generation}__${account ?? "guest"}';
+    final repairDetached = force || _sp.getBool(detachedRepairKey) != true;
+    if (list.isEmpty && list is! RemoteSyncRows && !repairDetached) return;
 
     final syncedTasks = <Task>[];
+    final affectedIds = <String>{};
     for (final item in list) {
       final task = Task.fromJson(item);
       if (task.userId != account) throw StateError('远程任务不属于请求账号');
+      affectedIds.add(task.id);
+      if (task.detachedFromTaskId != null) {
+        affectedIds.add(task.detachedFromTaskId!);
+      }
       final accepted = await _dbTaskApi.applySyncedTask(
         task: task,
         refreshOccurrences: false,
         protectLocal: fence.protects,
         validateAccount: validateAccount,
         writeRelated: () async {
-          // 分离实例到达时，压制主系列对应日期的 occurrence，避免他机重复显示。
-          final detachedFromId = task.detachedFromTaskId;
-          final detachedAt = task.detachedRecurrenceAt;
-          if (detachedFromId != null && detachedAt != null) {
-            final parent = await (_db.select(
-              _db.tasks,
-            )..where((t) => t.id.equals(detachedFromId))).getSingleOrNull();
-            if (parent != null) {
-              await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
-                taskId: detachedFromId,
-                occurrenceAt: detachedAt,
-                task: parent,
-              );
-            }
-          }
-
+          // 已有父任务时仍与分离记录原子提交；父任务未到则留待第二阶段。
+          await _hideDetachedOccurrence(task, account);
           final tags = <Tag>[];
           final links = <TaskTag>[];
           final activities = <TaskActivity>[];
@@ -335,11 +335,24 @@ class TasksRepository {
       );
       if (accepted) {
         syncedTasks.add(task);
-        if (list is RemoteSyncRows) list.batches['tasks']!.accept([task.id]);
       }
     }
+    // 全部任务落库后再补关系，不依赖远端父子 ID 的排序或是否同轮返回。
+    final reconciled = await _reconcileDetachedOccurrences(
+      tasks: syncedTasks,
+      affectedIds: affectedIds,
+      repairAll: repairDetached,
+      account: account,
+      fence: fence,
+      validateAccount: validateAccount,
+    );
     validateAccount();
     if (list is RemoteSyncRows) {
+      list.batches['tasks']!.accept([
+        for (final task in syncedTasks)
+          if (task.detachedFromTaskId == null || reconciled.contains(task.id))
+            task.id,
+      ]);
       for (final batch in list.batches.values) {
         if (batch.table == 'tasks') {
           await batch.commit();
@@ -354,7 +367,14 @@ class TasksRepository {
         }
       }
     }
-    final cursor = list is RemoteSyncRows
+    validateAccount();
+    if (repairDetached && !await _sp.setBool(detachedRepairKey, true)) {
+      throw StateError('分离实例修复标记保存失败');
+    }
+    final relationsReady = syncedTasks.every(
+      (task) => task.detachedFromTaskId == null || reconciled.contains(task.id),
+    );
+    final cursor = list is RemoteSyncRows || !relationsReady
         ? null
         : maxTimestampFromSyncItems(list);
     if (cursor != null) {
@@ -372,6 +392,115 @@ class TasksRepository {
             list.batches['task_activities']!.rows.isNotEmpty)) {
       unawaited(AlarmNotificationService.instance.reconcileAll());
     }
+  }
+
+  /// 父任务到达时重放本地分离记录，包含 deletedAt 非空的删除墓碑。
+  /// 每条关系独立短事务，分页只读 ID；不把网络等待或整批修复放进事务。
+  Future<Set<String>> _reconcileDetachedOccurrences({
+    required List<Task> tasks,
+    required Set<String> affectedIds,
+    required bool repairAll,
+    required String? account,
+    required PullWriteFence fence,
+    required void Function() validateAccount,
+  }) async {
+    final incoming = {for (final task in tasks) task.id: task};
+    final idsToCheck = affectedIds.toList();
+    final ready = <String>{};
+    // 首次升级补偿旧版已经确认的记录；以后只检查本轮涉及的系列。
+    final groups = repairAll
+        ? <List<String>?>[null]
+        : <List<String>?>[
+            for (var i = 0; i < idsToCheck.length; i += 256)
+              idsToCheck.sublist(i, (i + 256).clamp(0, idsToCheck.length)),
+          ];
+    for (final parents in groups) {
+      String? afterId;
+      while (true) {
+        validateAccount();
+        final query = _db.selectOnly(_db.tasks)
+          ..addColumns([_db.tasks.id])
+          ..where(
+            _db.tasks.detachedFromTaskId.isNotNull() &
+                _db.tasks.detachedRecurrenceAt.isNotNull() &
+                (account == null
+                    ? _db.tasks.userId.isNull()
+                    : _db.tasks.userId.equals(account)),
+          )
+          ..orderBy([OrderingTerm.asc(_db.tasks.id)])
+          ..limit(32);
+        if (parents != null) {
+          // 远端快照被本地保护拒绝时，仍按本地当前关系补偿，不确认旧版本。
+          query.where(
+            _db.tasks.detachedFromTaskId.isIn(parents) |
+                _db.tasks.id.isIn(parents),
+          );
+        }
+        if (afterId != null) {
+          query.where(_db.tasks.id.isBiggerThanValue(afterId));
+        }
+        final ids = await query.get();
+        if (ids.isEmpty) break;
+        for (final row in ids) {
+          final id = row.read(_db.tasks.id)!;
+          await _db.transaction(() async {
+            validateAccount();
+            // 用事务内最新关系，不覆盖期间的本地编辑，也不跨账号关联。
+            final child = await (_db.select(
+              _db.tasks,
+            )..where((t) => t.id.equals(id))).getSingleOrNull();
+            if (child == null || child.userId != account) return;
+            if (!await _hideDetachedOccurrence(child, account)) return;
+            if (incoming.containsKey(id) &&
+                jsonEncode(child.toJson()) ==
+                    jsonEncode(incoming[id]!.toJson()) &&
+                !await fence.protects(id)) {
+              ready.add(id);
+            }
+            validateAccount();
+          });
+        }
+        afterId = ids.last.read(_db.tasks.id);
+        await Future<void>.delayed(Duration.zero);
+      }
+    }
+    return ready;
+  }
+
+  // 调用方必须持有短事务，关联快照与隐藏行一起确认。
+  Future<bool> _hideDetachedOccurrence(Task child, String? account) async {
+    final parentId = child.detachedFromTaskId;
+    final at = child.detachedRecurrenceAt;
+    if (parentId == null || at == null) return false;
+    final parent = await (_db.select(
+      _db.tasks,
+    )..where((t) => t.id.equals(parentId))).getSingleOrNull();
+    if (parent == null || parent.userId != account) return false;
+    final existing =
+        await (_db.selectOnly(_db.taskOccurrences)
+              ..addColumns([_db.taskOccurrences.deletedAt])
+              ..where(
+                _db.taskOccurrences.taskId.equals(parentId) &
+                    _db.taskOccurrences.occurrenceAt.isBiggerOrEqualValue(
+                      at.startOf(Unit.day).dateTime,
+                    ) &
+                    _db.taskOccurrences.occurrenceAt.isSmallerOrEqualValue(
+                      at.endOf(Unit.day).dateTime,
+                    ),
+              ))
+            .get();
+    // 已隐藏的日期完全不重写，避免无效通知与更新时间漂移。
+    if (existing.isEmpty ||
+        existing.any(
+          (r) => r.read(_db.taskOccurrences.deletedAt) == null,
+        )) {
+      await _dbTaskDelayApi.ensureSoftDeleteOccurrence(
+        taskId: parentId,
+        occurrenceAt: at,
+        task: parent,
+      );
+    }
+    return true;
   }
 
   /// 滚动补 schedule：为所有带闹钟的重复任务重新调度，使预约窗口始终覆盖「从现在起」的未来一段时间。

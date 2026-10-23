@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'package:database_planbook_api/sync/outbox_api.dart';
 import 'package:database_planbook_api/tag/database_tag_api.dart';
 import 'package:database_planbook_api/task/task_occurrence_generator.dart';
+import 'package:database_planbook_api/task/task_preparation_budget.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
@@ -656,22 +657,9 @@ class DatabaseTaskApi {
         .map((e) => e.key.taskId)
         .toList();
     if (ids.isNotEmpty) {
-      final rows =
-          await (db.select(db.taskOccurrences)..where(
-                (o) =>
-                    o.taskId.isIn(ids) &
-                    o.occurrenceAt.isBiggerOrEqualValue(
-                      rangeStart.startOf(Unit.day).dateTime,
-                    ) &
-                    o.occurrenceAt.isSmallerOrEqualValue(
-                      rangeEnd.endOf(Unit.day).dateTime,
-                    ),
-              ))
-              .get();
+      final rows = await _getOccurrenceKeys(ids, rangeStart, rangeEnd);
       keys.addAll(
-        rows.map(
-          (o) => (o.taskId, o.occurrenceAt.dateTime.microsecondsSinceEpoch),
-        ),
+        rows.map((key) => (key.$1, key.$2.microsecondsSinceEpoch)),
       );
     }
     return {
@@ -719,21 +707,7 @@ class DatabaseTaskApi {
     if (validIds.isEmpty || generated.isEmpty) return retry;
 
     // 包含已删除的行，保护单次删除/分离的隐藏标记；只补真正缺失的实例。
-    final existing =
-        await (db.select(db.taskOccurrences)..where(
-              (o) =>
-                  o.taskId.isIn(validIds) &
-                  o.occurrenceAt.isBiggerOrEqualValue(
-                    rangeStart.startOf(Unit.day).dateTime,
-                  ) &
-                  o.occurrenceAt.isSmallerOrEqualValue(
-                    rangeEnd.endOf(Unit.day).dateTime,
-                  ),
-            ))
-            .get();
-    final keys = {
-      for (final row in existing) (row.taskId, row.occurrenceAt.dateTime),
-    };
+    final keys = await _getOccurrenceKeys(validIds, rangeStart, rangeEnd);
     final missing = generated
         .where(
           (row) =>
@@ -755,6 +729,34 @@ class DatabaseTaskApi {
     }
     return retry;
   });
+
+  /// 核验只读取实例键，仍包含隐藏行并沿用日期转换器及原有窗口边界。
+  Future<Set<(String?, DateTime)>> _getOccurrenceKeys(
+    Iterable<String> taskIds,
+    Jiffy rangeStart,
+    Jiffy rangeEnd,
+  ) async {
+    final occurrences = db.taskOccurrences;
+    final query = db.selectOnly(occurrences)
+      ..addColumns([occurrences.taskId, occurrences.occurrenceAt])
+      ..where(
+        occurrences.taskId.isIn(taskIds) &
+            occurrences.occurrenceAt.isBiggerOrEqualValue(
+              rangeStart.startOf(Unit.day).dateTime,
+            ) &
+            occurrences.occurrenceAt.isSmallerOrEqualValue(
+              rangeEnd.endOf(Unit.day).dateTime,
+            ),
+      );
+    final rows = await query.get();
+    return {
+      for (final row in rows)
+        (
+          row.read(occurrences.taskId),
+          row.readWithConverter(occurrences.occurrenceAt)!.dateTime,
+        ),
+    };
+  }
 
   Stream<int> getPlannedTaskCountByDateRange(
     Jiffy from,
@@ -794,13 +796,29 @@ class DatabaseTaskApi {
   Future<List<TaskEntity>> buildTaskEntities(
     List<TypedResult> rows, {
     Jiffy? occurrenceAt,
+  }) => assembleTaskEntities(rows);
+
+  /// 复用标准组装口径；预加载可分批执行，缓存核验后可传入本次读取的标签。
+  Future<List<TaskEntity>> assembleTaskEntities(
+    List<TypedResult> rows, {
+    bool yieldBetweenBatches = false,
+    Map<String, List<TagEntity>>? currentTags,
+    TaskPreparationBudget? preparationBudget,
   }) async {
+    preparationBudget?.check();
     if (rows.isEmpty) return [];
 
     // JOIN 会把标签、活动、实例和子任务组合成多行；只在最终组装时创建父实体，
     // 子任务按主键保留首次出现顺序，避免每行查找/复制不断增长的 children 列表。
     final grouped = <String, _TaskEntityRows>{};
+    var processed = 0;
     for (final row in rows) {
+      preparationBudget?.check();
+      // Splash 预组装限定小批量，批次之间让出事件循环，避免抢占动画。
+      if (yieldBetweenBatches && processed++ % 64 == 0) {
+        await Future<void>.delayed(Duration.zero);
+        preparationBudget?.check();
+      }
       final task = row.readTable(db.tasks);
       final group = grouped.putIfAbsent(task.id, () => _TaskEntityRows(task));
       group.occurrence =
@@ -814,11 +832,23 @@ class DatabaseTaskApi {
         );
       }
     }
-    final tagsByTaskId = await tagApi.getTagEntitiesByTaskIds({
-      for (final group in grouped.values) group.task.id: group.task.userId,
-    });
-    return [
-      for (final group in grouped.values)
+    final tagsByTaskId =
+        currentTags ??
+        await tagApi.getTagEntitiesByTaskIds(
+          {
+            for (final group in grouped.values)
+              group.task.id: group.task.userId,
+          },
+          preparationBudget: preparationBudget,
+        );
+    preparationBudget?.check();
+    final entities = <TaskEntity>[];
+    for (final group in grouped.values) {
+      if (preparationBudget != null &&
+          entities.length % TaskPreparationBudget.batchSize == 0) {
+        await preparationBudget.yieldAndCheck();
+      }
+      entities.add(
         TaskEntity(
           task: group.task,
           tags: tagsByTaskId[group.task.id] ?? const [],
@@ -826,7 +856,10 @@ class DatabaseTaskApi {
           activity: group.activity,
           children: group.children.values.toList(),
         ),
-    ];
+      );
+    }
+    preparationBudget?.check();
+    return entities;
   }
 
   Future<Task?> deleteTaskById(String taskId) async {

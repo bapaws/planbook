@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:isolate';
 
 import 'package:database_planbook_api/task/recurrence_rule_calculator.dart';
@@ -52,14 +53,22 @@ class TaskOccurrenceGenerator {
   static const _maxRows = 1024;
   static const _maxDateEntries = 1024;
   static const _maxDates = 65536;
+  static const _batchSize = 32;
+  static const _deliveryRowsPerTurn = 512;
+  static const _deliveryCompletionsPerTurn = 4;
 
   final OccurrenceBatchComputer? _computeBatch;
   final _worker = _OccurrenceWorker();
   final _cache = <_CacheKey, List<TaskOccurrencesCompanion>>{};
   final _dates = <_CacheKey, List<int>>{};
+  // 进行中结果独立于有界缓存；即使整批结果超出缓存预算，后续等价请求也不重算。
+  final _inFlight = <_CacheKey, Completer<List<TaskOccurrencesCompanion>>>{};
   var _cachedRows = 0;
   var _cachedDates = 0;
   Future<void> _tail = Future.value();
+  final _deliveries = Queue<_OccurrenceDelivery>();
+  Completer<void>? _resultsIdle;
+  var _pendingResults = 0;
 
   _CacheKey _key(TaskOccurrenceSchedule schedule, Jiffy start, Jiffy end) {
     final from = start.startOf(Unit.day).dateTime;
@@ -133,15 +142,6 @@ class TaskOccurrenceGenerator {
     return (start, end);
   }
 
-  List<TaskOccurrencesCompanion> _within(
-    List<TaskOccurrencesCompanion> rows,
-    Jiffy start,
-    Jiffy end,
-  ) => rows.where((row) {
-    final date = row.occurrenceAt.value.dateTime;
-    return !date.isBefore(start.dateTime) && !date.isAfter(end.dateTime);
-  }).toList();
-
   /// 日期摘要不持有整批 Jiffy/实例对象；调用方仍须核对数据库行是否存在。
   List<int>? expectedDates({
     required TaskOccurrenceSchedule schedule,
@@ -169,98 +169,183 @@ class TaskOccurrenceGenerator {
     );
   }
 
+  /// 入队前固定规则快照，防止调用方修改列表导致缓存键或排队计算发生变化。
+  TaskOccurrenceSchedule _snapshot(TaskOccurrenceSchedule schedule) {
+    final rule = schedule.rule;
+    // 保留旧月份字段，避免快照改写存量规则。
+    // ignore: deprecated_member_use
+    final legacyMonths = rule?.monthsOfYear;
+    return (
+      taskId: schedule.taskId,
+      startAt: schedule.startAt,
+      endAt: schedule.endAt,
+      dueAt: schedule.dueAt,
+      rule: rule?.copyWith(
+        daysOfWeek: rule.daysOfWeek == null
+            ? null
+            : List.unmodifiable(rule.daysOfWeek!),
+        daysOfMonth: rule.daysOfMonth == null
+            ? null
+            : List.unmodifiable(rule.daysOfMonth!),
+        weeksOfMonth: rule.weeksOfMonth == null
+            ? null
+            : List.unmodifiable(rule.weeksOfMonth!),
+        monthsOfYear: legacyMonths == null
+            ? null
+            : List.unmodifiable(legacyMonths),
+        daysOfYear: rule.daysOfYear == null
+            ? null
+            : List.unmodifiable(rule.daysOfYear!),
+      ),
+    );
+  }
+
   Future<List<TaskOccurrencesCompanion>> generate({
     required List<TaskOccurrenceSchedule> schedules,
     required Jiffy rangeStart,
     required Jiffy rangeEnd,
   }) {
-    // 串行复用一个 worker，排队期间也可以命中前一个请求产生的缓存。
-    final request = _tail.then(
-      (_) => _generate(
-        schedules: schedules,
-        rangeStart: rangeStart.startOf(Unit.day),
-        rangeEnd: rangeEnd.startOf(Unit.day),
-      ),
-    );
-    _tail = request.then<void>((_) {}, onError: (Object _, StackTrace _) {});
-    return request;
+    final from = rangeStart.startOf(Unit.day);
+    final to = rangeEnd.startOf(Unit.day);
+    final window = cacheWindowFor(rangeStart: from, rangeEnd: to);
+    final requests = <Future<List<TaskOccurrencesCompanion>>>[];
+    final missing = <(Jiffy, Jiffy), List<_CacheKey>>{};
+    for (final input in schedules) {
+      final schedule = _snapshot(input);
+      final (start, end) = _calculationRange(schedule, from, to, window);
+      final key = _key(schedule, start, end);
+      final cached = _cached(key, from, to);
+      if (cached != null) {
+        requests.add(Future.value(cached));
+        continue;
+      }
+      var pending = _inFlight[key];
+      if (pending == null) {
+        pending = Completer<List<TaskOccurrencesCompanion>>();
+        _inFlight[key] = pending;
+        (missing[(start, end)] ??= []).add(key);
+      }
+      requests.add(pending.future);
+    }
+    for (final entry in missing.entries) {
+      var batch = <_CacheKey>[];
+      final ids = <String>{};
+      for (final key in entry.value) {
+        // worker 按任务 ID 分组返回；同 ID 的不同版本必须分批，不能混合结果。
+        if (batch.length == _batchSize || ids.contains(key.$1.taskId)) {
+          _enqueue(batch, entry.key);
+          batch = [];
+          ids.clear();
+        }
+        batch.add(key);
+        ids.add(key.$1.taskId);
+      }
+      if (batch.isNotEmpty) _enqueue(batch, entry.key);
+    }
+    // 只收集共享结果引用；裁剪、拼接和完成通知由同一有界队列分批处理。
+    _pendingResults++;
+    _resultsIdle ??= Completer<void>();
+    return Future.wait(
+      requests,
+    ).then((parts) => _deliver(parts, from, to)).whenComplete(() {
+      if (--_pendingResults == 0) {
+        final idle = _resultsIdle!;
+        _resultsIdle = null;
+        idle.complete();
+      }
+    });
   }
 
-  Future<List<TaskOccurrencesCompanion>> _generate({
-    required List<TaskOccurrenceSchedule> schedules,
-    required Jiffy rangeStart,
-    required Jiffy rangeEnd,
-  }) async {
-    // 同批规则共享检查；时差发生变化的范围不扩大纯计算窗口。
-    final window = cacheWindowFor(rangeStart: rangeStart, rangeEnd: rangeEnd);
-    final results = <TaskOccurrencesCompanion>[];
-    final missing = <TaskOccurrenceSchedule>[];
-    for (final schedule in schedules) {
-      final (start, end) = _calculationRange(
-        schedule,
-        rangeStart,
-        rangeEnd,
-        window,
-      );
-      final key = _key(schedule, start, end);
-      final zone = key.$4;
-      var cached = _cache.remove(key);
-      if (cached != null) {
-        _cache[key] = cached;
-      } else if (schedule.rule?.frequency == RecurrenceFrequency.daily) {
-        // 每日规则的子窗口可直接截取；其他规则保留原计算器的窗口语义。
-        for (final entry in _cache.entries.toList().reversed) {
-          final (input, start, end, cachedZone) = entry.key;
-          if (input == schedule &&
-              cachedZone == zone &&
-              !start.isAfter(rangeStart.dateTime) &&
-              !end.isBefore(rangeEnd.dateTime) &&
-              _hasConstantOffset(start, end)) {
-            cached = entry.value
-                .where(
-                  (o) =>
-                      !o.occurrenceAt.value.isBefore(
-                        rangeStart,
-                        unit: Unit.day,
-                      ) &&
-                      !o.occurrenceAt.value.isAfter(rangeEnd, unit: Unit.day),
-                )
-                .toList();
-            _cache.remove(entry.key);
-            _cache[entry.key] = entry.value;
-            break;
-          }
+  Future<List<TaskOccurrencesCompanion>> _deliver(
+    List<List<TaskOccurrencesCompanion>> parts,
+    Jiffy from,
+    Jiffy to,
+  ) {
+    final delivery = _OccurrenceDelivery(parts, from.dateTime, to.dateTime);
+    final wasEmpty = _deliveries.isEmpty;
+    _deliveries.add(delivery);
+    if (wasEmpty) Timer.run(_drainDeliveries);
+    return delivery.completer.future;
+  }
+
+  void _drainDeliveries() {
+    final watch = Stopwatch()..start();
+    var processed = 0;
+    var completed = 0;
+    // 全部日期共享每轮预算，避免每个 Future 各自让出后同时恢复形成微任务长链。
+    while (_deliveries.isNotEmpty &&
+        processed < _deliveryRowsPerTurn &&
+        completed < _deliveryCompletionsPerTurn &&
+        watch.elapsedMicroseconds < 2000) {
+      final delivery = _deliveries.removeFirst();
+      try {
+        processed += delivery.advance(_batchSize);
+        if (delivery.isDone) {
+          completed++;
+          delivery.completer.complete(delivery.result);
+        } else {
+          _deliveries.add(delivery);
+        }
+      } on Object catch (error, stack) {
+        completed++;
+        delivery.completer.completeError(error, stack);
+      }
+    }
+    if (_deliveries.isNotEmpty) Timer.run(_drainDeliveries);
+  }
+
+  List<TaskOccurrencesCompanion>? _cached(
+    _CacheKey key,
+    Jiffy rangeStart,
+    Jiffy rangeEnd,
+  ) {
+    final cached = _cache.remove(key);
+    if (cached != null) {
+      _cache[key] = cached;
+      return cached;
+    }
+    if (key.$1.rule?.frequency == RecurrenceFrequency.daily) {
+      // 保留原每日子窗口复用规则；跨时差或不包含原窗口时不复用。
+      for (final entry in _cache.entries.toList().reversed) {
+        final (input, start, end, zone) = entry.key;
+        if (input == key.$1 &&
+            zone == key.$4 &&
+            !start.isAfter(rangeStart.dateTime) &&
+            !end.isBefore(rangeEnd.dateTime) &&
+            _hasConstantOffset(start, end)) {
+          _cache.remove(entry.key);
+          _cache[entry.key] = entry.value;
+          return entry.value;
         }
       }
-      if (cached != null) {
-        results.addAll(_within(cached, rangeStart, rangeEnd));
-      } else {
-        missing.add(schedule);
-      }
     }
-    if (missing.isEmpty) return results;
+    return null;
+  }
 
-    final groups = <(Jiffy, Jiffy), List<TaskOccurrenceSchedule>>{};
-    for (final schedule in missing) {
-      final range = _calculationRange(schedule, rangeStart, rangeEnd, window);
-      (groups[range] ??= []).add(schedule);
-    }
-    final calculated =
-        <TaskOccurrenceSchedule, List<TaskOccurrencesCompanion>>{};
-    for (final entry in groups.entries) {
-      final (start, end) = entry.key;
+  void _enqueue(List<_CacheKey> keys, (Jiffy, Jiffy) range) {
+    // 单 worker 串行、每批至多 32 个规则；队列只等待纯计算，不等待写事务。
+    _tail = _tail.then((_) => _compute(keys, range));
+  }
+
+  Future<void> _compute(List<_CacheKey> keys, (Jiffy, Jiffy) range) async {
+    try {
       final generated = await (_computeBatch ?? _worker.compute)(
-        (schedules: entry.value, rangeStart: start, rangeEnd: end),
+        (
+          schedules: keys.map((key) => key.$1).toList(),
+          rangeStart: range.$1,
+          rangeEnd: range.$2,
+        ),
       );
       final byTask = <String, List<TaskOccurrencesCompanion>>{};
       for (final row in generated) {
         (byTask[row.taskId.value!] ??= []).add(row);
       }
-      for (final schedule in entry.value) {
-        final rows =
-            byTask[schedule.taskId] ?? const <TaskOccurrencesCompanion>[];
-        calculated[schedule] = rows;
-        final key = _key(schedule, start, end);
+      final results = <_CacheKey, List<TaskOccurrencesCompanion>>{};
+      for (final key in keys) {
+        final rows = List<TaskOccurrencesCompanion>.unmodifiable(
+          byTask[key.$1.taskId] ?? const [],
+        );
+        results[key] = rows;
         _cachedRows -= _cache.remove(key)?.length ?? 0;
         _cache[key] = rows;
         _cachedRows += rows.length;
@@ -273,14 +358,18 @@ class TaskOccurrenceGenerator {
         _dates[key] = dates;
         _cachedDates += dates.length;
       }
-      // 后续分组失败也不能留下超过预算的纯计算缓存。
       _trimCaches();
+      for (final key in keys) {
+        _inFlight.remove(key)!.complete(results[key]!);
+      }
+    } on Object catch (error, stack) {
+      // 失败通知所有共享者并移除占位，不能污染后续重试或阻塞队列。
+      for (final key in keys) {
+        _inFlight.remove(key)?.completeError(error, stack);
+      }
     }
-    // 分组计算不能改变原输入顺序；窗口外的纯缓存数据不交给写库层。
-    for (final schedule in missing) {
-      results.addAll(_within(calculated[schedule]!, rangeStart, rangeEnd));
-    }
-    return results;
+    // 批次之间让出事件循环，避免大量完成回调连续挤占首屏动画。
+    await Future<void>.delayed(Duration.zero);
   }
 
   void _trimCaches() {
@@ -294,12 +383,53 @@ class TaskOccurrenceGenerator {
 
   /// 释放闲置 worker；正常运行时 worker 也会在空闲后自动退出。
   Future<void> close() async {
-    await _tail;
+    // 完成回调可能追加重试；等到队列稳定后再释放 worker。
+    while (true) {
+      final tail = _tail;
+      await tail;
+      await _resultsIdle?.future;
+      // 结果回调也可能追加计算或缓存命中的分发，待其入队后再检查收尾。
+      await Future<void>.delayed(Duration.zero);
+      if (identical(tail, _tail) && _resultsIdle == null) break;
+    }
     _worker.close();
     _cache.clear();
     _dates.clear();
     _cachedRows = 0;
     _cachedDates = 0;
+  }
+}
+
+/// 每个请求独立持有原窗口、游标和结果；纯缓存行仍保持只读且不代表库内覆盖。
+class _OccurrenceDelivery {
+  _OccurrenceDelivery(this.parts, this.from, this.to);
+
+  final List<List<TaskOccurrencesCompanion>> parts;
+  final DateTime from;
+  final DateTime to;
+  final result = <TaskOccurrencesCompanion>[];
+  final completer = Completer<List<TaskOccurrencesCompanion>>();
+  int _part = 0;
+  int _row = 0;
+
+  bool get isDone => _part == parts.length;
+
+  int advance(int limit) {
+    var processed = 0;
+    while (!isDone && processed < limit) {
+      processed++;
+      final rows = parts[_part];
+      if (_row == rows.length) {
+        _part++;
+        _row = 0;
+        continue;
+      }
+      final row = rows[_row++];
+      // 窗口边界只转换一次，避免原实现逐行重复创建起止 DateTime。
+      final date = row.occurrenceAt.value.dateTime;
+      if (!date.isBefore(from) && !date.isAfter(to)) result.add(row);
+    }
+    return processed;
   }
 }
 

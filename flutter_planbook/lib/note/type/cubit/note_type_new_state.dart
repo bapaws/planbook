@@ -6,6 +6,7 @@ final class NoteTypeNewState extends Equatable {
     required this.focusAt,
     this.status = PageStatus.initial,
     this.initialNote,
+    this.isReady = false,
     this.title = '',
     this.summaryContent = '',
     this.focusContent = '',
@@ -15,11 +16,13 @@ final class NoteTypeNewState extends Equatable {
     Note? note,
     NoteType? type,
     Jiffy? focusAt,
+    bool isReady = false,
   }) {
     final noteType = note?.type ?? type ?? NoteType.dailyFocus;
     return NoteTypeNewState(
       focusAt: focusAt ?? note?.focusAt ?? Jiffy.now(),
       initialNote: note,
+      isReady: isReady,
       type: type ?? note?.type ?? NoteType.dailyFocus,
       title: note?.title ?? '',
       summaryContent: noteType.isSummary ? note?.content ?? '' : '',
@@ -29,6 +32,7 @@ final class NoteTypeNewState extends Equatable {
 
   final PageStatus status;
   final Note? initialNote;
+  final bool isReady;
 
   final NoteType type;
 
@@ -48,6 +52,7 @@ final class NoteTypeNewState extends Equatable {
   List<Object?> get props => [
     status,
     initialNote,
+    isReady,
     title,
     summaryContent,
     focusContent,
@@ -57,7 +62,8 @@ final class NoteTypeNewState extends Equatable {
 
   NoteTypeNewState copyWith({
     PageStatus? status,
-    Note? initialNote,
+    ValueGetter<Note?>? initialNote,
+    bool? isReady,
     String? title,
     String? summaryContent,
     String? focusContent,
@@ -66,7 +72,8 @@ final class NoteTypeNewState extends Equatable {
   }) {
     return NoteTypeNewState(
       status: status ?? this.status,
-      initialNote: initialNote ?? this.initialNote,
+      initialNote: initialNote != null ? initialNote() : this.initialNote,
+      isReady: isReady ?? this.isReady,
       title: title ?? this.title,
       summaryContent: summaryContent ?? this.summaryContent,
       focusContent: focusContent ?? this.focusContent,

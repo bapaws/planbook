@@ -68,7 +68,11 @@ struct WeekGridWidgetLarge: Widget {
 
 struct WeekGridView: View {
     var entry: WeekGridEntry
-    private let isDark = WidgetBackgroundConfig.current().isDarkMode
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isDark: Bool {
+        WidgetSettings.isDark(colorScheme: colorScheme)
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {

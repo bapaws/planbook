@@ -5,6 +5,7 @@ import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/focus/view/open_period_note_editor.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
 import 'package:flutter_planbook/task/month/bloc/task_month_bloc.dart';
@@ -21,6 +22,8 @@ class TaskMonthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<TaskMonthBloc, TaskMonthState>(
+      // 日期网格只随日期集合变化；笔记更新由重点区域独立监听。
+      buildWhen: (previous, current) => previous.weeks != current.weeks,
       builder: (context, state) {
         return _TaskMonthPage(weeks: state.weeks);
       },
@@ -151,33 +154,32 @@ class _TaskMonthPage extends StatelessWidget {
   }
 
   Widget _buildFocusView(BuildContext context, NoteType noteType) {
-    final bloc = context.read<TaskMonthBloc>();
-    final note = noteType.isFocus
-        ? bloc.state.focusNote
-        : bloc.state.summaryNote;
-    return TaskFocusView(
-      note: note,
-      noteType: noteType,
-      onTap: () {
-        final focusAt = context.read<TaskMonthBloc>().state.date;
-        context.router.push(
-          NoteNewTypeRoute(
-            initialNote: note,
-            type: noteType,
-            focusAt: focusAt,
+    return BlocSelector<TaskMonthBloc, TaskMonthState, PeriodNoteSnapshot>(
+      selector: (state) => state.noteSnapshot(noteType),
+      builder: (context, snapshot) {
+        return TaskFocusView(
+          note: snapshot.note,
+          isReady: snapshot.canWrite,
+          noteType: noteType,
+          onTap: () => openPeriodNoteEditor(
+            context,
+            displayed: snapshot,
+            current: () =>
+                context.read<TaskMonthBloc>().state.noteSnapshot(noteType),
           ),
-        );
-      },
-      onMindMapTapped: () {
-        _addDiscoverEvent(context, noteType);
-        _navigateToRootDiscover(context, noteType);
-      },
-      onTaskDropped: (task) {
-        context.read<TaskMonthBloc>().add(
-          TaskMonthNoteTaskAppended(
-            task: task,
-            noteType: noteType,
-          ),
+          onMindMapTapped: () {
+            _addDiscoverEvent(context, noteType);
+            _navigateToRootDiscover(context, noteType);
+          },
+          onTaskDropped: (task) {
+            context.read<TaskMonthBloc>().add(
+              TaskMonthNoteTaskAppended(
+                task: task,
+                noteType: noteType,
+                target: snapshot.target,
+              ),
+            );
+          },
         );
       },
     );

@@ -30,7 +30,7 @@ class StartupPreparationCoordinator {
   Future<void> _prepare(Jiffy date) async {
     final stopwatch = Stopwatch()..start();
     try {
-      // 只走本地实例缓存，不读取带隐含同步的首页 Stream，也不安排提醒。
+      // 只准备本地实例和有限的首屏组装缓存，不读取隐含同步的 Stream 或安排提醒。
       await tasksRepository.prepareForHome(date: date);
       log(
         '本地准备完成：${stopwatch.elapsedMilliseconds}ms',

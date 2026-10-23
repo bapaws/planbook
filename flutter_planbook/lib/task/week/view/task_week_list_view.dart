@@ -5,6 +5,7 @@ import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/focus/view/open_period_note_editor.dart';
 import 'package:flutter_planbook/task/source/view/task_source_panel.dart'
     show TaskSourcePanel;
 import 'package:flutter_planbook/task/time_block/view/task_time_block_demo_banner.dart';
@@ -63,6 +64,7 @@ class TaskWeekListView extends StatelessWidget {
                       slivers: [
                         for (final day in weekDays)
                           TaskWeekListDayGroup(
+                            key: ValueKey(day.dateTime),
                             day: day,
                             crossAxisCount: crossAxisCount,
                             isDemo: isDemo,
@@ -125,20 +127,28 @@ class TaskWeekListView extends StatelessWidget {
           state.tabFocusNoteTypes[RootTaskTab.week] ?? NoteType.weeklyFocus,
       builder: (context, noteType) {
         final bloc = context.read<TaskWeekBloc>();
-        final note = noteType.isFocus
-            ? bloc.state.focusNote
-            : bloc.state.summaryNote;
-        return TaskFocusView(
-          note: note,
-          noteType: noteType,
-          onTap: () => _openNoteEditor(context, note, noteType),
-          onMindMapTapped: () => _openMindMap(context, noteType),
-          onTaskDropped: (task) => bloc.add(
-            TaskWeekNoteTaskAppended(
-              task: task,
+        return BlocSelector<TaskWeekBloc, TaskWeekState, PeriodNoteSnapshot>(
+          selector: (state) => state.noteSnapshot(noteType),
+          builder: (context, snapshot) {
+            return TaskFocusView(
+              note: snapshot.note,
+              isReady: snapshot.canWrite,
               noteType: noteType,
-            ),
-          ),
+              onTap: () => openPeriodNoteEditor(
+                context,
+                displayed: snapshot,
+                current: () => bloc.state.noteSnapshot(noteType),
+              ),
+              onMindMapTapped: () => _openMindMap(context, noteType),
+              onTaskDropped: (task) => bloc.add(
+                TaskWeekNoteTaskAppended(
+                  task: task,
+                  noteType: noteType,
+                  target: snapshot.target,
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -148,16 +158,6 @@ class TaskWeekListView extends StatelessWidget {
     return SliverToBoxAdapter(
       child: SizedBox(
         height: kRootBottomBarHeight + MediaQuery.of(context).padding.bottom,
-      ),
-    );
-  }
-
-  void _openNoteEditor(BuildContext context, Note? note, NoteType noteType) {
-    context.router.push(
-      NoteNewTypeRoute(
-        initialNote: note,
-        type: noteType,
-        focusAt: note?.focusAt ?? context.read<TaskWeekBloc>().state.date,
       ),
     );
   }

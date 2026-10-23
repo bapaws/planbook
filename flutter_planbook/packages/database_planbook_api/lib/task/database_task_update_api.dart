@@ -48,6 +48,7 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
     required super.db,
     required super.tagApi,
     required super.outboxApi,
+    super.occurrenceGenerator,
   });
 
   /// 检查任务是否有分离实例
@@ -368,9 +369,10 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
     List<TaskTag>? taskTags,
     List<Task>? children,
   }) async {
-    final existingTask = await getTaskById(task.id);
-
+    var regenerate = false;
     await db.transaction(() async {
+      // 在同一短事务内读取旧规则、保存任务并失效有效实例，防止并发生成插入旧缓存。
+      final existingTask = await getTaskById(task.id);
       await (db.update(
         db.tasks,
       )..where((t) => t.id.equals(task.id))).write(task.toCompanion(false));
@@ -405,22 +407,24 @@ class DatabaseTaskUpdateApi extends DatabaseTaskApi {
           await db.into(db.tasks).insertOnConflictUpdate(child);
         }
       }
+      if (existingTask == null) return;
+      regenerate =
+          existingTask.recurrenceRule != task.recurrenceRule ||
+          existingTask.startAt != task.startAt ||
+          existingTask.endAt != task.endAt ||
+          existingTask.dueAt != task.dueAt;
+      if (!regenerate) return;
+      // 隐藏行是单次删除/分离的业务标记，规则修改或取消后也必须原样保留。
+      await (db.delete(db.taskOccurrences)..where(
+            (to) => to.taskId.equals(task.id) & to.deletedAt.isNull(),
+          ))
+          .go();
     });
-
-    if (existingTask == null) return;
-    final recurrenceChanged =
-        existingTask.recurrenceRule != task.recurrenceRule ||
-        existingTask.startAt != task.startAt ||
-        existingTask.endAt != task.endAt ||
-        existingTask.dueAt != task.dueAt;
-
-    if (!recurrenceChanged) return;
-    await (db.delete(db.taskOccurrences)..where(
-          (to) => to.taskId.equals(task.id),
-        ))
-        .go();
-    preGenerateTaskOccurrencesInBackground(
-      fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
-    );
+    if (regenerate) {
+      // 展开仍在更新事务外，提交时沿用最新规则、隐藏行及原日期范围核验。
+      preGenerateTaskOccurrencesInBackground(
+        fromDate: task.startAt ?? task.dueAt ?? Jiffy.now(),
+      );
+    }
   }
 }

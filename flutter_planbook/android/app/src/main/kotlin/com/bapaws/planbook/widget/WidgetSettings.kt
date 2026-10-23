@@ -114,15 +114,44 @@ object WidgetSettings {
         return getPrefs(context).getString(KEY_BACKGROUND_ASSET, "bg_dot") ?: "bg_dot"
     }
 
-    /** 是否为深色模式（从 widget_theme 解析） */
-    fun isDarkMode(context: Context): Boolean {
-        val themeJson = getPrefs(context).getString(KEY_WIDGET_THEME, null) ?: return false
+    /**
+     * 外观偏好。
+     * 新数据用 `mode`：system / dark / light。
+     * 旧数据只有 `isDarkMode`：true 表示强制深色；false 无法区分浅色和跟随系统，按跟随系统处理。
+     */
+    fun themeMode(context: Context): String {
+        val themeJson = getPrefs(context).getString(KEY_WIDGET_THEME, null) ?: return "system"
         return try {
             val theme = org.json.JSONObject(themeJson)
-            theme.optBoolean("isDarkMode", false)
+            if (theme.has("mode")) {
+                when (theme.optString("mode")) {
+                    "dark" -> "dark"
+                    "light" -> "light"
+                    else -> "system"
+                }
+            } else if (theme.optBoolean("isDarkMode", false)) {
+                "dark"
+            } else {
+                "system"
+            }
         } catch (_: Exception) {
-            false
+            "system"
         }
+    }
+
+    /** 小组件实际是否使用深色。跟随系统时看系统夜间模式。 */
+    fun resolvedIsDark(context: Context): Boolean {
+        return when (themeMode(context)) {
+            "dark" -> true
+            "light" -> false
+            else -> isSystemDark(context)
+        }
+    }
+
+    private fun isSystemDark(context: Context): Boolean {
+        return context.resources.configuration.uiMode and
+            android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
+            android.content.res.Configuration.UI_MODE_NIGHT_YES
     }
 
     /** 亮色主题颜色方案 JSON */
@@ -260,10 +289,7 @@ object WidgetSettings {
 
     /** 获取当前主题颜色方案 */
     fun getCurrentColorScheme(context: Context): FlutterColorScheme {
-        val isSystemDark = context.resources.configuration.uiMode and
-                android.content.res.Configuration.UI_MODE_NIGHT_MASK ==
-                android.content.res.Configuration.UI_MODE_NIGHT_YES
-        val isDark = isSystemDark || isDarkMode(context)
+        val isDark = resolvedIsDark(context)
         val json = if (isDark) getDarkColorSchemeJSON(context) else getLightColorSchemeJSON(context)
         return try {
             json?.let { AppFlutterColorSchemes.decode(it) }

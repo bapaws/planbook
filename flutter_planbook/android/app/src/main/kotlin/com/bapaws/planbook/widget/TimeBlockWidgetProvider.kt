@@ -123,7 +123,7 @@ private object TimeBlockWidgetUpdater {
         updatedOptions: Bundle?,
     ) {
         try {
-            val isDark = WidgetSettings.isDarkMode(context)
+            val isDark = WidgetSettings.resolvedIsDark(context)
             val isPremium = WidgetSettings.isPremium(context)
             val options = updatedOptions ?: appWidgetManager.getAppWidgetOptions(appWidgetId)
             val tasks = if (isPremium) {

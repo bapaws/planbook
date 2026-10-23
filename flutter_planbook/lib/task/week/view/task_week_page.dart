@@ -49,6 +49,8 @@ class TaskWeekPage extends StatelessWidget {
           );
         },
         child: BlocBuilder<TaskWeekBloc, TaskWeekState>(
+          // 笔记和日历展开由各自区域监听，避免重建整周任务网格。
+          buildWhen: (previous, current) => previous.date != current.date,
           builder: (context, state) {
             return BlocSelector<RootTaskBloc, RootTaskState, TaskWeekViewMode>(
               selector: (rootState) => rootState.weekViewMode,
@@ -182,18 +184,17 @@ class _TaskWeekPage extends StatelessWidget {
           color: theme.colorScheme.surfaceContainer,
         ),
         Expanded(
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                _buildFirstCell(),
-                VerticalDivider(
-                  width: 1,
-                  color: theme.colorScheme.surfaceContainer,
-                  thickness: 1,
-                ),
-                _buildDayCell(context, 0),
-              ],
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildFirstCell(),
+              VerticalDivider(
+                width: 1,
+                color: theme.colorScheme.surfaceContainer,
+                thickness: 1,
+              ),
+              _buildDayCell(context, 0),
+            ],
           ),
         ),
         Divider(
@@ -201,18 +202,17 @@ class _TaskWeekPage extends StatelessWidget {
           color: theme.colorScheme.surfaceContainer,
         ),
         Expanded(
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                _buildDayCell(context, 1),
-                VerticalDivider(
-                  width: 1,
-                  color: theme.colorScheme.surfaceContainer,
-                  thickness: 1,
-                ),
-                _buildDayCell(context, 2),
-              ],
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDayCell(context, 1),
+              VerticalDivider(
+                width: 1,
+                color: theme.colorScheme.surfaceContainer,
+                thickness: 1,
+              ),
+              _buildDayCell(context, 2),
+            ],
           ),
         ),
         Divider(
@@ -220,18 +220,17 @@ class _TaskWeekPage extends StatelessWidget {
           color: theme.colorScheme.surfaceContainer,
         ),
         Expanded(
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                _buildDayCell(context, 3),
-                VerticalDivider(
-                  width: 1,
-                  color: theme.colorScheme.surfaceContainer,
-                  thickness: 1,
-                ),
-                _buildDayCell(context, 4),
-              ],
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDayCell(context, 3),
+              VerticalDivider(
+                width: 1,
+                color: theme.colorScheme.surfaceContainer,
+                thickness: 1,
+              ),
+              _buildDayCell(context, 4),
+            ],
           ),
         ),
         Divider(
@@ -239,18 +238,17 @@ class _TaskWeekPage extends StatelessWidget {
           color: theme.colorScheme.surfaceContainer,
         ),
         Expanded(
-          child: IntrinsicHeight(
-            child: Row(
-              children: [
-                _buildDayCell(context, 5),
-                VerticalDivider(
-                  width: 1,
-                  color: theme.colorScheme.surfaceContainer,
-                  thickness: 1,
-                ),
-                _buildDayCell(context, 6),
-              ],
-            ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _buildDayCell(context, 5),
+              VerticalDivider(
+                width: 1,
+                color: theme.colorScheme.surfaceContainer,
+                thickness: 1,
+              ),
+              _buildDayCell(context, 6),
+            ],
           ),
         ),
         Divider(

@@ -13,13 +13,14 @@ struct QuadrantWidgetSmallView: View {
     var entry: QuadrantEntry
 
     @Environment(\.widgetRenderingMode) private var widgetRenderingMode
+    @Environment(\.colorScheme) private var colorScheme
 
     private var selectedGroup: QuadrantGroup? {
         entry.groups.first { $0.priority == entry.selectedPriority }
     }
 
     private var isDarkMode: Bool {
-        WidgetBackgroundConfig.current().isDarkMode
+        WidgetSettings.isDark(colorScheme: colorScheme)
     }
 
     var body: some View {

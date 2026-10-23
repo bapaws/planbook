@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:database_planbook_api/sync/outbox_api.dart';
+import 'package:database_planbook_api/task/task_preparation_budget.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:jiffy/jiffy.dart';
@@ -86,7 +87,11 @@ class DatabaseTagApi {
     Tag tag,
     Map<String, Tag> allTags, {
     Set<String> ancestorIds = const {},
+    TaskPreparationBudget? preparationBudget,
+    int depth = 0,
   }) {
+    preparationBudget?.checkDepth(depth);
+    preparationBudget?.addEntity();
     final nextAncestorIds = {...ancestorIds, tag.id};
     final parent = allTags[tag.parentId];
     return TagEntity(
@@ -97,6 +102,8 @@ class DatabaseTagApi {
               parent,
               allTags,
               ancestorIds: nextAncestorIds,
+              preparationBudget: preparationBudget,
+              depth: depth + 1,
             )
           : null,
     );
@@ -341,24 +348,43 @@ class DatabaseTagApi {
 
   /// 批量读取关联与父链；缓存仅在本次组装内有效，沿用逐任务查询的过滤和排序。
   Future<Map<String, List<TagEntity>>> getTagEntitiesByTaskIds(
-    Map<String, String?> taskUserIds,
-  ) async {
+    Map<String, String?> taskUserIds, {
+    TaskPreparationBudget? preparationBudget,
+  }) async {
+    preparationBudget?.check();
     if (taskUserIds.isEmpty) return {};
-    const batchSize = 400;
+    final batchSize = preparationBudget == null
+        ? 400
+        : TaskPreparationBudget.batchSize;
     final taskIds = taskUserIds.keys.toList();
     final links = <TaskTag>[];
     for (var offset = 0; offset < taskIds.length; offset += batchSize) {
+      if (preparationBudget != null) await preparationBudget.yieldAndCheck();
       final ids = taskIds.skip(offset).take(batchSize).toList();
-      final rows =
-          await (db.select(db.taskTags)
-                ..where(
-                  (tt) =>
-                      tt.taskId.isIn(ids) &
-                      tt.deletedAt.isNull() &
-                      tt.linkedTagId.isNull(),
-                )
-                ..orderBy([(tt) => OrderingTerm.asc(tt.createdAt.datetime)]))
-              .get();
+      final query = (db.select(db.taskTags)
+        ..where(
+          (tt) =>
+              tt.taskId.isIn(ids) &
+              tt.deletedAt.isNull() &
+              tt.linkedTagId.isNull(),
+        )
+        ..orderBy([(tt) => OrderingTerm.asc(tt.createdAt.datetime)]));
+      // 多读一条仅用于发现超限；不向上返回截断的关联集合。
+      if (preparationBudget != null) {
+        query.limit(preparationBudget.remainingLinks + 1);
+      }
+      final rows = await query.get();
+      preparationBudget?.addLinks(rows.length);
+      if (preparationBudget != null) {
+        for (final link in rows) {
+          preparationBudget
+            ..addText(link.id)
+            ..addText(link.taskId)
+            ..addText(link.tagId)
+            ..addText(link.userId)
+            ..addText(link.linkedTagId);
+        }
+      }
       links.addAll(
         rows.where((link) => link.userId == taskUserIds[link.taskId]),
       );
@@ -367,18 +393,30 @@ class DatabaseTagApi {
     final tagsById = <String, Tag>{};
     final visitedIds = <String>{};
     var pendingIds = links.map((link) => link.tagId).toSet();
+    var depth = 0;
     while (pendingIds.isNotEmpty) {
+      preparationBudget?.checkDepth(depth++);
       final ids = pendingIds.toList();
       visitedIds.addAll(ids);
       pendingIds = {};
       for (var offset = 0; offset < ids.length; offset += batchSize) {
+        if (preparationBudget != null) await preparationBudget.yieldAndCheck();
         final chunk = ids.skip(offset).take(batchSize).toList();
         final tags =
             await (db.select(db.tags)..where(
                   (tag) => tag.id.isIn(chunk) & tag.deletedAt.isNull(),
                 ))
                 .get();
+        preparationBudget?.addTags(tags.length);
         for (final tag in tags) {
+          if (preparationBudget != null) {
+            preparationBudget
+              ..addText(tag.id)
+              ..addText(tag.userId)
+              ..addText(tag.parentId)
+              ..addText(tag.name)
+              ..addText(tag.color);
+          }
           tagsById[tag.id] = tag;
           final parentId = tag.parentId;
           if (parentId != null && !visitedIds.contains(parentId)) {
@@ -390,15 +428,24 @@ class DatabaseTagApi {
 
     final result = <String, List<TagEntity>>{};
     final entitiesById = <String, TagEntity>{};
+    var processed = 0;
     for (final link in links) {
+      if (preparationBudget != null && processed++ % batchSize == 0) {
+        await preparationBudget.yieldAndCheck();
+      }
       final tag = tagsById[link.tagId];
       if (tag == null) continue;
       final entity = entitiesById.putIfAbsent(
         tag.id,
-        () => _buildTagEntity(tag, tagsById),
+        () => _buildTagEntity(
+          tag,
+          tagsById,
+          preparationBudget: preparationBudget,
+        ),
       );
       result.putIfAbsent(link.taskId, () => []).add(entity);
     }
+    preparationBudget?.check();
     return result;
   }
 
@@ -433,7 +480,7 @@ class DatabaseTagApi {
       );
     });
 
-    // TODO: update task tags and note tags
+    // 待处理：同步任务标签与笔记标签。
   }
 
   Future<void> updateTag({

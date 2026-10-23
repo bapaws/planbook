@@ -61,3 +61,15 @@ internal fun requestWidgetUpdate(context: Context, provider: Class<out AppWidget
         putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids)
     })
 }
+
+/** 配置刷新只更新所属组件的单个实例，不在 Activity 主线程读库或绘图。 */
+internal fun requestWidgetUpdate(context: Context, appWidgetId: Int) {
+    val provider = AppWidgetManager.getInstance(context)
+        .getAppWidgetInfo(appWidgetId)?.provider ?: return
+    // 配置 Activity 仅供本应用的小组件使用。
+    if (provider.packageName != context.packageName) return
+    context.sendBroadcast(Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE).apply {
+        component = provider
+        putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
+    })
+}

@@ -133,6 +133,71 @@ class DatabaseNoteApi {
     });
   }
 
+  /// 周期笔记的读改写共用短事务，避免并发创建和使用过期页面快照。
+  Future<Note> mutatePeriodNote({
+    required String? userId,
+    required NoteType type,
+    required Jiffy rangeStart,
+    required Jiffy rangeEnd,
+    required Jiffy focusAt,
+    required String title,
+    required String Function(String? content) content,
+    required void Function() validateAccount,
+    bool preserveExistingTitle = false,
+  }) => db.transaction(() async {
+    validateAccount();
+    final current =
+        await (db.select(db.notes)
+              ..where(
+                (n) =>
+                    n.type.equals(type.name) &
+                    n.deletedAt.isNull() &
+                    n.focusAt.isBiggerOrEqualValue(rangeStart.dateTime) &
+                    n.focusAt.isSmallerOrEqualValue(rangeEnd.dateTime) &
+                    (userId == null
+                        ? n.userId.isNull()
+                        : n.userId.equals(userId)),
+              )
+              ..limit(1))
+            .getSingleOrNull();
+    validateAccount();
+    final now = Jiffy.now();
+    final nextContent = content(current?.content);
+    if (current == null) {
+      final note = Note(
+        id: const Uuid().v4(),
+        userId: userId,
+        title: title,
+        content: nextContent,
+        images: const [],
+        type: type,
+        focusAt: focusAt,
+        createdAt: now,
+      );
+      await create(note: note);
+      validateAccount();
+      return note;
+    }
+    // 拖入只追加内容；标题以事务内最新值为准，编辑器显式保存仍可更新标题。
+    final note = current.copyWith(
+      title: preserveExistingTitle ? current.title : title,
+      content: Value(nextContent),
+      updatedAt: Value(now),
+    );
+    // 保留原有标签、图片和任务关联，不删除或重建关联行。
+    await (db.update(
+      db.notes,
+    )..where((n) => n.id.equals(note.id))).write(note.toCompanion(false));
+    await _outboxApi.enqueue(
+      tableName: 'notes',
+      recordId: note.id,
+      operation: 'update',
+      payload: jsonEncode(note.toJson()),
+    );
+    validateAccount();
+    return note;
+  });
+
   Future<NoteEntity?> getNoteEntityById(String noteId) async {
     final rows =
         await (db.select(db.notes).join([
@@ -408,6 +473,7 @@ class DatabaseNoteApi {
                 n.focusAt.isBiggerOrEqualValue(start.dateTime) &
                 n.focusAt.isSmallerOrEqualValue(end.dateTime) &
                 n.type.equals(type.name) &
+                n.deletedAt.isNull() &
                 (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
           )
           ..limit(1))
@@ -579,19 +645,18 @@ class DatabaseNoteApi {
         db.notes.title.like(pattern, escapeChar: r'\') |
         db.notes.content.like(pattern, escapeChar: r'\');
 
-    final idQuery =
-        db.selectOnly(db.notes)
-          ..addColumns([
-            db.notes.id,
-            db.notes.updatedAt,
-            db.notes.createdAt,
-          ])
-          ..where(db.notes.deletedAt.isNull() & userExp & matchExp)
-          ..orderBy([
-            OrderingTerm.desc(db.notes.updatedAt),
-            OrderingTerm.desc(db.notes.createdAt),
-          ])
-          ..limit(limit);
+    final idQuery = db.selectOnly(db.notes)
+      ..addColumns([
+        db.notes.id,
+        db.notes.updatedAt,
+        db.notes.createdAt,
+      ])
+      ..where(db.notes.deletedAt.isNull() & userExp & matchExp)
+      ..orderBy([
+        OrderingTerm.desc(db.notes.updatedAt),
+        OrderingTerm.desc(db.notes.createdAt),
+      ])
+      ..limit(limit);
 
     final ids = await idQuery.map((row) => row.read(db.notes.id)!).get();
     if (ids.isEmpty) return [];

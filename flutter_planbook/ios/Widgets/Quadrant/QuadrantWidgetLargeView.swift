@@ -14,8 +14,10 @@ private let kQuadrantLargeSpacing: CGFloat = 12
 struct QuadrantWidgetLargeView: View {
     var entry: QuadrantEntry
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private var isDarkMode: Bool {
-        WidgetBackgroundConfig.current().isDarkMode
+        WidgetSettings.isDark(colorScheme: colorScheme)
     }
 
     var body: some View {
@@ -97,7 +99,6 @@ struct QuadrantView: View {
     let group: QuadrantGroup
     let size: CGSize
     let isDark: Bool
-    @Environment(\.colorScheme) var colorScheme
     @Environment(\.widgetRenderingMode) private var widgetRenderingMode
 
     var body: some View {

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/note/period_note_target.dart';
 import 'package:planbook_repository/sync/apply_remote_batch.dart';
 import 'package:planbook_repository/sync/database_pull_lock.dart';
 import 'package:planbook_repository/sync/merge_remote_rows.dart';
@@ -379,54 +380,82 @@ class NotesRepository {
     required TaskEntity task,
     required Note? currentNote,
   }) async {
-    final newLine = '${task.isCompleted ? '✅' : '⭕️'} ${task.title}';
-    final base = (currentNote?.content ?? '').trim();
+    final target = PeriodNoteTarget(date: focusAt, type: noteType);
+    // currentNote 只为兼容调用保留，不能以页面快照决定更新 ID 或创建。
+    await _mutatePeriodNote(target, title, (existingContent) {
+      final newLine = '${task.isCompleted ? '✅' : '⭕️'} ${task.title}';
+      final base = (existingContent ?? '').trim();
 
-    final String newContent;
-    if (base.isEmpty) {
-      newContent = newLine;
-    } else {
-      final lines = base.split('\n').toList();
-      final taskTitle = task.title;
+      final String newContent;
+      if (base.isEmpty) {
+        newContent = newLine;
+      } else {
+        final lines = base.split('\n').toList();
+        final taskTitle = task.title;
 
-      bool isSameTaskLine(String l) {
-        if (l.length < 2) return false;
-        final first = l[0];
-        if (first != '✅' && first != '⭕️') return false;
-        return l.substring(1).trimLeft() == taskTitle;
-      }
+        bool isSameTaskLine(String l) {
+          if (l.length < 2) return false;
+          // 未完成标记包含变体选择符，必须按完整前缀识别。
+          final prefix = l.startsWith('✅')
+              ? '✅'
+              : l.startsWith('⭕️')
+              ? '⭕️'
+              : null;
+          if (prefix == null) return false;
+          return l.substring(prefix.length).trimLeft() == taskTitle;
+        }
 
-      int? firstIdx;
-      final result = <String>[];
-      for (var i = 0; i < lines.length; i++) {
-        if (isSameTaskLine(lines[i])) {
-          firstIdx ??= result.length;
-          if (firstIdx == result.length) {
-            result.add(newLine);
+        int? firstIdx;
+        final result = <String>[];
+        for (var i = 0; i < lines.length; i++) {
+          if (isSameTaskLine(lines[i])) {
+            firstIdx ??= result.length;
+            if (firstIdx == result.length) {
+              result.add(newLine);
+            }
+          } else {
+            result.add(lines[i]);
           }
+        }
+        if (firstIdx != null) {
+          newContent = result.join('\n');
         } else {
-          result.add(lines[i]);
+          newContent = '$base\n$newLine';
         }
       }
-      if (firstIdx != null) {
-        newContent = result.join('\n');
-      } else {
-        newContent = '$base\n$newLine';
-      }
+
+      return newContent;
+    }, preserveExistingTitle: true);
+  }
+
+  Future<Note> savePeriodNote({
+    required PeriodNoteTarget target,
+    required String title,
+    required String content,
+  }) => _mutatePeriodNote(target, title, (_) => content);
+
+  Future<Note> _mutatePeriodNote(
+    PeriodNoteTarget target,
+    String title,
+    String Function(String?) content, {
+    bool preserveExistingTitle = false,
+  }) {
+    final account = userId;
+    void validateAccount() {
+      if (userId != account) throw StateError('笔记账号已变化，取消写入');
     }
 
-    if (currentNote == null) {
-      await create(
-        title: title,
-        content: newContent,
-        focusAt: focusAt,
-        type: noteType,
-      );
-    } else {
-      await update(
-        note: currentNote.copyWith(content: Value(newContent)),
-      );
-    }
+    return _dbNoteApi.mutatePeriodNote(
+      userId: account,
+      type: target.type,
+      rangeStart: target.start,
+      rangeEnd: target.end,
+      focusAt: target.focusAt,
+      title: title,
+      content: content,
+      validateAccount: validateAccount,
+      preserveExistingTitle: preserveExistingTitle,
+    );
   }
 
   Future<void> updateTypeNoteContentByTaskActivities(

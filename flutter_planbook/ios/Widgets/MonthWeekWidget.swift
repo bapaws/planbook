@@ -86,7 +86,11 @@ struct MonthWeekWidgetLarge: Widget {
 
 struct MonthWeekView: View {
     var entry: MonthWeekEntry
-    private let isDark = WidgetBackgroundConfig.current().isDarkMode
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var isDark: Bool {
+        WidgetSettings.isDark(colorScheme: colorScheme)
+    }
 
     var body: some View {
         let weeks = stride(from: 0, to: entry.days.count, by: 7).map { start in

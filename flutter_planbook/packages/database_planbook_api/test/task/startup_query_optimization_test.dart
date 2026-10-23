@@ -14,8 +14,12 @@ import 'package:planbook_api/planbook_api.dart';
 
 class _Queries extends QueryInterceptor {
   final selects = <String>[];
+  final occurrenceColumns = <Set<String>>[];
   bool failNextSelect = false;
   int occurrenceBatches = 0;
+  int occurrenceRows = 0;
+  AppDatabase? projectionReference;
+  int comparedProjections = 0;
   int? failOccurrenceBatch;
   Future<void> Function()? beforeNextSelect;
   Future<void> Function()? beforeNextOccurrenceBatch;
@@ -34,7 +38,42 @@ class _Queries extends QueryInterceptor {
     final before = beforeNextSelect;
     beforeNextSelect = null;
     await before?.call();
-    return executor.runSelect(statement, args);
+    final rows = await executor.runSelect(statement, args);
+    if (statement.contains('FROM "task_occurrences"') &&
+        !statement.contains('JOIN') &&
+        rows.isNotEmpty) {
+      occurrenceColumns.add(rows.first.keys.toSet());
+      final referenceDb = projectionReference;
+      if (referenceDb != null && rows.first.length == 2) {
+        // 同一测试快照中对照原完整行 mapper 的实例键及日期转换。
+        final from = statement.indexOf(' FROM "task_occurrences"');
+        final fullRows = await executor.runSelect(
+          'SELECT *${statement.substring(from)}',
+          args,
+        );
+        final fullKeys = fullRows
+            .map(referenceDb.taskOccurrences.map)
+            .map(
+              (row) => (row.taskId, row.occurrenceAt.dateTime),
+            );
+        final projectedKeys = rows.map(
+          (row) => (
+            row['task_occurrences.task_id'],
+            const JiffyConverter()
+                .fromSql(
+                  referenceDb.typeMapping.read(
+                    DriftSqlType.dateTime,
+                    row['task_occurrences.occurrence_at'],
+                  )!,
+                )
+                .dateTime,
+          ),
+        );
+        expect(projectedKeys, unorderedEquals(fullKeys));
+        comparedProjections++;
+      }
+    }
+    return rows;
   }
 
   @override
@@ -44,6 +83,13 @@ class _Queries extends QueryInterceptor {
   ) async {
     if (statements.statements.any((sql) => sql.contains('task_occurrences'))) {
       occurrenceBatches++;
+      occurrenceRows += statements.arguments
+          .where(
+            (args) => statements.statements[args.statementIndex].contains(
+              'task_occurrences',
+            ),
+          )
+          .length;
       if (occurrenceBatches == failOccurrenceBatch) {
         throw StateError('模拟第二批写入失败');
       }
@@ -119,6 +165,8 @@ void main() {
   }
 
   test('连续切天复用明确星期的日期摘要，不扩大写库范围，缺行与隐藏标记仍正确', () async {
+    // 本用例验证固定时差窗口的复用；跨夏令时的精确窗口另行验证。
+    final date = Jiffy.parse('2026-06-13');
     var calls = 0;
     final computer = TaskOccurrenceGenerator(
       computeBatch: (input) async {
@@ -172,11 +220,204 @@ void main() {
     )..where((o) => o.id.equals(missing.id))).go();
     await (db.update(db.taskOccurrences)..where((o) => o.id.equals(hidden.id)))
         .write(TaskOccurrencesCompanion(deletedAt: Value(date)));
+    queries.occurrenceColumns.clear();
     await api.preGenerateTaskOccurrences(fromDate: date.add(days: 2));
+    // 摘要命中核验和事务内补写核验都只传回两列，同时保留隐藏标记。
+    expect(queries.occurrenceColumns.length, greaterThanOrEqualTo(2));
+    for (final columns in queries.occurrenceColumns) {
+      expect(columns, {
+        'task_occurrences.task_id',
+        'task_occurrences.occurrence_at',
+      });
+    }
     final after = await db.select(db.taskOccurrences).get();
     expect(after.any((o) => o.occurrenceAt == missing.occurrenceAt), isTrue);
     expect(after.singleWhere((o) => o.id == hidden.id).deletedAt, date);
     expect(calls, 1);
+    expect(await db.select(db.syncOutbox).get(), isEmpty);
+  });
+
+  test('实例键两列核验在跨夏令时窗口保留隐藏标记并修复缺行', () async {
+    await db
+        .into(db.tasks)
+        .insert(
+          TasksCompanion.insert(
+            id: const Value('projection'),
+            title: '跨时差周任务',
+            startAt: Value(date.add(hours: 9)),
+            endAt: Value(date.add(hours: 10)),
+            dueAt: Value(date.add(hours: 17)),
+            recurrenceRule: Value(
+              RecurrenceRule(
+                frequency: RecurrenceFrequency.weekly,
+                daysOfWeek: [RecurrenceDayOfWeek.day(Weekday.thursday)],
+              ),
+            ),
+          ),
+        );
+    await tasks.preGenerateTaskOccurrences(fromDate: date);
+    final before = await db.select(db.taskOccurrences).get();
+    expect(before.length, greaterThan(2));
+    final hidden = before.first;
+    final missing = before.last;
+    await (db.update(db.taskOccurrences)..where((o) => o.id.equals(hidden.id)))
+        .write(TaskOccurrencesCompanion(deletedAt: Value(date)));
+    await (db.delete(
+      db.taskOccurrences,
+    )..where((o) => o.id.equals(missing.id))).go();
+    queries.occurrenceColumns.clear();
+    // 起点本身不是周四，重入相同窗口仍会经过摘要和事务内的两次核验。
+    await tasks.preGenerateTaskOccurrences(fromDate: date);
+    expect(queries.occurrenceColumns.length, greaterThanOrEqualTo(2));
+    for (final columns in queries.occurrenceColumns) {
+      expect(columns, {
+        'task_occurrences.task_id',
+        'task_occurrences.occurrence_at',
+      });
+    }
+    final after = await db.select(db.taskOccurrences).get();
+    expect(after.length, before.length);
+    final repaired = after.singleWhere(
+      (o) => o.occurrenceAt == missing.occurrenceAt,
+    );
+    expect(repaired.startAt, missing.startAt);
+    expect(repaired.endAt, missing.endAt);
+    expect(repaired.dueAt, missing.dueAt);
+    expect(repaired.deletedAt, isNull);
+    expect(
+      after.where((o) => o.id != repaired.id),
+      unorderedEquals(
+        before
+            .where((o) => o.id != missing.id)
+            .map(
+              (o) => o.id == hidden.id ? o.copyWith(deletedAt: Value(date)) : o,
+            ),
+      ),
+    );
+    expect(await db.select(db.syncOutbox).get(), isEmpty);
+  });
+
+  test('实例键投影与完整行转换一致，隐藏与缺失记录不会触发整组重写', () async {
+    await db
+        .into(db.tasks)
+        .insert(
+          TasksCompanion.insert(
+            id: const Value('key-review'),
+            title: '键投影对照',
+            startAt: Value(date.add(hours: 9)),
+            recurrenceRule: Value(
+              RecurrenceRule(
+                frequency: RecurrenceFrequency.weekly,
+                daysOfWeek: [RecurrenceDayOfWeek.day(Weekday.thursday)],
+              ),
+            ),
+          ),
+        );
+    await tasks.preGenerateTaskOccurrences(fromDate: date);
+    final before = await db.select(db.taskOccurrences).get();
+    final hidden = before.first;
+    final missing = before.last;
+    await (db.update(db.taskOccurrences)..where((o) => o.id.equals(hidden.id)))
+        .write(TaskOccurrencesCompanion(deletedAt: Value(date)));
+    await (db.delete(
+      db.taskOccurrences,
+    )..where((o) => o.id.equals(missing.id))).go();
+    queries.projectionReference = db;
+    final rowsWritten = queries.occurrenceRows;
+    await tasks.preGenerateTaskOccurrences(fromDate: date);
+    expect(queries.comparedProjections, greaterThanOrEqualTo(2));
+    // 不依赖 insertOrIgnore 掩盖键转换错误：只应尝试写入真正缺少的一行。
+    expect(queries.occurrenceRows - rowsWritten, 1);
+    final after = await db.select(db.taskOccurrences).get();
+    expect(after.length, before.length);
+    expect(after.singleWhere((o) => o.id == hidden.id).deletedAt, date);
+    expect(after.any((o) => o.occurrenceAt == missing.occurrenceAt), isTrue);
+    expect(await db.select(db.syncOutbox).get(), isEmpty);
+  });
+
+  test('不同日期并发核验按最新规则补齐，迟到计算不覆盖隐藏行或生成旧规则', () async {
+    await db
+        .into(db.tasks)
+        .insert(
+          TasksCompanion.insert(
+            id: const Value('parallel-review'),
+            title: '不同日期并发',
+            startAt: Value(date.add(hours: 9)),
+            recurrenceRule: Value(
+              RecurrenceRule(
+                frequency: RecurrenceFrequency.weekly,
+                daysOfWeek: [RecurrenceDayOfWeek.day(Weekday.thursday)],
+              ),
+            ),
+          ),
+        );
+    final firstComputer = _ControlledComputer();
+    final secondComputer = _ControlledComputer();
+    final first = controlledApi(
+      firstComputer,
+    ).preGenerateTaskOccurrences(fromDate: date);
+    await firstComputer.entered.future;
+    final secondDate = date.add(days: 1);
+    final second = controlledApi(
+      secondComputer,
+    ).preGenerateTaskOccurrences(fromDate: secondDate);
+    await secondComputer.entered.future;
+    final rule = RecurrenceRule(
+      frequency: RecurrenceFrequency.weekly,
+      daysOfWeek: [RecurrenceDayOfWeek.day(Weekday.tuesday)],
+    );
+    await (db.update(
+      db.tasks,
+    )..where((t) => t.id.equals('parallel-review'))).write(
+      TasksCompanion(
+        startAt: Value(date.add(hours: 11)),
+        recurrenceRule: Value(rule),
+      ),
+    );
+    final hiddenAt = date.add(days: 5).startOf(Unit.day);
+    await db
+        .into(db.taskOccurrences)
+        .insert(
+          TaskOccurrencesCompanion.insert(
+            id: const Value('parallel-hidden'),
+            taskId: const Value('parallel-review'),
+            occurrenceAt: hiddenAt,
+            deletedAt: Value(date),
+          ),
+        );
+    secondComputer.resume.complete();
+    await second.timeout(const Duration(seconds: 5));
+    firstComputer.resume.complete();
+    await first.timeout(const Duration(seconds: 5));
+    final rows = await db.select(db.taskOccurrences).get();
+    expect(rows.singleWhere((o) => o.id == 'parallel-hidden').deletedAt, date);
+    // 与原纯计算/归一化流程对照，保留跨夏令时的现有日偏移语义。
+    final expected = {
+      for (final from in [date, secondDate])
+        for (final row in generateTaskOccurrenceBatch((
+          schedules: [
+            (
+              taskId: 'parallel-review',
+              startAt: date.add(hours: 11),
+              endAt: null,
+              dueAt: null,
+              rule: rule,
+            ),
+          ],
+          rangeStart: from,
+          rangeEnd: from.add(months: 3),
+        )))
+          (row.occurrenceAt.value, row.startAt.value),
+    };
+    final visible = rows.where((o) => o.deletedAt == null).toList();
+    expect(
+      visible.map((o) => (o.occurrenceAt, o.startAt)),
+      unorderedEquals(expected),
+    );
+    expect(
+      rows.map((o) => (o.taskId, o.occurrenceAt)).toSet().length,
+      rows.length,
+    );
     expect(await db.select(db.syncOutbox).get(), isEmpty);
   });
 
@@ -575,6 +816,8 @@ void main() {
   });
 
   test('后台分批展开与原规则计算一致，保留起止与截止时间', () async {
+    // 此处验证固定时差下的时分；跨夏令时语义由精确窗口对照用例验证。
+    final date = Jiffy.parse('2026-06-13');
     final rules = [
       RecurrenceRule(
         frequency: RecurrenceFrequency.daily,
@@ -1002,6 +1245,8 @@ void main() {
   });
 
   test('强制刷新事务与准备共用计算队列不会互相等待，最终采用新时间', () async {
+    // 此处验证固定时差下的时分；跨夏令时语义由精确窗口对照用例验证。
+    final date = Jiffy.parse('2026-06-13');
     final start = date.subtract(days: 3);
     await db
         .into(db.tasks)

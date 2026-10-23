@@ -119,10 +119,16 @@ class _WidgetOpenTaskBinderState extends State<_WidgetOpenTaskBinder> {
   Widget build(BuildContext context) => widget.child;
 }
 
-class _RootTaskPage extends StatelessWidget {
-  _RootTaskPage({required this.child});
+class _RootTaskPage extends StatefulWidget {
+  const _RootTaskPage({required this.child});
 
   final Widget child;
+
+  @override
+  State<_RootTaskPage> createState() => _RootTaskPageState();
+}
+
+class _RootTaskPageState extends State<_RootTaskPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -295,7 +301,7 @@ class _RootTaskPage extends StatelessWidget {
           ),
         ],
       ),
-      body: child,
+      body: widget.child,
     );
   }
 

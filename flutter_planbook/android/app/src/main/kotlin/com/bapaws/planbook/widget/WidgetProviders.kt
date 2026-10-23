@@ -44,7 +44,7 @@ class QuadrantWidgetLargeProvider : BackgroundWidgetProvider() {
             try {
                 val rv = RemoteViews(context.packageName, R.layout.widget_quadrant_large)
 
-                val isDark = WidgetSettings.isDarkMode(context)
+                val isDark = WidgetSettings.resolvedIsDark(context)
                 val bgResId = WidgetBackgroundConfig.safeBackgroundResId(context)
                 val filterMode = WidgetActionUtils.getFilterMode(context, appWidgetId)
 
@@ -193,7 +193,7 @@ class QuadrantWidgetSmallProvider : BackgroundWidgetProvider() {
             try {
                 val rv = RemoteViews(context.packageName, R.layout.widget_quadrant_small)
 
-                val isDark = WidgetSettings.isDarkMode(context)
+                val isDark = WidgetSettings.resolvedIsDark(context)
                 val bgResId = WidgetBackgroundConfig.safeBackgroundResId(context)
                 val filterMode = WidgetActionUtils.getFilterMode(context, appWidgetId)
                 val selectedPriority = WidgetSettings.getSelectedPriority(context)
@@ -327,7 +327,7 @@ class QuickNoteWidgetProvider : BackgroundWidgetProvider() {
             try {
                 val rv = RemoteViews(context.packageName, R.layout.widget_quick_note)
 
-                val isDark = WidgetSettings.isDarkMode(context)
+                val isDark = WidgetSettings.resolvedIsDark(context)
                 val bgResId = WidgetBackgroundConfig.safeBackgroundResId(context)
                 val colorScheme = WidgetSettings.getCurrentColorScheme(context)
 

@@ -83,7 +83,7 @@ object WeekWidgetUpdater {
     ) {
         try {
             val rv = RemoteViews(context.packageName, R.layout.widget_week)
-            val isDark = WidgetSettings.isDarkMode(context)
+            val isDark = WidgetSettings.resolvedIsDark(context)
             val density = context.resources.displayMetrics.density
             val widgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
             val options = appWidgetManager.getAppWidgetOptions(appWidgetId)

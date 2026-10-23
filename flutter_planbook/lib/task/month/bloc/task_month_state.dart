@@ -7,6 +7,8 @@ final class TaskMonthState extends Equatable {
     this.status = PageStatus.initial,
     this.focusNote,
     this.summaryNote,
+    this.isFocusNoteReady = false,
+    this.isSummaryNoteReady = false,
     this.isCalendarExpanded = false,
     this.weeks = const [],
   });
@@ -19,6 +21,14 @@ final class TaskMonthState extends Equatable {
   final NoteType noteType;
   final Note? focusNote;
   final Note? summaryNote;
+  final bool isFocusNoteReady;
+  final bool isSummaryNoteReady;
+
+  PeriodNoteSnapshot noteSnapshot(NoteType type) => PeriodNoteSnapshot(
+    target: PeriodNoteTarget(date: date, type: type),
+    note: type.isFocus ? focusNote : summaryNote,
+    isReady: type.isFocus ? isFocusNoteReady : isSummaryNoteReady,
+  );
   final bool isCalendarExpanded;
 
   /// 获取当月的所有日期列表
@@ -49,6 +59,8 @@ final class TaskMonthState extends Equatable {
     date,
     focusNote,
     summaryNote,
+    isFocusNoteReady,
+    isSummaryNoteReady,
     isCalendarExpanded,
     noteType,
   ];
@@ -57,8 +69,10 @@ final class TaskMonthState extends Equatable {
     PageStatus? status,
     Jiffy? date,
     List<List<Jiffy?>>? weeks,
-    Note? focusNote,
-    Note? summaryNote,
+    ValueGetter<Note?>? focusNote,
+    ValueGetter<Note?>? summaryNote,
+    bool? isFocusNoteReady,
+    bool? isSummaryNoteReady,
     bool? isCalendarExpanded,
     NoteType? noteType,
   }) {
@@ -66,8 +80,10 @@ final class TaskMonthState extends Equatable {
       status: status ?? this.status,
       date: date ?? this.date,
       weeks: weeks ?? this.weeks,
-      focusNote: focusNote ?? this.focusNote,
-      summaryNote: summaryNote ?? this.summaryNote,
+      focusNote: focusNote != null ? focusNote() : this.focusNote,
+      summaryNote: summaryNote != null ? summaryNote() : this.summaryNote,
+      isFocusNoteReady: isFocusNoteReady ?? this.isFocusNoteReady,
+      isSummaryNoteReady: isSummaryNoteReady ?? this.isSummaryNoteReady,
       isCalendarExpanded: isCalendarExpanded ?? this.isCalendarExpanded,
       noteType: noteType ?? this.noteType,
     );

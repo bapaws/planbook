@@ -114,6 +114,11 @@ class AppBloc extends Bloc<AppEvent, AppState> with WidgetsBindingObserver {
     // 首页标签加载完成也会请求初始化，已有配置和监听无需重复建立。
     if (state.isInitialized) return;
     final darkMode = _settingsRepository.getDarkMode();
+    try {
+      await _settingsRepository.syncWidgetTheme();
+    } on Object catch (error, stack) {
+      debugPrint('同步小组件主题失败: $error\n$stack');
+    }
     final locale = _settingsRepository.getLocale();
     final seedColorHex = _settingsRepository.getSeedColorHex();
     final seedColor = seedColorHex == null

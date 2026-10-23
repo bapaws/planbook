@@ -17,21 +17,23 @@ final class TaskWeekDateSelected extends TaskWeekEvent {
 }
 
 final class TaskWeekFocusNoteRequested extends TaskWeekEvent {
-  const TaskWeekFocusNoteRequested({required this.date});
+  const TaskWeekFocusNoteRequested({required this.date, this.generation});
 
   final Jiffy date;
+  final int? generation;
 
   @override
-  List<Object> get props => [date];
+  List<Object?> get props => [date, generation];
 }
 
 final class TaskWeekSummaryNoteRequested extends TaskWeekEvent {
-  const TaskWeekSummaryNoteRequested({required this.date});
+  const TaskWeekSummaryNoteRequested({required this.date, this.generation});
 
   final Jiffy date;
+  final int? generation;
 
   @override
-  List<Object> get props => [date];
+  List<Object?> get props => [date, generation];
 }
 
 final class TaskWeekCalendarToggled extends TaskWeekEvent {
@@ -42,11 +44,13 @@ final class TaskWeekNoteTaskAppended extends TaskWeekEvent {
   const TaskWeekNoteTaskAppended({
     required this.task,
     required this.noteType,
+    this.target,
   });
 
   final TaskEntity task;
   final NoteType noteType;
+  final PeriodNoteTarget? target;
 
   @override
-  List<Object> get props => [task, noteType];
+  List<Object?> get props => [task, noteType, target];
 }

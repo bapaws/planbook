@@ -159,12 +159,28 @@ class SettingsRepository {
     } else {
       await _sp.setInt(kSettingsDarkModeKey, mode.index);
     }
-    // 同步深色模式到 Widget（iOS + Android）
-    final isDarkMode = mode == DarkMode.dark;
-    await AppHomeWidget.saveWidgetData(
-      'widget_theme',
-      jsonEncode({'isDarkMode': isDarkMode}),
-    );
+    await syncWidgetTheme();
+  }
+
+  /// 把外观偏好写给小组件并刷新。
+  ///
+  /// `null` 是跟随系统。小组件要能区分「浅色」和「跟随系统」，
+  /// 不能只存一个布尔值，否则系统暗黑时文字仍会用浅色方案。
+  Future<void> syncWidgetTheme() async {
+    final mode = getDarkMode();
+    final payload = jsonEncode({
+      'mode': switch (mode) {
+        DarkMode.dark => 'dark',
+        DarkMode.light => 'light',
+        null => 'system',
+      },
+      // 旧版小组件只认布尔值：只有明确选深色才为 true。
+      'isDarkMode': mode == DarkMode.dark,
+    });
+    final existing = await AppHomeWidget.getWidgetData<String>('widget_theme');
+    if (existing == payload) return;
+    await AppHomeWidget.saveWidgetData('widget_theme', payload);
+    await AppHomeWidget.refreshTaskWidgets();
   }
 
   String? getAppIconName() => _sp.getString(kSettingsAppIconNameKey);

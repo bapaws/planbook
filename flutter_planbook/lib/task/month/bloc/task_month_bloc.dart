@@ -1,6 +1,10 @@
+// 保留公开命名参数及私有依赖字段，兼容项目最低 SDK。
+// ignore_for_file: prefer_initializing_formals
+
 import 'package:bloc/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:planbook_core/data/page_status.dart';
@@ -26,11 +30,15 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
       transformer: restartable(),
     );
     on<TaskMonthCalendarToggled>(_onCalendarToggled);
-    on<TaskMonthNoteTaskAppended>(_onNoteTaskAppended);
+    on<TaskMonthNoteTaskAppended>(
+      _onNoteTaskAppended,
+      transformer: sequential(),
+    );
   }
 
   final NotesRepository _notesRepository;
   final AppLocalizations _l10n;
+  int _noteGeneration = 0;
 
   Future<void> _onDateSelected(
     TaskMonthDateSelected event,
@@ -73,25 +81,60 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
       weeks.add(currentWeek);
     }
 
-    emit(state.copyWith(date: event.date, weeks: weeks));
+    final changedPeriod =
+        PeriodNoteTarget(date: state.date, type: NoteType.monthlyFocus) !=
+        PeriodNoteTarget(date: event.date, type: NoteType.monthlyFocus);
+    final generation = ++_noteGeneration;
+    emit(
+      state.copyWith(
+        date: event.date,
+        weeks: weeks,
+        focusNote: changedPeriod ? () => null : null,
+        summaryNote: changedPeriod ? () => null : null,
+        isFocusNoteReady: changedPeriod ? false : null,
+        isSummaryNoteReady: changedPeriod ? false : null,
+      ),
+    );
 
-    add(TaskMonthFocusNoteRequested(date: event.date));
-    add(TaskMonthSummaryNoteRequested(date: event.date));
+    add(TaskMonthFocusNoteRequested(date: event.date, generation: generation));
+    add(
+      TaskMonthSummaryNoteRequested(date: event.date, generation: generation),
+    );
   }
 
   Future<void> _onFocusNoteRequested(
     TaskMonthFocusNoteRequested event,
     Emitter<TaskMonthState> emit,
   ) async {
+    final generation = event.generation ?? _noteGeneration;
+    final target = PeriodNoteTarget(
+      date: event.date,
+      type: NoteType.monthlyFocus,
+    );
+    final account = _notesRepository.userId;
+    bool isCurrent() =>
+        generation == _noteGeneration &&
+        target == PeriodNoteTarget(date: state.date, type: target.type) &&
+        account == _notesRepository.userId;
+    if (!isCurrent()) return;
     await emit.forEach(
-      _notesRepository.getNoteByFocusAt(
-        event.date,
-        type: NoteType.monthlyFocus,
-      ),
-      onData: (note) => state.copyWith(
-        focusNote: note,
-        status: PageStatus.success,
-      ),
+      _notesRepository.getNoteByFocusAt(event.date, type: target.type),
+      onData: (note) {
+        if (!isCurrent()) return state;
+        final valid =
+            note == null || (target.accepts(note) && note.userId == account);
+        return state.copyWith(
+          focusNote: () => valid ? note : null,
+          isFocusNoteReady: valid,
+          status: valid ? PageStatus.success : PageStatus.failure,
+        );
+      },
+      onError: (_, _) => !isCurrent()
+          ? state
+          : state.copyWith(
+              focusNote: () => null,
+              isFocusNoteReady: false,
+            ),
     );
   }
 
@@ -99,15 +142,35 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
     TaskMonthSummaryNoteRequested event,
     Emitter<TaskMonthState> emit,
   ) async {
+    final generation = event.generation ?? _noteGeneration;
+    final target = PeriodNoteTarget(
+      date: event.date,
+      type: NoteType.monthlySummary,
+    );
+    final account = _notesRepository.userId;
+    bool isCurrent() =>
+        generation == _noteGeneration &&
+        target == PeriodNoteTarget(date: state.date, type: target.type) &&
+        account == _notesRepository.userId;
+    if (!isCurrent()) return;
     await emit.forEach(
-      _notesRepository.getNoteByFocusAt(
-        event.date,
-        type: NoteType.monthlySummary,
-      ),
-      onData: (note) => state.copyWith(
-        summaryNote: note,
-        status: PageStatus.success,
-      ),
+      _notesRepository.getNoteByFocusAt(event.date, type: target.type),
+      onData: (note) {
+        if (!isCurrent()) return state;
+        final valid =
+            note == null || (target.accepts(note) && note.userId == account);
+        return state.copyWith(
+          summaryNote: () => valid ? note : null,
+          isSummaryNoteReady: valid,
+          status: valid ? PageStatus.success : PageStatus.failure,
+        );
+      },
+      onError: (_, _) => !isCurrent()
+          ? state
+          : state.copyWith(
+              summaryNote: () => null,
+              isSummaryNoteReady: false,
+            ),
     );
   }
 
@@ -122,17 +185,24 @@ class TaskMonthBloc extends Bloc<TaskMonthEvent, TaskMonthState> {
     TaskMonthNoteTaskAppended event,
     Emitter<TaskMonthState> emit,
   ) async {
-    final currentNote = event.noteType.isFocus
-        ? state.focusNote
-        : state.summaryNote;
-    final title = event.noteType.noteTitle(state.date, _l10n);
-    final focusAt = event.noteType.normalizedFocusAt(state.date);
+    if (event.noteType != NoteType.monthlyFocus &&
+        event.noteType != NoteType.monthlySummary) {
+      return;
+    }
+    final snapshot = state.noteSnapshot(event.noteType);
+    if (!snapshot.canWrite ||
+        (event.target != null && event.target != snapshot.target) ||
+        (snapshot.note != null &&
+            snapshot.note!.userId != _notesRepository.userId)) {
+      return;
+    }
+    final title = event.noteType.noteTitle(snapshot.target.focusAt, _l10n);
     await _notesRepository.appendTaskLineToNote(
       title: title,
-      focusAt: focusAt,
+      focusAt: snapshot.target.focusAt,
       noteType: event.noteType,
       task: event.task,
-      currentNote: currentNote,
+      currentNote: snapshot.note,
     );
   }
 }

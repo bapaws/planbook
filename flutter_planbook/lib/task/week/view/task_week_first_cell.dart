@@ -11,6 +11,7 @@ import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/focus/view/open_period_note_editor.dart';
 import 'package:flutter_planbook/task/source/bloc/task_source_bloc.dart';
 import 'package:flutter_planbook/task/source/model/task_source_panel_type.dart';
 import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
@@ -32,7 +33,10 @@ class TaskWeekFirstCell extends StatelessWidget {
     return BlocBuilder<TaskWeekBloc, TaskWeekState>(
       buildWhen: (previous, current) =>
           previous.focusNote != current.focusNote ||
-          previous.summaryNote != current.summaryNote,
+          previous.summaryNote != current.summaryNote ||
+          previous.date != current.date ||
+          previous.isFocusNoteReady != current.isFocusNoteReady ||
+          previous.isSummaryNoteReady != current.isSummaryNoteReady,
       builder: (context, weekState) {
         return BlocBuilder<RootTaskBloc, RootTaskState>(
           buildWhen: (previous, current) =>
@@ -71,15 +75,23 @@ class TaskWeekFirstCell extends StatelessWidget {
     TaskWeekState weekState,
     NoteType noteType,
   ) {
-    final note = noteType.isFocus ? weekState.focusNote : weekState.summaryNote;
+    final snapshot = weekState.noteSnapshot(noteType);
     return TaskWeekFocusCell(
-      note: note,
+      note: snapshot.note,
+      isReady: snapshot.canWrite,
+      onTap: () => openPeriodNoteEditor(
+        context,
+        displayed: snapshot,
+        current: () =>
+            context.read<TaskWeekBloc>().state.noteSnapshot(noteType),
+      ),
       noteType: noteType,
       onTaskDropped: (task) {
         context.read<TaskWeekBloc>().add(
           TaskWeekNoteTaskAppended(
             task: task,
             noteType: noteType,
+            target: snapshot.target,
           ),
         );
       },
