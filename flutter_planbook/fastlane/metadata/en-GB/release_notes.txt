@@ -1,9 +1,9 @@
 What's New:
-- New Week widgets
-- Edit your avatar and display name
-- Bug fixes and improvements
+- Faster startup and performance improvements
+- Fixed some known issues
 
 Recent updates:
+- New Week view widget
 - New Time Block widget
 - Week Octant view now supports Inbox
 - Search support

@@ -1,9 +1,9 @@
 Neu in dieser Version:
-- Neue Wochenansicht-Widgets
-- Avatar und Anzeigename können geändert werden
+- Schnellerer Start und Leistungsverbesserungen
 - Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
+- Neues Widget für die Wochenansicht
 - Neues Zeitblock-Widget
 - Die Wochen-Oktant-Ansicht unterstützt jetzt den Posteingang
-- Suche
+- Suchfunktion

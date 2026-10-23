@@ -112,13 +112,14 @@ Future<void> applyRemoteBatch({
     final candidates = local
         .where((r) => !inventory.contains(r['id']))
         .toList();
+    final deferred = candidates.map((r) => r['id']! as String).toSet();
     for (var offset = 0; offset < candidates.length; offset += 100) {
       final part = candidates.skip(offset).take(100).toList();
       final missing = await batch.confirmMissing(
         part.map((r) => r['id']! as String).toList(),
       );
       validateAccount();
-      await db.transaction(() async {
+      final deleted = await db.transaction(() async {
         validateAccount();
         final ids = <String>{};
         for (final row in part.where((r) => missing.contains(r['id']))) {
@@ -139,7 +140,7 @@ Future<void> applyRemoteBatch({
             ids.add(row['id']! as String);
           }
         }
-        if (ids.isEmpty) return;
+        if (ids.isEmpty) return ids;
         final now = Jiffy.now();
         if (batch.table == 'task_tags') {
           await (db.update(db.taskTags)..where(
@@ -153,8 +154,12 @@ Future<void> applyRemoteBatch({
               .write(NoteTagsCompanion(deletedAt: Value(now)));
         }
         validateAccount();
+        return ids;
       });
+      // 事务成功后才能忘记关联；Outbox、写入保护和二次确认拦下的项继续保留基线。
+      deferred.removeAll(deleted);
     }
+    batch.retainMissing(deferred);
   }
   validateAccount();
   await batch.commit();

@@ -1,9 +1,9 @@
 Nouveautés :
-- Nouveaux widgets de vue semaine
-- Modification de l’avatar et du nom
+- Démarrage plus rapide et améliorations des performances
 - Correctifs de problèmes connus
 
 Mises à jour récentes :
+- Nouveau widget de vue semaine
 - Nouveau widget Blocs horaires
 - La vue Octant de la semaine prend en charge la boîte de réception
 - Prise en charge de la recherche

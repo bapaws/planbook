@@ -169,11 +169,15 @@ class RemoteTableBatch {
   final Map<String, String> _previous;
   final Future<void> Function(Map<String, String>) _save;
   final _accepted = <String>{};
+  final _retainedMissing = <String>{};
 
   /// 上次清单里见过的 id。空集表示还没有基线，关联删除仍按远程确认处理。
   Set<String> get knownIds => _previous.keys.toSet();
 
   void accept(Iterable<String> ids) => _accepted.addAll(ids);
+
+  /// 尚未完成本地删除的关联保留旧版本，供下一轮同步继续确认和重试。
+  void retainMissing(Iterable<String> ids) => _retainedMissing.addAll(ids);
 
   Future<void> commit() async {
     final next = Map<String, String>.from(_previous);
@@ -183,7 +187,11 @@ class RemoteTableBatch {
       }
     }
     final present = inventory;
-    if (present != null) next.removeWhere((id, _) => !present.contains(id));
+    if (present != null) {
+      next.removeWhere(
+        (id, _) => !present.contains(id) && !_retainedMissing.contains(id),
+      );
+    }
     if (_accepted.isEmpty && next.length == _previous.length) return;
     await _save(next);
   }

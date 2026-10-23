@@ -225,6 +225,28 @@ void main() {
     );
   });
 
+  test('暂缓删除的关联跨批次保留基线，解除暂缓后移除且重建可重拉', () async {
+    await commit(await pull().pull('task_tags', force: false));
+    source.removeWhere((row) => row['id'] == 'id3' || row['id'] == 'id4');
+    final deferred = await pull().pull('task_tags', force: false);
+    deferred.retainMissing(['id3', 'local-new']);
+    await commit(deferred);
+    final retry = await pull().pull('task_tags', force: true);
+    expect(retry.knownIds, contains('id3'));
+    expect(retry.knownIds, isNot(contains('id4')));
+    expect(retry.knownIds, isNot(contains('local-new')));
+    await commit(retry);
+    expect(
+      (await pull().pull('task_tags', force: false)).knownIds,
+      isNot(contains('id3')),
+    );
+    source.add({'id': 'id3', '_sync_version': '1'});
+    expect(
+      (await pull().pull('task_tags', force: false)).rows.map((r) => r['id']),
+      ['id3'],
+    );
+  });
+
   test('版本清单过大时分片保存，缺一片则下次全量', () async {
     source = List.generate(
       1501,

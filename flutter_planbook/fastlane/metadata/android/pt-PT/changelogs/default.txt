@@ -1,9 +1,9 @@
 Novidades:
-- Novos widgets da vista semanal
-- Alterar a fotografia e o nome
+- Arranque mais rápido e melhorias de desempenho
 - Correção de alguns problemas conhecidos
 
 Atualizações recentes:
+- Novo widget da vista semanal
 - Novo widget de blocos horários
 - A vista Octante semanal passa a suportar a caixa de entrada
 - Suporte à pesquisa

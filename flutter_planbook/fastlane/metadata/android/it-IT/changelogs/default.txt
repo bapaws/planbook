@@ -1,9 +1,9 @@
 Novità di questa versione:
-- Nuovi widget della vista settimanale
-- Modifica di avatar e nome
+- Avvio più rapido e miglioramenti delle prestazioni
 - Risolti alcuni problemi noti
 
 Aggiornamenti recenti:
+- Nuovo widget della vista settimanale
 - Nuovo widget Blocchi orari
 - La vista Ottante settimanale supporta ora Inbox
 - Supporto alla ricerca

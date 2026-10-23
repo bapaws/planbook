@@ -141,6 +141,88 @@ void main() {
     });
   }
 
+  for (final table in ['task_tags', 'note_tags']) {
+    for (final protection in ['link', 'parent', 'tag', 'before', 'during']) {
+      test('$table 删除因 $protection 暂缓，上传后下一轮仍可删除且不误删本地新关联', () async {
+        Map<String, dynamic> row(String id) => table == 'task_tags'
+            ? TaskTag(
+                id: id,
+                taskId: 'task',
+                tagId: 'tag',
+                userId: 'a',
+                createdAt: date,
+              ).toJson()
+            : NoteTag(
+                id: id,
+                noteId: 'note',
+                tagId: 'tag',
+                userId: 'a',
+                createdAt: date,
+              ).toJson();
+        for (final id in ['link', 'local']) {
+          if (table == 'task_tags') {
+            await db.into(db.taskTags).insert(TaskTag.fromJson(row(id)));
+          } else {
+            await db.into(db.noteTags).insert(NoteTag.fromJson(row(id)));
+          }
+        }
+        final parentId = table == 'task_tags' ? 'task' : 'note';
+        Future<void> enqueue() => outbox.enqueue(
+          tableName: protection == 'link'
+              ? table
+              : protection == 'parent'
+              ? (table == 'task_tags' ? 'tasks' : 'notes')
+              : 'tags',
+          recordId: protection == 'link'
+              ? 'link'
+              : protection == 'parent'
+              ? parentId
+              : 'tag',
+          operation: 'update',
+          payload: '{}',
+        );
+        if (protection != 'during') await enqueue();
+        final fence = await PullWriteFence.capture(db);
+        if (protection == 'during') await enqueue();
+        if (protection == 'before' || protection == 'during') {
+          await outbox.markSynced((await outbox.getPending()).single.id);
+        }
+        saved = {'link': '1', 'other': '1'};
+        await apply(
+          batch(
+            table,
+            [],
+            inventory: {'other'},
+            previous: {'link': '1', 'other': '1'},
+          ),
+          fence: fence,
+        );
+        expect(saved, {'link': '1', 'other': '1'});
+        Future<Map<String, bool>> deleted() async => table == 'task_tags'
+            ? {
+                for (final r in await db.select(db.taskTags).get())
+                  r.id: r.deletedAt != null,
+              }
+            : {
+                for (final r in await db.select(db.noteTags).get())
+                  r.id: r.deletedAt != null,
+              };
+        expect(await deleted(), {'link': false, 'local': false});
+        final previous = Map<String, String>.from(saved!);
+        for (final pending in await outbox.getPending()) {
+          await outbox.markSynced(pending.id);
+        }
+        await apply(
+          batch(table, [], inventory: {'other'}, previous: previous),
+          fence: await PullWriteFence.capture(db),
+        );
+        expect(await deleted(), {'link': true, 'local': false});
+        expect(saved, {'other': '1'});
+        expect(await outbox.getPending(), isEmpty);
+      });
+    }
+  }
+
   test('清单漏掉但二次查询仍存在的关联不删除', () async {
     final link = TaskTag(
       id: 'link',
@@ -150,8 +232,22 @@ void main() {
       createdAt: date,
     );
     await db.into(db.taskTags).insert(link);
-    await apply(batch('task_tags', [], confirmMissing: (_) async => {}));
-    expect((await db.select(db.taskTags).get()).single.deletedAt, isNull);
+    await apply(
+      batch(
+        'task_tags',
+        [],
+        inventory: {'other'},
+        previous: {'link': '1', 'other': '1'},
+        confirmMissing: (_) async => {},
+      ),
+    );
+    // 未提交变化时保留原清单；有提交时也不能丢失 link。
+    final previous = saved ?? {'link': '1', 'other': '1'};
+    expect(previous, containsPair('link', '1'));
+    await apply(
+      batch('task_tags', [], inventory: {'other'}, previous: previous),
+    );
+    expect((await db.select(db.taskTags).get()).single.deletedAt, isNotNull);
   });
 
   for (final preexisting in [true, false]) {
