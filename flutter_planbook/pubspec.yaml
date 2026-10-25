@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 3.2.3+165
+version: 3.3.0+165
 publish_to: none
 
 environment:
@@ -70,6 +70,8 @@ dependencies:
   jiffy: ^6.3.1
   octo_image: ^2.1.0
   package_info_plus: ^9.0.0
+  paper_notebook:
+    path: packages/paper_notebook
   path: ^1.9.1
   path_provider: ^2.1.5
   pdf: ^3.11.3

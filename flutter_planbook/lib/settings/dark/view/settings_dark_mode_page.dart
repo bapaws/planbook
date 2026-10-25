@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -20,7 +21,7 @@ class SettingsDarkModePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(l10n.darkMode),

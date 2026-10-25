@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "Экспорт",
+  "diaryExportTitle": "Экспорт дневника",
+  "diaryExportEmpty": "В этом диапазоне нет записей.",
+  "diaryEditNotebook": "Изменить блокнот",
+  "diaryCoverImage": "Изображение обложки",
+  "diaryCoverColor": "Цвет",
+  "diaryCoverTexture": "Текстура",
+  "diaryPaperPattern": "Бумага",
+  "diaryTextureNone": "Нет",
+  "diaryTextureLeather": "Кожа",
+  "diaryTextureKraft": "Крафт",
+  "diaryTextureCloth": "Ткань",
+  "diaryTextureSmooth": "Гладкая",
+  "diaryPaperDots": "Точки",
+  "diaryPaperGrid": "Клетка",
+  "diaryPaperSolid": "Чистая",
   "journalSetYearCover": "Обложка года",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "Не удалось проверить локальную базу, поэтому она не открыта. Существующие данные сохранены.",
-  "startupDatabaseRetry": "Повторить"
+  "startupDatabaseRetry": "Повторить",
+  "notebooks": "Мои блокноты",
+  "diaryBook": "Дневник",
+  "plannerBookDescription": "Планы, задачи и размышления день за днём.",
+  "diaryBookDescription": "Ваши записи и фотографии в журнальной вёрстке.",
+  "openNotebook": "Открыть",
+  "diaryBookEmptyTitle": "Ваша история начинается здесь",
+  "diaryBookEmptyBody": "Напишите первую запись. Здесь появятся ваши слова и фотографии.",
+  "diaryBookLoadFailure": "Не удалось загрузить дневник",
+  "diaryBookRetry": "Повторить",
+  "diaryBookPreviousPage": "Предыдущая страница",
+  "diaryBookNextPage": "Следующая страница"
 }

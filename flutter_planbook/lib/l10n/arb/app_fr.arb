@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "Exporter",
+  "diaryExportTitle": "Exporter le journal",
+  "diaryExportEmpty": "Aucune entrée sur cette période.",
+  "diaryEditNotebook": "Modifier le carnet",
+  "diaryCoverImage": "Image de couverture",
+  "diaryCoverColor": "Couleur",
+  "diaryCoverTexture": "Texture",
+  "diaryPaperPattern": "Papier",
+  "diaryTextureNone": "Aucune",
+  "diaryTextureLeather": "Cuir",
+  "diaryTextureKraft": "Kraft",
+  "diaryTextureCloth": "Tissu",
+  "diaryTextureSmooth": "Lisse",
+  "diaryPaperDots": "Points",
+  "diaryPaperGrid": "Grille",
+  "diaryPaperSolid": "Uni",
   "journalSetYearCover": "Couverture annuelle",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "La base locale n’a pas pu être vérifiée, elle n’a donc pas été ouverte. Les données existantes sont conservées.",
-  "startupDatabaseRetry": "Réessayer"
+  "startupDatabaseRetry": "Réessayer",
+  "notebooks": "Mes carnets",
+  "diaryBook": "Journal intime",
+  "plannerBookDescription": "Projets, tâches et réflexions, jour après jour.",
+  "diaryBookDescription": "Vos mots et photos, réunis comme dans un magazine.",
+  "openNotebook": "Ouvrir",
+  "diaryBookEmptyTitle": "Votre histoire commence ici",
+  "diaryBookEmptyBody": "Écrivez votre première entrée. Vos mots et photos apparaîtront ici.",
+  "diaryBookLoadFailure": "Impossible de charger le journal",
+  "diaryBookRetry": "Réessayer",
+  "diaryBookPreviousPage": "Page précédente",
+  "diaryBookNextPage": "Page suivante"
 }

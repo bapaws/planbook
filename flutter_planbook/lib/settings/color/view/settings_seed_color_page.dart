@@ -5,6 +5,7 @@ import 'package:flutter_planbook/app/app_router.gr.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/model/app_seed_colors.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -16,7 +17,7 @@ class SettingsSeedColorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(l10n.seedColor),

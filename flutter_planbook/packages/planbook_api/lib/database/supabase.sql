@@ -220,6 +220,10 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
     -- 按年份的封面设置：JSON 对象，key 为年份字符串（如 "2026"），value 为封面地址（远端 URL 或 App 内置资源路径等）
     cover_by_year JSONB NOT NULL DEFAULT '{}'::jsonb,
 
+    -- 日记本按年外观：JSON 对象，key 为年份字符串，value 为
+    -- {"color","texture","template","paperPattern","coverImage"}
+    diary_notebook_looks JSONB NOT NULL DEFAULT '{}'::jsonb,
+
     -- 四象限自定义配置：JSON 数组，每项 {"priority":"high","name":...}
     quadrant_config JSONB NOT NULL DEFAULT '[]'::jsonb
 );
@@ -227,6 +231,9 @@ CREATE TABLE IF NOT EXISTS planbook.user_profiles (
 -- 已有部署的增量迁移（幂等）
 ALTER TABLE planbook.user_profiles
     ADD COLUMN IF NOT EXISTS quadrant_config JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE planbook.user_profiles
+    ADD COLUMN IF NOT EXISTS diary_notebook_looks JSONB NOT NULL DEFAULT '{}'::jsonb;
 
 -- UserProfiles 表索引
 CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profiles(deleted_at) WHERE deleted_at IS NULL;

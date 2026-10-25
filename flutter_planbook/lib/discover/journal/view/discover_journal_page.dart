@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_planbook/app/app_router.dart';
+import 'package:flutter_planbook/discover/bookshelf/view/notebook_page_navigation.dart';
+import 'package:flutter_planbook/discover/bookshelf/view/notebook_reader_scope.dart';
 import 'package:flutter_planbook/discover/daily/journal_daily_bloc_manager.dart';
 import 'package:flutter_planbook/discover/daily/view/journal_daily_page.dart';
 import 'package:flutter_planbook/discover/journal/bloc/discover_journal_bloc.dart';
@@ -18,7 +20,6 @@ import 'package:flutter_planbook/discover/monthly/view/journal_monthly_summary_p
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/gallery/view/note_gallery_calendar_view.dart';
 import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
-import 'package:flutter_planbook/root/home/view/root_home_bottom_bar.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/flip_page_view.dart';
 import 'package:planbook_repository/planbook_repository.dart';
@@ -46,6 +47,41 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
   );
 
   Timer? _timer;
+  final GlobalKey _coverKey = GlobalKey();
+  NotebookReaderController? _reader;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final reader = NotebookReaderScope.maybeOf(context);
+    if (reader == _reader) return;
+    _reader?.detach(this);
+    _reader = reader;
+    reader?.attach(
+      this,
+      open: () async {
+        final target = context.read<DiscoverJournalBloc>().state.date.pageIndex;
+        await _controller.animateToPage(
+          target == FlipPageIndex.cover ? FlipPageIndex.fromLeft(0) : target,
+          duration: const Duration(milliseconds: 560),
+        );
+        if (mounted) unawaited(_maybeShowFlipGestureHint());
+      },
+      close: () async {
+        _timer?.cancel();
+        await reader.waitForIdle(_controller, () => _controller.isAnimating);
+        if (!mounted) return;
+        context.read<DiscoverJournalBloc>().add(
+          const DiscoverJournalCalendarToggled(isExpanded: false),
+        );
+        await _controller.animateToPage(
+          FlipPageIndex.cover,
+          duration: const Duration(milliseconds: 560),
+        );
+      },
+      coverRect: () => notebookRenderRect(_coverKey.currentContext),
+    );
+  }
 
   @override
   void initState() {
@@ -53,12 +89,15 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _prefetch();
 
-      _maybeShowFlipGestureHint();
+      if (_reader == null) unawaited(_maybeShowFlipGestureHint());
     });
   }
 
   @override
   void dispose() {
+    _timer?.cancel();
+    _reader?.detach(this);
+    _controller.dispose();
     _blocManager.dispose();
     _monthlyBlocManager.dispose();
     super.dispose();
@@ -81,7 +120,7 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
   /// 首次进入日志翻页模式时提示手势；关闭对话框后写入本地标记。
   Future<void> _maybeShowFlipGestureHint() async {
     await Future<void>.delayed(const Duration(milliseconds: 450));
-    if (!mounted) return;
+    if (!mounted || (_reader != null && !_reader!.controlsVisible)) return;
     final settings = context.read<SettingsRepository>();
     if (settings.getDiscoverJournalFlipGestureHintShown()) return;
     final l10n = context.l10n;
@@ -193,6 +232,7 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
         ],
         child: _DiscoverJournalPage(
           controller: _controller,
+          coverKey: _coverKey,
         ),
       ),
     );
@@ -202,15 +242,17 @@ class _DiscoverJournalPageState extends State<DiscoverJournalPage> {
 class _DiscoverJournalPage extends StatelessWidget {
   const _DiscoverJournalPage({
     required this.controller,
+    required this.coverKey,
   });
 
   final FlipPageController controller;
+  final GlobalKey coverKey;
 
   @override
   Widget build(BuildContext context) {
-    final query = MediaQuery.of(context);
+    // 空白处不接点击，交给阅读页遮罩关闭；点在书页上仍收起日历。
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+      behavior: HitTestBehavior.deferToChild,
       onTap: () {
         context.read<DiscoverJournalBloc>().add(
           const DiscoverJournalCalendarToggled(isExpanded: false),
@@ -220,7 +262,20 @@ class _DiscoverJournalPage extends StatelessWidget {
         children: [
           Column(
             children: [
-              BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
+              const Spacer(),
+              _DiscoverJournalContent(
+                controller: controller,
+                coverKey: coverKey,
+              ),
+              const Spacer(),
+              SizedBox(
+                height: NotebookPageNavigation.bookReserve(context),
+              ),
+            ],
+          ),
+          NotebookPageNavigation(
+            child: NotebookReaderChrome(
+              child: BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
                 buildWhen: (previous, current) => previous.date != current.date,
                 builder: (context, state) {
                   return DiscoverJournalDateChangeView(
@@ -233,13 +288,7 @@ class _DiscoverJournalPage extends StatelessWidget {
                   );
                 },
               ),
-              const Spacer(),
-              _DiscoverJournalContent(controller: controller),
-              const Spacer(),
-              SizedBox(
-                height: query.padding.bottom + kRootBottomBarHeight + 16,
-              ),
-            ],
+            ),
           ),
           BlocSelector<DiscoverJournalBloc, DiscoverJournalState, bool>(
             selector: (state) => state.isCalendarExpanded,
@@ -281,12 +330,15 @@ class _DiscoverJournalPage extends StatelessWidget {
 class _DiscoverJournalContent extends StatelessWidget {
   const _DiscoverJournalContent({
     required this.controller,
+    required this.coverKey,
   });
 
   final FlipPageController controller;
+  final GlobalKey coverKey;
 
   @override
   Widget build(BuildContext context) {
+    final reader = NotebookReaderScope.maybeOf(context);
     return BlocBuilder<DiscoverJournalBloc, DiscoverJournalState>(
       buildWhen: (previous, current) =>
           previous.date.year != current.date.year ||
@@ -294,61 +346,61 @@ class _DiscoverJournalContent extends StatelessWidget {
           previous.coverColorScheme != current.coverColorScheme,
       builder: (context, state) => AnimatedSwitcher(
         duration: Durations.medium1,
-        child: state.coverBackgroundImage == null
-            ? const SizedBox.shrink()
-            : DiscoverJournalFlipView(
-                initialPage: state.date.pageIndex,
-                coverBuilder: (context) => JournalCover(
-                  year: state.date.year,
-                  backgroundImage: state.coverBackgroundImage,
-                  colorScheme: state.coverColorScheme,
+        child: DiscoverJournalFlipView(
+          autoOpen: reader == null,
+          onCoverClosed: () => reader?.onCoverClosed?.call(),
+          initialPage: state.date.pageIndex,
+          coverBuilder: (context) => JournalCover(
+            key: coverKey,
+            year: state.date.year,
+            backgroundImage:
+                state.coverBackgroundImage ?? 'assets/images/cover.jpg',
+            colorScheme: state.coverColorScheme,
+          ),
+          backCoverBuilder: (context) => JournalBackCover(
+            year: state.date.year,
+            backgroundImage:
+                state.coverBackgroundImage ?? 'assets/images/cover.jpg',
+            colorScheme: state.coverColorScheme,
+          ),
+          onPageChanged: (index) {
+            final journalDate = context.read<DiscoverJournalBloc>().state.date;
+            if (index == journalDate.pageIndex) return;
+            context.read<DiscoverJournalBloc>().add(
+              DiscoverJournalDateChanged(
+                date: JournalDate.fromYear(
+                  journalDate.year,
+                  pageIndex: index,
                 ),
-                backCoverBuilder: (context) => JournalBackCover(
-                  year: state.date.year,
-                  backgroundImage: state.coverBackgroundImage,
-                  colorScheme: state.coverColorScheme,
-                ),
-                onPageChanged: (index) {
-                  final journalDate = context
-                      .read<DiscoverJournalBloc>()
-                      .state
-                      .date;
-                  if (index == journalDate.pageIndex) return;
-                  context.read<DiscoverJournalBloc>().add(
-                    DiscoverJournalDateChanged(
-                      date: JournalDate.fromYear(
-                        journalDate.year,
-                        pageIndex: index,
-                      ),
-                    ),
-                  );
-                },
-                controller: controller,
-                itemsCount: state.date.contentPageCount,
-                itemBuilder: (context, index) {
-                  final journalDate = JournalDate.fromContentIndex(
-                    state.date.year,
-                    index,
-                  );
-                  if (journalDate.isMonthHighlightPage) {
-                    return JournalMonthlyHighlightPage(
-                      date: journalDate,
-                      isLeft: index.isEven,
-                    );
-                  }
-                  if (journalDate.isMonthSummaryPage) {
-                    return JournalMonthlySummaryPage(
-                      date: journalDate,
-                      isLeft: index.isEven,
-                    );
-                  }
-                  final date = journalDate.date;
-                  if (index.isEven) {
-                    return JournalDailyLeftPage(date: date);
-                  }
-                  return JournalDailyRightPage(date: date);
-                },
               ),
+            );
+          },
+          controller: controller,
+          itemsCount: state.date.contentPageCount,
+          itemBuilder: (context, index) {
+            final journalDate = JournalDate.fromContentIndex(
+              state.date.year,
+              index,
+            );
+            if (journalDate.isMonthHighlightPage) {
+              return JournalMonthlyHighlightPage(
+                date: journalDate,
+                isLeft: index.isEven,
+              );
+            }
+            if (journalDate.isMonthSummaryPage) {
+              return JournalMonthlySummaryPage(
+                date: journalDate,
+                isLeft: index.isEven,
+              );
+            }
+            final date = journalDate.date;
+            if (index.isEven) {
+              return JournalDailyLeftPage(date: date);
+            }
+            return JournalDailyRightPage(date: date);
+          },
+        ),
       ),
     );
   }

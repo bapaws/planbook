@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "Exportar",
+  "diaryExportTitle": "Exportar el diario",
+  "diaryExportEmpty": "No hay entradas en este intervalo.",
+  "diaryEditNotebook": "Editar cuaderno",
+  "diaryCoverImage": "Imagen de portada",
+  "diaryCoverColor": "Color",
+  "diaryCoverTexture": "Textura",
+  "diaryPaperPattern": "Papel",
+  "diaryTextureNone": "Ninguna",
+  "diaryTextureLeather": "Cuero",
+  "diaryTextureKraft": "Kraft",
+  "diaryTextureCloth": "Tela",
+  "diaryTextureSmooth": "Lisa",
+  "diaryPaperDots": "Puntos",
+  "diaryPaperGrid": "Cuadrícula",
+  "diaryPaperSolid": "Liso",
   "journalSetYearCover": "Portada anual",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "No se pudo comprobar la base de datos local, así que no se abrió. Los datos existentes se conservan.",
-  "startupDatabaseRetry": "Reintentar"
+  "startupDatabaseRetry": "Reintentar",
+  "notebooks": "Mis cuadernos",
+  "diaryBook": "Diario",
+  "plannerBookDescription": "Planes, tareas y reflexiones, día a día.",
+  "diaryBookDescription": "Tus palabras y fotos, reunidas como en una revista.",
+  "openNotebook": "Abrir",
+  "diaryBookEmptyTitle": "Tu historia empieza aquí",
+  "diaryBookEmptyBody": "Escribe tu primera entrada. Tus palabras y fotos aparecerán aquí.",
+  "diaryBookLoadFailure": "No se pudo cargar el diario",
+  "diaryBookRetry": "Reintentar",
+  "diaryBookPreviousPage": "Página anterior",
+  "diaryBookNextPage": "Página siguiente"
 }

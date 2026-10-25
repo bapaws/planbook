@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "Exportieren",
+  "diaryExportTitle": "Tagebuch exportieren",
+  "diaryExportEmpty": "Keine Einträge in diesem Zeitraum.",
+  "diaryEditNotebook": "Notizbuch bearbeiten",
+  "diaryCoverImage": "Titelbild",
+  "diaryCoverColor": "Farbe",
+  "diaryCoverTexture": "Textur",
+  "diaryPaperPattern": "Papier",
+  "diaryTextureNone": "Keine",
+  "diaryTextureLeather": "Leder",
+  "diaryTextureKraft": "Kraft",
+  "diaryTextureCloth": "Stoff",
+  "diaryTextureSmooth": "Glatt",
+  "diaryPaperDots": "Punkte",
+  "diaryPaperGrid": "Raster",
+  "diaryPaperSolid": "Leer",
   "journalSetYearCover": "Jahrescover",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "Die lokale Datenbank konnte nicht geprüft werden, deshalb wurde sie nicht geöffnet. Vorhandene Daten bleiben unverändert.",
-  "startupDatabaseRetry": "Erneut versuchen"
+  "startupDatabaseRetry": "Erneut versuchen",
+  "notebooks": "Meine Bücher",
+  "diaryBook": "Tagebuch",
+  "plannerBookDescription": "Pläne, Aufgaben und Rückblicke, Tag für Tag.",
+  "diaryBookDescription": "Deine Texte und Fotos, gesammelt wie in einem Magazin.",
+  "openNotebook": "Öffnen",
+  "diaryBookEmptyTitle": "Deine Geschichte beginnt hier",
+  "diaryBookEmptyBody": "Schreibe deinen ersten Tagebucheintrag. Deine Texte und Fotos erscheinen hier.",
+  "diaryBookLoadFailure": "Tagebuch konnte nicht geladen werden",
+  "diaryBookRetry": "Erneut versuchen",
+  "diaryBookPreviousPage": "Vorherige Seite",
+  "diaryBookNextPage": "Nächste Seite"
 }

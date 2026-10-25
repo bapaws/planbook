@@ -310,6 +310,26 @@ class DatabaseNoteApi {
         .toList();
   }
 
+  /// 日记本仅收录当前用户主动写下的日记，不包含任务记录和周期笔记。
+  Stream<List<NoteEntity>> watchDiaryNotes({required String? userId}) {
+    return (db.select(db.notes)
+          ..where(
+            (note) =>
+                note.deletedAt.isNull() &
+                note.taskId.isNull() &
+                (note.type.isNull() | note.type.equals(NoteType.journal.name)) &
+                (userId == null
+                    ? note.userId.isNull()
+                    : note.userId.equals(userId)),
+          )
+          ..orderBy([
+            (note) => OrderingTerm.asc(note.createdAt.datetime),
+            (note) => OrderingTerm.asc(note.id),
+          ]))
+        .watch()
+        .map((notes) => notes.map((note) => NoteEntity(note: note)).toList());
+  }
+
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
     NoteListMode mode = NoteListMode.all,

@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/discover/bookshelf/model/notebook_kind.dart';
+import 'package:flutter_planbook/root/discover/bloc/root_discover_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -42,65 +44,88 @@ class RootHomeBottomBar extends StatelessWidget {
     final theme = Theme.of(context);
     final tabsRouter = context.watchTabsRouter;
     final activeTab = RootHomeTab.values[tabsRouter.activeIndex];
+    final openedNotebook = context.select(
+      (RootDiscoverBloc bloc) => bloc.state.openedNotebook,
+    );
+    // 这排 Tab 叠在阅读页遮罩上面，调透明度只会让图标发虚，白底还是清楚的。
+    // 打开时把它藏掉，露出底下同一层毛玻璃。
+    final notebookOpen = openedNotebook != null;
+    final actionIcon =
+        activeTab == RootHomeTab.journal &&
+            openedNotebook != NotebookKind.planner
+        ? FontAwesomeIcons.featherPointed
+        : activeTab.actionIcon;
     return Row(
       children: [
-        Container(
-          width: kRootBottomBarItemWidth * 3,
-          height: kRootBottomBarItemHeight,
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(32),
-            boxShadow: [
-              BoxShadow(
-                color: theme.colorScheme.surfaceContainerHighest,
-                blurRadius: 12,
-              ),
-            ],
-          ),
-          clipBehavior: Clip.hardEdge,
-          child: Stack(
-            children: [
-              AnimatedPositioned(
-                duration: animationDuration,
-                top: 2,
-                left: 2 + tabsRouter.activeIndex * kRootBottomBarItemWidth,
-                bottom: 2,
-                child: Container(
-                  width: kRootBottomBarItemWidth - 4,
-                  height: kRootBottomBarItemHeight - 4,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainer,
-                    borderRadius: BorderRadius.circular(32),
-                  ),
+        ExcludeSemantics(
+          excluding: notebookOpen,
+          child: IgnorePointer(
+            ignoring: notebookOpen,
+            child: AnimatedOpacity(
+              duration: Durations.medium2,
+              curve: Curves.easeInOutCubic,
+              opacity: notebookOpen ? 0 : 1,
+              child: Container(
+                width: kRootBottomBarItemWidth * 3,
+                height: kRootBottomBarItemHeight,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(32),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      blurRadius: 12,
+                    ),
+                  ],
                 ),
-              ),
-              Row(
-                children: [
-                  for (final tab in RootHomeTab.values)
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () {
-                        _onTabTapped(context, tab);
-                      },
-                      child: SizedBox(
-                        height: kRootBottomBarItemHeight,
-                        width: kRootBottomBarItemWidth,
-                        child: AnimatedSwitcher(
-                          duration: animationDuration,
-                          child: FaIcon(
-                            tab.icon,
-                            key: ValueKey(tab),
-                            size: 24,
-                            color: activeTab == tab
-                                ? theme.colorScheme.onSurface
-                                : Colors.grey.shade400,
-                          ),
+                clipBehavior: Clip.hardEdge,
+                child: Stack(
+                  children: [
+                    AnimatedPositioned(
+                      duration: animationDuration,
+                      top: 2,
+                      left:
+                          2 + tabsRouter.activeIndex * kRootBottomBarItemWidth,
+                      bottom: 2,
+                      child: Container(
+                        width: kRootBottomBarItemWidth - 4,
+                        height: kRootBottomBarItemHeight - 4,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainer,
+                          borderRadius: BorderRadius.circular(32),
                         ),
                       ),
                     ),
-                ],
+                    Row(
+                      children: [
+                        for (final tab in RootHomeTab.values)
+                          GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _onTabTapped(context, tab);
+                            },
+                            child: SizedBox(
+                              height: kRootBottomBarItemHeight,
+                              width: kRootBottomBarItemWidth,
+                              child: AnimatedSwitcher(
+                                duration: animationDuration,
+                                child: FaIcon(
+                                  tab.icon,
+                                  key: ValueKey(tab),
+                                  size: 24,
+                                  color: activeTab == tab
+                                      ? theme.colorScheme.onSurface
+                                      : Colors.grey.shade400,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ],
+            ),
           ),
         ),
         const Spacer(),
@@ -128,8 +153,8 @@ class RootHomeBottomBar extends StatelessWidget {
             child: AnimatedSwitcher(
               duration: animationDuration,
               child: FaIcon(
-                activeTab.actionIcon,
-                key: ValueKey(activeTab),
+                actionIcon,
+                key: ValueKey((activeTab, actionIcon)),
                 size: 18,
                 color: theme.colorScheme.onSurface,
               ),
@@ -168,10 +193,18 @@ class RootHomeBottomBar extends StatelessWidget {
         };
         await context.router.push(TaskNewRoute(dueAt: dueAt));
       case RootHomeTab.journal:
-        // context.read<RootHomeBloc>().add(
-        //   const RootHomeDownloadJournalDayRequested(),
-        // );
-        await context.router.push(const JournalExportRoute());
+        if (context.read<RootDiscoverBloc>().state.openedNotebook ==
+            NotebookKind.planner) {
+          await context.router.push(const JournalExportRoute());
+        } else {
+          if (await context.read<AppPurchasesBloc>().isNoteLimitReached() &&
+              context.mounted) {
+            await context.router.push(const AppPurchasesRoute());
+            return;
+          }
+          if (!context.mounted) return;
+          await context.router.push(NoteNewRoute());
+        }
       case RootHomeTab.note:
         if (await context.read<AppPurchasesBloc>().isNoteLimitReached() &&
             context.mounted) {

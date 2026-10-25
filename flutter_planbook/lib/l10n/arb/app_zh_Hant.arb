@@ -817,6 +817,22 @@
       }
     }
   },
+  "diaryExport": "匯出",
+  "diaryExportTitle": "匯出日記本",
+  "diaryExportEmpty": "這個日期裡沒有日記。",
+  "diaryEditNotebook": "編輯筆記本",
+  "diaryCoverImage": "封面底圖",
+  "diaryCoverColor": "封面顏色",
+  "diaryCoverTexture": "封面紋理",
+  "diaryPaperPattern": "紙張",
+  "diaryTextureNone": "無",
+  "diaryTextureLeather": "皮革",
+  "diaryTextureKraft": "牛皮紙",
+  "diaryTextureCloth": "布紋",
+  "diaryTextureSmooth": "平滑",
+  "diaryPaperDots": "點陣",
+  "diaryPaperGrid": "方格",
+  "diaryPaperSolid": "空白",
   "journalSetYearCover": "年度封面",
   "@journalSetYearCover": {
     "description": "探索頁日誌選單：設定年度封面"
@@ -907,5 +923,16 @@
     }
   },
   "startupDatabaseUnavailable": "暫時無法檢查本機資料庫，因此沒有開啟它。既有資料仍保留在原處。",
-  "startupDatabaseRetry": "重試"
+  "startupDatabaseRetry": "重試",
+  "notebooks": "我的本子",
+  "diaryBook": "日記本",
+  "plannerBookDescription": "每天的計畫、任務與回顧，收進一本計畫本。",
+  "diaryBookDescription": "只收藏你的日記，讓文字和照片成為一本生活雜誌。",
+  "openNotebook": "打開",
+  "diaryBookEmptyTitle": "故事，從這裡開始",
+  "diaryBookEmptyBody": "寫下第一篇日記，讓文字和照片慢慢裝滿這本書。",
+  "diaryBookLoadFailure": "日記載入失敗",
+  "diaryBookRetry": "重試",
+  "diaryBookPreviousPage": "上一頁",
+  "diaryBookNextPage": "下一頁"
 }

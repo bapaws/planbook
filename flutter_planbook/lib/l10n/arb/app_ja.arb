@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "書き出す",
+  "diaryExportTitle": "日記を書き出す",
+  "diaryExportEmpty": "この期間に日記はありません。",
+  "diaryEditNotebook": "ノートを編集",
+  "diaryCoverImage": "表紙の画像",
+  "diaryCoverColor": "色",
+  "diaryCoverTexture": "質感",
+  "diaryPaperPattern": "用紙",
+  "diaryTextureNone": "なし",
+  "diaryTextureLeather": "レザー",
+  "diaryTextureKraft": "クラフト",
+  "diaryTextureCloth": "布",
+  "diaryTextureSmooth": "スムーズ",
+  "diaryPaperDots": "ドット",
+  "diaryPaperGrid": "方眼",
+  "diaryPaperSolid": "無地",
   "journalSetYearCover": "年間表紙",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "ローカルデータベースを確認できなかったため、開いていません。既存のデータはそのままです。",
-  "startupDatabaseRetry": "再試行"
+  "startupDatabaseRetry": "再試行",
+  "notebooks": "ノートブック",
+  "diaryBook": "日記帳",
+  "plannerBookDescription": "日々の計画、タスク、振り返りを一冊に。",
+  "diaryBookDescription": "あなたの言葉と写真を、雑誌のような一冊に。",
+  "openNotebook": "開く",
+  "diaryBookEmptyTitle": "ここから始まる物語",
+  "diaryBookEmptyBody": "最初の日記を書きましょう。言葉と写真がここに並びます。",
+  "diaryBookLoadFailure": "日記を読み込めませんでした",
+  "diaryBookRetry": "再試行",
+  "diaryBookPreviousPage": "前のページ",
+  "diaryBookNextPage": "次のページ"
 }

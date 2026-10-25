@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "내보내기",
+  "diaryExportTitle": "일기 내보내기",
+  "diaryExportEmpty": "이 기간에 일기가 없습니다.",
+  "diaryEditNotebook": "노트 편집",
+  "diaryCoverImage": "표지 이미지",
+  "diaryCoverColor": "색상",
+  "diaryCoverTexture": "질감",
+  "diaryPaperPattern": "용지",
+  "diaryTextureNone": "없음",
+  "diaryTextureLeather": "가죽",
+  "diaryTextureKraft": "크라프트",
+  "diaryTextureCloth": "천",
+  "diaryTextureSmooth": "매끈",
+  "diaryPaperDots": "도트",
+  "diaryPaperGrid": "격자",
+  "diaryPaperSolid": "무지",
   "journalSetYearCover": "연간 표지",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "로컬 데이터베이스를 확인하지 못해 열지 않았습니다. 기존 데이터는 그대로 두었습니다.",
-  "startupDatabaseRetry": "다시 시도"
+  "startupDatabaseRetry": "다시 시도",
+  "notebooks": "내 노트",
+  "diaryBook": "일기장",
+  "plannerBookDescription": "매일의 계획, 할 일과 돌아보기를 한 권에.",
+  "diaryBookDescription": "나의 글과 사진을 잡지처럼 모아 보세요.",
+  "openNotebook": "열기",
+  "diaryBookEmptyTitle": "여기서 시작되는 이야기",
+  "diaryBookEmptyBody": "첫 일기를 써 보세요. 글과 사진이 이곳에 모입니다.",
+  "diaryBookLoadFailure": "일기를 불러오지 못했어요",
+  "diaryBookRetry": "다시 시도",
+  "diaryBookPreviousPage": "이전 페이지",
+  "diaryBookNextPage": "다음 페이지"
 }

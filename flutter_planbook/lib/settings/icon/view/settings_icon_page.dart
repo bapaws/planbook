@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/icon/cubit/settings_icon_cubit.dart';
 import 'package:flutter_planbook/settings/icon/model/app_icons.dart';
@@ -29,7 +30,7 @@ class _SettingsIconPage extends StatelessWidget {
     final l10n = context.l10n;
     final theme = Theme.of(context);
     MediaQuery.sizeOf(context);
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(

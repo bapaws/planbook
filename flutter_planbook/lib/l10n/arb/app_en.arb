@@ -828,6 +828,22 @@
       }
     }
   },
+  "diaryExport": "Export",
+  "diaryExportTitle": "Export diary",
+  "diaryExportEmpty": "No diary entries in this range.",
+  "diaryEditNotebook": "Edit notebook",
+  "diaryCoverImage": "Cover image",
+  "diaryCoverColor": "Cover color",
+  "diaryCoverTexture": "Texture",
+  "diaryPaperPattern": "Paper",
+  "diaryTextureNone": "None",
+  "diaryTextureLeather": "Leather",
+  "diaryTextureKraft": "Kraft",
+  "diaryTextureCloth": "Cloth",
+  "diaryTextureSmooth": "Smooth",
+  "diaryPaperDots": "Dots",
+  "diaryPaperGrid": "Grid",
+  "diaryPaperSolid": "Plain",
   "journalSetYearCover": "Year cover",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -957,5 +973,16 @@
   "startupDatabaseRetry": "Try again",
   "@startupDatabaseRetry": {
     "description": "Button to retry opening the local database"
-  }
+  },
+  "notebooks": "Notebooks",
+  "diaryBook": "Diary",
+  "plannerBookDescription": "Plans, tasks and reflections, day by day.",
+  "diaryBookDescription": "Your words and photos, collected like a magazine.",
+  "openNotebook": "Open",
+  "diaryBookEmptyTitle": "Your story starts here",
+  "diaryBookEmptyBody": "Write your first diary entry. Your words and photos will appear here.",
+  "diaryBookLoadFailure": "Could not load your diary",
+  "diaryBookRetry": "Try again",
+  "diaryBookPreviousPage": "Previous page",
+  "diaryBookNextPage": "Next page"
 }

@@ -244,6 +244,12 @@ class NotesRepository {
     return _dbNoteApi.getNoteEntitiesByTagId(tagId);
   }
 
+  /// 按时间顺序监听当前用户的整本日记。
+  Stream<List<NoteEntity>> watchDiaryNotes() {
+    syncNotes();
+    return _dbNoteApi.watchDiaryNotes(userId: userId);
+  }
+
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
     Jiffy date, {
     NoteListMode mode = NoteListMode.all,

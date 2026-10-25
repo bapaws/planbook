@@ -1,0 +1,29 @@
+name: paper_notebook
+description: Kraft notebook shell with cover turn and paper page-flip for Flutter.
+publish_to: "none"
+version: 1.0.0
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=3.35.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  assets:
+    - assets/tiles/bg_dot_light.png
+    - assets/tiles/bg_dot_dark.png
+    - assets/tiles/bg_grid_light.png
+    - assets/tiles/bg_grid_dark.png
+    - assets/covers/catalog.json
+    - assets/covers/wheat.jpg
+    - assets/covers/bridge.jpg
+    - assets/covers/moonlight.jpg
+    - assets/covers/bouquet.jpg

@@ -817,6 +817,22 @@
       }
     }
   },
+  "diaryExport": "导出",
+  "diaryExportTitle": "导出日记本",
+  "diaryExportEmpty": "这个日期里没有日记。",
+  "diaryEditNotebook": "编辑笔记本",
+  "diaryCoverImage": "封面底图",
+  "diaryCoverColor": "封面颜色",
+  "diaryCoverTexture": "封面纹理",
+  "diaryPaperPattern": "纸张",
+  "diaryTextureNone": "无",
+  "diaryTextureLeather": "皮革",
+  "diaryTextureKraft": "牛皮纸",
+  "diaryTextureCloth": "布纹",
+  "diaryTextureSmooth": "平滑",
+  "diaryPaperDots": "点阵",
+  "diaryPaperGrid": "方格",
+  "diaryPaperSolid": "空白",
   "journalSetYearCover": "年度封面",
   "@journalSetYearCover": {
     "description": "发现页日志菜单：设置年度封面"
@@ -907,5 +923,16 @@
     }
   },
   "startupDatabaseUnavailable": "暂时无法检查本地数据库，因此没有打开它。已有数据仍保留在原处。",
-  "startupDatabaseRetry": "重试"
+  "startupDatabaseRetry": "重试",
+  "notebooks": "我的本子",
+  "diaryBook": "日记本",
+  "plannerBookDescription": "每天的计划、任务与回顾，收进一本计划本。",
+  "diaryBookDescription": "只收藏你的日记，让文字和照片成为一本生活杂志。",
+  "openNotebook": "打开",
+  "diaryBookEmptyTitle": "故事，从这里开始",
+  "diaryBookEmptyBody": "写下第一篇日记，让文字和照片慢慢装满这本书。",
+  "diaryBookLoadFailure": "日记加载失败",
+  "diaryBookRetry": "重试",
+  "diaryBookPreviousPage": "上一页",
+  "diaryBookNextPage": "下一页"
 }

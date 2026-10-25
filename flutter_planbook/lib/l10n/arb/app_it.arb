@@ -818,6 +818,22 @@
       }
     }
   },
+  "diaryExport": "Esporta",
+  "diaryExportTitle": "Esporta il diario",
+  "diaryExportEmpty": "Nessuna voce in questo intervallo.",
+  "diaryEditNotebook": "Modifica quaderno",
+  "diaryCoverImage": "Immagine di copertina",
+  "diaryCoverColor": "Colore",
+  "diaryCoverTexture": "Texture",
+  "diaryPaperPattern": "Carta",
+  "diaryTextureNone": "Nessuna",
+  "diaryTextureLeather": "Pelle",
+  "diaryTextureKraft": "Kraft",
+  "diaryTextureCloth": "Tessuto",
+  "diaryTextureSmooth": "Liscia",
+  "diaryPaperDots": "Punti",
+  "diaryPaperGrid": "Griglia",
+  "diaryPaperSolid": "Tinta unita",
   "journalSetYearCover": "Copertina annuale",
   "@journalSetYearCover": {
     "description": "Discover journal menu: set yearly cover"
@@ -919,5 +935,16 @@
     }
   },
   "startupDatabaseUnavailable": "Impossibile controllare il database locale, quindi non è stato aperto. I dati esistenti restano al loro posto.",
-  "startupDatabaseRetry": "Riprova"
+  "startupDatabaseRetry": "Riprova",
+  "notebooks": "I miei quaderni",
+  "diaryBook": "Diario",
+  "plannerBookDescription": "Piani, attività e riflessioni, giorno dopo giorno.",
+  "diaryBookDescription": "Le tue parole e foto, raccolte come in una rivista.",
+  "openNotebook": "Apri",
+  "diaryBookEmptyTitle": "La tua storia inizia qui",
+  "diaryBookEmptyBody": "Scrivi la tua prima pagina di diario. Le tue parole e foto appariranno qui.",
+  "diaryBookLoadFailure": "Impossibile caricare il diario",
+  "diaryBookRetry": "Riprova",
+  "diaryBookPreviousPage": "Pagina precedente",
+  "diaryBookNextPage": "Pagina successiva"
 }

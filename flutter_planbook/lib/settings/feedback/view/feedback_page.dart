@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_planbook/core/view/app_scaffold.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/settings/home/view/settings_row.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -19,7 +20,7 @@ class FeedbackPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final theme = Theme.of(context);
-    return Scaffold(
+    return AppScaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
         title: Text(l10n.feedback),

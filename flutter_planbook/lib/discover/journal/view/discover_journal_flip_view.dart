@@ -14,10 +14,14 @@ class DiscoverJournalFlipView extends StatefulWidget {
     required this.coverBuilder,
     required this.backCoverBuilder,
     this.initialPage = FlipPageIndex.cover,
+    this.autoOpen = true,
+    this.onCoverClosed,
     super.key,
   });
 
   final FlipPageIndex initialPage;
+  final bool autoOpen;
+  final VoidCallback? onCoverClosed;
   final ValueChanged<FlipPageIndex> onPageChanged;
 
   final int itemsCount;
@@ -50,6 +54,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
     _controller.addListener(_onFlipPageChanged);
 
+    if (!widget.autoOpen) return;
     if (widget.initialPage != FlipPageIndex.cover) {
       _controller.animateToPage(FlipPageIndex.cover);
     }
@@ -67,6 +72,9 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
 
   void _onFlipPageChanged() {
     final index = _controller.value;
+    if (_controller.isCoverPage(index) && !_controller.isAnimating) {
+      widget.onCoverClosed?.call();
+    }
     if (_controller.isCoverPage(index) || _controller.isBackCoverPage(index)) {
       _isLeftEnlarged = false;
       _isRightEnlarged = false;
@@ -90,8 +98,7 @@ class _DiscoverJournalFlipViewState extends State<DiscoverJournalFlipView> {
           query.padding.vertical -
           kToolbarHeight -
           kRootBottomBarHeight -
-          16 -
-          kMinInteractiveDimension * 3,
+          16,
       pageWidth /
               kDiscoverJournalDailyPageWidth *
               kDiscoverJournalDailyPageHeight -

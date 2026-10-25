@@ -10,6 +10,7 @@ enum AppProFeatures {
   subTask,
   timeBlock,
   weekList,
+  diary,
   // statistics,
   // desktopWidget,
   theme,
@@ -26,6 +27,7 @@ enum AppProFeatures {
     subTask => '🔖 ${context.l10n.subtasks}',
     timeBlock => '📅 ${context.l10n.timeBlockView}',
     weekList => '📋 ${context.l10n.weekListView}',
+    diary => '📔 ${context.l10n.diaryBook}',
     // statistics => '📊 ${context.l10n.statistics}',
     more => '🔥 ${context.l10n.more}',
   };
@@ -61,6 +63,7 @@ enum AppProFeatures {
     subTask => '✅',
     timeBlock => '✅',
     weekList => '✅',
+    diary => '✅',
     more => '✅',
     _ => '♾️',
   };

@@ -31,6 +31,7 @@ class SettingsRepository {
 
   late final _quadrantConfigsController =
       BehaviorSubject<List<QuadrantConfigEntity>>();
+
   Stream<List<QuadrantConfigEntity>> get onQuadrantConfigsChange =>
       _quadrantConfigsController.stream;
   List<QuadrantConfigEntity>? get quadrantConfigs =>

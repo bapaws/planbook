@@ -100,6 +100,8 @@ class FlipPageController extends ValueNotifier<FlipPageIndex> {
 
   bool get hasClients => _state != null;
 
+  bool get isAnimating => _state?._isAnimating ?? false;
+
   // ignore: use_setters_to_change_properties, lifecycle method
   void _attach(_FlipPageViewState state) {
     _state = state;

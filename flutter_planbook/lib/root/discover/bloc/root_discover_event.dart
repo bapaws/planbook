@@ -33,3 +33,12 @@ final class RootDiscoverSummaryDateChanged extends RootDiscoverEvent {
   @override
   List<Object?> get props => [date, type];
 }
+
+final class RootDiscoverNotebookChanged extends RootDiscoverEvent {
+  const RootDiscoverNotebookChanged(this.notebook);
+
+  final NotebookKind? notebook;
+
+  @override
+  List<Object?> get props => [notebook];
+}

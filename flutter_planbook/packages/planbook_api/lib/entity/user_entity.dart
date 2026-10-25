@@ -36,6 +36,25 @@ Map<String, String> _coverByYearFromDynamic(Object? raw) {
   return result;
 }
 
+/// 解析 `user_profiles.diary_notebook_looks`
+/// （年份字符串 -> 颜色、纹理、版式、纸张、封面 id）
+Map<String, Map<String, String>> _diaryNotebookLooksFromDynamic(Object? raw) {
+  if (raw is! Map) return const {};
+  final result = <String, Map<String, String>>{};
+  raw.cast<dynamic, dynamic>().forEach((key, value) {
+    if (value is! Map) return;
+    final look = <String, String>{};
+    value.cast<dynamic, dynamic>().forEach((field, fieldValue) {
+      if (fieldValue == null) return;
+      look[field.toString()] = fieldValue is String
+          ? fieldValue
+          : fieldValue.toString();
+    });
+    result[key.toString()] = look;
+  });
+  return result;
+}
+
 /// 解析 `user_profiles.quadrant_config`（JSON 数组：四象限名称/emoji 配置）
 List<QuadrantConfigEntity> _quadrantConfigFromDynamic(Object? raw) {
   if (raw is! List) return const [];
@@ -55,6 +74,7 @@ class UserProfileEntity extends Equatable {
     this.lastLaunchAppAt,
     this.launchCount = 0,
     this.coverByYear = const {},
+    this.diaryNotebookLooks = const {},
     this.quadrantConfig = const [],
     this.productId,
     this.expiresAt,
@@ -91,6 +111,9 @@ class UserProfileEntity extends Equatable {
           : null,
       launchCount: map['launch_count'] as int? ?? 0,
       coverByYear: _coverByYearFromDynamic(map['cover_by_year']),
+      diaryNotebookLooks: _diaryNotebookLooksFromDynamic(
+        map['diary_notebook_looks'],
+      ),
       quadrantConfig: _quadrantConfigFromDynamic(map['quadrant_config']),
       productId: map['product_id'] as String?,
       expiresAt: map['expires_at'] != null
@@ -112,8 +135,11 @@ class UserProfileEntity extends Equatable {
   final DateTime? lastLaunchAppAt;
   final int launchCount;
 
-  /// 按年份的日记封面配置（key：年份如 `"2026"`，value：远端 URL 或 App 内置路径）
+  /// 按年份的计划本封面（key：年份如 `"2026"`，value：远端 URL 或 App 内置路径）
   final Map<String, String> coverByYear;
+
+  /// 按年份的日记本外观（key：年份，value：颜色、纹理、版式、纸张、封面 id）
+  final Map<String, Map<String, String>> diaryNotebookLooks;
 
   /// 四象限自定义配置（名称 + emoji），按优先级维度
   final List<QuadrantConfigEntity> quadrantConfig;
@@ -140,6 +166,7 @@ class UserProfileEntity extends Equatable {
     lastLaunchAppAt,
     launchCount,
     coverByYear,
+    diaryNotebookLooks,
     quadrantConfig,
     productId,
     expiresAt,
@@ -159,6 +186,7 @@ class UserProfileEntity extends Equatable {
     DateTime? lastLaunchAppAt,
     int? launchCount,
     Map<String, String>? coverByYear,
+    Map<String, Map<String, String>>? diaryNotebookLooks,
     List<QuadrantConfigEntity>? quadrantConfig,
     String? productId,
     DateTime? expiresAt,
@@ -177,6 +205,7 @@ class UserProfileEntity extends Equatable {
       lastLaunchAppAt: lastLaunchAppAt ?? this.lastLaunchAppAt,
       launchCount: launchCount ?? this.launchCount,
       coverByYear: coverByYear ?? this.coverByYear,
+      diaryNotebookLooks: diaryNotebookLooks ?? this.diaryNotebookLooks,
       quadrantConfig: quadrantConfig ?? this.quadrantConfig,
       productId: productId ?? this.productId,
       expiresAt: expiresAt ?? this.expiresAt,
@@ -199,6 +228,7 @@ class UserProfileEntity extends Equatable {
         'last_launch_app_at': lastLaunchAppAt?.toIso8601String(),
       'launch_count': launchCount,
       'cover_by_year': coverByYear,
+      'diary_notebook_looks': diaryNotebookLooks,
       'quadrant_config': quadrantConfig.map((e) => e.toJson()).toList(),
       if (productId != null) 'product_id': productId,
       if (expiresAt != null) 'expires_at': expiresAt?.toIso8601String(),

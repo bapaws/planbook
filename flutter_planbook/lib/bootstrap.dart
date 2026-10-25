@@ -14,6 +14,7 @@ import 'package:flutter_planbook/app/view/app.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
+import 'package:flutter_planbook/discover/diary/bloc/diary_notebook_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_planbook/widget/widget_action_setup.dart';
@@ -310,6 +311,10 @@ Future<Widget> _initApp() async {
     ],
     child: MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) =>
+              DiaryNotebookBloc(usersRepository: context.read()),
+        ),
         BlocProvider(
           create: (context) =>
               AppPurchasesBloc(

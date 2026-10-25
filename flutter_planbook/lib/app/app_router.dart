@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_planbook/app/app_router.gr.dart';
+import 'package:flutter_planbook/discover/bookshelf/view/notebook_flight.dart';
 import 'package:planbook_api/planbook_api.dart';
 
 export 'package:auto_route/auto_route.dart';
@@ -94,9 +95,19 @@ class AppRouter extends RootStackRouter {
         AutoRoute(
           page: RootDiscoverRoute.page,
           children: [
-            AutoRoute(page: DiscoverJournalRoute.page),
-            AutoRoute(page: DiscoverFocusRoute.page),
-            AutoRoute(page: DiscoverSummaryRoute.page),
+            AutoRoute(
+              initial: true,
+              page: DiscoverBrowseRoute.page,
+              children: [
+                AutoRoute(page: DiscoverJournalRoute.page),
+                AutoRoute(page: DiscoverFocusRoute.page),
+                AutoRoute(page: DiscoverSummaryRoute.page),
+              ],
+            ),
+            CustomRoute<void>(
+              page: NotebookReaderRoute.page,
+              customRouteBuilder: notebookReaderFlightBuilder,
+            ),
           ],
         ),
         AutoRoute(
@@ -112,6 +123,7 @@ class AppRouter extends RootStackRouter {
       ],
     ),
     AutoRoute(page: DiscoverJournalCoverRoute.page),
+    AutoRoute(page: DiaryNotebookSettingsRoute.page),
 
     // AutoRoute(page: TaskNewRoute.page),
     _buildModalBottomSheetRoute(TaskNewChildRoute.page),
@@ -188,6 +200,7 @@ class AppRouter extends RootStackRouter {
     _buildModalBottomSheetRoute(DiscoverJournalPlayRoute.page),
 
     AutoRoute(page: JournalExportRoute.page),
+    AutoRoute(page: DiaryExportRoute.page),
 
     // CustomRoute<void>(
     //   page: DiscoverJournalFullRoute.page,

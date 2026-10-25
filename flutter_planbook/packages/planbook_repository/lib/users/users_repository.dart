@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
@@ -572,6 +573,108 @@ class UsersRepository {
         ?.from('user_profiles')
         .update({
           'cover_by_year': merged,
+          'updated_at': now.toIso8601String(),
+        })
+        .eq('id', entity.id);
+  }
+
+  /// 合并写入某年的日记本外观（`user_profiles.diary_notebook_looks`）。
+  ///
+  /// 图片本身在封面图库，这里只存颜色、纹理、版式、纸张和封面 id。
+  Future<void> updateDiaryNotebookLook({
+    required int year,
+    required Map<String, String> look,
+  }) async {
+    if (_supabase?.auth.currentUser == null) {
+      throw StateError('用户未登录，无法保存日记本封面');
+    }
+    var entity = userProfile;
+    entity ??= await getUserProfile(force: true);
+    if (entity == null) {
+      throw StateError('用户资料未就绪，无法保存日记本封面');
+    }
+    final merged = Map<String, Map<String, String>>.from(
+      entity.diaryNotebookLooks,
+    )..['$year'] = look;
+    await _saveDiaryNotebookLooks(entity, merged);
+  }
+
+  /// 旧版本曾把日记外观写在本机。登录后并入服务端，再删掉本机副本。
+  Future<void> migrateLegacyDiaryNotebookLooks() {
+    final running = _diaryLooksMigration;
+    if (running != null) return running;
+    const legacyKey = '__diary_notebook_looks_key__';
+    final raw = _sp.getString(legacyKey);
+    if (raw == null || raw.isEmpty || raw == '{}') {
+      if (raw != null) unawaited(_sp.remove(legacyKey));
+      return Future<void>.value();
+    }
+    if (_supabase?.auth.currentUser == null || userProfile == null) {
+      return Future<void>.value();
+    }
+    return _diaryLooksMigration = _migrateLegacyDiaryNotebookLooks(
+      legacyKey,
+      raw,
+    ).whenComplete(() => _diaryLooksMigration = null);
+  }
+
+  Future<void>? _diaryLooksMigration;
+
+  Future<void> _migrateLegacyDiaryNotebookLooks(
+    String legacyKey,
+    String raw,
+  ) async {
+    Object? decoded;
+    try {
+      decoded = jsonDecode(raw);
+    } on FormatException {
+      await _sp.remove(legacyKey);
+      return;
+    }
+    if (decoded is! Map) {
+      await _sp.remove(legacyKey);
+      return;
+    }
+    final entity = userProfile;
+    if (entity == null) return;
+    final merged = Map<String, Map<String, String>>.from(
+      entity.diaryNotebookLooks,
+    );
+    var changed = false;
+    decoded.forEach((key, value) {
+      final year = key.toString();
+      if (merged.containsKey(year) || value is! Map) return;
+      final look = <String, String>{};
+      value.forEach((field, fieldValue) {
+        if (fieldValue == null) return;
+        look[field.toString()] = fieldValue.toString();
+      });
+      merged[year] = look;
+      changed = true;
+    });
+    try {
+      if (changed) await _saveDiaryNotebookLooks(entity, merged);
+      await _sp.remove(legacyKey);
+    } on Object catch (error) {
+      if (kDebugMode) print('迁移日记封面失败: $error');
+    }
+  }
+
+  Future<void> _saveDiaryNotebookLooks(
+    UserProfileEntity entity,
+    Map<String, Map<String, String>> looks,
+  ) async {
+    final now = DateTime.now().toUtc();
+    final newEntity = entity.copyWith(
+      diaryNotebookLooks: looks,
+      updatedAt: now,
+    );
+    unawaited(_sp.setString(kUserProfile, newEntity.toJson()));
+    _onUserProfileChangeController.add(newEntity);
+    await _supabase
+        ?.from('user_profiles')
+        .update({
+          'diary_notebook_looks': looks,
           'updated_at': now.toIso8601String(),
         })
         .eq('id', entity.id);
