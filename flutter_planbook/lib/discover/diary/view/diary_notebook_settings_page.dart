@@ -72,154 +72,168 @@ class _DiaryNotebookSettingsPageState extends State<DiaryNotebookSettingsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return BlocBuilder<DiaryNotebookBloc, DiaryNotebookState>(
-      builder: (context, state) {
-        final look = _look(state);
-        final swatches = look.template.recommendedColors;
-        final isCustom = !swatches.any(
-          (color) => color.toARGB32() == look.color.toARGB32(),
-        );
-        final specs = _covers.isEmpty
-            ? [
-                for (final image in PaperNotebookCoverImage.bundled)
-                  PaperNotebookCoverSpec(
-                    image: image,
-                    zh: image.id,
-                    en: image.id,
-                  ),
-              ]
-            : _covers;
-        final locale = Localizations.localeOf(context);
-        return AppScaffold(
-          appBar: AppBar(title: Text(l10n.diaryEditNotebook)),
-          body: ListView(
-            padding: const EdgeInsets.only(bottom: 40),
-            children: [
-              SizedBox(
-                height: 280,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  itemCount: PaperNotebookCoverTemplate.values.length,
-                  separatorBuilder: (_, _) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final template = PaperNotebookCoverTemplate.values[index];
-                    final slide = look.copyWith(
-                      template: template,
-                      color: _colorFor(look, template),
-                    );
-                    return _CoverSlide(
-                      year: widget.year,
-                      look: slide,
-                      title: l10n.diaryBook,
-                      selected: look.template == template,
-                      onTap: () => _onChange(
-                        (current) => current.copyWith(
-                          template: template,
-                          color: _colorFor(current, template),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              _SectionLabel(l10n.diaryCoverImage),
-              SizedBox(
-                height: 56,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  itemCount: specs.length + 1,
-                  separatorBuilder: (_, _) => const SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final spec = index == 0 ? null : specs[index - 1];
-                    final image = spec?.image ?? PaperNotebookCoverImage.none;
-                    return _CoverImageThumb(
-                      image: image,
-                      color: look.color,
-                      selected: look.coverImage == image,
-                      label: spec?.labelFor(locale) ?? l10n.diaryTextureNone,
-                      onTap: () => _onChange(
-                        (current) => current.copyWith(coverImage: image),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              _SectionLabel(l10n.diaryCoverColor),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    for (final color in swatches)
-                      _ColorDot(
-                        color: color,
-                        selected: look.color.toARGB32() == color.toARGB32(),
-                        onTap: () => _onChange(
-                          (current) => current.copyWith(color: color),
-                        ),
-                      ),
-                    _ColorDot(
-                      color: look.color,
-                      selected: isCustom,
-                      outlined: true,
-                      onTap: () => _pickCustomColor(look),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 20, 4, 0),
-                child: PullDownButton(
-                  itemBuilder: (context) => [
-                    for (final texture in PaperNotebookCoverTexture.values)
-                      PullDownMenuItem.selectable(
-                        title: _textureLabel(l10n, texture),
-                        selected: look.texture == texture,
-                        onTap: () => _onChange(
-                          (current) => current.copyWith(texture: texture),
-                        ),
-                      ),
-                  ],
-                  buttonBuilder: (context, showMenu) => ListTile(
-                    minVerticalPadding: 0,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: const Icon(Icons.texture),
-                    title: Text(l10n.diaryCoverTexture),
-                    trailing: Text(_textureLabel(l10n, look.texture)),
-                    onTap: showMenu,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(4, 20, 4, 0),
-                child: PullDownButton(
-                  itemBuilder: (context) => [
-                    for (final pattern in PaperNotebookPattern.values)
-                      PullDownMenuItem.selectable(
-                        title: _paperLabel(l10n, pattern),
-                        selected: look.paperPattern == pattern,
-                        onTap: () => _onChange(
-                          (current) => current.copyWith(paperPattern: pattern),
-                        ),
-                      ),
-                  ],
-                  buttonBuilder: (context, showMenu) => ListTile(
-                    minVerticalPadding: 0,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    leading: const Icon(Icons.grid_on_outlined),
-                    title: Text(l10n.diaryPaperPattern),
-                    trailing: Text(_paperLabel(l10n, look.paperPattern)),
-                    onTap: showMenu,
-                  ),
-                ),
-              ),
-            ],
-          ),
+    return BlocListener<DiaryNotebookBloc, DiaryNotebookState>(
+      listenWhen: (previous, current) =>
+          current.saveFailureCount != previous.saveFailureCount,
+      listener: (context, state) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(context.l10n.saveFailed)),
         );
       },
+      child: BlocBuilder<DiaryNotebookBloc, DiaryNotebookState>(
+        builder: (context, state) {
+          final look = _look(state);
+          final swatches = look.template.recommendedColors;
+          final isCustom = !swatches.any(
+            (color) => color.toARGB32() == look.color.toARGB32(),
+          );
+          final specs = _covers.isEmpty
+              ? [
+                  for (final image in PaperNotebookCoverImage.bundled)
+                    PaperNotebookCoverSpec(
+                      image: image,
+                      zh: image.id,
+                      en: image.id,
+                    ),
+                ]
+              : _covers;
+          final locale = Localizations.localeOf(context);
+          return AppScaffold(
+            appBar: AppBar(title: Text(l10n.diaryEditNotebook)),
+            body: ListView(
+              padding: const EdgeInsets.only(bottom: 40),
+              children: [
+                SizedBox(
+                  height: 280,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    itemCount: PaperNotebookCoverTemplate.values.length,
+                    separatorBuilder: (_, _) => const SizedBox(width: 12),
+                    itemBuilder: (context, index) {
+                      final template = PaperNotebookCoverTemplate.values[index];
+                      final slide = look.copyWith(
+                        template: template,
+                        color: _colorFor(look, template),
+                      );
+                      return _CoverSlide(
+                        year: widget.year,
+                        look: slide,
+                        title: l10n.diaryBook,
+                        selected: look.template == template,
+                        onTap: () => _onChange(
+                          (current) => current.copyWith(
+                            template: template,
+                            color: _colorFor(current, template),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                _SectionLabel(l10n.diaryCoverImage),
+                SizedBox(
+                  height: 56,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                    itemCount: specs.length + 1,
+                    separatorBuilder: (_, _) => const SizedBox(width: 8),
+                    itemBuilder: (context, index) {
+                      final spec = index == 0 ? null : specs[index - 1];
+                      final image = spec?.image ?? PaperNotebookCoverImage.none;
+                      return _CoverImageThumb(
+                        image: image,
+                        color: look.color,
+                        selected: look.coverImage == image,
+                        label: spec?.labelFor(locale) ?? l10n.diaryTextureNone,
+                        onTap: () => _onChange(
+                          (current) => current.copyWith(coverImage: image),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                _SectionLabel(l10n.diaryCoverColor),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      for (final color in swatches)
+                        _ColorDot(
+                          color: color,
+                          selected: look.color.toARGB32() == color.toARGB32(),
+                          onTap: () => _onChange(
+                            (current) => current.copyWith(color: color),
+                          ),
+                        ),
+                      _ColorDot(
+                        color: look.color,
+                        selected: isCustom,
+                        outlined: true,
+                        onTap: () => _pickCustomColor(look),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 20, 4, 0),
+                  child: PullDownButton(
+                    itemBuilder: (context) => [
+                      for (final texture in PaperNotebookCoverTexture.values)
+                        PullDownMenuItem.selectable(
+                          title: _textureLabel(l10n, texture),
+                          selected: look.texture == texture,
+                          onTap: () => _onChange(
+                            (current) => current.copyWith(texture: texture),
+                          ),
+                        ),
+                    ],
+                    buttonBuilder: (context, showMenu) => ListTile(
+                      minVerticalPadding: 0,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      leading: const Icon(Icons.texture),
+                      title: Text(l10n.diaryCoverTexture),
+                      trailing: Text(_textureLabel(l10n, look.texture)),
+                      onTap: showMenu,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 20, 4, 0),
+                  child: PullDownButton(
+                    itemBuilder: (context) => [
+                      for (final pattern in PaperNotebookPattern.values)
+                        PullDownMenuItem.selectable(
+                          title: _paperLabel(l10n, pattern),
+                          selected: look.paperPattern == pattern,
+                          onTap: () => _onChange(
+                            (current) =>
+                                current.copyWith(paperPattern: pattern),
+                          ),
+                        ),
+                    ],
+                    buttonBuilder: (context, showMenu) => ListTile(
+                      minVerticalPadding: 0,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      leading: const Icon(Icons.grid_on_outlined),
+                      title: Text(l10n.diaryPaperPattern),
+                      trailing: Text(_paperLabel(l10n, look.paperPattern)),
+                      onTap: showMenu,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }

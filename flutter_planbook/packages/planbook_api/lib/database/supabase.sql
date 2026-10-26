@@ -235,6 +235,63 @@ ALTER TABLE planbook.user_profiles
 ALTER TABLE planbook.user_profiles
     ADD COLUMN IF NOT EXISTS diary_notebook_looks JSONB NOT NULL DEFAULT '{}'::jsonb;
 
+-- 按年写入，避免客户端整份覆盖其他年份。
+-- 定义见 planbook.set_diary_notebook_look。
+
+CREATE OR REPLACE FUNCTION planbook.set_diary_notebook_look(
+    p_year TEXT,
+    p_look JSONB
+) RETURNS JSONB
+LANGUAGE plpgsql
+SECURITY INVOKER
+SET search_path = planbook, pg_temp
+AS $$
+DECLARE
+    v_looks JSONB;
+    v_updated TIMESTAMPTZ;
+BEGIN
+    IF auth.uid() IS NULL THEN
+        RAISE EXCEPTION 'not authenticated';
+    END IF;
+    IF p_year IS NULL OR p_year !~ '^[0-9]{1,4}$' THEN
+        RAISE EXCEPTION 'invalid year';
+    END IF;
+    IF p_look IS NULL OR jsonb_typeof(p_look) IS DISTINCT FROM 'object' THEN
+        RAISE EXCEPTION 'invalid look';
+    END IF;
+
+    UPDATE planbook.user_profiles
+    SET diary_notebook_looks = jsonb_set(
+            CASE
+                WHEN jsonb_typeof(diary_notebook_looks) = 'object'
+                    THEN diary_notebook_looks
+                ELSE '{}'::jsonb
+            END,
+            ARRAY[p_year],
+            p_look,
+            TRUE
+        ),
+        updated_at = NOW()
+    WHERE id = auth.uid()
+    RETURNING diary_notebook_looks, updated_at
+    INTO v_looks, v_updated;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'profile missing';
+    END IF;
+
+    RETURN jsonb_build_object(
+        'diary_notebook_looks', v_looks,
+        'updated_at', v_updated
+    );
+END;
+$$;
+
+DROP FUNCTION IF EXISTS planbook.merge_missing_diary_notebook_looks(JSONB);
+
+REVOKE ALL ON FUNCTION planbook.set_diary_notebook_look(TEXT, JSONB) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION planbook.set_diary_notebook_look(TEXT, JSONB) TO authenticated;
+
 -- UserProfiles 表索引
 CREATE INDEX IF NOT EXISTS idx_user_profiles_deleted_at ON planbook.user_profiles(deleted_at) WHERE deleted_at IS NULL;
 -- 为商户订单号创建唯一索引（防止重复处理）

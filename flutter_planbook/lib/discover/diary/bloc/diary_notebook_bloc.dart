@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,6 +29,8 @@ class DiaryNotebookBloc extends Bloc<DiaryNotebookEvent, DiaryNotebookState> {
   }
 
   final UsersRepository _usersRepository;
+  int? _pendingYear;
+  DiaryNotebookLook? _pendingLook;
 
   Future<void> _onStarted(
     DiaryNotebookStarted event,
@@ -39,14 +39,15 @@ class DiaryNotebookBloc extends Bloc<DiaryNotebookEvent, DiaryNotebookState> {
     await emit.forEach(
       _usersRepository.onUserProfileChange,
       onData: (profile) {
-        if (profile != null) {
-          unawaited(_usersRepository.migrateLegacyDiaryNotebookLooks());
-        }
-        return state.copyWith(
-          byYear: DiaryNotebookLook.fromProfile(
-            profile?.diaryNotebookLooks ?? const {},
-          ),
+        final looks = DiaryNotebookLook.fromProfile(
+          profile?.diaryNotebookLooks ?? const {},
         );
+        final pendingYear = _pendingYear;
+        final pendingLook = _pendingLook;
+        if (pendingYear != null && pendingLook != null) {
+          looks[pendingYear] = pendingLook;
+        }
+        return state.copyWith(byYear: looks);
       },
     );
   }
@@ -55,10 +56,39 @@ class DiaryNotebookBloc extends Bloc<DiaryNotebookEvent, DiaryNotebookState> {
     DiaryNotebookSaved event,
     Emitter<DiaryNotebookState> emit,
   ) async {
-    await _usersRepository.updateDiaryNotebookLook(
-      year: event.year,
-      look: event.look.toJson(),
+    final hadYear = state.byYear.containsKey(event.year);
+    final previous = state.byYear[event.year];
+    _pendingYear = event.year;
+    _pendingLook = event.look;
+    emit(
+      state.copyWith(
+        byYear: {...state.byYear, event.year: event.look},
+      ),
     );
+    try {
+      await _usersRepository.updateDiaryNotebookLook(
+        year: event.year,
+        look: event.look.toJson(),
+      );
+    } on Object {
+      _pendingYear = null;
+      _pendingLook = null;
+      final restored = Map<int, DiaryNotebookLook>.from(state.byYear);
+      if (hadYear && previous != null) {
+        restored[event.year] = previous;
+      } else {
+        restored.remove(event.year);
+      }
+      emit(
+        state.copyWith(
+          byYear: restored,
+          saveFailureCount: state.saveFailureCount + 1,
+        ),
+      );
+      return;
+    }
+    _pendingYear = null;
+    _pendingLook = null;
   }
 
   void _onYearChanged(

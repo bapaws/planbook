@@ -55,6 +55,11 @@ Map<String, Map<String, String>> _diaryNotebookLooksFromDynamic(Object? raw) {
   return result;
 }
 
+/// 解析日记本外观。保存接口返回的 JSON 与资料行用同一套结构。
+Map<String, Map<String, String>> parseDiaryNotebookLooks(Object? raw) {
+  return _diaryNotebookLooksFromDynamic(raw);
+}
+
 /// 解析 `user_profiles.quadrant_config`（JSON 数组：四象限名称/emoji 配置）
 List<QuadrantConfigEntity> _quadrantConfigFromDynamic(Object? raw) {
   if (raw is! List) return const [];

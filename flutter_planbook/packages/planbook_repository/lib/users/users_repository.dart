@@ -75,6 +75,10 @@ class UsersRepository {
   /// 是否已完成过一次查询（区分「没查过」与「查了但没行」）
   bool _entitlementCacheLoaded = false;
 
+  /// 最近一次日记外观写入的服务端 `updated_at`。
+  /// 更早的资料刷新是保存前发出的，不能盖掉这次写入。
+  DateTime? _diaryLooksUpdatedAt;
+
   Stream<UserEntity?> get onUserEntityChange {
     return CombineLatestStream.combine2(
       onAuthStateChange.map(
@@ -308,6 +312,7 @@ class UsersRepository {
     await _supabase?.auth.signOut();
     await _sp.remove(kUserProfile);
     _invalidateEntitlementCache();
+    _diaryLooksUpdatedAt = null;
     _onUserProfileChangeController.add(null);
     await AppHomeWidget.removeWidgetData(kUserId);
   }
@@ -319,6 +324,7 @@ class UsersRepository {
         await _supabase?.auth.signOut();
         await _sp.remove(kUserProfile);
         _invalidateEntitlementCache();
+        _diaryLooksUpdatedAt = null;
         _onUserProfileChangeController.add(null);
         await AppHomeWidget.removeWidgetData(kUserId);
       } else {
@@ -401,11 +407,22 @@ class UsersRepository {
           .maybeSingle();
       if (response == null) return null;
     }
-    final entity = UserProfileEntity.fromMap(response);
+    final fetched = UserProfileEntity.fromMap(response);
+    final fetchedUpdated = fetched.updatedAt;
     // 用 entitlements 覆盖 profile 中的权益字段（新真相源；行存在则以之为准）。
     // 强制刷新：profile 刷新（含支付/恢复后的 force 刷新）必须同步更新缓存，
     // 否则合并出来的 profile 与后续 getActiveEntitlementProductId 会不一致。
     final entitlement = await _getEntitlementRow(force: true);
+    final current = userProfile;
+    final marker = _diaryLooksUpdatedAt;
+    // 保存前发出的刷新可能更晚返回。它的 updated_at 更早，整行都不要盖回来。
+    final entity =
+        current != null &&
+            marker != null &&
+            fetchedUpdated != null &&
+            fetchedUpdated.isBefore(marker)
+        ? current
+        : fetched;
     // 注意 copyWith 的 ?? 语义：entitlement 字段为 null 时保留 profile 原值。
     // entitlement 行以 productId 非空为常态；且行存在时会员判定直接读行
     // （getActiveEntitlementProductId），不经过该合并结果，差异无实害。
@@ -581,6 +598,7 @@ class UsersRepository {
   /// 合并写入某年的日记本外观（`user_profiles.diary_notebook_looks`）。
   ///
   /// 图片本身在封面图库，这里只存颜色、纹理、版式、纸张和封面 id。
+  /// 服务端按年份写入，成功后才更新本地缓存。
   Future<void> updateDiaryNotebookLook({
     required int year,
     required Map<String, String> look,
@@ -593,91 +611,58 @@ class UsersRepository {
     if (entity == null) {
       throw StateError('用户资料未就绪，无法保存日记本封面');
     }
-    final merged = Map<String, Map<String, String>>.from(
-      entity.diaryNotebookLooks,
-    )..['$year'] = look;
-    await _saveDiaryNotebookLooks(entity, merged);
-  }
-
-  /// 旧版本曾把日记外观写在本机。登录后并入服务端，再删掉本机副本。
-  Future<void> migrateLegacyDiaryNotebookLooks() {
-    final running = _diaryLooksMigration;
-    if (running != null) return running;
-    const legacyKey = '__diary_notebook_looks_key__';
-    final raw = _sp.getString(legacyKey);
-    if (raw == null || raw.isEmpty || raw == '{}') {
-      if (raw != null) unawaited(_sp.remove(legacyKey));
-      return Future<void>.value();
-    }
-    if (_supabase?.auth.currentUser == null || userProfile == null) {
-      return Future<void>.value();
-    }
-    return _diaryLooksMigration = _migrateLegacyDiaryNotebookLooks(
-      legacyKey,
-      raw,
-    ).whenComplete(() => _diaryLooksMigration = null);
-  }
-
-  Future<void>? _diaryLooksMigration;
-
-  Future<void> _migrateLegacyDiaryNotebookLooks(
-    String legacyKey,
-    String raw,
-  ) async {
-    Object? decoded;
-    try {
-      decoded = jsonDecode(raw);
-    } on FormatException {
-      await _sp.remove(legacyKey);
-      return;
-    }
-    if (decoded is! Map) {
-      await _sp.remove(legacyKey);
-      return;
-    }
-    final entity = userProfile;
-    if (entity == null) return;
-    final merged = Map<String, Map<String, String>>.from(
-      entity.diaryNotebookLooks,
+    await _writeDiaryLooks(
+      'set_diary_notebook_look',
+      {'p_year': '$year', 'p_look': look},
+      entity,
     );
-    var changed = false;
-    decoded.forEach((key, value) {
-      final year = key.toString();
-      if (merged.containsKey(year) || value is! Map) return;
-      final look = <String, String>{};
-      value.forEach((field, fieldValue) {
-        if (fieldValue == null) return;
-        look[field.toString()] = fieldValue.toString();
-      });
-      merged[year] = look;
-      changed = true;
-    });
-    try {
-      if (changed) await _saveDiaryNotebookLooks(entity, merged);
-      await _sp.remove(legacyKey);
-    } on Object catch (error) {
-      if (kDebugMode) print('迁移日记封面失败: $error');
-    }
   }
 
-  Future<void> _saveDiaryNotebookLooks(
-    UserProfileEntity entity,
-    Map<String, Map<String, String>> looks,
+  /// 调用按年写入函数。返回的是服务端整份外观，成功后才写入本地。
+  Future<void> _writeDiaryLooks(
+    String function,
+    Map<String, dynamic> params,
+    UserProfileEntity fallback,
   ) async {
-    final now = DateTime.now().toUtc();
-    final newEntity = entity.copyWith(
-      diaryNotebookLooks: looks,
-      updatedAt: now,
+    final client = _supabase;
+    if (client == null) {
+      throw StateError('用户未登录，无法保存日记本封面');
+    }
+    final response = await client.rpc<Object?>(function, params: params);
+    final result = _parseDiaryLooksResult(response);
+    final updatedAt = result.updatedAt;
+    final marker = _diaryLooksUpdatedAt;
+    if (updatedAt != null && (marker == null || updatedAt.isAfter(marker))) {
+      _diaryLooksUpdatedAt = updatedAt;
+    }
+    final base = userProfile ?? fallback;
+    await _rememberProfile(
+      base.copyWith(
+        diaryNotebookLooks: result.looks,
+        updatedAt: updatedAt ?? base.updatedAt,
+      ),
     );
-    unawaited(_sp.setString(kUserProfile, newEntity.toJson()));
-    _onUserProfileChangeController.add(newEntity);
-    await _supabase
-        ?.from('user_profiles')
-        .update({
-          'diary_notebook_looks': looks,
-          'updated_at': now.toIso8601String(),
-        })
-        .eq('id', entity.id);
+  }
+
+  ({Map<String, Map<String, String>> looks, DateTime? updatedAt})
+  _parseDiaryLooksResult(Object? response) {
+    var decoded = response;
+    if (decoded is String && decoded.isNotEmpty) {
+      decoded = jsonDecode(decoded);
+    }
+    if (decoded is! Map || !decoded.containsKey('diary_notebook_looks')) {
+      throw StateError('日记封面保存结果无效');
+    }
+    final updatedRaw = decoded['updated_at'];
+    return (
+      looks: parseDiaryNotebookLooks(decoded['diary_notebook_looks']),
+      updatedAt: updatedRaw is String ? DateTime.tryParse(updatedRaw) : null,
+    );
+  }
+
+  Future<void> _rememberProfile(UserProfileEntity entity) async {
+    _onUserProfileChangeController.add(entity);
+    await _sp.setString(kUserProfile, entity.toJson());
   }
 
   /// 保存四象限自定义配置到 `user_profiles.quadrant_config`
