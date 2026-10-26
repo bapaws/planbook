@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/view/app_network_image.dart';
@@ -28,6 +29,57 @@ NoteEntity _note(String id) => NoteEntity(
 );
 
 void main() {
+  for (final scale in [0.8, 1.6]) {
+    testWidgets('系统字号 $scale 在分页和真实阅读页中保持一致', (tester) async {
+      final repository = _NotesRepository();
+      when(repository.watchDiaryNotes).thenAnswer(
+        (_) => Stream.value([
+          _note('scaled').copyWith(
+            note: _note('scaled').note.copyWith(
+              content: Value('记下今天的心情。\n' * 30),
+            ),
+          ),
+        ]),
+      );
+      final scaler = TextScaler.linear(scale);
+      await tester.pumpWidget(
+        RepositoryProvider<NotesRepository>.value(
+          value: repository,
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: scaler),
+              child: child!,
+            ),
+            home: const Scaffold(body: DiaryBookView()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final leafFinder = find.byType(DiaryBookLeaf).first;
+      final page = tester.widget<DiaryBookLeaf>(leafFinder).page;
+      final texts = tester.widgetList<RichText>(
+        find.descendant(of: leafFinder, matching: find.byType(RichText)),
+      );
+      for (final frame in page.frames.where((frame) => frame.text.isNotEmpty)) {
+        final text = texts.firstWhere(
+          (text) => text.text.toPlainText() == frame.text,
+        );
+        expect(text.textScaler.scale(14), scaler.scale(14));
+        final painter = TextPainter(
+          text: text.text,
+          textDirection: text.textDirection,
+          textScaler: text.textScaler,
+        )..layout(maxWidth: frame.rect.width);
+        expect(painter.height, lessThanOrEqualTo(frame.rect.height));
+        painter.dispose();
+      }
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
+
   testWidgets('日记变更保留阅读位置，删除末篇后页码不会越界', (tester) async {
     final stream = StreamController<List<NoteEntity>>.broadcast();
     final repository = _NotesRepository();

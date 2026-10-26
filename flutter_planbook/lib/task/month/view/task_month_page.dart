@@ -214,18 +214,7 @@ class _TaskMonthPage extends StatelessWidget {
 
   void _navigateToRootDiscover(BuildContext context, NoteType noteType) {
     AutoRouter.of(context).navigate(
-      RootHomeRoute(
-        children: [
-          RootDiscoverRoute(
-            children: [
-              if (noteType.isFocus)
-                const DiscoverFocusRoute()
-              else
-                const DiscoverSummaryRoute(),
-            ],
-          ),
-        ],
-      ),
+      discoverMindMapRoute(noteType),
     );
   }
 }

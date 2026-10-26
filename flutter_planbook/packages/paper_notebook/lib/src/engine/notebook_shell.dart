@@ -309,7 +309,6 @@ class _NotebookShellState extends State<NotebookShell>
                           padding: EdgeInsets.zero,
                           viewPadding: EdgeInsets.zero,
                           viewInsets: EdgeInsets.zero,
-                          textScaler: TextScaler.noScaling,
                         ),
                         child: _NotebookCanvas(
                           t: t,
@@ -371,7 +370,13 @@ class _NotebookCanvas extends StatelessWidget {
   final Widget child;
 
   Widget _buildCover(BuildContext context) {
-    return coverBuilder?.call(context) ?? cover ?? const PaperNotebookCover();
+    // 封面是固定比例的装饰，正文则保留分页时使用的系统字号。
+    return MediaQuery.withNoTextScaling(
+      child: Builder(
+        builder: (context) =>
+            coverBuilder?.call(context) ?? cover ?? const PaperNotebookCover(),
+      ),
+    );
   }
 
   Widget _coverFace({

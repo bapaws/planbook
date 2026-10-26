@@ -8,6 +8,24 @@ export 'package:auto_route/auto_route.dart';
 
 export 'app_router.gr.dart';
 
+/// 任务日、周、月视图共用的思维导图入口，保持与发现页的嵌套路由一致。
+RootHomeRoute discoverMindMapRoute(NoteType noteType) => RootHomeRoute(
+  children: [
+    RootDiscoverRoute(
+      children: [
+        DiscoverBrowseRoute(
+          children: [
+            if (noteType.isFocus)
+              const DiscoverFocusRoute()
+            else
+              const DiscoverSummaryRoute(),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
 @AutoRouterConfig(replaceInRouteName: 'Screen|Page,Route')
 class AppRouter extends RootStackRouter {
   @override

@@ -33,8 +33,17 @@ class NoteNewBottomBar extends StatelessWidget {
                   }
 
                   final picker = ImagePicker();
-                  final files = await picker.pickMultiImage(limit: remaining);
-                  if (!context.mounted) return;
+                  // 多选接口至少要求两张；只剩一个名额时改用相册单选。
+                  final List<XFile> files;
+                  if (remaining == 1) {
+                    final file = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    files = file == null ? const [] : [file];
+                  } else {
+                    files = await picker.pickMultiImage(limit: remaining);
+                  }
+                  if (!context.mounted || files.isEmpty) return;
 
                   final paths = files.map((file) => file.path).toList();
                   await context.read<NoteNewCubit>().addImages(paths);

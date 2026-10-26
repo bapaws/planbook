@@ -294,18 +294,7 @@ class _TaskWeekFirstCellHeader extends StatelessWidget {
             ),
     );
     AutoRouter.of(context).navigate(
-      RootHomeRoute(
-        children: [
-          RootDiscoverRoute(
-            children: [
-              if (noteType.isFocus)
-                const DiscoverFocusRoute()
-              else
-                const DiscoverSummaryRoute(),
-            ],
-          ),
-        ],
-      ),
+      discoverMindMapRoute(noteType),
     );
   }
 }

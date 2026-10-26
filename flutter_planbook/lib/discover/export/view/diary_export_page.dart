@@ -64,6 +64,7 @@ class _DiaryExportView extends StatefulWidget {
 
 class _DiaryExportViewState extends State<_DiaryExportView> {
   final GlobalKey _boundaryKey = GlobalKey();
+  final GlobalKey _pdfButtonKey = GlobalKey();
   final Set<String> _selected = {};
   DiaryBookDocument? _document;
   var _captureIndex = 0;
@@ -166,6 +167,7 @@ class _DiaryExportViewState extends State<_DiaryExportView> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: CupertinoButton(
+                    key: _pdfButtonKey,
                     padding: EdgeInsets.zero,
                     minimumSize: const Size.fromHeight(kToolbarHeight),
                     color: theme.colorScheme.secondaryContainer,
@@ -371,8 +373,15 @@ class _DiaryExportViewState extends State<_DiaryExportView> {
       await file.writeAsBytes(bytes);
       await EasyLoading.dismiss();
       if (!mounted) return;
+      final shareBox =
+          _pdfButtonKey.currentContext!.findRenderObject()! as RenderBox;
       await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)], subject: l10n.diaryExportTitle),
+        ShareParams(
+          files: [XFile(file.path)],
+          subject: l10n.diaryExportTitle,
+          sharePositionOrigin:
+              shareBox.localToGlobal(Offset.zero) & shareBox.size,
+        ),
       );
       if (!mounted) return;
       messenger.showSnackBar(

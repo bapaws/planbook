@@ -321,6 +321,55 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final back in [false, true]) {
+    testWidgets('日记本${back ? '向前' : '向后'}翻页中关闭可正常返回书架', (tester) async {
+      final key = GlobalKey<NotebookReaderPageState>();
+      final changes = <NotebookKind?>[];
+      await mount(
+        tester,
+        key,
+        changes,
+        diaryNotes: [
+          for (var i = 0; i < 3; i++)
+            NoteEntity(
+              note: Note(
+                id: 'entry-$i',
+                title: '日记 $i',
+                content: '今天的一小段记录。',
+                images: const [],
+                createdAt: Jiffy.parse('2026-10-23'),
+              ),
+            ),
+        ],
+      );
+      await tester.drag(
+        find.byKey(const Key('notebook-bookshelf')),
+        const Offset(-340, 0),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+      final controller = tester
+          .widget<PaperNotebook>(find.byType(PaperNotebook).last)
+          .controller!;
+      if (back) {
+        controller.jumpTo(1);
+        await tester.pumpAndSettle();
+      }
+      final turn = back ? controller.previousPage() : controller.nextPage();
+      await tester.pump(const Duration(milliseconds: 60));
+      expect(controller.isAnimating, isTrue);
+      var closed = false;
+      unawaited(key.currentState!.closeNotebook().then((_) => closed = true));
+      await tester.pumpAndSettle();
+      await turn;
+      expect(closed, isTrue);
+      expect(changes, [NotebookKind.diary, null]);
+      expect(find.byType(DiaryBookView), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('计划本正在翻页时关闭，会等待纸页落定再合上', (tester) async {
     final key = GlobalKey<NotebookReaderPageState>();
     final changes = <NotebookKind?>[];

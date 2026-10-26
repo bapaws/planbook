@@ -170,18 +170,7 @@ class TaskWeekListView extends StatelessWidget {
           : RootDiscoverSummaryDateChanged(date: date, type: noteType),
     );
     AutoRouter.of(context).navigate(
-      RootHomeRoute(
-        children: [
-          RootDiscoverRoute(
-            children: [
-              if (noteType.isFocus)
-                const DiscoverFocusRoute()
-              else
-                const DiscoverSummaryRoute(),
-            ],
-          ),
-        ],
-      ),
+      discoverMindMapRoute(noteType),
     );
   }
 }

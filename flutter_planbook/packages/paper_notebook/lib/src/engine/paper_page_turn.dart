@@ -21,6 +21,7 @@ class PaperPageTurn extends StatefulWidget {
     this.closesCoverOnBack = false,
     this.closesCoverOnForward = false,
     this.onCloseCover,
+    this.onAnimationChanged,
     this.controller,
     super.key,
   });
@@ -38,6 +39,9 @@ class PaperPageTurn extends StatefulWidget {
   /// 最后一页再往前翻：右侧拖动合上牛皮纸，不走纸折页。
   final bool closesCoverOnForward;
   final VoidCallback? onCloseCover;
+
+  /// 手势开始、翻页完成和回弹取消后通知外部重新读取动画状态。
+  final VoidCallback? onAnimationChanged;
   final PaperPageTurnController? controller;
 
   /// 折瓣会画出纸页，画布四周留出余量以免被裁掉。
@@ -172,6 +176,7 @@ class _PaperPageTurnState extends State<PaperPageTurn>
   void _onStatus(AnimationStatus status) {
     if (status == AnimationStatus.dismissed) {
       _resetGrab();
+      if (!_busy) widget.onAnimationChanged?.call();
       return;
     }
     if (status != AnimationStatus.completed || _busy) return;
@@ -190,6 +195,8 @@ class _PaperPageTurnState extends State<PaperPageTurn>
     _controller.reset();
     _resetGrab();
     _busy = false;
+    // 页码回调执行时仍处于 busy；必须在全部清理后再通知等待合书的调用方。
+    widget.onAnimationChanged?.call();
   }
 
   Future<void> _playForward(Duration duration) async {
@@ -258,6 +265,7 @@ class _PaperPageTurnState extends State<PaperPageTurn>
       _pointerStart = local;
       _coverCloseDx = 0;
       _dragging = true;
+      widget.onAnimationChanged?.call();
       return;
     }
     if (!fromLeft && widget.closesCoverOnForward) {
@@ -266,6 +274,7 @@ class _PaperPageTurnState extends State<PaperPageTurn>
       _pointerStart = local;
       _coverCloseDx = 0;
       _dragging = true;
+      widget.onAnimationChanged?.call();
       return;
     }
     _forward = !fromLeft;
@@ -280,6 +289,7 @@ class _PaperPageTurnState extends State<PaperPageTurn>
     _dragging = true;
     _controller.duration = _style.pageTurn;
     _controller.value = 0.001;
+    widget.onAnimationChanged?.call();
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -353,6 +363,7 @@ class _PaperPageTurnState extends State<PaperPageTurn>
       final complete = !cancelled && (pulled || fling);
       _resetGrab();
       if (complete) widget.onCloseCover?.call();
+      widget.onAnimationChanged?.call();
       return;
     }
     _dragging = false;

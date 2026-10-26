@@ -367,7 +367,7 @@ class _PaperNotebookState extends State<PaperNotebook> {
     _skipTo = null;
     setState(() => _index = target);
     widget.onIndexChanged?.call(_index);
-    _notify(animating: false);
+    _notify();
   }
 
   void _onBack() {
@@ -375,7 +375,7 @@ class _PaperNotebookState extends State<PaperNotebook> {
     _skipTo = null;
     setState(() => _index = target);
     widget.onIndexChanged?.call(_index);
-    _notify(animating: false);
+    _notify();
   }
 
   Widget _page(BuildContext context, int index) {
@@ -413,6 +413,7 @@ class _PaperNotebookState extends State<PaperNotebook> {
           closesCoverOnBack: _closesCoverOnBack,
           closesCoverOnForward: _closesCoverOnForward,
           onCloseCover: _closeCover,
+          onAnimationChanged: _notify,
           current: _page(context, _index),
           next: _peekForwardIndex != null
               ? _page(context, _peekForwardIndex!)
