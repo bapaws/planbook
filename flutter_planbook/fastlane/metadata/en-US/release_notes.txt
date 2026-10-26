@@ -1,9 +1,8 @@
 What's New:
+- Brand-new page-turning diary book
 - Faster startup and performance improvements
 - Fixed some known issues
 
 Recent updates:
 - New Week view widget
 - New Time Block widget
-- Week Octant view now supports Inbox
-- Search support

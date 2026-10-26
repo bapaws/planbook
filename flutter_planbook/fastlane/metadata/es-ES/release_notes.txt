@@ -1,9 +1,8 @@
 Novedades:
+- Nuevo diario con páginas para pasar
 - Inicio más rápido y mejoras de rendimiento
 - Corrección de algunos problemas conocidos
 
 Actualizaciones recientes:
 - Nuevo widget de vista semanal
 - Nuevo widget de bloques horarios
-- La vista Octante semanal ahora admite la bandeja de entrada
-- Compatibilidad con búsqueda

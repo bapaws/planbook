@@ -1,9 +1,8 @@
 Novidades:
+- Novo diário para folhear
 - Arranque mais rápido e melhorias de desempenho
 - Correção de alguns problemas conhecidos
 
 Atualizações recentes:
 - Novo widget da vista semanal
 - Novo widget de blocos horários
-- A vista Octante semanal passa a suportar a caixa de entrada
-- Suporte à pesquisa
