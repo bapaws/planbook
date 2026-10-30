@@ -27,32 +27,36 @@ final class TaskTodayCalendarFormatChanged extends TaskTodayEvent {
 }
 
 final class TaskTodayFocusNoteRequested extends TaskTodayEvent {
-  const TaskTodayFocusNoteRequested({required this.date});
+  const TaskTodayFocusNoteRequested({required this.date, this.generation});
 
   final Jiffy date;
+  final int? generation;
 
   @override
-  List<Object?> get props => [date];
+  List<Object?> get props => [date, generation];
 }
 
 final class TaskTodaySummaryNoteRequested extends TaskTodayEvent {
-  const TaskTodaySummaryNoteRequested({required this.date});
+  const TaskTodaySummaryNoteRequested({required this.date, this.generation});
 
   final Jiffy date;
+  final int? generation;
 
   @override
-  List<Object?> get props => [date];
+  List<Object?> get props => [date, generation];
 }
 
 final class TaskTodayNoteTaskAppended extends TaskTodayEvent {
   const TaskTodayNoteTaskAppended({
     required this.task,
     required this.noteType,
+    this.target,
   });
 
   final TaskEntity task;
   final NoteType noteType;
+  final PeriodNoteTarget? target;
 
   @override
-  List<Object?> get props => [task, noteType];
+  List<Object?> get props => [task, noteType, target];
 }

@@ -270,6 +270,11 @@ class _TaskTimeBlockItemState extends State<TaskTimeBlockItem> {
   }
 
   void _toggleCompleted() {
+    if (item.task.children.isNotEmpty) {
+      context.router.push(TaskDoneRoute(task: item.task));
+      return;
+    }
+
     setState(() => _isCompleted = !_isCompleted);
     context.read<TaskListBloc>().add(TaskListCompleted(task: item.task));
     context.read<TaskActionService>().playCompletedFeedback();

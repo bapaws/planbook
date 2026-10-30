@@ -10,19 +10,10 @@ import SwiftUI
 /// Widget 背景配置
 struct WidgetBackgroundConfig {
     let assetName: String
-    let isDarkMode: Bool
-    
-    /// 根据当前主题获取实际的图片名称
-    var imageName: String {
-        "\(assetName)_tile_\(isDarkMode ? "dark" : "light")"
-    }
-    
+
     /// 从 UserDefaults 读取配置
     static func current() -> WidgetBackgroundConfig {
-        WidgetBackgroundConfig(
-            assetName: WidgetSettings.backgroundAsset,
-            isDarkMode: WidgetSettings.isDarkMode
-        )
+        WidgetBackgroundConfig(assetName: WidgetSettings.backgroundAsset)
     }
 }
 
@@ -30,9 +21,11 @@ struct WidgetBackgroundConfig {
 struct WidgetTiledBackground: View {
     let config: WidgetBackgroundConfig
     @Environment(\.colorScheme) private var colorScheme
-    
+
+    /// 与任务文字使用同一套外观解析，避免系统暗黑时铺深色底、文字仍是浅色方案。
     private var imageName: String {
-        "\(config.assetName)_tile_\(colorScheme == .dark ? "dark" : "light")"
+        let isDark = WidgetSettings.isDark(colorScheme: colorScheme)
+        return "\(config.assetName)_tile_\(isDark ? "dark" : "light")"
     }
     
     var body: some View {

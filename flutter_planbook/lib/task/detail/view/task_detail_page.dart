@@ -22,7 +22,6 @@ import 'package:flutter_planbook/task/detail/view/task_detail_tile.dart';
 import 'package:flutter_planbook/task/duration/model/task_duration_entity.dart';
 import 'package:flutter_planbook/task/list/view/task_delete_dialog.dart';
 import 'package:flutter_planbook/task/list/view/task_list_tile.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:planbook_core/data/page_status.dart';
 import 'package:planbook_core/view/navigation_bar_back_button.dart';
@@ -75,6 +74,52 @@ class TaskDetailPage extends StatelessWidget {
                   initialNote: state.currentTaskNote,
                 ),
               );
+            },
+          ),
+          BlocListener<TaskDetailBloc, TaskDetailState>(
+            listenWhen: (previous, current) =>
+                previous.showEditModeSelection !=
+                    current.showEditModeSelection &&
+                current.showEditModeSelection,
+            listener: (context, state) async {
+              final mode = await showCupertinoDialog<RecurringTaskEditMode>(
+                context: context,
+                builder: (context) => CupertinoAlertDialog(
+                  title: Text(context.l10n.editModeSelection),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () => Navigator.pop(
+                        context,
+                        RecurringTaskEditMode.allEvents,
+                      ),
+                      child: Text(context.l10n.allEvents),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () => Navigator.pop(
+                        context,
+                        RecurringTaskEditMode.thisAndFutureEvents,
+                      ),
+                      child: Text(context.l10n.thisAndFutureEvents),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () => Navigator.pop(
+                        context,
+                        RecurringTaskEditMode.thisEventOnly,
+                      ),
+                      child: Text(context.l10n.thisEventOnly),
+                    ),
+                    CupertinoDialogAction(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(context.l10n.cancel),
+                    ),
+                  ],
+                ),
+              );
+              if (context.mounted) {
+                context.read<TaskDetailBloc>().add(
+                  TaskDetailEditModeSelected(mode: mode),
+                );
+              }
             },
           ),
           BlocListener<TaskDetailBloc, TaskDetailState>(
@@ -442,13 +487,6 @@ class _TaskDetailPage extends StatelessWidget {
   }
 
   Future<void> _onDateTap(BuildContext context, TaskEntity task) async {
-    if (task.occurrence?.occurrenceAt != null) {
-      await Fluttertoast.showToast(
-        msg: context.l10n.recurringTaskCannotChangeDate,
-        gravity: ToastGravity.CENTER,
-      );
-      return;
-    }
     final entity = await context.router.push(
       TaskDurationRoute(
         startAt: task.startAt,

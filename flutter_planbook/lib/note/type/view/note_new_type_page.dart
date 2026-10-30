@@ -36,7 +36,7 @@ class NoteNewTypePage extends StatelessWidget {
         focusAt: focusAt,
         initialNote: initialNote,
         l10n: l10n,
-      ),
+      )..onRequested(),
       child: BlocListener<NoteTypeNewCubit, NoteTypeNewState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: (context, state) {
@@ -93,11 +93,15 @@ class _NoteNewTypePage extends StatelessWidget {
             Row(
               children: [
                 const Spacer(),
-                CupertinoButton(
-                  onPressed: () {
-                    context.read<NoteTypeNewCubit>().onSave();
-                  },
-                  child: const FaIcon(FontAwesomeIcons.solidPaperPlane),
+                BlocSelector<NoteTypeNewCubit, NoteTypeNewState, bool>(
+                  selector: (state) =>
+                      state.isReady && state.status != PageStatus.loading,
+                  builder: (context, canSave) => CupertinoButton(
+                    onPressed: canSave
+                        ? () => context.read<NoteTypeNewCubit>().onSave()
+                        : null,
+                    child: const FaIcon(FontAwesomeIcons.solidPaperPlane),
+                  ),
                 ),
               ],
             ),

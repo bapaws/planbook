@@ -10,6 +10,10 @@ import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/color_scheme_converter.dart';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:planbook_core/planbook_core.dart';
+import 'package:planbook_repository/sync/apply_remote_batch.dart';
+import 'package:planbook_repository/sync/database_pull_lock.dart';
+import 'package:planbook_repository/sync/pull_sync_coordinator.dart';
+import 'package:planbook_repository/sync/pull_write_fence.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/tag/supabase_tag_api.dart';
 import 'package:uuid/uuid.dart';
@@ -43,7 +47,11 @@ class TagsRepository {
   Stream<List<TagEntity>> getAllTags({
     Set<String> notIncludeTagIds = const {},
   }) async* {
-    unawaited(syncTags());
+    unawaited(
+      syncTags().catchError((Object e, StackTrace st) {
+        debugPrint('TagsRepository.syncTags failed: $e\n$st');
+      }),
+    );
     yield* _tagApi.getAllTags(
       notIncludeTagIds: notIncludeTagIds,
       userId: userId,
@@ -54,24 +62,36 @@ class TagsRepository {
     return _tagApi.getTagAndDescendantIds(id: id, userId: userId);
   }
 
-  Future<void> syncTags({bool force = false}) async {
-    try {
-      // 先修复本地已有的历史脏数据，离线时也能恢复标签；远端合并后再检查一次。
-      await _tagApi.repairHierarchyCycles(userId: userId);
-      final tags = await _supabaseTagApi.getLatestTags(force: force);
-      await _db.transaction(() async {
-        for (final tag in tags) {
-          // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
-          final hasPending = await _tagApi.hasPendingChanges(tag.id);
-          if (hasPending) continue;
+  final _pullSync = PullSyncCoordinator();
 
-          await _db.into(_db.tags).insertOnConflictUpdate(tag);
+  Future<void> syncTags({bool force = false}) {
+    final account = userId;
+    return _pullSync.run(
+      userId: account,
+      force: force,
+      action: ({required force}) => DatabasePullLock.run(_db, () async {
+        void validateAccount() {
+          if (userId != account) throw StateError('标签同步账号已变化');
         }
-      });
-      await _tagApi.repairHierarchyCycles(userId: userId);
-    } on Object catch (e, st) {
-      debugPrint('TagsRepository.syncTags failed: $e\n$st');
-    }
+
+        validateAccount();
+        await _tagApi.repairHierarchyCycles(userId: account);
+        final fence = await PullWriteFence.capture(_db);
+        final batch = await _supabaseTagApi.getLatestTagRows(force: force);
+        validateAccount();
+        if (batch != null) {
+          await applyRemoteBatch(
+            db: _db,
+            batch: batch,
+            fence: fence,
+            account: account!,
+            validateAccount: validateAccount,
+          );
+        }
+        await _tagApi.repairHierarchyCycles(userId: account);
+        validateAccount();
+      }),
+    );
   }
 
   Future<TagEntity?> getTagEntityById(String id) async {

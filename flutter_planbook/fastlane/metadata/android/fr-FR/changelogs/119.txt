@@ -1,4 +1,0 @@
-• Widgets d’accueil
-• Sync local d’abord
-
-Récent : couverture & zoom du journal, glisser-déposer (jour/semaine/mois), focus & synthèses, correctifs

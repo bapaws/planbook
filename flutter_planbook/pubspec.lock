@@ -1074,7 +1074,7 @@ packages:
     source: hosted
     version: "10.1.1"
   image:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: image
       sha256: "492bd52f6c4fbb6ee41f781ff27765ce5f627910e1e0cbecfa3d9add5562604c"
@@ -1430,6 +1430,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.1"
+  paper_notebook:
+    dependency: "direct main"
+    description:
+      path: "packages/paper_notebook"
+      relative: true
+    source: path
+    version: "1.0.0"
   path:
     dependency: "direct main"
     description:
@@ -1702,10 +1709,10 @@ packages:
     dependency: "direct main"
     description:
       name: purchases_flutter
-      sha256: d91ca4d2abaca098af7b9e5736490950811c0f2e9c2b236f6a467ff52ecdfd39
+      sha256: "8b70ab671adca2cd067492e24f2d1b342e948c7dace35bf0baa6d3c8901674e9"
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "9.9.9"
+    version: "10.4.0"
   qr:
     dependency: transitive
     description:

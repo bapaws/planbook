@@ -205,6 +205,7 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
   ) async {
     final updatedTask = state.task?.task.copyWith(
       isAllDay: event.entity?.isAllDay ?? true,
+      dueAt: Value(event.entity?.startAt?.startOf(Unit.day)),
       startAt: Value(event.entity?.startAt),
       endAt: Value(event.entity?.endAt),
     );
@@ -307,21 +308,45 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     final entity = state.task;
     if (entity == null) return;
 
-    final task = _updatedTask ?? entity.task;
+    final requestedTask = _updatedTask ?? entity.task;
+    final editMode = event.mode!;
+    final isRecurringOccurrence =
+        entity.recurrenceRule != null && entity.occurrence != null;
+    final task =
+        isRecurringOccurrence && editMode != RecurringTaskEditMode.allEvents
+        ? _preserveOccurrenceSchedule(requestedTask, entity)
+        : requestedTask;
+    emit(
+      state.copyWith(
+        status: PageStatus.loading,
+        showEditModeSelection: false,
+      ),
+    );
     await _tasksRepository.updateWithEditMode(
       entity: entity,
       task: task,
-      editMode: event.mode!,
+      editMode: editMode,
       tags: _updatedTags,
       children: _updatedChildren,
     );
+    final occurrence = _hasScheduleChanges(requestedTask, entity.task)
+        ? entity.occurrence?.copyWith(
+            startAt: Value(task.startAt),
+            endAt: Value(task.endAt),
+            dueAt: Value(task.dueAt),
+          )
+        : entity.occurrence;
     emit(
       state.copyWith(
         status: PageStatus.success,
+        showEditModeSelection: false,
         task: state.task?.copyWith(
-          task: _updatedTask,
+          task: task,
           tags: _updatedTags,
-          children: _updatedChildren,
+          occurrence: occurrence,
+          children: _updatedChildren
+              ?.where((child) => child.task.deletedAt == null)
+              .toList(),
         ),
       ),
     );
@@ -329,8 +354,10 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     _updatedTags = null;
     _updatedChildren = null;
 
-    /// 重新调度任务的提醒
-    _taskActionService.rescheduleAlarm(task);
+    // 仅修改整个重复序列时，按任务本身重新调度提醒。
+    if (editMode == RecurringTaskEditMode.allEvents) {
+      _taskActionService.rescheduleAlarm(task);
+    }
   }
 
   Future<void> _onUpdated(
@@ -342,7 +369,12 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
     _updatedTags = event.tags;
     _updatedChildren = event.children;
 
-    final need = await _tasksRepository.needsEditModeSelection(state.task!);
+    final entity = state.task!;
+    final isRecurringOccurrence =
+        entity.recurrenceRule != null && entity.occurrence != null;
+    final need =
+        isRecurringOccurrence ||
+        await _tasksRepository.needsEditModeSelection(entity);
     if (need) {
       emit(state.copyWith(showEditModeSelection: true));
     } else {
@@ -352,5 +384,38 @@ class TaskDetailBloc extends Bloc<TaskDetailEvent, TaskDetailState> {
         ),
       );
     }
+  }
+
+  Task _preserveOccurrenceSchedule(Task requestedTask, TaskEntity entity) {
+    final template = entity.task;
+    final occurrence = entity.occurrence;
+    return requestedTask.copyWith(
+      startAt: Value(
+        _sameTime(requestedTask.startAt, template.startAt)
+            ? (template.startAt == null ? null : entity.startAt)
+            : requestedTask.startAt,
+      ),
+      endAt: Value(
+        _sameTime(requestedTask.endAt, template.endAt)
+            ? (template.endAt == null ? null : entity.endAt)
+            : requestedTask.endAt,
+      ),
+      dueAt: Value(
+        _sameTime(requestedTask.dueAt, template.dueAt)
+            ? occurrence?.dueAt ?? template.dueAt
+            : requestedTask.dueAt,
+      ),
+    );
+  }
+
+  bool _sameTime(Jiffy? first, Jiffy? second) {
+    if (first == null || second == null) return first == second;
+    return first.dateTime.isAtSameMomentAs(second.dateTime);
+  }
+
+  bool _hasScheduleChanges(Task requestedTask, Task originalTask) {
+    return !_sameTime(requestedTask.startAt, originalTask.startAt) ||
+        !_sameTime(requestedTask.endAt, originalTask.endAt) ||
+        !_sameTime(requestedTask.dueAt, originalTask.dueAt);
   }
 }

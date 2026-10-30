@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 
 class AppAvatar extends StatelessWidget {
@@ -20,22 +20,16 @@ class AppAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final errorWidget = ColoredBox(
-      color: Theme.of(context).colorScheme.surfaceContainerHigh,
-      child: SizedBox(
-        width: radius * 2,
-        height: radius * 2,
-        child: FaIcon(
-          FontAwesomeIcons.user,
-          color: Theme.of(context).disabledColor,
-          size: radius,
-        ),
-      ),
+    final placeholder = SvgPicture.asset(
+      'assets/images/logo.svg',
+      width: radius * 2,
+      height: radius * 2,
+      fit: BoxFit.cover,
     );
-    if (url == null) {
+    if (url == null || url!.trim().isEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(radius),
-        child: errorWidget,
+        child: placeholder,
       );
     }
 
@@ -46,7 +40,7 @@ class AppAvatar extends StatelessWidget {
         width: radius * 2,
         height: radius * 2,
         fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) => errorWidget,
+        errorBuilder: (context, error, stackTrace) => placeholder,
       );
     } else {
       final repo = context.read<AssetsRepository>();
@@ -57,8 +51,8 @@ class AppAvatar extends StatelessWidget {
           height: radius * 2,
           fit: BoxFit.cover,
           loadingBuilder: (context, child, progress) =>
-              progress == null ? child : errorWidget,
-          errorBuilder: (context, error, stackTrace) => errorWidget,
+              progress == null ? child : placeholder,
+          errorBuilder: (context, error, stackTrace) => placeholder,
         );
       } else {
         image = CachedNetworkImage(
@@ -66,8 +60,8 @@ class AppAvatar extends StatelessWidget {
           width: radius * 2,
           height: radius * 2,
           fit: BoxFit.cover,
-          placeholder: (context, url) => errorWidget,
-          errorWidget: (context, url, error) => errorWidget,
+          placeholder: (context, url) => placeholder,
+          errorWidget: (context, url, error) => placeholder,
         );
       }
     }

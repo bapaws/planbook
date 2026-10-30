@@ -188,11 +188,16 @@ class TaskSourcePanelBloc
           ),
         );
         _justDroppedTaskIds.add(task.id);
-        await _tasksRepository.update(
-          task: updatedTask.task,
-          tags: task.tags,
-          children: task.children.isEmpty ? null : task.children,
-        );
+        if (task.recurrenceRule != null) {
+          // 只把这一次发生送进收集箱，不能清掉整条重复的日期。
+          await _moveRecurringOccurrenceToInbox(task);
+        } else {
+          await _tasksRepository.update(
+            task: updatedTask.task,
+            tags: task.tags,
+            children: task.children.isEmpty ? null : task.children,
+          );
+        }
         _justDroppedTaskIds.remove(task.id);
       case TaskSourcePanelTag(tags: final tags):
         final existingIds = task.tags.map((t) => t.id).toSet();
@@ -245,29 +250,27 @@ class TaskSourcePanelBloc
             ),
           );
           _justDroppedTaskIds.add(task.id);
-          await _tasksRepository.update(
-            task: updatedTask.task,
-            tags: task.tags,
-            children: task.children.isEmpty ? null : task.children,
-          );
+          if (task.recurrenceRule != null) {
+            await _scheduleRecurringAsAllDay(task, targetDate);
+          } else {
+            await _tasksRepository.update(
+              task: updatedTask.task,
+              tags: task.tags,
+              children: task.children.isEmpty ? null : task.children,
+            );
+          }
           _justDroppedTaskIds.remove(task.id);
           return;
         }
 
-        // 全部 / 非全天：改到该日期
+        // 全部 / 非全天：改到该日期，保留原来的钟点和全天标记。
         if (sameDay) {
           _justDroppedTaskIds.add(task.id);
           return;
         }
         final hasDate =
             task.startAt != null || task.dueAt != null || task.endAt != null;
-        final updatedTask = task.copyWith(
-          task: task.task.copyWith(
-            startAt: Value(targetDate),
-            endAt: Value(targetDate.endOf(Unit.day)),
-            isAllDay: true,
-          ),
-        );
+        final updatedTask = _taskShiftedToDay(task, targetDate);
         emit(
           state.copyWith(
             tasks: _replaceTask(state.tasks, updatedTask),
@@ -440,6 +443,99 @@ class TaskSourcePanelBloc
       return _removeTask(state.tasks, newTask.id);
     }
     return _replaceTask(state.tasks, newTask);
+  }
+
+  /// 重复任务只分离这一次发生，再清掉日期，使其进入收集箱。
+  Future<void> _moveRecurringOccurrenceToInbox(TaskEntity task) async {
+    final occurrenceDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)
+        ?.startOf(Unit.day);
+    if (occurrenceDay == null) return;
+    final delayed = await _tasksRepository.delayTask(
+      entity: task,
+      delayTo: occurrenceDay,
+    );
+    if (delayed == null) return;
+    await _tasksRepository.update(
+      task: delayed.task.copyWith(
+        startAt: const Value(null),
+        endAt: const Value(null),
+        dueAt: const Value(null),
+      ),
+      tags: delayed.tags,
+    );
+  }
+
+  /// 重复任务只把这一次发生改成目标日的全天任务。
+  Future<void> _scheduleRecurringAsAllDay(
+    TaskEntity task,
+    Jiffy targetDate,
+  ) async {
+    final delayed = await _tasksRepository.delayTask(
+      entity: task,
+      delayTo: targetDate,
+    );
+    if (delayed == null) return;
+    await _tasksRepository.update(
+      task: delayed.task.copyWith(
+        startAt: Value(targetDate),
+        endAt: Value(targetDate.endOf(Unit.day)),
+        isAllDay: true,
+      ),
+      tags: delayed.tags,
+    );
+  }
+
+  /// 把任务平移到 [targetDate]，保留钟点；没有日期时落到当天全天。
+  TaskEntity _taskShiftedToDay(TaskEntity task, Jiffy targetDate) {
+    final target = targetDate.startOf(Unit.day);
+    final taskDay = (task.occurrenceAt ?? task.startAt ?? task.dueAt)?.startOf(
+      Unit.day,
+    );
+    final daysDiff = taskDay != null
+        ? target.diff(taskDay, unit: Unit.day).toInt()
+        : null;
+    final occurrence = task.occurrence;
+    final updatedOccurrence = occurrence?.copyWith(
+      occurrenceAt: target,
+      startAt: Value(
+        daysDiff != null && occurrence.startAt != null
+            ? occurrence.startAt!.add(days: daysDiff)
+            : target,
+      ),
+      endAt: Value(
+        daysDiff != null && occurrence.endAt != null
+            ? occurrence.endAt!.add(days: daysDiff)
+            : target.endOf(Unit.day),
+      ),
+      dueAt: Value(
+        daysDiff != null && occurrence.dueAt != null
+            ? occurrence.dueAt!.add(days: daysDiff)
+            : null,
+      ),
+    );
+    final hasDate =
+        task.startAt != null || task.dueAt != null || task.endAt != null;
+    return task.copyWith(
+      task: task.task.copyWith(
+        startAt: Value(
+          daysDiff != null && task.task.startAt != null
+              ? task.task.startAt!.add(days: daysDiff)
+              : target,
+        ),
+        endAt: Value(
+          daysDiff != null && task.task.endAt != null
+              ? task.task.endAt!.add(days: daysDiff)
+              : target.endOf(Unit.day),
+        ),
+        dueAt: Value(
+          daysDiff != null && task.task.dueAt != null
+              ? task.task.dueAt!.add(days: daysDiff)
+              : null,
+        ),
+        isAllDay: !hasDate || task.task.isAllDay,
+      ),
+      occurrence: updatedOccurrence,
+    );
   }
 
   /// 从列表中移除指定 ID 的任务。

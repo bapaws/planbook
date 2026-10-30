@@ -7,6 +7,7 @@ import 'package:flutter_planbook/root/home/bloc/root_home_bloc.dart';
 import 'package:flutter_planbook/root/home/view/root_home_page.dart';
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
 import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/focus/view/open_period_note_editor.dart';
 import 'package:flutter_planbook/task/list/bloc/task_list_bloc.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
 import 'package:flutter_planbook/task/list/view/task_list_bloc_provider.dart';
@@ -19,8 +20,7 @@ import 'package:flutter_planbook/task/source/view/task_source_panel.dart';
 import 'package:flutter_planbook/task/time_block/view/task_time_block_page.dart';
 import 'package:flutter_planbook/task/today/bloc/task_today_bloc.dart';
 import 'package:flutter_planbook/task/today/view/task_focus_view.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class TaskTodayPage extends StatelessWidget {
@@ -61,6 +61,15 @@ class TaskTodayPage extends StatelessWidget {
         return bloc;
       },
       child: BlocBuilder<TaskTodayBloc, TaskTodayState>(
+        // 计数仍由原订阅更新；日历和列表布局不使用 taskCounts，
+        // 不因计数结果到达而把整块日视图再次构建。
+        buildWhen: (previous, current) =>
+            previous.date != current.date ||
+            previous.calendarFormat != current.calendarFormat ||
+            previous.focusNote != current.focusNote ||
+            previous.summaryNote != current.summaryNote ||
+            previous.isFocusNoteReady != current.isFocusNoteReady ||
+            previous.isSummaryNoteReady != current.isSummaryNoteReady,
         builder: (context, todayState) {
           return Column(
             children: [
@@ -206,22 +215,17 @@ class TaskTodayPage extends StatelessWidget {
 
   Widget _buildFocusView(BuildContext context, NoteType noteType) {
     final bloc = context.read<TaskTodayBloc>();
-    final note = noteType.isFocus
-        ? bloc.state.focusNote
-        : bloc.state.summaryNote;
+    final snapshot = bloc.state.noteSnapshot(noteType);
     return TaskFocusView(
-      note: note,
+      note: snapshot.note,
+      isReady: snapshot.canWrite,
       noteType: noteType,
-      onTap: () {
-        final focusAt = context.read<TaskTodayBloc>().state.date;
-        context.router.push(
-          NoteNewTypeRoute(
-            initialNote: note,
-            type: noteType,
-            focusAt: focusAt,
-          ),
-        );
-      },
+      onTap: () => openPeriodNoteEditor(
+        context,
+        displayed: snapshot,
+        current: () =>
+            context.read<TaskTodayBloc>().state.noteSnapshot(noteType),
+      ),
       onMindMapTapped: () {
         _addDiscoverEvent(context, noteType);
         _navigateToRootDiscover(context, noteType);
@@ -231,6 +235,7 @@ class TaskTodayPage extends StatelessWidget {
           TaskTodayNoteTaskAppended(
             task: task,
             noteType: noteType,
+            target: snapshot.target,
           ),
         );
       },
@@ -248,18 +253,7 @@ class TaskTodayPage extends StatelessWidget {
 
   void _navigateToRootDiscover(BuildContext context, NoteType noteType) {
     AutoRouter.of(context).navigate(
-      RootHomeRoute(
-        children: [
-          RootDiscoverRoute(
-            children: [
-              if (noteType.isFocus)
-                const DiscoverFocusRoute()
-              else
-                const DiscoverSummaryRoute(),
-            ],
-          ),
-        ],
-      ),
+      discoverMindMapRoute(noteType),
     );
   }
 }
@@ -314,6 +308,8 @@ class _TaskTodayListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               date: state.date,
+              isCompleted: context.read<RootTaskBloc>().state.isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
               tagId: tag?.id,
             ),
           );
@@ -353,6 +349,8 @@ class _TaskTodayListPage extends StatelessWidget {
           context.read<TaskListBloc>().add(
             TaskListRequested(
               date: state.date,
+              isCompleted: context.read<RootTaskBloc>().state.isCompleted,
+              selectedTagIds: context.read<RootTaskBloc>().state.selectedTagIds,
               tagId: tag?.id,
             ),
           );

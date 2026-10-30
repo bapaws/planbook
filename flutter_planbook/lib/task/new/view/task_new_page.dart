@@ -15,11 +15,20 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 @RoutePage()
 class TaskNewPage extends StatelessWidget {
-  const TaskNewPage({this.initialTask, this.dueAt, this.priority, super.key});
+  const TaskNewPage({
+    this.initialTask,
+    this.dueAt,
+    this.priority,
+    this.initialTags = const [],
+    this.isAllDay,
+    super.key,
+  });
 
   final TaskEntity? initialTask;
   final Jiffy? dueAt;
   final TaskPriority? priority;
+  final List<TagEntity> initialTags;
+  final bool? isAllDay;
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +41,8 @@ class TaskNewPage extends StatelessWidget {
             initialTask: initialTask,
             dueAt: dueAt,
             priority: priority,
+            initialTags: initialTags,
+            isAllDay: isAllDay,
           ),
         ),
         BlocProvider(

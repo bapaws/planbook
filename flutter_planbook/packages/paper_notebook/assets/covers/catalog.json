@@ -1,0 +1,258 @@
+{
+  "version": 2,
+  "prefabStartYear": 2016,
+  "covers": [
+    {
+      "id": "wheat",
+      "file": "wheat.jpg",
+      "thumb": "wheat.thumb.jpg",
+      "zh": "麦田",
+      "en": "Wheat"
+    },
+    {
+      "id": "bridge",
+      "file": "bridge.jpg",
+      "thumb": "bridge.thumb.jpg",
+      "zh": "睡莲",
+      "en": "Bridge"
+    },
+    {
+      "id": "moonlight",
+      "file": "moonlight.jpg",
+      "thumb": "moonlight.thumb.jpg",
+      "zh": "月光",
+      "en": "Moonlight"
+    },
+    {
+      "id": "bouquet",
+      "file": "bouquet.jpg",
+      "thumb": "bouquet.thumb.jpg",
+      "zh": "瓶花",
+      "en": "Bouquet"
+    },
+    {
+      "id": "farmhouse",
+      "file": "farmhouse.jpg",
+      "thumb": "farmhouse.thumb.jpg",
+      "zh": "农舍",
+      "en": "Farmhouse"
+    },
+    {
+      "id": "olives",
+      "file": "olives.jpg",
+      "thumb": "olives.thumb.jpg",
+      "zh": "橄榄",
+      "en": "Olives"
+    },
+    {
+      "id": "roses",
+      "file": "roses.jpg",
+      "thumb": "roses.thumb.jpg",
+      "zh": "玫瑰",
+      "en": "Roses"
+    },
+    {
+      "id": "holland",
+      "file": "holland.jpg",
+      "thumb": "holland.thumb.jpg",
+      "zh": "花圃",
+      "en": "Holland"
+    },
+    {
+      "id": "citrus",
+      "file": "citrus.jpg",
+      "thumb": "citrus.thumb.jpg",
+      "zh": "柑橘",
+      "en": "Citrus"
+    },
+    {
+      "id": "garden",
+      "file": "garden.jpg",
+      "thumb": "garden.thumb.jpg",
+      "zh": "花园",
+      "en": "Garden"
+    },
+    {
+      "id": "dahlias",
+      "file": "dahlias.jpg",
+      "thumb": "dahlias.thumb.jpg",
+      "zh": "大丽",
+      "en": "Dahlias"
+    },
+    {
+      "id": "argenteuil",
+      "file": "argenteuil.jpg",
+      "thumb": "argenteuil.thumb.jpg",
+      "zh": "岸边",
+      "en": "Argenteuil"
+    },
+    {
+      "id": "parliament",
+      "file": "parliament.jpg",
+      "thumb": "parliament.thumb.jpg",
+      "zh": "议会",
+      "en": "Parliament"
+    },
+    {
+      "id": "cathedral",
+      "file": "cathedral.jpg",
+      "thumb": "cathedral.thumb.jpg",
+      "zh": "教堂",
+      "en": "Cathedral"
+    },
+    {
+      "id": "haze",
+      "file": "haze.jpg",
+      "thumb": "haze.thumb.jpg",
+      "zh": "晨雾",
+      "en": "Haze"
+    },
+    {
+      "id": "venice",
+      "file": "venice.jpg",
+      "thumb": "venice.thumb.jpg",
+      "zh": "威尼斯",
+      "en": "Venice"
+    },
+    {
+      "id": "giverny",
+      "file": "giverny.jpg",
+      "thumb": "giverny.thumb.jpg",
+      "zh": "吉维尼",
+      "en": "Giverny"
+    },
+    {
+      "id": "apples",
+      "file": "apples.jpg",
+      "thumb": "apples.thumb.jpg",
+      "zh": "果盘",
+      "en": "Apples"
+    },
+    {
+      "id": "victoire",
+      "file": "victoire.jpg",
+      "thumb": "victoire.thumb.jpg",
+      "zh": "圣山",
+      "en": "Victoire"
+    },
+    {
+      "id": "breeze",
+      "file": "breeze.jpg",
+      "thumb": "breeze.thumb.jpg",
+      "zh": "乘风",
+      "en": "Breeze"
+    },
+    {
+      "id": "orchard",
+      "file": "orchard.jpg",
+      "thumb": "orchard.thumb.jpg",
+      "zh": "果园",
+      "en": "Orchard"
+    },
+    {
+      "id": "meadow",
+      "file": "meadow.jpg",
+      "thumb": "meadow.thumb.jpg",
+      "zh": "草地",
+      "en": "Meadow"
+    },
+    {
+      "id": "haystacks",
+      "file": "haystacks.jpg",
+      "thumb": "haystacks.thumb.jpg",
+      "zh": "麦垛",
+      "en": "Haystacks"
+    },
+    {
+      "id": "brittany",
+      "file": "brittany.jpg",
+      "thumb": "brittany.thumb.jpg",
+      "zh": "布列塔尼",
+      "en": "Brittany"
+    },
+    {
+      "id": "poppies",
+      "file": "poppies.jpg",
+      "thumb": "poppies.thumb.jpg",
+      "zh": "罂粟",
+      "en": "Poppies"
+    },
+    {
+      "id": "lighthouse",
+      "file": "lighthouse.jpg",
+      "thumb": "lighthouse.thumb.jpg",
+      "zh": "灯塔",
+      "en": "Lighthouse"
+    },
+    {
+      "id": "skiffs",
+      "file": "skiffs.jpg",
+      "thumb": "skiffs.thumb.jpg",
+      "zh": "小舟",
+      "en": "Skiffs"
+    },
+    {
+      "id": "niagara",
+      "file": "niagara.jpg",
+      "thumb": "niagara.thumb.jpg",
+      "zh": "瀑布",
+      "en": "Niagara"
+    },
+    {
+      "id": "catskills",
+      "file": "catskills.jpg",
+      "thumb": "catskills.thumb.jpg",
+      "zh": "日出",
+      "en": "Catskills"
+    },
+    {
+      "id": "wivenhoe",
+      "file": "wivenhoe.jpg",
+      "thumb": "wivenhoe.thumb.jpg",
+      "zh": "庄园",
+      "en": "Wivenhoe"
+    },
+    {
+      "id": "magnolias",
+      "file": "magnolias.jpg",
+      "thumb": "magnolias.thumb.jpg",
+      "zh": "木兰",
+      "en": "Magnolias"
+    },
+    {
+      "id": "mortlake",
+      "file": "mortlake.jpg",
+      "thumb": "mortlake.thumb.jpg",
+      "zh": "河岸",
+      "en": "Mortlake"
+    },
+    {
+      "id": "melon",
+      "file": "melon.jpg",
+      "thumb": "melon.thumb.jpg",
+      "zh": "甜瓜",
+      "en": "Melon"
+    },
+    {
+      "id": "fontainebleau",
+      "file": "fontainebleau.jpg",
+      "thumb": "fontainebleau.thumb.jpg",
+      "zh": "枫丹",
+      "en": "Fontainebleau"
+    },
+    {
+      "id": "snow",
+      "file": "snow.jpg",
+      "thumb": "snow.thumb.jpg",
+      "zh": "初雪",
+      "en": "Snow"
+    },
+    {
+      "id": "beach",
+      "file": "beach.jpg",
+      "thumb": "beach.thumb.jpg",
+      "zh": "海滩",
+      "en": "Beach"
+    }
+  ]
+}

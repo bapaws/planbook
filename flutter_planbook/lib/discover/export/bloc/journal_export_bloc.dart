@@ -6,11 +6,11 @@ part 'journal_export_event.dart';
 part 'journal_export_state.dart';
 
 class JournalExportBloc extends Bloc<JournalExportEvent, JournalExportState> {
-  JournalExportBloc()
+  JournalExportBloc({Jiffy? startDate, Jiffy? endDate})
     : super(
         JournalExportReady(
-          startDate: Jiffy.now().startOf(Unit.day),
-          endDate: Jiffy.now().startOf(Unit.day),
+          startDate: (startDate ?? Jiffy.now()).startOf(Unit.day),
+          endDate: (endDate ?? startDate ?? Jiffy.now()).startOf(Unit.day),
         ),
       ) {
     on<JournalExportStartDateChanged>(_onStartChanged);

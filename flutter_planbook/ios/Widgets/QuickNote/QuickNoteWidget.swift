@@ -34,17 +34,24 @@ struct QuickNoteWidgetView: View {
 
     @Environment(\.widgetFamily) private var widgetFamily
     @Environment(\.widgetRenderingMode) private var widgetRenderingMode
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var theme: FlutterColorScheme {
+        WidgetSettings.isDark(colorScheme: colorScheme)
+            ? AppFlutterColorSchemes.dark
+            : AppFlutterColorSchemes.light
+    }
 
     private var iconColor: Color {
-        widgetRenderingMode == .fullColor ? AppFlutterColorSchemes.light.primaryColor : .primary
+        widgetRenderingMode == .fullColor ? theme.primaryColor : .primary
     }
 
     private var iconBackgroundColor: Color {
-        widgetRenderingMode == .fullColor ? AppFlutterColorSchemes.light.primaryContainerColor : .primary.opacity(0.2)
+        widgetRenderingMode == .fullColor ? theme.primaryContainerColor : .primary.opacity(0.2)
     }
 
     private var textColor: Color {
-        widgetRenderingMode == .fullColor ? AppFlutterColorSchemes.light.outlineColor : .primary
+        widgetRenderingMode == .fullColor ? theme.onSurfaceVariantColor : .primary
     }
 
     private var accessoryIconBackgroundColor: Color {

@@ -1,7 +1,7 @@
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
+import 'package:supabase_planbook_api/sync/remote_table_pull.dart';
 
 class SupabaseNoteApi {
   SupabaseNoteApi({
@@ -66,42 +66,21 @@ class SupabaseNoteApi {
   Future<List<Map<String, dynamic>>> getLatestNotes({
     bool force = false,
   }) async {
-    if (supabase == null) return [];
-
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final lastAttempt = _sp.getInt(kLastGetNotesAttemptAt);
-    if (lastAttempt != null && timestamp - lastAttempt < 3000) {
-      return [];
+    final client = supabase;
+    final account = userId;
+    if (client == null || account == null) return [];
+    final pull = RemoteTablePull.supabase(
+      sp: _sp,
+      client: client,
+      account: account,
+    );
+    final batches = <String, RemoteTableBatch>{};
+    for (final table in ['tags', 'notes', 'note_tags']) {
+      batches[table] = await pull.pull(table, force: force);
     }
-    await _sp.setInt(kLastGetNotesAttemptAt, timestamp);
-
-    final lastTimestamp = _sp.getInt(kLastGetNotesTimestamp);
-    var builder = supabase!
-        .from('notes')
-        .select(
-          '*,'
-          'note_tags(*,tag:tags!note_tags_tag_id_fkey(*)),'
-          'tasks(*)',
-        );
-    if (!force) {
-      if (lastTimestamp != null) {
-        final date = DateTime.fromMillisecondsSinceEpoch(
-          lastTimestamp,
-        ).toIso8601String();
-        builder = builder.or(
-          'updated_at.gte.$date,created_at.gte.$date,deleted_at.gte.$date',
-        );
-      }
-    }
-
-    final results = await builder;
-
-    // 仅在有服务端时间戳时推进游标；空结果保持原游标，避免本机时钟偏快导致漏同步。
-    final maxTimestamp = maxTimestampFromSyncItems(results);
-    if (maxTimestamp != null) {
-      await _sp.setInt(kLastGetNotesTimestamp, maxTimestamp);
-    }
-
-    return results;
+    return RemoteSyncRows(batches, 'notes');
   }
+
+  static String cursorKey(String? userId) =>
+      '$kLastGetNotesTimestamp${userId ?? "guest"}';
 }

@@ -1,6 +1,0 @@
-• Vista de blocos horários do dia
-• Barra lateral de tarefas
-• Vista de lista semanal
-• Correcção de erros
-
-Recente: novo calendário mensal de foco no Diário, nomes dos quadrantes personalizados, widgets do ecrã inicial

@@ -95,31 +95,16 @@ def release_cnstore_apk
   apk
 end
 
-# Homebrew CocoaPods breaks under fastlane:
-# 1) Bundler (project Gemfile has fastlane, not cocoapods) hijacks `pod`
-# 2) fastlane sets GEM_PATH to its libexec; Homebrew pod then can't resolve
-#    deps (e.g. MissingSpecError: minitest) even though `pod` works in a
-#    clean shell.
+# Homebrew CocoaPods breaks under `bundle exec fastlane`:
+# Bundler 4 injects BUNDLER_SETUP, so a child `pod` loads this Gemfile
+# (fastlane only) and cannot find the cocoapods gem.
+# `with_unbundled_env` strips that setup for flutter/pod subprocesses.
 def with_clean_ruby_env
-  keys = %w[
-    BUNDLE_GEMFILE BUNDLE_BIN_PATH BUNDLE_PATH BUNDLE_WITHOUT
-    BUNDLE_APP_CONFIG BUNDLE_IGNORE_CONFIG BUNDLE_FROZEN
-    RUBYOPT RUBYLIB
-    GEM_HOME GEM_PATH
-  ]
-  saved = keys.to_h { |k| [k, ENV[k]] }
-  saved_path = ENV["PATH"]
-  begin
-    keys.each { |k| ENV.delete(k) }
+  Bundler.with_unbundled_env do
+    saved_path = ENV["PATH"]
     # Prefer Homebrew pod / ruby / fvm over any bundler binstubs.
     ENV["PATH"] = ["/opt/homebrew/bin", "/usr/local/bin", saved_path].compact.join(":")
     yield
-  ensure
-    keys.each do |k|
-      v = saved[k]
-      v ? ENV[k] = v : ENV.delete(k)
-    end
-    ENV["PATH"] = saved_path if saved_path
   end
 end
 

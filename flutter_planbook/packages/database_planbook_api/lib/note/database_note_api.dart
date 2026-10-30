@@ -133,6 +133,72 @@ class DatabaseNoteApi {
     });
   }
 
+  /// 周期笔记的读改写共用短事务，避免并发创建和使用过期页面快照。
+  Future<Note> mutatePeriodNote({
+    required String? userId,
+    required NoteType type,
+    required Jiffy rangeStart,
+    required Jiffy rangeEnd,
+    required Jiffy focusAt,
+    required String title,
+    required String Function(String? content) content,
+    required void Function() validateAccount,
+    bool preserveExistingTitle = false,
+  }) => db.transaction(() async {
+    validateAccount();
+    final current =
+        await (db.select(db.notes)
+              ..where(
+                (n) =>
+                    n.type.equals(type.name) &
+                    n.deletedAt.isNull() &
+                    n.focusAt.isBiggerOrEqualValue(rangeStart.dateTime) &
+                    n.focusAt.isSmallerOrEqualValue(rangeEnd.dateTime) &
+                    (userId == null
+                        ? n.userId.isNull()
+                        : n.userId.equals(userId)),
+              )
+              ..orderBy(_periodNoteOrder(focusAt))
+              ..limit(1))
+            .getSingleOrNull();
+    validateAccount();
+    final now = Jiffy.now();
+    final nextContent = content(current?.content);
+    if (current == null) {
+      final note = Note(
+        id: const Uuid().v4(),
+        userId: userId,
+        title: title,
+        content: nextContent,
+        images: const [],
+        type: type,
+        focusAt: focusAt,
+        createdAt: now,
+      );
+      await create(note: note);
+      validateAccount();
+      return note;
+    }
+    // 拖入只追加内容；标题以事务内最新值为准，编辑器显式保存仍可更新标题。
+    final note = current.copyWith(
+      title: preserveExistingTitle ? current.title : title,
+      content: Value(nextContent),
+      updatedAt: Value(now),
+    );
+    // 保留原有标签、图片和任务关联，不删除或重建关联行。
+    await (db.update(
+      db.notes,
+    )..where((n) => n.id.equals(note.id))).write(note.toCompanion(false));
+    await _outboxApi.enqueue(
+      tableName: 'notes',
+      recordId: note.id,
+      operation: 'update',
+      payload: jsonEncode(note.toJson()),
+    );
+    validateAccount();
+    return note;
+  });
+
   Future<NoteEntity?> getNoteEntityById(String noteId) async {
     final rows =
         await (db.select(db.notes).join([
@@ -242,6 +308,26 @@ class DatabaseNoteApi {
           ),
         )
         .toList();
+  }
+
+  /// 日记本仅收录当前用户主动写下的日记，不包含任务记录和周期笔记。
+  Stream<List<NoteEntity>> watchDiaryNotes({required String? userId}) {
+    return (db.select(db.notes)
+          ..where(
+            (note) =>
+                note.deletedAt.isNull() &
+                note.taskId.isNull() &
+                (note.type.isNull() | note.type.equals(NoteType.journal.name)) &
+                (userId == null
+                    ? note.userId.isNull()
+                    : note.userId.equals(userId)),
+          )
+          ..orderBy([
+            (note) => OrderingTerm.asc(note.createdAt.datetime),
+            (note) => OrderingTerm.asc(note.id),
+          ]))
+        .watch()
+        .map((notes) => notes.map((note) => NoteEntity(note: note)).toList());
   }
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
@@ -384,6 +470,17 @@ class DatabaseNoteApi {
         .asyncMap(buildNoteEntities);
   }
 
+  /// 同一周期有多条笔记时，优先精确日期，再取最近更新的一条。
+  List<OrderingTerm Function($NotesTable)> _periodNoteOrder(Jiffy focusAt) => [
+    (n) => OrderingTerm(
+      expression: n.focusAt.equals(focusAt.dateTime),
+      mode: OrderingMode.desc,
+    ),
+    (n) => OrderingTerm.desc(n.updatedAt.datetime),
+    (n) => OrderingTerm.desc(n.createdAt.datetime),
+    (n) => OrderingTerm.asc(n.id),
+  ];
+
   Stream<Note?> getNoteByFocusAt(
     Jiffy focusAt, {
     NoteType type = NoteType.dailyFocus,
@@ -408,8 +505,10 @@ class DatabaseNoteApi {
                 n.focusAt.isBiggerOrEqualValue(start.dateTime) &
                 n.focusAt.isSmallerOrEqualValue(end.dateTime) &
                 n.type.equals(type.name) &
+                n.deletedAt.isNull() &
                 (userId == null ? n.userId.isNull() : n.userId.equals(userId)),
           )
+          ..orderBy(_periodNoteOrder(focusAt))
           ..limit(1))
         .watchSingleOrNull();
   }
@@ -579,19 +678,18 @@ class DatabaseNoteApi {
         db.notes.title.like(pattern, escapeChar: r'\') |
         db.notes.content.like(pattern, escapeChar: r'\');
 
-    final idQuery =
-        db.selectOnly(db.notes)
-          ..addColumns([
-            db.notes.id,
-            db.notes.updatedAt,
-            db.notes.createdAt,
-          ])
-          ..where(db.notes.deletedAt.isNull() & userExp & matchExp)
-          ..orderBy([
-            OrderingTerm.desc(db.notes.updatedAt),
-            OrderingTerm.desc(db.notes.createdAt),
-          ])
-          ..limit(limit);
+    final idQuery = db.selectOnly(db.notes)
+      ..addColumns([
+        db.notes.id,
+        db.notes.updatedAt,
+        db.notes.createdAt,
+      ])
+      ..where(db.notes.deletedAt.isNull() & userExp & matchExp)
+      ..orderBy([
+        OrderingTerm.desc(db.notes.updatedAt),
+        OrderingTerm.desc(db.notes.createdAt),
+      ])
+      ..limit(limit);
 
     final ids = await idQuery.map((row) => row.read(db.notes.id)!).get();
     if (ids.isEmpty) return [];

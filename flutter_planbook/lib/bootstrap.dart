@@ -9,15 +9,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart' hide kAppGroupId;
 import 'package:flutter_planbook/app/privacy/view/privacy_consent_page.dart';
 import 'package:flutter_planbook/app/purchases/bloc/app_purchases_bloc.dart';
+import 'package:flutter_planbook/app/startup/startup_preparation_coordinator.dart';
 import 'package:flutter_planbook/app/view/app.dart';
 import 'package:flutter_planbook/core/model/app_channel.dart';
 import 'package:flutter_planbook/core/purchases/app_purchases.dart';
 import 'package:flutter_planbook/discover/cover/repository/discover_cover_repository.dart';
+import 'package:flutter_planbook/discover/diary/bloc/diary_notebook_bloc.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:flutter_planbook/widget/widget_action_setup.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:planbook_api/database/database_recovery.dart';
 import 'package:planbook_core/planbook_core.dart';
 import 'package:planbook_repository/planbook_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,6 +49,11 @@ Future<void> bootstrap() async {
     log(details.exceptionAsString(), stackTrace: details.stack);
   };
 
+  PlatformDispatcher.instance.onError = (error, stack) {
+    log(error.toString(), stackTrace: stack);
+    return true;
+  };
+
   Bloc.observer = const AppBlocObserver();
 
   runApp(const _BootstrapApp());
@@ -62,6 +70,7 @@ class _BootstrapApp extends StatefulWidget {
 class _BootstrapAppState extends State<_BootstrapApp> {
   Widget? _app;
   bool _needsConsent = false;
+  bool _databaseUnavailable = false;
   late SharedPreferences _sp;
 
   @override
@@ -94,18 +103,24 @@ class _BootstrapAppState extends State<_BootstrapApp> {
   }
 
   Future<void> _completeBootstrap() async {
-    await AppPurchases.initialize(enableChinaPay: AppChannel.isAndroidChina);
-    await AppSupabase.initialize();
+    if (mounted) setState(() => _databaseUnavailable = false);
+    try {
+      await AppPurchases.initialize(enableChinaPay: AppChannel.isAndroidChina);
+      await AppSupabase.initialize();
 
-    HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: kIsWeb
-          ? HydratedStorageDirectory.web
-          : HydratedStorageDirectory((await getTemporaryDirectory()).path),
-    );
+      HydratedBloc.storage = await HydratedStorage.build(
+        storageDirectory: kIsWeb
+            ? HydratedStorageDirectory.web
+            : HydratedStorageDirectory((await getTemporaryDirectory()).path),
+      );
 
-    final app = await _initApp();
-    if (mounted) {
-      setState(() => _app = app);
+      final app = await _initApp();
+      if (mounted) {
+        setState(() => _app = app);
+      }
+    } on DatabaseRecoveryException {
+      // 数据库仍被占用或检查失败时停在可重试页，不打开业务库。
+      if (mounted) setState(() => _databaseUnavailable = true);
     }
   }
 
@@ -125,7 +140,42 @@ class _BootstrapAppState extends State<_BootstrapApp> {
       ),
       home: _needsConsent
           ? PrivacyConsentPage(onAccepted: _onConsentAccepted)
+          : _databaseUnavailable
+          ? _StartupRecoveryPage(onRetry: _completeBootstrap)
           : const _BootstrapLoadingPage(),
+    );
+  }
+}
+
+/// 本地库暂时无法检查时停在这里，已有数据保持原样，用户可以重试。
+class _StartupRecoveryPage extends StatelessWidget {
+  const _StartupRecoveryPage({required this.onRetry});
+
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                l10n.startupDatabaseUnavailable,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              FilledButton(
+                onPressed: () => unawaited(onRetry()),
+                child: Text(l10n.startupDatabaseRetry),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -165,7 +215,7 @@ Future<Widget> _initApp() async {
   await AppHomeWidget.setAppGroupId(kAppGroupId);
   final sp = await SharedPreferences.getInstance();
 
-  /// 本地库损坏时先隔离文件；下面的路径迁移逻辑会清同步时间戳以便重拉。
+  // 检查成功后才能迁移路径并创建业务库；检查/保全失败必须保留异常、停止启动。
   await AppDatabase.recoverCorruptIfNeeded();
 
   /// Migration database path
@@ -200,6 +250,12 @@ Future<Widget> _initApp() async {
   final assetsRepository = AssetsRepository(
     supabase: AppSupabase.client,
     db: db,
+  );
+
+  AlarmNotificationService.instance.configure(
+    loadTasks: tasksRepository.getTasksForAlarms,
+    loadTask: tasksRepository.getTaskForAlarm,
+    account: () => tasksRepository.userId,
   );
 
   await UsersRepository.initialize(
@@ -241,6 +297,12 @@ Future<Widget> _initApp() async {
       RepositoryProvider.value(value: taskActionService),
       RepositoryProvider.value(value: UsersRepository.instance),
       RepositoryProvider(
+        create: (context) => StartupPreparationCoordinator(
+          tasksRepository: tasksRepository,
+          usersRepository: UsersRepository.instance,
+        ),
+      ),
+      RepositoryProvider(
         create: (context) => DiscoverCoverRepository(
           supabase: AppSupabase.client,
           assetsRepository: assetsRepository,
@@ -249,6 +311,10 @@ Future<Widget> _initApp() async {
     ],
     child: MultiBlocProvider(
       providers: [
+        BlocProvider(
+          create: (context) =>
+              DiaryNotebookBloc(usersRepository: context.read()),
+        ),
         BlocProvider(
           create: (context) =>
               AppPurchasesBloc(
@@ -282,10 +348,32 @@ Future<Widget> _initApp() async {
 
 Future<void> _migrationDatabasePath(SharedPreferences sp) async {
   final dbFile = await AppDatabase.getDatabaseFile();
+  const generationKey = 'remote_database_generation_v1';
   if (dbFile.existsSync()) {
+    if (!sp.containsKey(generationKey) &&
+        !await sp.setString(
+          generationKey,
+          DateTime.now().microsecondsSinceEpoch.toString(),
+        )) {
+      throw StateError('业务库同步代次保存失败');
+    }
     return;
   }
-  unawaited(sp.remove(SupabaseNoteApi.kLastGetNotesTimestamp));
-  unawaited(sp.remove(SupabaseTaskApi.kLastGetTasksTimestamp));
-  unawaited(sp.remove(SupabaseTagApi.kLastGetTagsTimestamp));
+  if (!await sp.setString(
+    generationKey,
+    DateTime.now().microsecondsSinceEpoch.toString(),
+  )) {
+    throw StateError('业务库同步代次保存失败');
+  }
+  // 空业务库不能继承任何账号的旧游标，等待清理完成后再创建 Repository。
+  for (final key in sp.getKeys()) {
+    if (key.startsWith(SupabaseNoteApi.kLastGetNotesTimestamp) ||
+        key.startsWith(SupabaseTaskApi.kLastGetTasksTimestamp) ||
+        key.startsWith(SupabaseTagApi.kLastGetTagsTimestamp) ||
+        key.startsWith('remote_row_versions_v1__') ||
+        key.startsWith('occurrence_repair_v1__') ||
+        key == 'startup_synced_account_v1') {
+      await sp.remove(key);
+    }
+  }
 }

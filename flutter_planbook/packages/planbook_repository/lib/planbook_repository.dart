@@ -10,6 +10,7 @@ export 'package:planbook_api/planbook_api.dart';
 export 'assets/assets_repository.dart';
 export 'assets/supa_storage_image_provider.dart';
 export 'note/notes_repository.dart';
+export 'note/period_note_target.dart';
 export 'settings/settings_repository.dart';
 export 'sync/sync_engine.dart';
 export 'task/alarm_notification_service.dart';

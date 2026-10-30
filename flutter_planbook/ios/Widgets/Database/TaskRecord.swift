@@ -11,6 +11,80 @@ import GRDB
 import SQLite3
 import SwiftUI
 
+/// 一周小组件使用的轻量任务记录。
+@available(iOS 16.0, *)
+struct WeekTask: Identifiable, FetchableRecord {
+    let taskId: String
+    let title: String
+    let priority: TaskPriority
+    let isCompleted: Bool
+    let occurrenceAt: String?
+    let startAt: Date?
+    let endAt: Date?
+    let dueAt: Date?
+    let detachedRecurrenceAt: Date?
+
+    var id: String {
+        if let occurrenceAt, !occurrenceAt.isEmpty {
+            return "\(taskId)#\(occurrenceAt)"
+        }
+        return taskId
+    }
+
+    init(row: Row) {
+        let id: String = row["id"]
+        let priority: String? = row["priority"]
+        let occurrenceAt: String? = row["occurrence_at"]
+        let completedAt: String? = row["completed_at"]
+        let activityDeletedAt: String? = row["activity_deleted_at"]
+        self.taskId = id
+        self.title = row["title"]
+        self.priority = TaskPriority(rawValue: priority ?? "none") ?? .none
+        self.isCompleted = completedAt != nil && activityDeletedAt == nil
+        self.occurrenceAt = occurrenceAt
+        self.startAt = TimeBlockLayout.parseISODate(row["start_at"])
+        self.endAt = TimeBlockLayout.parseISODate(row["end_at"])
+        self.dueAt = TimeBlockLayout.parseISODate(row["due_at"])
+        self.detachedRecurrenceAt = TimeBlockLayout.parseISODate(row["detached_recurrence_at"])
+    }
+
+    func overlayCompleted(_ isCompleted: Bool) -> WeekTask {
+        WeekTask(
+            taskId: taskId,
+            title: title,
+            priority: priority,
+            isCompleted: isCompleted,
+            occurrenceAt: occurrenceAt,
+            startAt: startAt,
+            endAt: endAt,
+            dueAt: dueAt,
+            detachedRecurrenceAt: detachedRecurrenceAt
+        )
+    }
+
+    private init(
+        taskId: String,
+        title: String,
+        priority: TaskPriority,
+        isCompleted: Bool,
+        occurrenceAt: String?,
+        startAt: Date?,
+        endAt: Date?,
+        dueAt: Date?,
+        detachedRecurrenceAt: Date?
+    ) {
+        self.taskId = taskId
+        self.title = title
+        self.priority = priority
+        self.isCompleted = isCompleted
+        self.occurrenceAt = occurrenceAt
+        self.startAt = startAt
+        self.endAt = endAt
+        self.dueAt = dueAt
+        self.detachedRecurrenceAt = detachedRecurrenceAt
+    }
+}
+
 /// 任务优先级（对应 Flutter TaskPriority）
 @available(iOS 16.0, *)
 enum TaskPriority: String, CaseIterable, AppEnum {

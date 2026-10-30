@@ -7,8 +7,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
+import 'package:planbook_repository/note/period_note_target.dart';
+import 'package:planbook_repository/sync/apply_remote_batch.dart';
+import 'package:planbook_repository/sync/database_pull_lock.dart';
+import 'package:planbook_repository/sync/merge_remote_rows.dart';
+import 'package:planbook_repository/sync/pull_sync_coordinator.dart';
+import 'package:planbook_repository/sync/pull_write_fence.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_planbook_api/note/supabase_note_api.dart';
+import 'package:supabase_planbook_api/sync/remote_table_pull.dart';
+import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
 import 'package:uuid/uuid.dart';
 
 class NotesRepository {
@@ -20,10 +28,12 @@ class NotesRepository {
     DatabaseNoteApi? dbNoteApi,
     DatabaseNoteTaskApi? dbNoteTaskApi,
     DatabaseTaskApi? dbTaskApi,
+    SupabaseNoteApi? supabaseNoteApi,
   }) : _dbNoteApi =
            dbNoteApi ??
            DatabaseNoteApi(db: db, tagApi: tagApi, outboxApi: outboxApi),
-       _supabaseNoteApi = SupabaseNoteApi(sp: sp),
+       _supabaseNoteApi = supabaseNoteApi ?? SupabaseNoteApi(sp: sp),
+       _sp = sp,
        _db = db,
        _tagApi = tagApi,
        _dbNoteTaskApi = dbNoteTaskApi ?? DatabaseNoteTaskApi(db: db),
@@ -32,6 +42,8 @@ class NotesRepository {
            DatabaseTaskApi(db: db, tagApi: tagApi, outboxApi: outboxApi);
 
   final DatabaseNoteApi _dbNoteApi;
+  final SharedPreferences _sp;
+  final _pullSync = PullSyncCoordinator();
 
   final SupabaseNoteApi _supabaseNoteApi;
   final AppDatabase _db;
@@ -102,32 +114,73 @@ class NotesRepository {
     await _dbNoteApi.update(note: newNote, noteTags: noteTags);
   }
 
-  Future<void> syncNotes({
-    bool force = false,
+  Future<void> syncNotes({bool force = false}) {
+    final account = userId;
+    return _pullSync.run(
+      userId: account,
+      force: force,
+      action: ({required force}) => DatabasePullLock.run(
+        _db,
+        () => _syncNotes(force: force, account: account),
+      ),
+    );
+  }
+
+  Future<void> _syncNotes({
+    required bool force,
+    required String? account,
   }) async {
+    void validateAccount() {
+      if (userId != account) throw StateError('同步账号已变化，丢弃旧请求');
+    }
+
+    validateAccount();
+    final fence = await PullWriteFence.capture(_db);
     final list = await _supabaseNoteApi.getLatestNotes(force: force);
-    await _db.transaction(() async {
-      for (final item in list) {
-        final note = Note.fromJson(item);
+    validateAccount();
+    for (final item in list) {
+      final note = Note.fromJson(item);
+      if (note.userId != account) throw StateError('远程笔记不属于请求账号');
+      await _db.transaction(() async {
+        validateAccount();
 
         // 如果本地还有该记录的待同步变更，优先保留本地版本，避免远程旧数据覆盖。
         final hasPending = await _dbNoteApi.hasPendingChanges(note.id);
-        if (hasPending) continue;
+        if (hasPending || await fence.protects(note.id)) return;
 
-        await _db.into(_db.notes).insertOnConflictUpdate(note);
+        final accepted = await mergeRemoteRows(
+          db: _db,
+          table: _db.notes,
+          idColumn: _db.notes.id,
+          rows: [note],
+          protectedIds: fence.blocked,
+        );
+        if (list is RemoteSyncRows) list.batches['notes']!.accept(accepted);
 
+        final tags = <Tag>[];
+        final links = <NoteTag>[];
         if (item['note_tags'] is List<dynamic>) {
           for (final noteTag in item['note_tags'] as List<dynamic>) {
             final map = noteTag as Map<String, dynamic>;
             final tagMap = map['tag'] as Map<String, dynamic>?;
             if (tagMap == null) continue;
             final tag = Tag.fromJson(tagMap);
-            await _db.into(_db.tags).insertOnConflictUpdate(tag);
-            await _db
-                .into(_db.noteTags)
-                .insertOnConflictUpdate(NoteTag.fromJson(map));
+            tags.add(tag);
+            links.add(NoteTag.fromJson(map));
           }
         }
+        await mergeRemoteRows(
+          db: _db,
+          table: _db.tags,
+          idColumn: _db.tags.id,
+          rows: tags,
+        );
+        await mergeRemoteRows(
+          db: _db,
+          table: _db.noteTags,
+          idColumn: _db.noteTags.id,
+          rows: links,
+        );
 
         if (item['tasks'] is List<dynamic>) {
           for (final taskItem in item['tasks'] as List<dynamic>) {
@@ -143,8 +196,35 @@ class NotesRepository {
             await _db.into(_db.tasks).insertOnConflictUpdate(task);
           }
         }
+        validateAccount();
+      });
+    }
+    validateAccount();
+    if (list is RemoteSyncRows) {
+      for (final batch in list.batches.values) {
+        if (batch.table == 'notes') {
+          await batch.commit();
+        } else {
+          await applyRemoteBatch(
+            db: _db,
+            batch: batch,
+            fence: fence,
+            account: account!,
+            validateAccount: validateAccount,
+          );
+        }
       }
-    });
+    }
+    final cursor = list is RemoteSyncRows
+        ? null
+        : maxTimestampFromSyncItems(list);
+    if (cursor != null) {
+      final key = SupabaseNoteApi.cursorKey(account);
+      final previous = _sp.getInt(key);
+      if (previous == null || cursor > previous) {
+        if (!await _sp.setInt(key, cursor)) throw StateError('笔记同步游标保存失败');
+      }
+    }
   }
 
   Future<NoteEntity?> getNoteEntityById(String noteId) async {
@@ -162,6 +242,12 @@ class NotesRepository {
 
   Stream<List<NoteEntity>> getNoteEntitiesByTagId(String tagId) {
     return _dbNoteApi.getNoteEntitiesByTagId(tagId);
+  }
+
+  /// 按时间顺序监听当前用户的整本日记。
+  Stream<List<NoteEntity>> watchDiaryNotes() {
+    syncNotes();
+    return _dbNoteApi.watchDiaryNotes(userId: userId);
   }
 
   Stream<List<NoteEntity>> getNoteEntitiesByDate(
@@ -300,54 +386,82 @@ class NotesRepository {
     required TaskEntity task,
     required Note? currentNote,
   }) async {
-    final newLine = '${task.isCompleted ? '✅' : '⭕️'} ${task.title}';
-    final base = (currentNote?.content ?? '').trim();
+    final target = PeriodNoteTarget(date: focusAt, type: noteType);
+    // currentNote 只为兼容调用保留，不能以页面快照决定更新 ID 或创建。
+    await _mutatePeriodNote(target, title, (existingContent) {
+      final newLine = '${task.isCompleted ? '✅' : '⭕️'} ${task.title}';
+      final base = (existingContent ?? '').trim();
 
-    final String newContent;
-    if (base.isEmpty) {
-      newContent = newLine;
-    } else {
-      final lines = base.split('\n').toList();
-      final taskTitle = task.title;
+      final String newContent;
+      if (base.isEmpty) {
+        newContent = newLine;
+      } else {
+        final lines = base.split('\n').toList();
+        final taskTitle = task.title;
 
-      bool isSameTaskLine(String l) {
-        if (l.length < 2) return false;
-        final first = l[0];
-        if (first != '✅' && first != '⭕️') return false;
-        return l.substring(1).trimLeft() == taskTitle;
-      }
+        bool isSameTaskLine(String l) {
+          if (l.length < 2) return false;
+          // 未完成标记包含变体选择符，必须按完整前缀识别。
+          final prefix = l.startsWith('✅')
+              ? '✅'
+              : l.startsWith('⭕️')
+              ? '⭕️'
+              : null;
+          if (prefix == null) return false;
+          return l.substring(prefix.length).trimLeft() == taskTitle;
+        }
 
-      int? firstIdx;
-      final result = <String>[];
-      for (var i = 0; i < lines.length; i++) {
-        if (isSameTaskLine(lines[i])) {
-          firstIdx ??= result.length;
-          if (firstIdx == result.length) {
-            result.add(newLine);
+        int? firstIdx;
+        final result = <String>[];
+        for (var i = 0; i < lines.length; i++) {
+          if (isSameTaskLine(lines[i])) {
+            firstIdx ??= result.length;
+            if (firstIdx == result.length) {
+              result.add(newLine);
+            }
+          } else {
+            result.add(lines[i]);
           }
+        }
+        if (firstIdx != null) {
+          newContent = result.join('\n');
         } else {
-          result.add(lines[i]);
+          newContent = '$base\n$newLine';
         }
       }
-      if (firstIdx != null) {
-        newContent = result.join('\n');
-      } else {
-        newContent = '$base\n$newLine';
-      }
+
+      return newContent;
+    }, preserveExistingTitle: true);
+  }
+
+  Future<Note> savePeriodNote({
+    required PeriodNoteTarget target,
+    required String title,
+    required String content,
+  }) => _mutatePeriodNote(target, title, (_) => content);
+
+  Future<Note> _mutatePeriodNote(
+    PeriodNoteTarget target,
+    String title,
+    String Function(String?) content, {
+    bool preserveExistingTitle = false,
+  }) {
+    final account = userId;
+    void validateAccount() {
+      if (userId != account) throw StateError('笔记账号已变化，取消写入');
     }
 
-    if (currentNote == null) {
-      await create(
-        title: title,
-        content: newContent,
-        focusAt: focusAt,
-        type: noteType,
-      );
-    } else {
-      await update(
-        note: currentNote.copyWith(content: Value(newContent)),
-      );
-    }
+    return _dbNoteApi.mutatePeriodNote(
+      userId: account,
+      type: target.type,
+      rangeStart: target.start,
+      rangeEnd: target.end,
+      focusAt: target.focusAt,
+      title: title,
+      content: content,
+      validateAccount: validateAccount,
+      preserveExistingTitle: preserveExistingTitle,
+    );
   }
 
   Future<void> updateTypeNoteContentByTaskActivities(

@@ -1,4 +1,0 @@
-• Widget schermata Home
-• Sync local-first
-
-Recente: copertina e zoom diario, trascina attività (giorno/settimana/mese), focus e riepiloghi, fix

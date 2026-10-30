@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:planbook_api/planbook_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:supabase_planbook_api/utils/supabase_sync_utils.dart';
+import 'package:supabase_planbook_api/sync/remote_table_pull.dart';
 
 class SupabaseTaskApi {
   SupabaseTaskApi({
@@ -68,42 +68,23 @@ class SupabaseTaskApi {
   Future<List<Map<String, dynamic>>> getLatestTasks({
     bool force = false,
   }) async {
-    if (supabase == null) return [];
-
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final lastAttempt = _sp.getInt(kLastGetTasksAttemptAt);
-    if (lastAttempt != null && timestamp - lastAttempt < 3000) {
-      return [];
+    final client = supabase;
+    final account = userId;
+    if (client == null || account == null) return [];
+    final pull = RemoteTablePull.supabase(
+      sp: _sp,
+      client: client,
+      account: account,
+    );
+    final batches = <String, RemoteTableBatch>{};
+    for (final table in ['tags', 'tasks', 'task_activities', 'task_tags']) {
+      batches[table] = await pull.pull(table, force: force);
     }
-    await _sp.setInt(kLastGetTasksAttemptAt, timestamp);
-
-    final lastTimestamp = _sp.getInt(kLastGetTasksTimestamp);
-    var builder = supabase!
-        .from('tasks')
-        .select(
-          '*,task_tags(*,tag:tags!task_tags_tag_id_fkey(*)),task_activities(*)',
-        );
-    if (!force) {
-      if (lastTimestamp != null) {
-        final date = DateTime.fromMillisecondsSinceEpoch(
-          lastTimestamp,
-        ).toIso8601String();
-        builder = builder.or(
-          'updated_at.gte.$date,created_at.gte.$date,deleted_at.gte.$date',
-        );
-      }
-    }
-
-    final results = await builder;
-
-    // 仅在有服务端时间戳时推进游标；空结果保持原游标，避免本机时钟偏快导致漏同步。
-    final maxTimestamp = maxTimestampFromSyncItems(results);
-    if (maxTimestamp != null) {
-      await _sp.setInt(kLastGetTasksTimestamp, maxTimestamp);
-    }
-
-    return results;
+    return RemoteSyncRows(batches, 'tasks');
   }
+
+  static String cursorKey(String? userId) =>
+      '$kLastGetTasksTimestamp${userId ?? "guest"}';
 
   Future<void> complete({
     required List<TaskActivity> activities,

@@ -1,6 +1,0 @@
-• Vista a blocchi orari del giorno
-• Barra laterale attività
-• Vista elenco settimanale
-• Correzioni di bug
-
-Recente: nuovo calendario mensile Focus nel Diario, nomi dei quadranti personalizzati, widget schermata Home

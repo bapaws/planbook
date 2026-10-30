@@ -4,13 +4,26 @@ import 'package:flutter_planbook/app/app_router.dart';
 import 'package:shimmer/shimmer.dart';
 
 class AppProView extends StatelessWidget {
-  const AppProView({super.key, this.style});
+  const AppProView({super.key, this.style, this.animate = true});
 
   final TextStyle? style;
+
+  /// 书架等常驻按钮关掉循环闪烁，避免动画无法结束。
+  final bool animate;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final label = Text(
+      'PRO',
+      style:
+          style ??
+          theme.textTheme.titleLarge?.copyWith(
+            color: theme.colorScheme.tertiary,
+            fontWeight: FontWeight.bold,
+          ),
+    );
+    if (!animate) return label;
     return Shimmer(
       gradient: const LinearGradient(
         colors: [
@@ -19,15 +32,7 @@ class AppProView extends StatelessWidget {
           Colors.red,
         ],
       ),
-      child: Text(
-        'PRO',
-        style:
-            style ??
-            theme.textTheme.titleLarge?.copyWith(
-              color: theme.colorScheme.tertiary,
-              fontWeight: FontWeight.bold,
-            ),
-      ),
+      child: label,
     );
   }
 }

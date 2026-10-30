@@ -1,6 +1,0 @@
-• Day time-block view
-• Task sidebar
-• Week list view
-• Bug fixes and improvements
-
-Recent: new focus monthly calendar in Journal, custom quadrant names, home screen widgets

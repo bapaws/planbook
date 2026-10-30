@@ -57,10 +57,8 @@ class WidgetConfigureActivity : Activity() {
             // 保存过滤模式（按 widget 实例隔离）
             WidgetSettings.saveFilterMode(this, appWidgetId, selectedMode)
 
-            // 更新 widget
-            val appWidgetManager = AppWidgetManager.getInstance(this)
-            QuadrantWidgetLargeProvider.updateLargeWidget(this, appWidgetManager, appWidgetId)
-            QuadrantWidgetSmallProvider.updateSmallWidget(this, appWidgetManager, appWidgetId)
+            // 对应实例通过广播进入共用后台队列，排在旧绘图之后读取最新配置。
+            requestWidgetUpdate(this, appWidgetId)
 
             // 返回成功结果
             val resultValue = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

@@ -24,9 +24,10 @@ struct TimeBlockView: View {
     var entry: TimeBlockEntry
 
     @Environment(\.widgetFamily) private var family
+    @Environment(\.colorScheme) private var colorScheme
 
     private var isDarkMode: Bool {
-        WidgetBackgroundConfig.current().isDarkMode
+        WidgetSettings.isDark(colorScheme: colorScheme)
     }
 
     var body: some View {

@@ -202,10 +202,17 @@ class WidgetDatabase private constructor(context: Context) {
               AND COALESCE(t.is_all_day, 0) = 0
               AND t.start_at IS NOT NULL
               AND t.detached_from_task_id IS NOT NULL
-              AND t.detached_recurrence_at IS NOT NULL
               $userClause
-              AND date(datetime(substr(t.detached_recurrence_at, 1, 19) || 'Z', 'localtime'))
-                  = date('now', 'localtime')
+              AND datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime')
+                  < datetime('now', 'localtime', 'start of day', '+1 day')
+              AND (
+                  (t.end_at IS NOT NULL
+                   AND datetime(substr(t.end_at, 1, 19) || 'Z', 'localtime')
+                       >= datetime('now', 'localtime', 'start of day'))
+                  OR (t.end_at IS NULL
+                      AND date(datetime(substr(t.start_at, 1, 19) || 'Z', 'localtime'))
+                          = date('now', 'localtime'))
+              )
             UNION ALL
             SELECT DISTINCT
                 t.id, t.title, t.priority,
@@ -441,6 +448,177 @@ class WidgetDatabase private constructor(context: Context) {
     private fun newUuid(): String =
         UUID.randomUUID().toString()
 
+    fun fetchWeekTasks(startDate: String, endDateExclusive: String): List<WeekTask> {
+        val userId = WidgetSettings.getCurrentUserId(appContext)
+        val scopedUserClause = if (userId == null) "AND t.user_id IS NULL" else "AND t.user_id = ?"
+        val args = mutableListOf<String>()
+        if (userId != null) args.add(userId)
+        val completedByOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at = toc.occurrence_at
+            ) THEN '1' END
+        """.trimIndent()
+        val completedWithoutOccurrence = """
+            CASE WHEN EXISTS (
+                SELECT 1 FROM task_activities ta
+                WHERE ta.task_id = s.id
+                  AND ta.deleted_at IS NULL
+                  AND ta.completed_at IS NOT NULL
+                  AND ta.occurrence_at IS NULL
+            ) THEN '1' END
+        """.trimIndent()
+        val sql = """
+            WITH scoped AS (
+                SELECT * FROM tasks t
+                WHERE t.deleted_at IS NULL
+                  AND t.parent_id IS NULL
+                  $scopedUserClause
+            )
+            SELECT
+                s.id, s.title, s.priority,
+                s.start_at, s.end_at, s.due_at, s.detached_recurrence_at,
+                NULL AS occurrence_at,
+                $completedWithoutOccurrence AS completed_at,
+                NULL AS activity_deleted_at,
+                s."order" AS task_order, s.created_at AS task_created
+            FROM scoped s
+            WHERE s.recurrence_rule IS NULL
+              AND s.detached_from_task_id IS NULL
+              AND (
+                  (s.start_at IS NOT NULL
+                   AND ${sqlLocalDateTime("s.start_at")} < datetime('$endDateExclusive')
+                   AND (
+                       (s.end_at IS NOT NULL
+                        AND ${sqlLocalDateTime("s.end_at")} >= datetime('$startDate'))
+                       OR (s.end_at IS NULL
+                           AND ${sqlLocalDate("s.start_at")} >= '$startDate'
+                           AND ${sqlLocalDate("s.start_at")} < '$endDateExclusive')
+                   ))
+                  OR (s.due_at IS NOT NULL
+                      AND ${sqlLocalDate("s.due_at")} >= '$startDate'
+                      AND ${sqlLocalDate("s.due_at")} < '$endDateExclusive')
+              )
+            UNION ALL
+            SELECT
+                s.id, s.title, s.priority,
+                s.start_at, s.end_at, s.due_at, s.detached_recurrence_at,
+                NULL AS occurrence_at,
+                $completedWithoutOccurrence AS completed_at,
+                NULL AS activity_deleted_at,
+                s."order" AS task_order, s.created_at AS task_created
+            FROM scoped s
+            WHERE s.detached_from_task_id IS NOT NULL
+              AND (
+                  (s.start_at IS NOT NULL
+                   AND ${sqlLocalDateTime("s.start_at")} < datetime('$endDateExclusive')
+                   AND (
+                       (s.end_at IS NOT NULL
+                        AND ${sqlLocalDateTime("s.end_at")} >= datetime('$startDate'))
+                       OR (s.end_at IS NULL
+                           AND ${sqlLocalDate("s.start_at")} >= '$startDate'
+                           AND ${sqlLocalDate("s.start_at")} < '$endDateExclusive')
+                   ))
+                  OR (s.due_at IS NOT NULL
+                      AND ${sqlLocalDate("s.due_at")} >= '$startDate'
+                      AND ${sqlLocalDate("s.due_at")} < '$endDateExclusive')
+              )
+            UNION ALL
+            SELECT
+                s.id, s.title, s.priority,
+                COALESCE(toc.start_at, s.start_at) AS start_at,
+                COALESCE(toc.end_at, s.end_at) AS end_at,
+                COALESCE(toc.due_at, s.due_at) AS due_at,
+                s.detached_recurrence_at,
+                toc.occurrence_at,
+                $completedByOccurrence AS completed_at,
+                NULL AS activity_deleted_at,
+                s."order" AS task_order, s.created_at AS task_created
+            FROM scoped s
+            INNER JOIN task_occurrences toc
+                ON toc.task_id = s.id
+                AND toc.deleted_at IS NULL
+                AND ${sqlOccurrenceInRange(startDate, endDateExclusive)}
+            WHERE s.recurrence_rule IS NOT NULL
+              AND s.detached_from_task_id IS NULL
+            ORDER BY task_order ASC, task_created ASC
+            LIMIT 200
+        """.trimIndent()
+        val tasks = mutableListOf<WeekTask>()
+        db.rawQuery(sql, args.toTypedArray()).use { cursor ->
+            while (cursor.moveToNext()) {
+                tasks.add(cursor.toWeekTask())
+            }
+        }
+        return tasks
+    }
+
+    fun fetchWeeklyFocus(startDate: String, endDateExclusive: String): String? {
+        val userId = WidgetSettings.getCurrentUserId(appContext)
+        val userClause = if (userId == null) "AND user_id IS NULL" else "AND user_id = ?"
+        val args = mutableListOf<String>()
+        if (userId != null) args.add(userId)
+        val sql = """
+            SELECT content
+            FROM notes
+            WHERE deleted_at IS NULL
+              AND type = 'weeklyFocus'
+              $userClause
+              AND focus_at IS NOT NULL
+              AND ${sqlLocalDate("focus_at")} >= '$startDate'
+              AND ${sqlLocalDate("focus_at")} < '$endDateExclusive'
+            ORDER BY updated_at DESC
+            LIMIT 1
+        """.trimIndent()
+        db.rawQuery(sql, args.toTypedArray()).use { cursor ->
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                return cursor.getString(0)
+            }
+        }
+        return null
+    }
+
+    private fun sqlOccurrenceInRange(start: String, end: String, alias: String = "toc"): String = """
+        (
+            ($alias.due_at IS NOT NULL
+             AND ${sqlLocalDate("$alias.due_at")} >= '$start'
+             AND ${sqlLocalDate("$alias.due_at")} < '$end')
+            OR (
+                $alias.start_at IS NOT NULL AND $alias.end_at IS NOT NULL
+                AND ${sqlLocalDateTime("$alias.start_at")} < datetime('$end')
+                AND ${sqlLocalDateTime("$alias.end_at")} >= datetime('$start')
+            )
+            OR (
+                $alias.due_at IS NULL AND $alias.start_at IS NULL
+                AND ${sqlLocalDate("$alias.occurrence_at")} >= '$start'
+                AND ${sqlLocalDate("$alias.occurrence_at")} < '$end'
+            )
+        )
+    """.trimIndent()
+
+    private fun Cursor.toWeekTask(): WeekTask {
+        fun optionalString(name: String): String? {
+            val idx = getColumnIndex(name)
+            return if (idx >= 0 && !isNull(idx)) getString(idx) else null
+        }
+        val completedAt = optionalString("completed_at")
+        val activityDeletedAt = optionalString("activity_deleted_at")
+        return WeekTask(
+            taskId = getString(getColumnIndexOrThrow("id")),
+            title = getString(getColumnIndexOrThrow("title")),
+            priority = TaskPriority.fromRawValue(optionalString("priority")),
+            isCompleted = completedAt != null && activityDeletedAt == null,
+            occurrenceAt = optionalString("occurrence_at"),
+            startAt = TimeBlockLayout.parseIso(optionalString("start_at")),
+            endAt = TimeBlockLayout.parseIso(optionalString("end_at")),
+            dueAt = TimeBlockLayout.parseIso(optionalString("due_at")),
+            detachedRecurrenceAt = TimeBlockLayout.parseIso(optionalString("detached_recurrence_at")),
+        )
+    }
+
     /** ISO8601 UTC 文本转本地日历日，截断小数秒避免 .999999 进位到下一天。 */
     private fun sqlLocalDate(column: String): String =
         "date(datetime(substr($column, 1, 19) || 'Z', 'localtime'))"
@@ -558,8 +736,20 @@ class WidgetDatabase private constructor(context: Context) {
                     s."order" AS task_order, s.created_at AS task_created
                 FROM scoped s
                 WHERE s.detached_from_task_id IS NOT NULL
-                  AND s.detached_recurrence_at IS NOT NULL
-                  AND ${sqlLocalDate("s.detached_recurrence_at")} = date('now', 'localtime')
+                  AND (
+                      (s.start_at IS NOT NULL
+                       AND ${sqlLocalDateTime("s.start_at")}
+                           < datetime('now', 'localtime', 'start of day', '+1 day')
+                       AND (
+                           (s.end_at IS NOT NULL
+                            AND ${sqlLocalDateTime("s.end_at")}
+                                >= datetime('now', 'localtime', 'start of day'))
+                           OR (s.end_at IS NULL
+                               AND ${sqlLocalDate("s.start_at")} = date('now', 'localtime'))
+                       ))
+                      OR (s.due_at IS NOT NULL
+                          AND ${sqlLocalDate("s.due_at")} = date('now', 'localtime'))
+                  )
                 UNION ALL
                 SELECT
                     s.id, s.title, s.priority, s.alarms,
@@ -633,8 +823,10 @@ class WidgetDatabase private constructor(context: Context) {
                     s."order" AS task_order, s.created_at AS task_created
                 FROM scoped s
                 WHERE s.detached_from_task_id IS NOT NULL
-                  AND s.detached_recurrence_at IS NOT NULL
-                  AND ${sqlLocalDate("s.detached_recurrence_at")} < date('now', 'localtime')
+                  AND (
+                      (s.due_at IS NOT NULL AND ${sqlLocalDate("s.due_at")} < date('now', 'localtime'))
+                      OR (s.end_at IS NOT NULL AND ${sqlLocalDateTime("s.end_at")} < datetime('now', 'localtime'))
+                  )
                   AND (s.detached_reason IS NULL OR s.detached_reason != 'completed')
                   AND NOT EXISTS (
                       SELECT 1 FROM task_activities ta

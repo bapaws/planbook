@@ -2,8 +2,8 @@
   "app": {
     "bundleName": "com.bapaws.planbook",
     "vendor": "bapaws",
-    "versionCode": 150,
-    "versionName": "3.2.0",
+    "versionCode": 168,
+    "versionName": "3.3.0",
     "icon": "$media:app_icon",
     "label": "$string:app_name"
   }

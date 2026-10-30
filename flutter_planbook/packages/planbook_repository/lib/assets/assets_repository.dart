@@ -112,10 +112,10 @@ class AssetsRepository {
 
     final file = File(path);
 
-    unawaited(() async {
+    () async {
       final fileBytes = await file.readAsBytes();
       await _cacheManager.putFile(url, fileBytes);
-    }());
+    }().ignore();
 
     await _supabase?.storage.from(bucket.name).upload(fileName, file);
 

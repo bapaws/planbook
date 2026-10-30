@@ -31,11 +31,30 @@ const _kTimeBlockSmallIOSKind = 'TimeBlockWidgetSmall';
 const _kTimeBlockSmallAndroidClass =
     'com.bapaws.planbook.widget.TimeBlockWidgetSmallProvider';
 
+const _kWeekListLargeIOSKind = 'WeekListWidgetLarge';
+const _kWeekListLargeAndroidClass =
+    'com.bapaws.planbook.widget.WeekListWidgetLargeProvider';
+
+const _kWeekGridLargeIOSKind = 'WeekGridWidgetLarge';
+const _kWeekGridLargeAndroidClass =
+    'com.bapaws.planbook.widget.WeekGridWidgetLargeProvider';
+
+const _kMonthWeekMediumIOSKind = 'MonthWeekWidgetMedium';
+const _kMonthWeekMediumAndroidClass =
+    'com.bapaws.planbook.widget.MonthWeekWidgetMediumProvider';
+
+const _kMonthWeekLargeIOSKind = 'MonthWeekWidgetLarge';
+const _kMonthWeekLargeAndroidClass =
+    'com.bapaws.planbook.widget.MonthWeekWidgetLargeProvider';
+
 /// 会员状态，供时间块小组件门控。缺省（从未写入）视为非会员。
 const kWidgetIsPremiumKey = 'widget_is_premium';
 
 /// App home widget
 class AppHomeWidget {
+  static Future<void> _premiumSync = Future<void>.value();
+  static ({bool isPremium, String? userId})? _lastPremiumSync;
+
   /// Initializes the HomeWidget plugin with the given app group ID.
   /// This is required for iOS.
   static Future<bool?> setAppGroupId(String groupId) {
@@ -81,13 +100,25 @@ class AppHomeWidget {
   }
 
   /// 把会员状态写入小组件配置。时间块小组件据此决定展示日程还是锁定态。
-  static Future<void> syncPremium({required bool isPremium}) async {
-    try {
-      await saveWidgetData(kWidgetIsPremiumKey, isPremium);
-      await refreshTimeBlockWidgets();
-    } on Object {
-      // 容错：配置同步失败不影响主流程
-    }
+  static Future<void> syncPremium({
+    required bool isPremium,
+    String? userId,
+  }) {
+    // 串行同步避免并发覆盖；每次进程首刷和账号变化仍刷新组件。
+    final request = _premiumSync.then((_) async {
+      final value = (isPremium: isPremium, userId: userId);
+      if (_lastPremiumSync == value) return;
+      try {
+        final saved = await saveWidgetData(kWidgetIsPremiumKey, isPremium);
+        if (saved != true) return;
+        await _updateTimeBlockWidgets();
+        _lastPremiumSync = value;
+      } on Object {
+        // 容错：配置同步失败不影响主流程，下次调用仍可重试。
+      }
+    });
+    _premiumSync = request;
+    return request;
   }
 
   /// 一键刷新四象限 + 时间块相关小组件。
@@ -101,26 +132,30 @@ class AppHomeWidget {
   static Future<void> refreshTimeBlockWidgets() async {
     if (kIsOhos) return;
     try {
-      await Future.wait([
-        HomeWidget.updateWidget(
-          iOSName: _kTimeBlockLargeIOSKind,
-          qualifiedAndroidName: _kTimeBlockLargeAndroidClass,
-        ),
-        HomeWidget.updateWidget(
-          iOSName: _kTimeBlockMediumIOSKind,
-          qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
-        ),
-        HomeWidget.updateWidget(
-          iOSName: _kTimeBlockSmallIOSKind,
-          qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
-        ),
-      ]);
+      await _updateTimeBlockWidgets();
     } on Object {
       // 容错：即使插件未注册或无对应平台实现也不影响主流程
     }
   }
 
-  /// 刷新所有任务类小组件（四象限 + 时间块）。
+  static Future<void> _updateTimeBlockWidgets() async {
+    await Future.wait([
+      HomeWidget.updateWidget(
+        iOSName: _kTimeBlockLargeIOSKind,
+        qualifiedAndroidName: _kTimeBlockLargeAndroidClass,
+      ),
+      HomeWidget.updateWidget(
+        iOSName: _kTimeBlockMediumIOSKind,
+        qualifiedAndroidName: _kTimeBlockMediumAndroidClass,
+      ),
+      HomeWidget.updateWidget(
+        iOSName: _kTimeBlockSmallIOSKind,
+        qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
+      ),
+    ]);
+  }
+
+  /// 刷新所有任务类小组件（四象限 + 时间块 + 一周）。
   static Future<void> refreshTaskWidgets() async {
     if (kIsOhos) return;
     try {
@@ -144,6 +179,22 @@ class AppHomeWidget {
         HomeWidget.updateWidget(
           iOSName: _kTimeBlockSmallIOSKind,
           qualifiedAndroidName: _kTimeBlockSmallAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kWeekListLargeIOSKind,
+          qualifiedAndroidName: _kWeekListLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kWeekGridLargeIOSKind,
+          qualifiedAndroidName: _kWeekGridLargeAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kMonthWeekMediumIOSKind,
+          qualifiedAndroidName: _kMonthWeekMediumAndroidClass,
+        ),
+        HomeWidget.updateWidget(
+          iOSName: _kMonthWeekLargeIOSKind,
+          qualifiedAndroidName: _kMonthWeekLargeAndroidClass,
         ),
       ]);
     } on Object {

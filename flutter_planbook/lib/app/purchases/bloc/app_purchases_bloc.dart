@@ -311,7 +311,10 @@ class AppPurchasesBloc extends Bloc<AppPurchasesEvent, AppPurchasesState> {
   /// 把当前会员状态同步给时间块小组件。未打开过 App 时 native 缺省为非会员。
   void _syncPremiumWidget([AppPurchasesState? next]) {
     unawaited(
-      AppHomeWidget.syncPremium(isPremium: (next ?? state).isPremium),
+      AppHomeWidget.syncPremium(
+        isPremium: (next ?? state).isPremium,
+        userId: (next ?? state).userId,
+      ),
     );
   }
 }

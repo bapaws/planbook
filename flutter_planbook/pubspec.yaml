@@ -1,6 +1,6 @@
 name: flutter_planbook
 description: A Very Good Project created by Very Good CLI.
-version: 3.2.0+150
+version: 3.3.0+168
 publish_to: none
 
 environment:
@@ -59,6 +59,7 @@ dependencies:
   google_fonts: ^6.3.0
   http: ^1.6.0
   hydrated_bloc: ^10.1.1
+  image: ^4.7.2
   image_cropper: ^11.0.0
   image_picker: ^1.1.2
   in_app_review: ^2.0.10
@@ -68,6 +69,8 @@ dependencies:
   jiffy: ^6.3.1
   octo_image: ^2.1.0
   package_info_plus: ^9.0.0
+  paper_notebook:
+    path: packages/paper_notebook
   path: ^1.9.1
   path_provider: ^2.1.5
   pdf: ^3.11.3
@@ -81,7 +84,7 @@ dependencies:
   planbook_widget:
     path: packages/planbook_widget
   pull_down_button: ^0.10.2
-  purchases_flutter: 9.9.9
+  purchases_flutter: 10.4.0
   rxdart: ^0.28.0
   saver_gallery: ^4.0.0
   screenshot: ^3.0.0

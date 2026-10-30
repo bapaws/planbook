@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 @available(iOS 16.0, *)
 enum WidgetSettings {
@@ -58,14 +59,55 @@ enum WidgetSettings {
         defaults.string(forKey: Keys.backgroundAsset) ?? "bg_dot"
     }
 
-    /// 是否为深色模式（从 widget_theme 解析）
-    static var isDarkMode: Bool {
+    /// 外观偏好。缺省和无法识别的值都按跟随系统处理。
+    enum ThemeMode {
+        case system
+        case dark
+        case light
+    }
+
+    /// 从 `widget_theme` 解析外观。
+    ///
+    /// 新数据用 `mode`：`system` / `dark` / `light`。
+    /// 旧数据只有 `isDarkMode`：`true` 表示强制深色；`false` 无法区分浅色和跟随系统，按跟随系统处理。
+    static var themeMode: ThemeMode {
         guard let themeJson = defaults.string(forKey: Keys.widgetTheme),
               let data = themeJson.data(using: .utf8),
               let theme = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return .system
+        }
+        if let mode = theme["mode"] as? String {
+            switch mode {
+            case "dark": return .dark
+            case "light": return .light
+            default: return .system
+            }
+        }
+        // JSONSerialization 把布尔值桥接成 NSNumber，不能只做 as? Bool。
+        if jsonBool(theme["isDarkMode"]) {
+            return .dark
+        }
+        return .system
+    }
+
+    private static func jsonBool(_ value: Any?) -> Bool {
+        switch value {
+        case let bool as Bool:
+            return bool
+        case let number as NSNumber:
+            return number.boolValue
+        default:
             return false
         }
-        return theme["isDarkMode"] as? Bool ?? false
+    }
+
+    /// 小组件实际是否使用深色。跟随系统时看 WidgetKit 的 `colorScheme`。
+    static func isDark(colorScheme: ColorScheme) -> Bool {
+        switch themeMode {
+        case .dark: return true
+        case .light: return false
+        case .system: return colorScheme == .dark
+        }
     }
 
     // MARK: - 四象限自定义配置

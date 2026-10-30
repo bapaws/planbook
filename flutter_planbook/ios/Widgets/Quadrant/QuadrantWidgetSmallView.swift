@@ -7,20 +7,20 @@
 
 import AppIntents
 import SwiftUI
-import SwiftUIX
 import WidgetKit
 
 struct QuadrantWidgetSmallView: View {
     var entry: QuadrantEntry
 
     @Environment(\.widgetRenderingMode) private var widgetRenderingMode
+    @Environment(\.colorScheme) private var colorScheme
 
     private var selectedGroup: QuadrantGroup? {
         entry.groups.first { $0.priority == entry.selectedPriority }
     }
 
     private var isDarkMode: Bool {
-        WidgetBackgroundConfig.current().isDarkMode
+        WidgetSettings.isDark(colorScheme: colorScheme)
     }
 
     var body: some View {
@@ -31,13 +31,13 @@ struct QuadrantWidgetSmallView: View {
                 HStack(spacing: 0) {
                     ForEach(entry.groups) { group in
                         quadrantButton(group)
+                            .frame(width: proxy.size.width / 4)
                     }
-                    .width(proxy.size.width / 4)
                 }
             }
-            .padding(.top, .extraSmall)
-            .padding(.horizontal, .small)
-            .height(headerHeight)
+            .padding(.top, 4)
+            .padding(.horizontal, 8)
+            .frame(height: headerHeight)
 
             // 右侧任务列表
             if let group = selectedGroup {
@@ -65,11 +65,12 @@ struct QuadrantWidgetSmallView: View {
                 .foregroundStyle(theme.primaryColor)
                 .frame(width: 21, height: 21, alignment: .center)
                 .background(widgetRenderingMode == .fullColor ? theme.primaryContainerColor : theme.primaryContainerColor.opacity(0.12))
-                .modify(if: isSelected) {
-                    $0.border(cornerRadius: 8, style: .init())
-                }
-                .modify(if: !isSelected) {
-                    $0.clipShape(.rect(cornerRadius: 8, style: .continuous))
+                .clipShape(.rect(cornerRadius: 8, style: .continuous))
+                .overlay {
+                    if isSelected {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(theme.primaryColor, lineWidth: 1)
+                    }
                 }
         }
         .buttonStyle(.plain)

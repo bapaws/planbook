@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/l10n/l10n.dart';
 import 'package:flutter_planbook/note/type/model/note_type_x.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_operation.dart';
 import 'package:flutter_planbook/task/list/view/task_drag_target.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/database/database.dart';
 import 'package:planbook_api/database/note_type.dart';
 import 'package:planbook_api/entity/task_entity.dart';
@@ -16,10 +14,14 @@ class TaskWeekFocusCell extends StatelessWidget {
     required this.note,
     required this.noteType,
     this.onTaskDropped,
+    this.onTap,
+    this.isReady = true,
     super.key,
   });
 
   final Note? note;
+  final VoidCallback? onTap;
+  final bool isReady;
   final NoteType noteType;
   final ValueChanged<TaskEntity>? onTaskDropped;
 
@@ -36,22 +38,20 @@ class TaskWeekFocusCell extends StatelessWidget {
     final child = ColoredBox(
       color: theme.colorScheme.surface,
       child: GestureDetector(
-        onTap: () {
-          context.router.push(
-            NoteNewTypeRoute(
-              initialNote: note,
-              type: noteType,
-              focusAt: note?.focusAt ?? Jiffy.now(),
-            ),
-          );
-        },
+        onTap: isReady ? onTap : null,
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 8,
               vertical: 8,
             ),
-            child: isEmpty
+            child: !isReady
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : isEmpty
                 ? onTaskDropped != null
                       ? SequentialRotatingText(
                           key: ValueKey(noteType),
@@ -75,7 +75,7 @@ class TaskWeekFocusCell extends StatelessWidget {
     );
 
     return TaskDragTarget(
-      onAccept: onTaskDropped,
+      onAccept: isReady ? onTaskDropped : null,
       operation: TaskDragOperation.noteAppend,
       child: SizedBox.expand(child: child),
     );

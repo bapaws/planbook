@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_planbook/task/list/view/task_drag_schedule.dart';
 import 'package:flutter_planbook/task/service/task_action_service.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:planbook_core/planbook_core.dart';
@@ -80,11 +81,21 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     TaskListRequested event,
     Emitter<TaskListState> emit,
   ) async {
-    if (event is TaskListDayAllRequested) {
-      await _onDayAllRequested(event, emit);
-    } else {
-      await _onRequested(event, emit);
+    try {
+      if (event is TaskListDayAllRequested) {
+        await _onDayAllRequested(event, emit);
+      } else {
+        await _onRequested(event, emit);
+      }
+    } on Object catch (error, stackTrace) {
+      emit(_onLoadError(error, stackTrace));
     }
+  }
+
+  TaskListState _onLoadError(Object error, StackTrace stackTrace) {
+    addError(error, stackTrace);
+    // 保留已显示的数据，结束 loading；同一条流恢复后仍可继续更新。
+    return state.copyWith(status: PageStatus.failure);
   }
 
   Future<void> _onRequested(
@@ -108,7 +119,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       tagId: event.tagId,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(stream, onData: _onTasksDataChanged);
+    await emit.forEach(
+      stream,
+      onData: _onTasksDataChanged,
+      onError: _onLoadError,
+    );
   }
 
   Future<void> _onDayAllRequested(
@@ -132,7 +147,11 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       priority: priority,
       isCompleted: event.isCompleted,
     );
-    await emit.forEach(stream, onData: _onTasksDataChanged);
+    await emit.forEach(
+      stream,
+      onData: _onTasksDataChanged,
+      onError: _onLoadError,
+    );
   }
 
   /// 解析列表日期写入 [TaskListState.date]。
@@ -667,15 +686,15 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
       return;
     }
 
-    // 同步乐观更新：任务移动到目标日期并设置优先级
-    final updatedTask = task.copyWith(
-      task: task.task.copyWith(
-        startAt: Value(targetDate),
-        endAt: Value(targetDate.endOf(Unit.day)),
-        isAllDay: true,
-        priority: Value(event.targetPriority),
-      ),
-      tags: event.tags ?? task.tags,
+    final movesDay = !sameDay;
+    final hasDate =
+        task.startAt != null || task.dueAt != null || task.endAt != null;
+    // 四象限换日保留钟点。没有日期（收集箱）才落到当天全天。
+    // 侧栏「全天」不走这里。
+    final updatedTask = applyDraggedTaskSchedule(
+      task: task,
+      targetDate: targetDate,
+      priority: event.targetPriority,
     );
     emit(
       state.copyWith(
@@ -688,37 +707,36 @@ class TaskListBloc extends Bloc<TaskListEvent, TaskListState> {
     );
     _justDroppedTaskIds.add(task.id);
 
-    final hasDate =
-        task.startAt != null || task.dueAt != null || task.endAt != null;
-
     if (!hasDate) {
-      // 无日期任务：设置为当天全天任务并更新优先级
+      await _tasksRepository.update(
+        task: updatedTask.task,
+        tags: event.tags ?? task.tags,
+        children: task.children.isEmpty ? null : task.children,
+      );
+    } else if (movesDay || task.recurrenceRule != null) {
+      // 重复任务即使同日改优先级也要分离这一次发生，避免改到整条系列。
+      // delayTask 只平移钟点，不再覆盖成全天。
+      final delayed = await _tasksRepository.delayTask(
+        entity: task,
+        delayTo: targetDate,
+      );
+      if (delayed != null &&
+          (delayed.priority != event.targetPriority || event.tags != null)) {
+        await _tasksRepository.update(
+          task: delayed.task.copyWith(
+            priority: Value(event.targetPriority),
+          ),
+          tags: event.tags ?? delayed.tags,
+        );
+      }
+    } else if (task.priority != event.targetPriority || event.tags != null) {
       await _tasksRepository.update(
         task: task.task.copyWith(
-          startAt: Value(targetDate),
-          endAt: Value(targetDate.endOf(Unit.day)),
-          isAllDay: true,
           priority: Value(event.targetPriority),
         ),
         tags: event.tags ?? task.tags,
         children: task.children.isEmpty ? null : task.children,
       );
-    } else {
-      // 有日期任务：先延迟到当天，再更新优先级
-      final delayed = await _tasksRepository.delayTask(
-        entity: task,
-        delayTo: targetDate,
-      );
-      final entityToUpdate = delayed ?? task;
-      if (entityToUpdate.priority != event.targetPriority ||
-          event.tags != null) {
-        await _tasksRepository.update(
-          task: entityToUpdate.task.copyWith(
-            priority: Value(event.targetPriority),
-          ),
-          tags: event.tags ?? entityToUpdate.tags,
-        );
-      }
     }
     _justDroppedTaskIds.remove(task.id);
   }

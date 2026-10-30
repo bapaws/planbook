@@ -53,6 +53,10 @@ enum AppSeedColors {
   teal,
   indigo;
 
+  // 主题只依赖种子色与亮暗模式，避免用户资料等状态变化时重复计算配色。
+  static final _lightThemes = <AppSeedColors, ThemeData>{};
+  static final _darkThemes = <AppSeedColors, ThemeData>{};
+
   factory AppSeedColors.fromHex(String hex) {
     return AppSeedColors.values.firstWhere(
       (e) => e.hex == hex,
@@ -85,7 +89,9 @@ enum AppSeedColors {
     AppSeedColors.indigo => Colors.indigo,
   };
 
-  ThemeData get light {
+  ThemeData get light => _lightThemes.putIfAbsent(this, _buildLightTheme);
+
+  ThemeData _buildLightTheme() {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: color,
     );
@@ -125,7 +131,9 @@ enum AppSeedColors {
     );
   }
 
-  ThemeData get dark {
+  ThemeData get dark => _darkThemes.putIfAbsent(this, _buildDarkTheme);
+
+  ThemeData _buildDarkTheme() {
     final colorScheme = ColorScheme.fromSeed(
       brightness: Brightness.dark,
       seedColor: color,

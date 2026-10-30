@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_planbook/app/app_router.dart';
 import 'package:flutter_planbook/app/bloc/app_bloc.dart';
 import 'package:flutter_planbook/app/links/widget_deep_link.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -15,7 +16,8 @@ import 'package:planbook_api/planbook_api.dart';
 ///
 /// 当前支持的 URL Scheme：
 /// - `planbook.bapaws://task/new?priority=high|medium|low|none&dueAt=yyyy-MM-dd|today`
-/// - `planbook.bapaws://task/today?view=timeBlock`
+/// - `planbook.bapaws://task/today?view=timeBlock&date=yyyy-MM-dd`
+/// - `planbook.bapaws://task/week?view=grid|list&date=yyyy-MM-dd`
 /// - `planbook.bapaws://task/detail?taskId=...&occurrenceAt=...`
 /// - `planbook.bapaws://note/new`
 /// - `planbook.bapaws://purchases`
@@ -91,7 +93,15 @@ class AppLinksHandler {
 
         WidgetDeepLink.openCreateTask(dueAt: dueAt, priority: priority);
       case '/today':
-        _openToday(view: uri.queryParameters['view']);
+        _openToday(
+          view: uri.queryParameters['view'],
+          date: _parseDate(uri.queryParameters['date']),
+        );
+      case '/week':
+        _openWeek(
+          view: uri.queryParameters['view'],
+          date: _parseDate(uri.queryParameters['date']),
+        );
       case '/detail':
         final taskId = uri.queryParameters['taskId'];
         if (taskId == null || taskId.isEmpty) return;
@@ -111,7 +121,16 @@ class AppLinksHandler {
     }
   }
 
-  void _openToday({String? view}) {
+  Jiffy? _parseDate(String? raw) {
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      return Jiffy.parse(raw, pattern: 'yyyy-MM-dd');
+    } on Object {
+      return null;
+    }
+  }
+
+  void _openToday({String? view, Jiffy? date}) {
     unawaited(
       router.navigate(
         const RootHomeRoute(
@@ -123,9 +142,32 @@ class AppLinksHandler {
         ),
       ),
     );
+    if (date != null) {
+      WidgetDeepLink.openDay(date);
+    }
     if (view == 'timeBlock') {
       WidgetDeepLink.openTodayTimeBlock();
     }
+  }
+
+  void _openWeek({String? view, Jiffy? date}) {
+    unawaited(
+      router.navigate(
+        const RootHomeRoute(
+          children: [
+            RootTaskRoute(
+              children: [TaskWeekRoute()],
+            ),
+          ],
+        ),
+      ),
+    );
+    final weekViewMode = switch (view) {
+      'grid' => TaskWeekViewMode.grid,
+      'list' => TaskWeekViewMode.list,
+      _ => null,
+    };
+    WidgetDeepLink.openWeek(date: date, weekViewMode: weekViewMode);
   }
 
   void _handleNote(Uri uri) {

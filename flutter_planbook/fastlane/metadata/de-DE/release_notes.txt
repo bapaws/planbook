@@ -1,8 +1,8 @@
 Neu in dieser Version:
-- Neues Zeitblock-Widget
-- Die Wochen-Oktant-Ansicht unterstützt jetzt den Posteingang
+- Neues Tagebuch zum Umblättern
+- Schnellerer Start und Leistungsverbesserungen
 - Einige bekannte Probleme behoben
 
 Vor Kurzem hinzugefügt:
-- Suche
-- Aufgaben-Seitenleiste
+- Neues Widget für die Wochenansicht
+- Neues Zeitblock-Widget

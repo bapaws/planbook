@@ -1,8 +1,0 @@
-Nouveautés :
-- Prise en charge de la recherche
-- Correctifs de problèmes connus
-
-Mises à jour récentes :
-- Barre latérale des tâches
-- Vue du jour par blocs horaires
-- Vue liste de la semaine

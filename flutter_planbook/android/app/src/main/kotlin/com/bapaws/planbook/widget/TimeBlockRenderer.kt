@@ -25,8 +25,13 @@ object TimeBlockRenderer {
         isPremium: Boolean,
         tasks: List<TimeBlockTask>,
         isDark: Boolean,
+        baseBitmap: Bitmap? = null,
     ): Pair<Bitmap, List<TimeBlockHit>> {
-        val bitmap = Bitmap.createBitmap(widthPx.coerceAtLeast(1), heightPx.coerceAtLeast(1), Bitmap.Config.ARGB_8888)
+        val bitmap = baseBitmap ?: Bitmap.createBitmap(
+            widthPx.coerceAtLeast(1),
+            heightPx.coerceAtLeast(1),
+            Bitmap.Config.ARGB_8888,
+        )
         val canvas = Canvas(bitmap)
         val density = context.resources.displayMetrics.density
         val colorScheme = WidgetSettings.getCurrentColorScheme(context)

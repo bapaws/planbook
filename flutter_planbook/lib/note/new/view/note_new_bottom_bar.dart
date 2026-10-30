@@ -16,23 +16,38 @@ class NoteNewBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final imageCount = context.select(
+      (NoteNewCubit cubit) => cubit.state.images.length,
+    );
+    final remaining = kNoteMaxImages - imageCount;
     return Row(
       children: [
         CupertinoButton(
           padding: const EdgeInsets.all(16),
-          onPressed: () async {
-            if (!context.read<AppPurchasesBloc>().isPremium) {
-              await context.router.push(const AppPurchasesRoute());
-              return;
-            }
+          onPressed: remaining <= 0
+              ? null
+              : () async {
+                  if (!context.read<AppPurchasesBloc>().isPremium) {
+                    await context.router.push(const AppPurchasesRoute());
+                    return;
+                  }
 
-            final picker = ImagePicker();
-            final files = await picker.pickMultiImage(limit: 9);
-            if (!context.mounted) return;
+                  final picker = ImagePicker();
+                  // 多选接口至少要求两张；只剩一个名额时改用相册单选。
+                  final List<XFile> files;
+                  if (remaining == 1) {
+                    final file = await picker.pickImage(
+                      source: ImageSource.gallery,
+                    );
+                    files = file == null ? const [] : [file];
+                  } else {
+                    files = await picker.pickMultiImage(limit: remaining);
+                  }
+                  if (!context.mounted || files.isEmpty) return;
 
-            final paths = files.map((file) => file.path).toList();
-            await context.read<NoteNewCubit>().addImages(paths);
-          },
+                  final paths = files.map((file) => file.path).toList();
+                  await context.read<NoteNewCubit>().addImages(paths);
+                },
           child: FaIcon(
             FontAwesomeIcons.solidImage,
             color: colorScheme.onSurface,
@@ -41,20 +56,22 @@ class NoteNewBottomBar extends StatelessWidget {
         CupertinoButton(
           padding: const EdgeInsets.all(16),
           minimumSize: const Size.square(kMinInteractiveDimension),
-          onPressed: () async {
-            if (!context.read<AppPurchasesBloc>().isPremium) {
-              await context.router.push(const AppPurchasesRoute());
-              return;
-            }
+          onPressed: remaining <= 0
+              ? null
+              : () async {
+                  if (!context.read<AppPurchasesBloc>().isPremium) {
+                    await context.router.push(const AppPurchasesRoute());
+                    return;
+                  }
 
-            final picker = ImagePicker();
-            final file = await picker.pickImage(
-              source: ImageSource.camera,
-            );
+                  final picker = ImagePicker();
+                  final file = await picker.pickImage(
+                    source: ImageSource.camera,
+                  );
 
-            if (!context.mounted || file == null) return;
-            await context.read<NoteNewCubit>().addImages([file.path]);
-          },
+                  if (!context.mounted || file == null) return;
+                  await context.read<NoteNewCubit>().addImages([file.path]);
+                },
           child: FaIcon(
             FontAwesomeIcons.solidCamera,
             color: colorScheme.onSurface,

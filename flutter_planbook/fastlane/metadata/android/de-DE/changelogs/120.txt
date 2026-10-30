@@ -1,6 +1,0 @@
-• Tagesansicht mit Zeitblöcken
-• Aufgaben-Seitenleiste
-• Wochenlistenansicht
-• Fehlerbehebungen
-
-Zuletzt: Neuer Fokus-Monatskalender im Journal, Quadrantennamen anpassen, Startbildschirm-Widgets

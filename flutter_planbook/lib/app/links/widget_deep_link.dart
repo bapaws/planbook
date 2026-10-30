@@ -1,4 +1,6 @@
 import 'package:flutter_planbook/root/task/bloc/root_task_bloc.dart';
+import 'package:flutter_planbook/root/task/model/root_task_tab.dart';
+import 'package:flutter_planbook/task/week/model/task_week_view_mode.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:planbook_api/planbook_api.dart';
 
@@ -7,6 +9,18 @@ class WidgetCreateTaskRequest {
 
   final Jiffy? dueAt;
   final TaskPriority? priority;
+}
+
+class WidgetOpenTaskRequest {
+  const WidgetOpenTaskRequest({
+    required this.tab,
+    this.date,
+    this.weekViewMode,
+  });
+
+  final RootTaskTab tab;
+  final Jiffy? date;
+  final TaskWeekViewMode? weekViewMode;
 }
 
 /// 小组件 deeplink 与主界面之间的一次性桥接。
@@ -20,6 +34,8 @@ class WidgetDeepLink {
   static RootTaskViewType? _pendingDayViewType;
   static void Function(WidgetCreateTaskRequest)? _createTaskHandler;
   static WidgetCreateTaskRequest? _pendingCreateTaskRequest;
+  static void Function(WidgetOpenTaskRequest)? _openTaskHandler;
+  static WidgetOpenTaskRequest? _pendingOpenTaskRequest;
 
   /// 小组件要求打开「今天的时间块」。
   static void openTodayTimeBlock() {
@@ -33,6 +49,32 @@ class WidgetDeepLink {
     }
   }
 
+  static void openDay(Jiffy date) {
+    _dispatchOpenTask(
+      WidgetOpenTaskRequest(tab: RootTaskTab.day, date: date),
+    );
+  }
+
+  static void openWeek({Jiffy? date, TaskWeekViewMode? weekViewMode}) {
+    _dispatchOpenTask(
+      WidgetOpenTaskRequest(
+        tab: RootTaskTab.week,
+        date: date,
+        weekViewMode: weekViewMode,
+      ),
+    );
+  }
+
+  static void _dispatchOpenTask(WidgetOpenTaskRequest request) {
+    final handler = _openTaskHandler;
+    if (handler != null) {
+      handler(request);
+      _pendingOpenTaskRequest = null;
+    } else {
+      _pendingOpenTaskRequest = request;
+    }
+  }
+
   /// RootHome 就绪后绑定；若已有 pending 则立即下发。
   static void bind(void Function(RootTaskViewType) handler) {
     _handler = handler;
@@ -40,6 +82,21 @@ class WidgetDeepLink {
     if (pending != null) {
       _pendingDayViewType = null;
       handler(pending);
+    }
+  }
+
+  static void bindOpenTask(void Function(WidgetOpenTaskRequest) handler) {
+    _openTaskHandler = handler;
+    final pending = _pendingOpenTaskRequest;
+    if (pending != null) {
+      _pendingOpenTaskRequest = null;
+      handler(pending);
+    }
+  }
+
+  static void unbindOpenTask(void Function(WidgetOpenTaskRequest) handler) {
+    if (_openTaskHandler == handler) {
+      _openTaskHandler = null;
     }
   }
 

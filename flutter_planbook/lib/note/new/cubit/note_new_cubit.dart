@@ -7,6 +7,9 @@ import 'package:planbook_repository/planbook_repository.dart';
 
 part 'note_new_state.dart';
 
+/// 一篇笔记最多附 9 张图。相册单次选择和拍照都算进这个总数。
+const kNoteMaxImages = 9;
+
 class NoteNewCubit extends HydratedCubit<NoteNewState> {
   NoteNewCubit({
     required NotesRepository notesRepository,
@@ -54,7 +57,10 @@ class NoteNewCubit extends HydratedCubit<NoteNewState> {
   }
 
   Future<void> addImages(List<String> imagePaths) async {
-    emit(state.copyWith(images: [...state.images, ...imagePaths]));
+    final remaining = kNoteMaxImages - state.images.length;
+    if (remaining <= 0 || imagePaths.isEmpty) return;
+    final accepted = imagePaths.take(remaining);
+    emit(state.copyWith(images: [...state.images, ...accepted]));
   }
 
   void removeImage(int index) {

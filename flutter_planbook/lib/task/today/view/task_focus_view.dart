@@ -17,10 +17,12 @@ class TaskFocusView extends StatelessWidget {
     required this.onTap,
     required this.onMindMapTapped,
     this.onTaskDropped,
+    this.isReady = true,
     super.key,
   });
 
   final Note? note;
+  final bool isReady;
 
   final NoteType noteType;
   final VoidCallback onTap;
@@ -52,7 +54,7 @@ class TaskFocusView extends StatelessWidget {
     );
     final content = GestureDetector(
       key: ValueKey(noteType),
-      onTap: onTap,
+      onTap: isReady ? onTap : null,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 8),
         padding: const EdgeInsets.symmetric(vertical: 8),
@@ -84,7 +86,13 @@ class TaskFocusView extends StatelessWidget {
               child: Padding(
                 key: ValueKey(noteType),
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: isEmpty
+                child: !isReady
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : isEmpty
                     ? onTaskDropped != null
                           ? SequentialRotatingText(
                               key: ValueKey(noteType),
@@ -109,7 +117,7 @@ class TaskFocusView extends StatelessWidget {
       ),
     );
     return TaskDragTarget(
-      onAccept: onTaskDropped,
+      onAccept: isReady ? onTaskDropped : null,
       operation: TaskDragOperation.noteAppend,
       child: content,
     );
